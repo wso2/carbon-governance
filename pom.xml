@@ -27,7 +27,7 @@
 		<activeByDefault>true</activeByDefault>
 	  </activation>
 	     <modules>
-		<module>governance</module>
+		<module>components</module>
 		<module>features</module>
              </modules>
 	</profile>
@@ -40,7 +40,7 @@
                 </property>
             </activation>
 	     <modules>
-		<module>governance</module>
+		<module>components</module>
 		<module>features</module>
              </modules>
 	</profile>
@@ -53,7 +53,6 @@
 		</property>
 	  </activation>
 	  <modules>
-                <module>core</module>
                 <module>components</module>
 	  </modules>
 	</profile>
@@ -72,5 +71,3 @@
         </snapshotRepository>
     </distributionManagement>
 </project>
-
-
