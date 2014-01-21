@@ -1,0 +1,519 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax2115="http://beans.processes.governance.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.processes.governance.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax2112="http://api.registry.carbon.wso2.org/xsd" xmlns:ax2111="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.processes.governance.carbon.wso2.org">
+    <wsdl:documentation>AddProcessesService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax2113="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd"/>
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ax2113:RegistryException">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.processes.governance.carbon.wso2.org/xsd">
+            <xs:complexType name="ProcessBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="canDelete" nillable="true" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="names" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="namespace" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="size" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2116="http://beans.processes.governance.carbon.wso2.org/xsd" xmlns:ax2114="http://exceptions.core.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.processes.governance.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://beans.processes.governance.carbon.wso2.org/xsd"/>
+            <xs:element name="RegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2114:RegistryException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="saveProcessConfiguration">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="update" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="saveProcessConfigurationResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listProcesses">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="criteria" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listProcessesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2116:ProcessBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getProcessPathResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getProcessConfigurationResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Exception">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Exception" nillable="true" type="ns:Exception"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="getAvailableAspectsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="editProcess">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="processname" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="editProcessResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canChange">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canChangeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addProcess">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="info" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addProcessResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="listProcessesRequest">
+        <wsdl:part name="parameters" element="ns:listProcesses"/>
+    </wsdl:message>
+    <wsdl:message name="listProcessesResponse">
+        <wsdl:part name="parameters" element="ns:listProcessesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="RegistryException">
+        <wsdl:part name="parameters" element="ns:RegistryException"/>
+    </wsdl:message>
+    <wsdl:message name="getProcessPathRequest"/>
+    <wsdl:message name="getProcessPathResponse">
+        <wsdl:part name="parameters" element="ns:getProcessPathResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getProcessConfigurationRequest"/>
+    <wsdl:message name="getProcessConfigurationResponse">
+        <wsdl:part name="parameters" element="ns:getProcessConfigurationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="saveProcessConfigurationRequest">
+        <wsdl:part name="parameters" element="ns:saveProcessConfiguration"/>
+    </wsdl:message>
+    <wsdl:message name="saveProcessConfigurationResponse">
+        <wsdl:part name="parameters" element="ns:saveProcessConfigurationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="addProcessRequest">
+        <wsdl:part name="parameters" element="ns:addProcess"/>
+    </wsdl:message>
+    <wsdl:message name="addProcessResponse">
+        <wsdl:part name="parameters" element="ns:addProcessResponse"/>
+    </wsdl:message>
+    <wsdl:message name="editProcessRequest">
+        <wsdl:part name="parameters" element="ns:editProcess"/>
+    </wsdl:message>
+    <wsdl:message name="editProcessResponse">
+        <wsdl:part name="parameters" element="ns:editProcessResponse"/>
+    </wsdl:message>
+    <wsdl:message name="canChangeRequest">
+        <wsdl:part name="parameters" element="ns:canChange"/>
+    </wsdl:message>
+    <wsdl:message name="canChangeResponse">
+        <wsdl:part name="parameters" element="ns:canChangeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="Exception">
+        <wsdl:part name="parameters" element="ns:Exception"/>
+    </wsdl:message>
+    <wsdl:message name="getAvailableAspectsRequest"/>
+    <wsdl:message name="getAvailableAspectsResponse">
+        <wsdl:part name="parameters" element="ns:getAvailableAspectsResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="AddProcessesServicePortType">
+        <wsdl:operation name="listProcesses">
+            <wsdl:input message="ns:listProcessesRequest" wsaw:Action="urn:listProcesses"/>
+            <wsdl:output message="ns:listProcessesResponse" wsaw:Action="urn:listProcessesResponse"/>
+            <wsdl:fault message="ns:RegistryException" name="RegistryException" wsaw:Action="urn:listProcessesRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getProcessPath">
+            <wsdl:input message="ns:getProcessPathRequest" wsaw:Action="urn:getProcessPath"/>
+            <wsdl:output message="ns:getProcessPathResponse" wsaw:Action="urn:getProcessPathResponse"/>
+            <wsdl:fault message="ns:RegistryException" name="RegistryException" wsaw:Action="urn:getProcessPathRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getProcessConfiguration">
+            <wsdl:input message="ns:getProcessConfigurationRequest" wsaw:Action="urn:getProcessConfiguration"/>
+            <wsdl:output message="ns:getProcessConfigurationResponse" wsaw:Action="urn:getProcessConfigurationResponse"/>
+            <wsdl:fault message="ns:RegistryException" name="RegistryException" wsaw:Action="urn:getProcessConfigurationRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveProcessConfiguration">
+            <wsdl:input message="ns:saveProcessConfigurationRequest" wsaw:Action="urn:saveProcessConfiguration"/>
+            <wsdl:output message="ns:saveProcessConfigurationResponse" wsaw:Action="urn:saveProcessConfigurationResponse"/>
+            <wsdl:fault message="ns:RegistryException" name="RegistryException" wsaw:Action="urn:saveProcessConfigurationRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="addProcess">
+            <wsdl:input message="ns:addProcessRequest" wsaw:Action="urn:addProcess"/>
+            <wsdl:output message="ns:addProcessResponse" wsaw:Action="urn:addProcessResponse"/>
+            <wsdl:fault message="ns:RegistryException" name="RegistryException" wsaw:Action="urn:addProcessRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="editProcess">
+            <wsdl:input message="ns:editProcessRequest" wsaw:Action="urn:editProcess"/>
+            <wsdl:output message="ns:editProcessResponse" wsaw:Action="urn:editProcessResponse"/>
+            <wsdl:fault message="ns:RegistryException" name="RegistryException" wsaw:Action="urn:editProcessRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <wsdl:input message="ns:canChangeRequest" wsaw:Action="urn:canChange"/>
+            <wsdl:output message="ns:canChangeResponse" wsaw:Action="urn:canChangeResponse"/>
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:canChangeException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <wsdl:input message="ns:getAvailableAspectsRequest" wsaw:Action="urn:getAvailableAspects"/>
+            <wsdl:output message="ns:getAvailableAspectsResponse" wsaw:Action="urn:getAvailableAspectsResponse"/>
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:getAvailableAspectsException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="AddProcessesServiceSoap11Binding" type="ns:AddProcessesServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="listProcesses">
+            <soap:operation soapAction="urn:listProcesses" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getProcessPath">
+            <soap:operation soapAction="urn:getProcessPath" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getProcessConfiguration">
+            <soap:operation soapAction="urn:getProcessConfiguration" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="saveProcessConfiguration">
+            <soap:operation soapAction="urn:saveProcessConfiguration" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="editProcess">
+            <soap:operation soapAction="urn:editProcess" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addProcess">
+            <soap:operation soapAction="urn:addProcess" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <soap:operation soapAction="urn:canChange" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <soap:operation soapAction="urn:getAvailableAspects" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="AddProcessesServiceSoap12Binding" type="ns:AddProcessesServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="listProcesses">
+            <soap12:operation soapAction="urn:listProcesses" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap12:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getProcessPath">
+            <soap12:operation soapAction="urn:getProcessPath" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap12:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getProcessConfiguration">
+            <soap12:operation soapAction="urn:getProcessConfiguration" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap12:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="saveProcessConfiguration">
+            <soap12:operation soapAction="urn:saveProcessConfiguration" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap12:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="editProcess">
+            <soap12:operation soapAction="urn:editProcess" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap12:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addProcess">
+            <soap12:operation soapAction="urn:addProcess" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap12:fault use="literal" name="RegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <soap12:operation soapAction="urn:canChange" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <soap12:operation soapAction="urn:getAvailableAspects" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="AddProcessesServiceHttpBinding" type="ns:AddProcessesServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="listProcesses">
+            <http:operation location="listProcesses"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getProcessPath">
+            <http:operation location="getProcessPath"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getProcessConfiguration">
+            <http:operation location="getProcessConfiguration"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveProcessConfiguration">
+            <http:operation location="saveProcessConfiguration"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="editProcess">
+            <http:operation location="editProcess"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addProcess">
+            <http:operation location="addProcess"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <http:operation location="canChange"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <http:operation location="getAvailableAspects"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="AddProcessesService">
+        <wsdl:port name="AddProcessesServiceHttpsSoap11Endpoint" binding="ns:AddProcessesServiceSoap11Binding">
+            <soap:address location="https://10.0.0.11:9443/services/AddProcessesService.AddProcessesServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="AddProcessesServiceHttpsSoap12Endpoint" binding="ns:AddProcessesServiceSoap12Binding">
+            <soap12:address location="https://10.0.0.11:9443/services/AddProcessesService.AddProcessesServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="AddProcessesServiceHttpsEndpoint" binding="ns:AddProcessesServiceHttpBinding">
+            <http:address location="https://10.0.0.11:9443/services/AddProcessesService.AddProcessesServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

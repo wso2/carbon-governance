@@ -1,0 +1,1014 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax2220="http://securevault.wso2.org/xsd"
+                  xmlns:ax2240="http://multitenancy.config.core.user.carbon.wso2.org/xsd"
+                  xmlns:ax2222="http://jdbc.core.registry.carbon.wso2.org/xsd"
+                  xmlns:ns="http://services.list.governance.carbon.wso2.org"
+                  xmlns:ax2242="http://tenant.core.user.carbon.wso2.org/xsd"
+                  xmlns:ax2243="http://framework.osgi.org/xsd"
+                  xmlns:ax2228="http://queries.jdbc.core.registry.carbon.wso2.org/xsd"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:ax2248="http://statistics.core.registry.carbon.wso2.org/xsd"
+                  xmlns:ax2226="http://utils.core.registry.carbon.wso2.org/xsd"
+                  xmlns:ax2204="http://exceptions.core.registry.carbon.wso2.org/xsd"
+                  xmlns:ax2208="http://beans.list.governance.carbon.wso2.org/xsd"
+                  xmlns:ax2205="http://api.registry.carbon.wso2.org/xsd"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:ax2211="http://config.core.registry.carbon.wso2.org/xsd"
+                  xmlns:ax2210="http://session.core.registry.carbon.wso2.org/xsd"
+                  xmlns:ax2232="http://claim.core.user.carbon.wso2.org/xsd"
+                  xmlns:ax2231="http://core.user.carbon.wso2.org/xsd"
+                  xmlns:ax2230="http://service.core.user.carbon.wso2.org/xsd"
+                  xmlns:ax2236="http://api.user.carbon.wso2.org/xsd"
+                  xmlns:ax2217="http://dao.core.registry.carbon.wso2.org/xsd"
+                  xmlns:ax2216="http://dataaccess.core.registry.carbon.wso2.org/xsd"
+                  xmlns:ax2234="http://profile.core.user.carbon.wso2.org/xsd"
+                  xmlns:ax2214="http://handlers.jdbc.core.registry.carbon.wso2.org/xsd"
+                  xmlns:ax2212="http://util.java/xsd" xmlns:ns1="http://org.apache.axis2/xsd"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  targetNamespace="http://services.list.governance.carbon.wso2.org">
+    <wsdl:documentation>ListMetadataService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax2224="http://session.core.registry.carbon.wso2.org/xsd"
+                   xmlns:ax2223="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified"
+                   elementFormDefault="qualified" targetNamespace="http://jdbc.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://session.core.registry.carbon.wso2.org/xsd"/>
+            <xs:complexType name="EmbeddedRegistryService">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="configUserRegistry" nillable="true" type="ax2223:Registry"/>
+                    <xs:element minOccurs="0" name="governanceUserRegistry" nillable="true" type="ax2223:Registry"/>
+                    <xs:element minOccurs="0" name="registry" nillable="true" type="ax2223:Registry"/>
+                    <xs:element minOccurs="0" name="userRegistry" nillable="true" type="ax2224:UserRegistry"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Repository">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="VersionRepository">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="Registry">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="availableAspects" nillable="true"
+                                type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://dao.core.registry.carbon.wso2.org/xsd">
+            <xs:complexType abstract="true" name="AssociationDAO">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="LogsDAO">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="ResourceDAO">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="ResourceVersionDAO">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2237="http://api.user.carbon.wso2.org/xsd"
+                   xmlns:ax2235="http://profile.core.user.carbon.wso2.org/xsd"
+                   xmlns:ax2233="http://claim.core.user.carbon.wso2.org/xsd" attributeFormDefault="qualified"
+                   elementFormDefault="qualified" targetNamespace="http://core.user.carbon.wso2.org/xsd">
+            <xs:import namespace="http://claim.core.user.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://profile.core.user.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://api.user.carbon.wso2.org/xsd"/>
+            <xs:complexType abstract="true" name="UserRealm">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="authorizationManager" nillable="true"
+                                type="ax2231:AuthorizationManager"/>
+                    <xs:element minOccurs="0" name="claimManager" nillable="true" type="ax2233:ClaimManager"/>
+                    <xs:element minOccurs="0" name="profileConfigurationManager" nillable="true"
+                                type="ax2235:ProfileConfigurationManager"/>
+                    <xs:element minOccurs="0" name="realmConfiguration" nillable="true"
+                                type="ax2237:RealmConfiguration"/>
+                    <xs:element minOccurs="0" name="userStoreManager" nillable="true" type="ax2231:UserStoreManager"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="AuthorizationManager">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="UserStoreManager">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allProfileNames" nillable="true"
+                                type="xs:string"/>
+                    <xs:element minOccurs="0" name="bulkImportSupported" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="hybridRoles" nillable="true"
+                                type="xs:string"/>
+                    <xs:element minOccurs="0" name="readOnly" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="roleNames" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://multitenancy.config.core.user.carbon.wso2.org/xsd">
+            <xs:complexType abstract="true" name="MultiTenantRealmConfigBuilder">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2218="http://dao.core.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified"
+                   elementFormDefault="qualified" targetNamespace="http://dataaccess.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://dao.core.registry.carbon.wso2.org/xsd"/>
+            <xs:complexType abstract="true" name="DataAccessManager">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="DAOManager" nillable="true" type="ax2216:DAOManager"/>
+                    <xs:element minOccurs="0" name="clusterLock" nillable="true" type="ax2216:ClusterLock"/>
+                    <xs:element minOccurs="0" name="databaseExisting" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="databaseTransaction" nillable="true"
+                                type="ax2216:DatabaseTransaction"/>
+                    <xs:element minOccurs="0" name="queryProcessor" nillable="true" type="ax2216:QueryProcessor"/>
+                    <xs:element minOccurs="0" name="transactionManager" nillable="true"
+                                type="ax2216:TransactionManager"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="DAOManager">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="associationDAO" nillable="true" type="ax2218:AssociationDAO"/>
+                    <xs:element minOccurs="0" name="logsDAO" nillable="true" type="ax2218:LogsDAO"/>
+                    <xs:element minOccurs="0" name="resourceDAO" nillable="true" type="ax2218:ResourceDAO"/>
+                    <xs:element minOccurs="0" name="resourceVersionDAO" nillable="true"
+                                type="ax2218:ResourceVersionDAO"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="ClusterLock">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="DatabaseTransaction">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="nestedDepth" type="xs:int"/>
+                    <xs:element minOccurs="0" name="rollbacked" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="started" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="QueryProcessor">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="TransactionManager">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2244="http://util.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://framework.osgi.org/xsd">
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:complexType abstract="true" name="BundleContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="bundle" nillable="true" type="ax2243:Bundle"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="bundles" nillable="true"
+                                type="ax2243:Bundle"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="Bundle">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="bundleContext" nillable="true" type="ax2243:BundleContext"/>
+                    <xs:element minOccurs="0" name="bundleId" type="xs:long"/>
+                    <xs:element minOccurs="0" name="headers" nillable="true" type="ax2244:Dictionary"/>
+                    <xs:element minOccurs="0" name="lastModified" type="xs:long"/>
+                    <xs:element minOccurs="0" name="location" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="registeredServices" nillable="true"
+                                type="ax2243:ServiceReference"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="servicesInUse" nillable="true"
+                                type="ax2243:ServiceReference"/>
+                    <xs:element minOccurs="0" name="state" type="xs:int"/>
+                    <xs:element minOccurs="0" name="symbolicName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="version" nillable="true" type="ax2243:Version"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="ServiceReference">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="bundle" nillable="true" type="ax2243:Bundle"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="propertyKeys" nillable="true"
+                                type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="usingBundles" nillable="true"
+                                type="ax2243:Bundle"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Version">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="major" type="xs:int"/>
+                    <xs:element minOccurs="0" name="micro" type="xs:int"/>
+                    <xs:element minOccurs="0" name="minor" type="xs:int"/>
+                    <xs:element minOccurs="0" name="qualifier" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://api.user.carbon.wso2.org/xsd">
+            <xs:complexType name="RealmConfiguration">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="adminPassword" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="adminRoleName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="adminUserName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="authorizationManagerClass" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="authzProperties" nillable="true"
+                                type="xs:string"/>
+                    <xs:element minOccurs="0" name="everyOneRoleName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="passwordsExternallyManaged" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="persistedTimestamp" nillable="true" type="xs:date"/>
+                    <xs:element minOccurs="0" name="realmClassName" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="realmProperties" nillable="true"
+                                type="xs:string"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    <xs:element minOccurs="0" name="userStoreClass" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="userStoreProperties" nillable="true"
+                                type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://handlers.jdbc.core.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="CustomEditManager">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="HandlerManager">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="evaluateAllHandlers" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2245="http://framework.osgi.org/xsd" attributeFormDefault="qualified"
+                   elementFormDefault="qualified" targetNamespace="http://tenant.core.user.carbon.wso2.org/xsd">
+            <xs:import namespace="http://framework.osgi.org/xsd"/>
+            <xs:complexType abstract="true" name="TenantManager">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="bundleContext" nillable="true" type="ax2243:BundleContext"/>
+                    <xs:element minOccurs="0" name="superTenantDomain" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://util.java/xsd">
+            <xs:complexType abstract="true" name="Iterator">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType abstract="true" name="Dictionary">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="empty" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://queries.jdbc.core.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="QueryProcessorManager">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://claim.core.user.carbon.wso2.org/xsd">
+            <xs:complexType abstract="true" name="ClaimManager">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://statistics.core.registry.carbon.wso2.org/xsd">
+            <xs:complexType abstract="true" name="StatisticsCollector">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2252="http://session.core.registry.carbon.wso2.org/xsd"
+                   xmlns:ax2207="http://exceptions.core.registry.carbon.wso2.org/xsd"
+                   xmlns:ax2209="http://beans.list.governance.carbon.wso2.org/xsd" attributeFormDefault="qualified"
+                   elementFormDefault="qualified" targetNamespace="http://services.list.governance.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://beans.list.governance.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://session.core.registry.carbon.wso2.org/xsd"/>
+            <xs:element name="ListMetadataServiceRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true"
+                                    type="ax2204:RegistryException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listwsdls">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listwsdlsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2208:WSDLBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listservices">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="criteria" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listservicesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2208:ServiceBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listschema">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listschemaResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2208:SchemaBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listpolicies">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listpoliciesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2208:PolicyBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listWsdlsByName">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="wsdlName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listWsdlsByNameResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2208:WSDLBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ListMetadataServiceException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ListMetadataServiceException" nillable="true"
+                                    type="ns:Exception"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="listSchemaByName">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="schemaName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listSchemaByNameResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2208:SchemaBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listPoliciesByNames">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="policyName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listPoliciesByNamesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2208:PolicyBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPolicyBeanFromPaths">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="registry" nillable="true" type="ax2210:UserRegistry"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPolicyBeanFromPathsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2208:PolicyBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:ax2221="http://securevault.wso2.org/xsd"
+                   xmlns:ax2219="http://dataaccess.core.registry.carbon.wso2.org/xsd"
+                   xmlns:ax2227="http://utils.core.registry.carbon.wso2.org/xsd"
+                   xmlns:ax2247="http://service.core.user.carbon.wso2.org/xsd"
+                   xmlns:ax2229="http://queries.jdbc.core.registry.carbon.wso2.org/xsd"
+                   xmlns:ax2215="http://handlers.jdbc.core.registry.carbon.wso2.org/xsd"
+                   xmlns:ax2249="http://statistics.core.registry.carbon.wso2.org/xsd"
+                   xmlns:ax2213="http://util.java/xsd" xmlns:ax2225="http://jdbc.core.registry.carbon.wso2.org/xsd"
+                   attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://config.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://util.java/xsd"/>
+            <xs:import namespace="http://handlers.jdbc.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://dataaccess.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://securevault.wso2.org/xsd"/>
+            <xs:import namespace="http://jdbc.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://utils.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://queries.jdbc.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://service.core.user.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://statistics.core.registry.carbon.wso2.org/xsd"/>
+            <xs:complexType name="RegistryContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="DBConfigNames" nillable="true" type="ax2213:Iterator"/>
+                    <xs:element minOccurs="0" name="basePath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cacheEnabled" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="clone" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="collectionMediaTypes" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="customEditManager" nillable="true" type="ax2215:CustomEditManager"/>
+                    <xs:element minOccurs="0" name="customUIMediaTypes" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="dataAccessManager" nillable="true" type="ax2219:DataAccessManager"/>
+                    <xs:element minOccurs="0" name="defaultDataBaseConfiguration" nillable="true"
+                                type="ax2211:DataBaseConfiguration"/>
+                    <xs:element minOccurs="0" name="embeddedRegistryService" nillable="true"
+                                type="ax2222:EmbeddedRegistryService"/>
+                    <xs:element minOccurs="0" name="handlerConfigurations" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="handlerManager" nillable="true" type="ax2215:HandlerManager"/>
+                    <xs:element minOccurs="0" name="logWriter" nillable="true" type="ax2227:LogWriter"/>
+                    <xs:element minOccurs="0" name="maxCache" type="xs:int"/>
+                    <xs:element minOccurs="0" name="mediaTypeHandlers" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="mounts" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="nodeIdentifier" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="profilesPath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="queryProcessorManager" nillable="true"
+                                type="ax2228:QueryProcessorManager"/>
+                    <xs:element minOccurs="0" name="queryProcessors" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="readOnly" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="realmService" nillable="true" type="ax2247:RealmService"/>
+                    <xs:element minOccurs="0" name="registryRoot" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="remoteInstances" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="repository" nillable="true" type="ax2222:Repository"/>
+                    <xs:element minOccurs="0" name="resourceMediaTypes" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="servicePath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="setup" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="statisticsCollectors" nillable="true"
+                                type="ax2248:StatisticsCollector"/>
+                    <xs:element minOccurs="0" name="urlHandlers" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="versionOnChange" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="versionRepository" nillable="true" type="ax2222:VersionRepository"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="DataBaseConfiguration">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="configName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="dataSourceName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="dbUrl" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="driverName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="maxActive" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="maxIdle" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="maxWait" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="minEvictableIdleTimeMillis" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="minIdle" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="numTestsPerEvictionRun" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="passWord" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="passwordManager" nillable="true" type="ax2220:SecretResolver"/>
+                    <xs:element minOccurs="0" name="resolvedPassword" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="testWhileIdle" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="timeBetweenEvictionRunsMillis" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="validationQuery" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2246="http://tenant.core.user.carbon.wso2.org/xsd"
+                   xmlns:ax2241="http://multitenancy.config.core.user.carbon.wso2.org/xsd"
+                   xmlns:ax2239="http://api.user.carbon.wso2.org/xsd"
+                   xmlns:ax2238="http://core.user.carbon.wso2.org/xsd" attributeFormDefault="qualified"
+                   elementFormDefault="qualified" targetNamespace="http://service.core.user.carbon.wso2.org/xsd">
+            <xs:import namespace="http://core.user.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://api.user.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://multitenancy.config.core.user.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://tenant.core.user.carbon.wso2.org/xsd"/>
+            <xs:complexType abstract="true" name="RealmService">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="bootstrapRealm" nillable="true" type="ax2231:UserRealm"/>
+                    <xs:element minOccurs="0" name="bootstrapRealmConfiguration" nillable="true"
+                                type="ax2236:RealmConfiguration"/>
+                    <xs:element minOccurs="0" name="multiTenantRealmConfigBuilder" nillable="true"
+                                type="ax2240:MultiTenantRealmConfigBuilder"/>
+                    <xs:element minOccurs="0" name="tenantManager" nillable="true" type="ax2242:TenantManager"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2206="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified"
+                   elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd"/>
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ax2205:RegistryException">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2250="http://config.core.registry.carbon.wso2.org/xsd"
+                   xmlns:ax2251="http://core.user.carbon.wso2.org/xsd" attributeFormDefault="qualified"
+                   elementFormDefault="qualified" targetNamespace="http://session.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://config.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://core.user.carbon.wso2.org/xsd"/>
+            <xs:complexType name="UserRegistry">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="availableAspects" nillable="true"
+                                type="xs:string"/>
+                    <xs:element minOccurs="0" name="callerTenantId" type="xs:int"/>
+                    <xs:element minOccurs="0" name="registryContext" nillable="true" type="ax2211:RegistryContext"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="userRealm" nillable="true" type="ax2231:UserRealm"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://securevault.wso2.org/xsd">
+            <xs:complexType name="SecretResolver">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="initialized" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://profile.core.user.carbon.wso2.org/xsd">
+            <xs:complexType abstract="true" name="ProfileConfigurationManager">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://utils.core.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="LogWriter">
+                <xs:complexContent>
+                    <xs:extension base="xs:Thread">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="logQueue" nillable="true" type="ax2226:LogQueue"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="LogQueue">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://beans.list.governance.carbon.wso2.org/xsd">
+            <xs:complexType name="WSDLBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCName" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCState" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="canDelete" nillable="true" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="namespace" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="size" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ServiceBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCName" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCState" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="canDelete" nillable="true" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="defaultServicePath" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="names" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="namespace" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="size" type="xs:int"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="version" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="SchemaBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCName" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCState" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="canDelete" nillable="true" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="namespace" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="size" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PolicyBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCName" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCState" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="canDelete" nillable="true" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="size" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="listschemaRequest">
+        <wsdl:part name="parameters" element="ns:listschema"/>
+    </wsdl:message>
+    <wsdl:message name="listschemaResponse">
+        <wsdl:part name="parameters" element="ns:listschemaResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ListMetadataServiceRegistryException">
+        <wsdl:part name="parameters" element="ns:ListMetadataServiceRegistryException"/>
+    </wsdl:message>
+    <wsdl:message name="listservicesRequest">
+        <wsdl:part name="parameters" element="ns:listservices"/>
+    </wsdl:message>
+    <wsdl:message name="listservicesResponse">
+        <wsdl:part name="parameters" element="ns:listservicesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPolicyBeanFromPathsRequest">
+        <wsdl:part name="parameters" element="ns:getPolicyBeanFromPaths"/>
+    </wsdl:message>
+    <wsdl:message name="getPolicyBeanFromPathsResponse">
+        <wsdl:part name="parameters" element="ns:getPolicyBeanFromPathsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listSchemaByNameRequest">
+        <wsdl:part name="parameters" element="ns:listSchemaByName"/>
+    </wsdl:message>
+    <wsdl:message name="listSchemaByNameResponse">
+        <wsdl:part name="parameters" element="ns:listSchemaByNameResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ListMetadataServiceException">
+        <wsdl:part name="parameters" element="ns:ListMetadataServiceException"/>
+    </wsdl:message>
+    <wsdl:message name="listwsdlsRequest">
+        <wsdl:part name="parameters" element="ns:listwsdls"/>
+    </wsdl:message>
+    <wsdl:message name="listwsdlsResponse">
+        <wsdl:part name="parameters" element="ns:listwsdlsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listPoliciesByNamesRequest">
+        <wsdl:part name="parameters" element="ns:listPoliciesByNames"/>
+    </wsdl:message>
+    <wsdl:message name="listPoliciesByNamesResponse">
+        <wsdl:part name="parameters" element="ns:listPoliciesByNamesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listWsdlsByNameRequest">
+        <wsdl:part name="parameters" element="ns:listWsdlsByName"/>
+    </wsdl:message>
+    <wsdl:message name="listWsdlsByNameResponse">
+        <wsdl:part name="parameters" element="ns:listWsdlsByNameResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listpoliciesRequest">
+        <wsdl:part name="parameters" element="ns:listpolicies"/>
+    </wsdl:message>
+    <wsdl:message name="listpoliciesResponse">
+        <wsdl:part name="parameters" element="ns:listpoliciesResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="ListMetadataServicePortType">
+        <wsdl:operation name="listschema">
+            <wsdl:input message="ns:listschemaRequest" wsaw:Action="urn:listschema"/>
+            <wsdl:output message="ns:listschemaResponse" wsaw:Action="urn:listschemaResponse"/>
+            <wsdl:fault message="ns:ListMetadataServiceRegistryException" name="ListMetadataServiceRegistryException"
+                        wsaw:Action="urn:listschemaListMetadataServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listservices">
+            <wsdl:input message="ns:listservicesRequest" wsaw:Action="urn:listservices"/>
+            <wsdl:output message="ns:listservicesResponse" wsaw:Action="urn:listservicesResponse"/>
+            <wsdl:fault message="ns:ListMetadataServiceRegistryException" name="ListMetadataServiceRegistryException"
+                        wsaw:Action="urn:listservicesListMetadataServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyBeanFromPaths">
+            <wsdl:input message="ns:getPolicyBeanFromPathsRequest" wsaw:Action="urn:getPolicyBeanFromPaths"/>
+            <wsdl:output message="ns:getPolicyBeanFromPathsResponse" wsaw:Action="urn:getPolicyBeanFromPathsResponse"/>
+            <wsdl:fault message="ns:ListMetadataServiceRegistryException" name="ListMetadataServiceRegistryException"
+                        wsaw:Action="urn:getPolicyBeanFromPathsListMetadataServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listSchemaByName">
+            <wsdl:input message="ns:listSchemaByNameRequest" wsaw:Action="urn:listSchemaByName"/>
+            <wsdl:output message="ns:listSchemaByNameResponse" wsaw:Action="urn:listSchemaByNameResponse"/>
+            <wsdl:fault message="ns:ListMetadataServiceException" name="ListMetadataServiceException"
+                        wsaw:Action="urn:listSchemaByNameListMetadataServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listwsdls">
+            <wsdl:input message="ns:listwsdlsRequest" wsaw:Action="urn:listwsdls"/>
+            <wsdl:output message="ns:listwsdlsResponse" wsaw:Action="urn:listwsdlsResponse"/>
+            <wsdl:fault message="ns:ListMetadataServiceRegistryException" name="ListMetadataServiceRegistryException"
+                        wsaw:Action="urn:listwsdlsListMetadataServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listPoliciesByNames">
+            <wsdl:input message="ns:listPoliciesByNamesRequest" wsaw:Action="urn:listPoliciesByNames"/>
+            <wsdl:output message="ns:listPoliciesByNamesResponse" wsaw:Action="urn:listPoliciesByNamesResponse"/>
+            <wsdl:fault message="ns:ListMetadataServiceRegistryException" name="ListMetadataServiceRegistryException"
+                        wsaw:Action="urn:listPoliciesByNamesListMetadataServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listWsdlsByName">
+            <wsdl:input message="ns:listWsdlsByNameRequest" wsaw:Action="urn:listWsdlsByName"/>
+            <wsdl:output message="ns:listWsdlsByNameResponse" wsaw:Action="urn:listWsdlsByNameResponse"/>
+            <wsdl:fault message="ns:ListMetadataServiceRegistryException" name="ListMetadataServiceRegistryException"
+                        wsaw:Action="urn:listWsdlsByNameListMetadataServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listpolicies">
+            <wsdl:input message="ns:listpoliciesRequest" wsaw:Action="urn:listpolicies"/>
+            <wsdl:output message="ns:listpoliciesResponse" wsaw:Action="urn:listpoliciesResponse"/>
+            <wsdl:fault message="ns:ListMetadataServiceRegistryException" name="ListMetadataServiceRegistryException"
+                        wsaw:Action="urn:listpoliciesListMetadataServiceRegistryException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ListMetadataServiceSoap11Binding" type="ns:ListMetadataServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="listschema">
+            <soap:operation soapAction="urn:listschema" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listservices">
+            <soap:operation soapAction="urn:listservices" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listSchemaByName">
+            <soap:operation soapAction="urn:listSchemaByName" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceException">
+                <soap:fault use="literal" name="ListMetadataServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyBeanFromPaths">
+            <soap:operation soapAction="urn:getPolicyBeanFromPaths" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listwsdls">
+            <soap:operation soapAction="urn:listwsdls" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listPoliciesByNames">
+            <soap:operation soapAction="urn:listPoliciesByNames" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listWsdlsByName">
+            <soap:operation soapAction="urn:listWsdlsByName" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listpolicies">
+            <soap:operation soapAction="urn:listpolicies" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ListMetadataServiceSoap12Binding" type="ns:ListMetadataServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="listschema">
+            <soap12:operation soapAction="urn:listschema" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap12:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listservices">
+            <soap12:operation soapAction="urn:listservices" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap12:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listSchemaByName">
+            <soap12:operation soapAction="urn:listSchemaByName" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceException">
+                <soap12:fault use="literal" name="ListMetadataServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyBeanFromPaths">
+            <soap12:operation soapAction="urn:getPolicyBeanFromPaths" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap12:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listwsdls">
+            <soap12:operation soapAction="urn:listwsdls" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap12:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listPoliciesByNames">
+            <soap12:operation soapAction="urn:listPoliciesByNames" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap12:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listWsdlsByName">
+            <soap12:operation soapAction="urn:listWsdlsByName" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap12:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listpolicies">
+            <soap12:operation soapAction="urn:listpolicies" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ListMetadataServiceRegistryException">
+                <soap12:fault use="literal" name="ListMetadataServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ListMetadataServiceHttpBinding" type="ns:ListMetadataServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="listschema">
+            <http:operation location="listschema"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listservices">
+            <http:operation location="listservices"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listSchemaByName">
+            <http:operation location="listSchemaByName"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getPolicyBeanFromPaths">
+            <http:operation location="getPolicyBeanFromPaths"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listwsdls">
+            <http:operation location="listwsdls"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listPoliciesByNames">
+            <http:operation location="listPoliciesByNames"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listWsdlsByName">
+            <http:operation location="listWsdlsByName"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listpolicies">
+            <http:operation location="listpolicies"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ListMetadataService">
+        <wsdl:port name="ListMetadataServiceHttpsSoap11Endpoint" binding="ns:ListMetadataServiceSoap11Binding">
+            <soap:address
+                    location="https://10.200.3.76:9444/services/ListMetadataService.ListMetadataServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="ListMetadataServiceHttpsSoap12Endpoint" binding="ns:ListMetadataServiceSoap12Binding">
+            <soap12:address
+                    location="https://10.200.3.76:9444/services/ListMetadataService.ListMetadataServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="ListMetadataServiceHttpsEndpoint" binding="ns:ListMetadataServiceHttpBinding">
+            <http:address
+                    location="https://10.200.3.76:9444/services/ListMetadataService.ListMetadataServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

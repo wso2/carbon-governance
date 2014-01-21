@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Impact Analysis"
+                 title_url="http://wso2.org/"
+                 description="SLA validation gadget"
+                 height="500"
+                 width="600"
+                 author="wso2">
+        <Require feature="setprefs"/>
+    </ModulePrefs>
+    <UserPref name="iframeURL" display_name="URL to content" required="true"
+              default_value="https://localhost:9443/carbon/impactAnalysis/impact.html"/>
+    <UserPref name="scroll" display_name="Display scrollbar" default_value="no" datatype="enum">
+        <EnumValue value="auto" display_value="Automatic"/>
+        <EnumValue value="no" display_value="No"/>
+        <EnumValue value="yes" display_value="Yes"/>
+
+    </UserPref>
+
+    <Content type="html" view="default,canvas"><![CDATA[
+<div id='dest' />
+
+<script type="text/javascript">
+var bendUrl = 'carbon/impactAnalysis/impact.html';
+var prefs = new gadgets.Prefs();
+var currentUrl = top.location.href;
+prefs.set("iframeURL", currentUrl.split("carbon")[0] + bendUrl);
+
+  function doRender(){
+    // setup variables
+    var prefs = new _IG_Prefs();
+    var iframeURL = prefs.getString('iframeURL');
+    var scroll = prefs.getString('scroll');
+    var height = '100%';
+    var width = '100%';
+    if(gadgets.window){
+      var viewport = gadgets.window.getViewportDimensions();
+      if(viewport.width){
+        var width = viewport.width + 'px';
+      }
+      if(viewport.height){
+        var height = viewport.height + 'px';
+      }
+    }
+    var iframe = document.createElement('iframe');
+    iframe.setAttribute('width', width);
+    iframe.setAttribute('height', height + 'px');
+    iframe.setAttribute('frameborder','no');
+    if(scroll){
+      iframe.setAttribute('scrolling',scroll);
+    }
+    iframe.setAttribute('src', iframeURL);
+    var dest = document.getElementById('dest');
+    dest.appendChild(iframe);
+  }
+  gadgets.util.registerOnLoadHandler(doRender);
+</script>
+
+]]></Content>
+</Module>

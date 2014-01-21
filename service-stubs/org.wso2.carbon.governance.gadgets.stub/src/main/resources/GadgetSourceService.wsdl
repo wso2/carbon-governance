@@ -1,0 +1,276 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns="http://services.gadgetsource.governance.carbon.wso2.org" xmlns:ax2108="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ax2106="http://beans.gadgetsource.governance.carbon.wso2.org/xsd" targetNamespace="http://services.gadgetsource.governance.carbon.wso2.org">
+    <wsdl:documentation>GadgetSourceService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax2110="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2107="http://beans.gadgetsource.governance.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.gadgetsource.governance.carbon.wso2.org">
+            <xs:import namespace="http://beans.gadgetsource.governance.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd" />
+            <xs:element name="getServiceVersionHistogramGadgetDataResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2106:ServiceVersionHistogramGadgetBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceInfoGadgetDataResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2106:ServiceInfoGadgetBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSchemaSharingInfoGadgetDataResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2106:SchemaSharingInfoGadgetBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Exception" nillable="true" type="xs:anyType" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="RegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2108:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLifecyclePiechartGadgetDataResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2106:LifecyclePiechartGadgetBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:ax2109="http://services.gadgetsource.governance.carbon.wso2.org" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://services.gadgetsource.governance.carbon.wso2.org" />
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ns:Exception">
+                        <xs:sequence />
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.gadgetsource.governance.carbon.wso2.org/xsd">
+            <xs:complexType name="ServiceVersionHistogramGadgetBean">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:complexType name="ServiceInfoGadgetBean">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:complexType name="SchemaSharingInfoGadgetBean">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:complexType name="LifecyclePiechartGadgetBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="lifecycles" nillable="true" type="ax2106:LifecycleInfoBean" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="LifecycleInfoBean">
+                <xs:all>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="stages" nillable="true" type="ax2106:LifecycleStageInfoBean" />
+                </xs:all>
+            </xs:complexType>
+            <xs:complexType name="LifecycleStageInfoBean">
+                <xs:all>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="serviceCount" type="xs:int" />
+                </xs:all>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getLifecyclePiechartGadgetDataRequest" />
+    <wsdl:message name="getLifecyclePiechartGadgetDataResponse">
+        <wsdl:part name="parameters" element="ns:getLifecyclePiechartGadgetDataResponse" />
+    </wsdl:message>
+    <wsdl:message name="RegistryException">
+        <wsdl:part name="parameters" element="ns:RegistryException" />
+    </wsdl:message>
+    <wsdl:message name="getServiceVersionHistogramGadgetDataRequest" />
+    <wsdl:message name="getServiceVersionHistogramGadgetDataResponse">
+        <wsdl:part name="parameters" element="ns:getServiceVersionHistogramGadgetDataResponse" />
+    </wsdl:message>
+    <wsdl:message name="getSchemaSharingInfoGadgetDataRequest" />
+    <wsdl:message name="getSchemaSharingInfoGadgetDataResponse">
+        <wsdl:part name="parameters" element="ns:getSchemaSharingInfoGadgetDataResponse" />
+    </wsdl:message>
+    <wsdl:message name="getServiceInfoGadgetDataRequest" />
+    <wsdl:message name="getServiceInfoGadgetDataResponse">
+        <wsdl:part name="parameters" element="ns:getServiceInfoGadgetDataResponse" />
+    </wsdl:message>
+    <wsdl:portType name="GadgetSourceServicePortType">
+        <wsdl:operation name="getLifecyclePiechartGadgetData">
+            <wsdl:input message="ns:getLifecyclePiechartGadgetDataRequest" wsaw:Action="urn:getLifecyclePiechartGadgetData" />
+            <wsdl:output message="ns:getLifecyclePiechartGadgetDataResponse" wsaw:Action="urn:getLifecyclePiechartGadgetDataResponse" />
+            <wsdl:fault message="ns:RegistryException" name="RegistryException" wsaw:Action="urn:getLifecyclePiechartGadgetDataRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getServiceVersionHistogramGadgetData">
+            <wsdl:input message="ns:getServiceVersionHistogramGadgetDataRequest" wsaw:Action="urn:getServiceVersionHistogramGadgetData" />
+            <wsdl:output message="ns:getServiceVersionHistogramGadgetDataResponse" wsaw:Action="urn:getServiceVersionHistogramGadgetDataResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getSchemaSharingInfoGadgetData">
+            <wsdl:input message="ns:getSchemaSharingInfoGadgetDataRequest" wsaw:Action="urn:getSchemaSharingInfoGadgetData" />
+            <wsdl:output message="ns:getSchemaSharingInfoGadgetDataResponse" wsaw:Action="urn:getSchemaSharingInfoGadgetDataResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getServiceInfoGadgetData">
+            <wsdl:input message="ns:getServiceInfoGadgetDataRequest" wsaw:Action="urn:getServiceInfoGadgetData" />
+            <wsdl:output message="ns:getServiceInfoGadgetDataResponse" wsaw:Action="urn:getServiceInfoGadgetDataResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="GadgetSourceServiceSoap11Binding" type="ns:GadgetSourceServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="getLifecyclePiechartGadgetData">
+            <soap:operation soapAction="urn:getLifecyclePiechartGadgetData" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap:fault use="literal" name="RegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceVersionHistogramGadgetData">
+            <soap:operation soapAction="urn:getServiceVersionHistogramGadgetData" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getSchemaSharingInfoGadgetData">
+            <soap:operation soapAction="urn:getSchemaSharingInfoGadgetData" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceInfoGadgetData">
+            <soap:operation soapAction="urn:getServiceInfoGadgetData" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="GadgetSourceServiceSoap12Binding" type="ns:GadgetSourceServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="getLifecyclePiechartGadgetData">
+            <soap12:operation soapAction="urn:getLifecyclePiechartGadgetData" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="RegistryException">
+                <soap12:fault use="literal" name="RegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceVersionHistogramGadgetData">
+            <soap12:operation soapAction="urn:getServiceVersionHistogramGadgetData" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getSchemaSharingInfoGadgetData">
+            <soap12:operation soapAction="urn:getSchemaSharingInfoGadgetData" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceInfoGadgetData">
+            <soap12:operation soapAction="urn:getServiceInfoGadgetData" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="GadgetSourceServiceHttpBinding" type="ns:GadgetSourceServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="getLifecyclePiechartGadgetData">
+            <http:operation location="getLifecyclePiechartGadgetData" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="getLifecyclePiechartGadgetData" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getLifecyclePiechartGadgetData" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceVersionHistogramGadgetData">
+            <http:operation location="getServiceVersionHistogramGadgetData" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="getServiceVersionHistogramGadgetData" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getServiceVersionHistogramGadgetData" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getSchemaSharingInfoGadgetData">
+            <http:operation location="getSchemaSharingInfoGadgetData" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="getSchemaSharingInfoGadgetData" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getSchemaSharingInfoGadgetData" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceInfoGadgetData">
+            <http:operation location="getServiceInfoGadgetData" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="getServiceInfoGadgetData" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getServiceInfoGadgetData" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="GadgetSourceService">
+        <wsdl:port name="GadgetSourceServiceHttpsSoap11Endpoint" binding="ns:GadgetSourceServiceSoap11Binding">
+            <soap:address location="https://10.100.1.125:9443/services/GadgetSourceService.GadgetSourceServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="GadgetSourceServiceHttpsSoap12Endpoint" binding="ns:GadgetSourceServiceSoap12Binding">
+            <soap12:address location="https://10.100.1.125:9443/services/GadgetSourceService.GadgetSourceServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="GadgetSourceServiceHttpsEndpoint" binding="ns:GadgetSourceServiceHttpBinding">
+            <http:address location="https://10.100.1.125:9443/services/GadgetSourceService.GadgetSourceServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

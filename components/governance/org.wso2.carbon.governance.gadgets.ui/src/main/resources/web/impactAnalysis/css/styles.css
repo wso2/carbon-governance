@@ -1,0 +1,326 @@
+.centerCell {
+    width: 20%;
+}
+
+/* START - Tree styles */
+.innerTable {
+}
+
+table.innerTableLeft td, table.innerTable td {
+    border-left: solid 1px #ccc;
+    border-top: solid 1px #ccc;
+    border-bottom: solid 1px #ccc;
+    margin-bottom: 5px;
+    background-color: #000;
+    color: #fff;
+}
+
+table.innerTableLeft td.leftCell {
+    text-align: right;
+    padding-right: 5px;
+    border-left: none;
+    border-right: solid 1px #ccc;
+}
+
+.canvasCell {
+    width: 20px;
+    height: 50px;
+}
+
+.mainLeftCell {
+    text-align: right;
+}
+
+/* END - Tree styles */
+.outerTable, .formTable {
+    width: 98%;
+}
+
+body {
+    padding: 0: margin: 0; /* webkit */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(233, 233, 233, 1)), to(rgba(255, 255, 255, 1))); /* mozilla - FF3.6+ */
+    background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(233, 233, 233, 1) 100%); /* IE 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType = 0, startColor = 0, endColorStr = #e9e9e9); /* IE8 uses -ms-filter for whatever reason... */
+    -ms-filter: progid: DXImageTransform . Microsoft . gradient(gradientType = 0, startColor = 0, endColoStr = #e9e9e9);
+}
+
+.menuHeader {
+/* webkit */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(94, 185, 188, 1)), to(rgba(255, 255, 255, 1))); /* mozilla - FF3.6+ */
+    background-image: -moz-linear-gradient(top, rgba(94, 185, 188, 1) 0%, rgba(255, 255, 255, 1) 100%);
+
+    -moz-box-shadow: 3px 3px 3px #888;
+    -webkit-box-shadow: 3px 3px 3px #888;
+    box-shadow: 3px 3px 3px #888;
+
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+
+    border: solid 1px #46708e;
+    margin: 5px;
+
+    color: #fff;
+    font-size: 11px;
+    padding: 5px;
+}
+
+.button {
+/* webkit */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(86, 86, 86, 1)), to(rgba(0, 0, 0, 1))); /* mozilla - FF3.6+ */
+    background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(86, 86, 86, 1) 100%); /* IE 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType = 0, startColor = 0, endColorStr = #565656); /* IE8 */
+    -ms-filter: progid: DXImageTransform . Microsoft . gradient(gradientType = 0, startColor = 0, endColoStr = #565656);
+
+    display: inline-block;
+    padding: 5px 10px 6px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    line-height: 1;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 0 1px 3px #999;
+    -webkit-box-shadow: 0 1px 3px #999;
+    text-shadow: 0 -1px 1px #222;
+    border-bottom: 1px solid #222;
+    position: relative;
+    cursor: pointer;
+}
+
+.textBox {
+/* webkit */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(240, 240, 240, 1)), to(rgba(255, 255, 255, 1))); /* mozilla - FF3.6+ */
+    background-image: -moz-linear-gradient(top, rgba(240, 240, 240, 1) 0%, rgba(255, 255, 255, 1) 100%); /* IE 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType = 0, startColor = 0, endColorStr = #f0f0f0); /* IE8 */
+    -ms-filter: progid: DXImageTransform . Microsoft . gradient(gradientType = 0, startColor = 0, endColoStr = #f0f0f0);
+    width: 98%;
+    height: 30px;
+}
+
+.menuHeader table td {
+    padding: 5px;
+    margin: px;
+}
+
+.leftColumn {
+    width: 100px;
+}
+
+.mainTitle {
+    margin: 0px 0px 5px 5px;
+    color: #444;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 5px 5px 5px 30px;
+    cursor: pointer;
+}
+
+#titleFirst {
+    background: transparent url(../images/icon1.png) no-repeat left top;
+}
+
+#titleSecond {
+    background: transparent url(../images/icon2.png) no-repeat left top;
+}
+
+#titleThird {
+    background: transparent url(../images/icon3.png) no-repeat left top;
+}
+
+.emptyMessage {
+    padding: 15px 15px;
+    color: #666;
+}
+
+div#rslt table {
+    font-family: "Trebuchet MS", sans-serif;
+    font-weight: bold;
+    line-height: 1em;
+    font-style: normal;
+    border-collapse: separate;
+    width: 100%;
+}
+
+div#rslt table td {
+    background-color: #fff;
+}
+
+div#rslt table th {
+    padding: 5px;
+    color: #fff;
+    text-shadow: 1px 1px 1px #27687e;
+    border: 1px solid #27687e;
+    border-bottom: 3px solid #27687e;
+    background-color: #27687e; /* webkit */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 1)), to(rgba(117, 117, 117, 1))); /* mozilla - FF3.6+ */
+    background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(117, 117, 117, 1) 100%); /* IE 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType = 0, startColor = 0, endColorStr = #757575); /* IE8 */
+    -ms-filter: progid: DXImageTransform . Microsoft . gradient(gradientType = 0, startColor = 0, endColoStr = #757575);
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius: 5px 5px 0px 0px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-collapse: collapse;
+}
+
+tr.goodRow td {
+    background-color: #c8e6b9 !important;
+}
+
+tr.badRow td {
+    background-color: #ffbaa0 !important;
+}
+
+/* New node styles */
+div.nodeBox {
+/* webkit */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 92, 0, 1)), to(rgba(179, 44, 0, 1))); /* mozilla - FF3.6+ */
+    background-image: -moz-linear-gradient(top, rgba(255, 92, 0, 1) 0%, rgba(179, 44, 0, 1) 100%); /* IE 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType = 0, startColor = 0, endColorStr = #b32c00); /* IE8 */
+    -ms-filter: progid: DXImageTransform . Microsoft . gradient(gradientType = 0, startColor = 0, endColoStr = #b32c00);
+
+    padding: 2px 5px 3px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    line-height: 1;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -moz-box-shadow: 10px 10px 5px #888;
+    -webkit-box-shadow: 10px 10px 5px #888;
+    box-shadow: 10px 10px 5px #888;
+    text-shadow: 0 -1px 1px #222;
+    border-bottom: 1px solid #222;
+    height: 20px;
+    margin-bottom: 10px;
+}
+
+div.nodeLeft {
+    float: left;
+}
+
+div.clear {
+    clear: both;
+}
+
+.nodeTitle {
+    position: absolute; /* webkit */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 1)), to(rgba(117, 117, 117, 1))); /* mozilla - FF3.6+ */
+    background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(117, 117, 117, 1) 100%); /* IE 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType = 0, startColor = 0, endColorStr = #757575); /* IE8 */
+    -ms-filter: progid: DXImageTransform . Microsoft . gradient(gradientType = 0, startColor = 0, endColoStr = #757575);
+
+    padding: 4px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    line-height: 1;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -moz-box-shadow: 3px 3px 3px #888;
+    -webkit-box-shadow: 3px 3px 3px #888;
+    box-shadow: 3px 3px 3px #888;
+    text-shadow: 0 -1px 1px #222;
+    border-bottom: 1px solid #222;
+    margin-top: -5px;
+}
+
+.mainLeftCell div.nodeRight, .mainRightCell div.nodeLeft {
+    width: 30px;
+    height: 30px;
+}
+
+.mainLeftCell, .mainRightCell {
+    border: dotted 1px #000;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    padding-top: 20px !important
+}
+
+#msg {
+    background-color: #ffe893;
+    border: solid 1px #c96f0c;
+    padding: 5px;
+    margin: 0px 10px 10px 10px;
+    width: 200px;
+    position: absolute;
+    left: 50%;
+    margin-left: -100px;
+    height: 30px;
+    cursor: pointer;
+    opacity: 0.8;
+    display:none;
+}
+
+/* Registry parth picker style overrides */
+#pickedPath {
+    width: 150px !important;
+    text-align:left;
+}
+
+div.ui-dialog {
+    width: 350px !important;
+    -moz-border-radius: 10px !important;
+    border-radius: 10px !important;
+    height: 280px !important;
+}
+
+.ui-dialog-title-dialog {
+    font-size: 14px !important;
+    font-weight: bold !important;
+}
+
+.headding-tree-back {
+    display: none !important;
+}
+
+.resource-tree-headding {
+    background-color: #777777 !important;
+    color: #FFFFFF !important;
+}
+
+#dialog {
+    height: 250px !important;
+    overflow: hidden !important;
+}
+
+.resource-tree-box {
+    height: 195px !important;
+    overflow-y: auto !important;
+}
+
+.ui-dialog-container {
+    height: 250px !important;
+}
+
+.resource-tree-cell {
+    width: 50px;
+}
+#metaInfo{
+    text-align:center;
+}
+.resource-tree-headding{
+    text-align:left;
+}
+#regPath{
+    width:230px;
+    margin:15px 0px;
+}
+.resource-tree-box{
+    text-align:left !important;
+}
+.toggleButton{
+    background:transparent url(../images/tree-inout.png) no-repeat left top;
+    display:block;
+    width:24px;
+    height:24px;
+    margin-left:10px;
+    cursor:pointer;
+}
+.treeIn{
+     background-position: left -24px !important;
+}
+#metaInfo table{
+    margin:auto;
+}

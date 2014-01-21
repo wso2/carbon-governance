@@ -1,0 +1,270 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax221="http://util.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd" xmlns:ns="http://services.checklist.lifecycles.custom.governance.carbon.wso2.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax220="http://beans.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://services.checklist.lifecycles.custom.governance.carbon.wso2.org">
+    <wsdl:documentation>CustomLifecyclesChecklistAdminService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax223="http://beans.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.checklist.lifecycles.custom.governance.carbon.wso2.org">
+            <xs:import namespace="http://beans.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd"/>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Exception" nillable="true" type="xs:anyType"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="Exception">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Exception" nillable="true" type="ns:Exception"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeAspect">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="aspect" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="invokeAspect">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="aspect" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="action" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="items" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLifecycleBean">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLifecycleBeanResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax220:LifecycleBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addAspect">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="aspect" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://util.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd">
+            <xs:complexType name="LifecycleActions">
+                <xs:all>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="actions" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lifecycle" nillable="true" type="xs:string"/>
+                </xs:all>
+            </xs:complexType>
+            <xs:complexType name="Property">
+                <xs:all>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="values" nillable="true" type="xs:string"/>
+                </xs:all>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax222="http://util.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd">
+            <xs:import namespace="http://util.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd"/>
+            <xs:complexType name="LifecycleBean">
+                <xs:all>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="aspectsToAdd" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="availableActions" nillable="true" type="ax222:LifecycleActions"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="lifecycleProperties" nillable="true" type="ax222:Property"/>
+                    <xs:element minOccurs="0" name="link" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="loggedIn" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="mounted" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="pathWithVersion" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="putAllowed" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="showAddDelete" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="versionView" type="xs:boolean"/>
+                </xs:all>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getLifecycleBeanRequest">
+        <wsdl:part name="parameters" element="ns:getLifecycleBean"/>
+    </wsdl:message>
+    <wsdl:message name="getLifecycleBeanResponse">
+        <wsdl:part name="parameters" element="ns:getLifecycleBeanResponse"/>
+    </wsdl:message>
+    <wsdl:message name="Exception">
+        <wsdl:part name="parameters" element="ns:Exception"/>
+    </wsdl:message>
+    <wsdl:message name="addAspectRequest">
+        <wsdl:part name="parameters" element="ns:addAspect"/>
+    </wsdl:message>
+    <wsdl:message name="removeAspectRequest">
+        <wsdl:part name="parameters" element="ns:removeAspect"/>
+    </wsdl:message>
+    <wsdl:message name="invokeAspectRequest">
+        <wsdl:part name="parameters" element="ns:invokeAspect"/>
+    </wsdl:message>
+    <wsdl:portType name="CustomLifecyclesChecklistAdminServicePortType">
+        <wsdl:operation name="getLifecycleBean">
+            <wsdl:input message="ns:getLifecycleBeanRequest" wsaw:Action="urn:getLifecycleBean"/>
+            <wsdl:output message="ns:getLifecycleBeanResponse" wsaw:Action="urn:getLifecycleBeanResponse"/>
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:getLifecycleBeanException"/>
+        </wsdl:operation>
+        <wsdl:operation name="addAspect">
+            <wsdl:input message="ns:addAspectRequest" wsaw:Action="urn:addAspect"/>
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:addAspectException"/>
+        </wsdl:operation>
+        <wsdl:operation name="removeAspect">
+            <wsdl:input message="ns:removeAspectRequest" wsaw:Action="urn:removeAspect"/>
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:removeAspectException"/>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspect">
+            <wsdl:input message="ns:invokeAspectRequest" wsaw:Action="urn:invokeAspect"/>
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:invokeAspectException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="CustomLifecyclesChecklistAdminServiceSoap11Binding" type="ns:CustomLifecyclesChecklistAdminServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getLifecycleBean">
+            <soap:operation soapAction="urn:getLifecycleBean" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addAspect">
+            <soap:operation soapAction="urn:addAspect" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeAspect">
+            <soap:operation soapAction="urn:removeAspect" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspect">
+            <soap:operation soapAction="urn:invokeAspect" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="CustomLifecyclesChecklistAdminServiceSoap12Binding" type="ns:CustomLifecyclesChecklistAdminServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getLifecycleBean">
+            <soap12:operation soapAction="urn:getLifecycleBean" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addAspect">
+            <soap12:operation soapAction="urn:addAspect" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeAspect">
+            <soap12:operation soapAction="urn:removeAspect" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspect">
+            <soap12:operation soapAction="urn:invokeAspect" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="CustomLifecyclesChecklistAdminServiceHttpBinding" type="ns:CustomLifecyclesChecklistAdminServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="getLifecycleBean">
+            <http:operation location="getLifecycleBean"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getLifecycleBean"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getLifecycleBean"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addAspect">
+            <http:operation location="addAspect"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="addAspect"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="removeAspect">
+            <http:operation location="removeAspect"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="removeAspect"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspect">
+            <http:operation location="invokeAspect"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="invokeAspect"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="CustomLifecyclesChecklistAdminService">
+        <wsdl:port name="CustomLifecyclesChecklistAdminServiceHttpsSoap11Endpoint" binding="ns:CustomLifecyclesChecklistAdminServiceSoap11Binding">
+            <soap:address location="https://10.100.1.87:9443/services/CustomLifecyclesChecklistAdminService.CustomLifecyclesChecklistAdminServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="CustomLifecyclesChecklistAdminServiceHttpsSoap12Endpoint" binding="ns:CustomLifecyclesChecklistAdminServiceSoap12Binding">
+            <soap12:address location="https://10.100.1.87:9443/services/CustomLifecyclesChecklistAdminService.CustomLifecyclesChecklistAdminServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="CustomLifecyclesChecklistAdminServiceHttpsEndpoint" binding="ns:CustomLifecyclesChecklistAdminServiceHttpBinding">
+            <http:address location="https://10.100.1.87:9443/services/CustomLifecyclesChecklistAdminService.CustomLifecyclesChecklistAdminServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

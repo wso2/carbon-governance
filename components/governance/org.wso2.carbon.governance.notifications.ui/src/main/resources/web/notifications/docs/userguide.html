@@ -1,0 +1,161 @@
+<!--
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Notifications - User Guide</title>
+  <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+
+<body>
+<h1>Notifications</h1>
+
+<p>The Notifications feature can be used to generate notifications for events that occur as
+a result of performing operations. In order to receive notifications, users will have to
+create a subscription to a particular event along with a specified notification method (which can be
+an e-mail alert or a SOAP message). Each subscription is associated with a resource or collection on
+the registry. The Manage Notifications page can be used to create, edit, or delete subscriptions to
+notifications on various operations performed on resources and collections stored in the registry.
+</p>
+
+
+<h2>Managing Subscriptions</h2>
+
+<p>If you currently have made any subscriptions, these will be listed in a table, and beneath it you
+can click the link to add a new subscription.</p>
+
+<p><img src="images/manage_notifications.png" width="743px" /></p>
+
+<p>Figure 1: Manage Notifications Page</p>
+
+<p>If you currently have no subscriptions, a message indicating that you have not got any
+subscriptions followed by the link to add a new subscription. On the table (seen in Figure 1 above),
+you can click on the <strong>Path</strong> to browse the corresponding resource or collection. If
+you have subscribed with the notification method <strong>User Profile</strong>, You can also browse
+the user's default profile by clicking on the <strong>User Profile</strong> link under the
+Notification tab.</p>
+
+
+<h2>Adding Subscriptions to a Resource</h2>
+
+<p>When you click on a link to add a new subscription you will be forwarded to a dedicated page
+through which you can subscribe to notifications made on resources and collections of a single or
+many types.</p>
+
+<p><img src="images/notificationSubscriptionResource.png" width="900px" /></p>
+
+<p>Figure 2: Registry Subscription Page to a Resource</p>
+
+<p></p>
+<h2>Adding Subscriptions to a Collection</h2>
+
+<p>
+For Collections there is an additional facility of creating Hierarchical Subscriptions if needed. By default when a user
+adds a subscription to a Collection it will only get added to that collection. Similarly the user can add a subscription
+to that collection and its immediate child resources by selecting the option <strong>Collection and Children only</strong>
+or to that collection and all of its child resources by selecting the option <strong>Collection,Children and Grand Children</strong>.</p>
+
+<p><img src="images/notificationSubscriptionCollection.png" width="900px" /></p>
+
+<p>Figure 3: Registry Subscription Page to a Collection</p>
+
+<p>To start with, you have to specify the <strong>Subscription Path</strong>. To do so, you simply
+need to click on the <strong>..</strong> button seen in Figure 2. This will open a
+<strong>Resource Tree Browser</strong> as seen in Figure 3 below.</p>
+
+<p><img src="images/resource_tree.png" width="743px" /></p>
+
+<p>Figure 4: Resource Tree</p>
+
+<p>Selecting the <strong>Subscription Path</strong> can be done by clicking on any of the listed
+resources and collections, and pressing the <strong>OK</strong> button.</p>
+
+<p>The next step in adding a subscription involves selecting the event type and the notification
+method. The event types supported by default are as follows</p>
+
+<ul>
+  <li>Check LC Item         - Represents an event that fires when a item is checked in a lifecycle
+  check-list.</li>
+  <li>Uncheck LC Item       - Represents an event that fires when a item is unchecked in a lifecycle
+  check-list.</li>
+  <li>Create Child          - Represents an event of creating a resource (or collection) within an
+  existing collection.</li>
+  <li>Delete Child          - Represents an event of deleting a resource (or collection) within an
+  existing collection.</li>
+  <li>Delete                - Represents an event of deleting a resource (or collection).</li>
+  <li>Create LC             - Represents an event of creating a lifecycle.</li>
+  <li>Delete LC             - Represents an event of deleting a lifecycle.</li>
+  <li>Change LC State       - Represents an event of changing a lifecycle state.</li>
+  <li>Update                - Represents an event of updating a resource or collection.</li>
+  <li>LC Approval Needed    - Represents an event that fires when lifecycle transition required user approvals.</li>
+  <li>LC Approval Withdrawn - Represents an event that fires when remove approval form(remove vote) transition event.</li>
+  <li>LC Approved           - Represents an event that fires when approve(vote) a transition event.</li>
+</ul>
+
+<p>Please note that some of these events may not be available for certain types resources and
+collections. We support a variety of notification methods as well.</p>
+
+<ul>
+  <li>E-mail             - Any valid e-mail address.</li>
+  <li>REST               - An endpoint accepting HTML or text content.</li>
+  <li>SOAP               - An endpoint accepting notifications as a SOAP message.</li>
+  <li>User Profile       - A valid user's profile. Notifications will be sent to the e-mail address
+  specified on the user's default profile.</li>
+  <li>Group Profile      - A valid role. Notifications will be sent to all the users in the
+  specified role.</li>
+  <li>Management Console - A valid role. Notifications will be sent to work-list for role.</li>
+  <li>JMX                - Notifications will be sent via JMX.</li>
+</ul>
+
+<p>Based on the notification method you select, you may be required to provide additional
+information, such as the e-mail address to use of the name of the user of whom the profile will be
+used. When using E-mail, User Profile or Group Profile is used you can also specify the
+<b>Digest Frequency</b> as None, Hourly, Daily, Weekly, Fortnightly or Monthly.
+
+    Having done this step, you will have to click on the <strong>Subscribe</strong> button to add
+a subscription (see Figure 2 above).</p>
+
+<p>
+    You can also add new subscriptions to a resource/collection by browsing that resource/collection
+    using the resource browser and clicking <b>Add Subscription</b> link in <b>Subscriptions</b> box
+    that appears in the right hand side pane of the resource browser (Figure 3)
+</p>
+
+<p><img src="images/add_subscription.png"/></p>
+
+<p>Figure 5: Adding a Subscription Using the Resource Browser to a Resource</p>
+
+<p><img src="images/HierSubscriptions.png"/></p>
+
+<p>Figure 5: Adding a Subscription Using the Resource Browser to a Collection</p>
+
+<h2>Editing or Deleting a Subscription</h2>
+
+<p>You can delete an existing subscription (or unsubscribe) by clicking on the
+<strong>Delete</strong> button in the respective entry corresponding to the subscription you have
+made. Similarly you also can edit a subscription (or re-subscribe) that you have made by clicking on
+the <strong>Edit</strong> button. Editing a subscription is similar to adding a subscription except
+for the fact that the details that you had to enter before will be pre-populated based on the
+current subscription details. Once you are done with the changes to the various fields, click on
+the <strong>Modify </strong> button to re-subscribe.</p>
+
+<p><img src="images/edit_subscription.png" width="743px" /></p>
+
+<p>Figure 6: Edit Registry Subscription Page</p>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <script type="text/javascript" src="../admin/js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="js/json.js"></script>
+    <script type="text/javascript">
+        var $j = jQuery.noConflict();
+        function toggleTree(obj) {
+            if (!$j(obj).hasClass("treeIn")) {
+                $j(obj).addClass("treeIn");
+                $j('#toggleButton').attr("title", "Get Impact");
+                makeRequestCall('../gauges/gadgets/flash/flashdata-ajaxprocessor.jsp', {funcName:'getResourceImpact', path: $j('#regPath').val(), reverse: 'false'}, init)
+            } else {
+                $j(obj).removeClass("treeIn");
+                $j('#toggleButton').attr("title", "Get Usage");
+                makeRequestCall('../gauges/gadgets/flash/flashdata-ajaxprocessor.jsp', {funcName:'getResourceImpact', path: $j('#regPath').val(), reverse: 'true'}, init);
+            }
+        }
+
+        function onChangeFunc(obj) {
+            if (!$j().hasClass("treeIn")) {
+                makeRequestCall('../gauges/gadgets/flash/flashdata-ajaxprocessor.jsp', {funcName:'getResourceImpact', path: $j('#regPath').val(), reverse: 'false'}, init)
+            } else {
+                makeRequestCall('../gauges/gadgets/flash/flashdata-ajaxprocessor.jsp', {funcName:'getResourceImpact', path: $j('#regPath').val(), reverse: 'true'}, init);
+            }
+        }
+    </script>
+    <!-- CSS Files -->
+    <link type="text/css" href="css/base.css" rel="stylesheet"/>
+    <link type="text/css" href="css/RGraph.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+    <link media="all" type="text/css" rel="stylesheet"
+          href="../dialog/css/jqueryui/jqueryui-themeroller.css">
+
+    <!--[if IE]>
+    <script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
+
+    <!-- JIT Library File -->
+    <script language="javascript" type="text/javascript" src="jit.js"></script>
+
+    <!--&lt;!&ndash; json Library File &ndash;&gt;-->
+    <!--<script language="javascript" type="text/javascript" src="js/json.js"></script>-->
+
+    <!-- Example File -->
+    <script language="javascript" type="text/javascript" src="main.js"></script>
+
+
+    <script language="javascript" type="text/javascript" src="js/util.js"/>
+
+    <!-- registry popup imports -->
+    <script type="text/javascript" src="../admin/js/jquery.form.js"></script>
+    <script type="text/javascript" src="../dialog/js/jqueryui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../admin/js/main.js"></script>
+    <script type="text/javascript" src="../dialog/js/dialog.js"></script>
+    <script type="text/javascript" src='../yui/build/utilities/utilities.js'></script>
+    <script type="text/javascript" src='../yui/build/yahoo/yahoo-min.js'></script>
+    <script type="text/javascript" src='../yui/build/json/json-min.js'></script>
+    <script type="text/javascript" src="../ajax/js/prototype.js"></script>
+    <script type="text/javascript" src="../resources/js/resource_util.js"></script>
+    <script type="text/javascript">
+        var org_wso2_carbon_registry_resource_ui_tmpPairs = '{"dialog.cancel":"Cancel","dialog.ok":"OK","unable.to.upload":"Unable to upload the resource from the given URL.","picked.path.empty":"The required field Picked Path has not been filled in.","insert.image":"Insert Image","font.name.and.size":"Font Name and Size","back.to.parent":"Back to Parent","xml.visualizer":"XML Visualizer","good":"Good","select.user.for.permission":"Please select a User for Permission","italic":"Italic CTRL + SHIFT + I","password":"Password","user.authenticated.successfully":"User authenticated successfully.<br/>Signing in to the WSO2 Registry ...","error.occured":"Error Occurred!","unauthorized.to.add.links":"You do not have sufficient authorizations to create a link.","html.link":"HTML Link CTRL + SHIFT + L","failed.to.create.remote.link":"Failed to create Remote Link.","bold":"Bold CTRL + SHIFT + B","resource.exits":"A resource already exists at the given path:","permanently":"permanently?","destination.path":"Destination Path","verify.password":"Please verify your password again.","description":"Description","role.name":"Role Name","resource.does.not.exit":"Resource does not exist at path:","are.you.sure.you.want.to.delete":"Are you sure you want to delete","successfully.created.symbolic.link":"Successfully created Symbolic Link.","copied":"copied","could.not.get.custom.ui.media.type.information":"Could not get custom ui media types information from the server.","collection.exits":"A collection already exists at the given path:","session.timed.out":"Session timed out. Please login again.","successfully.created.remote.link":"Successfully created Remote Link.","failed.to.update":"Failed to update the resource.","registry.key.cannot.be.null.or.empty":"Registry Key input field ID cannot be null or empty","unsupported.media.type.to.upload":"Unsupported media type to upload","save.description":"Save Description","could.not.get.collection.media.type.information":"Could not get collection media types information from the server.","url":"URL","create.ordered.list":"Create an Ordered List","check.point.created":"Check point created successfully","the.given.name":"The given Name","the.given.description":"The given Description","user.name":"User name","registry.not.responding":"ERROR: Registry is not responding.","unsupported.media.type.to.display":"Unsupported media type to display as text","permission.applied.successfully":"Permission applied successfully","failed.to.delete":"Failed to delete","unable.to.move.resource.to":"Unable to move resource to","successfully.uploaded":"Successfully uploaded the resource from the given URL.","collection":"collection","display.name":"Display name","font.style":"Font Style","file.path.not.filled":"The required field File Path has not been filled in.","failed.to.add.collection":"Failed to add the collection.","renamed":"renamed","not.a.valid.path":"is not a valid path.","unable.create.symlink.to.root":"Unable to create a Symbolic Link to the root collection.","successfully.added.collection":"Successfully added new collection.","underline":"Underline CTRL + SHIFT + U","name":"Name","path":"Path","xml.visualizer.loading":"XML Visualizer loading please wait ..","file.path":"File Path","evening":"evening","select.action.for.permission":"Please select an Action for Permission","lists":"Lists","location.bar.empty":"The required field Location has not been filled in.","media.type":"Media type","successfully.added.text.content":"Successfully added Text content.","cannot.contain.more.than1":"cannot contain more than 256 characters.","cannot.contain.more.than2":"cannot contain more than 1000 characters.","unsupported.media.type.to.edit":"Unsupported media type to edit as text","error":"ERROR","edit.description":"Edit Description","afternoon":"afternoon","could.not.get.media.type.information":"Could not get media types information from the server.","resource":"resource","morning":"morning","please.make.sure.passwords.are.matching":"Please make sure Password and Confirm Password fields are matching.","font.color":"Font Color","moved":"moved","select.a.value":"Select A Value","failed.to.add.text.content":"Failed to add Text content.","resource.tree":"Resource Tree","unable.to.copy.resource.to":"Unable to copy resource to","form.processing.failed":"Form processing failed","insert.item":"Insert Item","successfully":"Successfully","create.unordered.list":"Create an Unordered List","content.url":"Content URL","resource.tree.loading":"Resource tree loading please wait ..","background.color":"Background Color","failed.to.create.symbolic.link":"Failed to create Symbolic Link."}';
+        var org_wso2_carbon_registry_resource_ui_jsi18n = YAHOO.lang.JSON.parse(org_wso2_carbon_registry_resource_ui_tmpPairs);
+    </script>
+</head>
+
+<body onload="makeRequestCall('../gauges/gadgets/flash/flashdata-ajaxprocessor.jsp',  {funcName:'getResourceImpact', path: $j('#regPath').val(), reverse: 'true'}, init);">
+<div id="msg"></div>
+<div id="dialogs"></div>
+<div id="metaInfo">
+    <table>
+        <tr>
+            <td>
+                <input id="regPath"
+                       onchange="javascript:onChangeFunc();"/>
+            </td>
+            <td>
+                <input type="button" class="button" value=".." title="Resource Tree"
+                       onclick="javascript:showResourceBox('regPath');"/>
+            </td>
+            <td>
+                <a onclick="toggleTree(this)" class="toggleButton" id="toggleButton"
+                   title="Get Usage"></a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="center-container">
+    <div id="infovis"></div>
+</div>
+</div>
+</body>
+</html>

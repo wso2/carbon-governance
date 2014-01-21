@@ -1,0 +1,1128 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax2204="http://beans.generic.governance.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax2201="http://api.registry.carbon.wso2.org/xsd" xmlns:ns="http://services.generic.governance.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax2200="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.generic.governance.carbon.wso2.org">
+    <wsdl:documentation>ManageGenericArtifactService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax2203="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2205="http://beans.generic.governance.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.generic.governance.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://beans.generic.governance.carbon.wso2.org/xsd"/>
+            <xs:element name="ManageGenericArtifactServiceRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2203:RegistryException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="setArtifactUIConfiguration">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="update" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="setArtifactUIConfigurationResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listContentArtifactsByName">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="criteria" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listContentArtifactsByNameResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2204:ContentArtifactsBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listContentArtifactsByLC">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="LCName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="LCState" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="LCInOut" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="LCStateInOut" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listContentArtifactsByLCResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2204:ContentArtifactsBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listContentArtifacts">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listContentArtifactsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2204:ContentArtifactsBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listArtifactsByName">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listArtifactsByNameResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2204:ArtifactsBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listArtifactsByLC">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="LCName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="LCState" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="LCInOut" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="LCStateInOut" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listArtifactsByLCResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2204:ArtifactsBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listArtifacts">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="criteria" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listArtifactsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2204:ArtifactsBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getStoragePath">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getStoragePathResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2204:StoragePathBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRxtAbsPathFromRxtName">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="rxtName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRxtAbsPathFromRxtNameResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ManageGenericArtifactServiceException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ManageGenericArtifactServiceException" nillable="true" type="ns:Exception"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="getAvailableAspects">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAvailableAspectsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getArtifactViewRequestParams">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getArtifactViewRequestParamsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getArtifactUIConfiguration">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getArtifactUIConfigurationResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getArtifactContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getArtifactContentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllLifeCycleState">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="LCName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllLifeCycleStateResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="editArtifact">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="info" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="lifecycleAttribute" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="editArtifactResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canChange">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canChangeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addRXTResource">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="rxtConfig" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addRXTResourceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addArtifact">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="info" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="lifecycleAttribute" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addArtifactResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:ax2202="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd"/>
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ax2201:RegistryException">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.generic.governance.carbon.wso2.org/xsd">
+            <xs:complexType name="ContentArtifactsBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCName" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="LCState" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="canDelete" nillable="true" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="namespace" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="size" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ArtifactsBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="artifacts" nillable="true" type="ax2204:ArtifactBean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="keys" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="names" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="types" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ArtifactBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="LCName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="LCState" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="canDelete" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="valuesA" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="valuesB" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="StoragePathBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="labels" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="names" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="size" type="xs:int"/>
+                    <xs:element minOccurs="0" name="storagePath" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="addRXTResourceRequest">
+        <wsdl:part name="parameters" element="ns:addRXTResource"/>
+    </wsdl:message>
+    <wsdl:message name="addRXTResourceResponse">
+        <wsdl:part name="parameters" element="ns:addRXTResourceResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ManageGenericArtifactServiceRegistryException">
+        <wsdl:part name="parameters" element="ns:ManageGenericArtifactServiceRegistryException"/>
+    </wsdl:message>
+    <wsdl:message name="listContentArtifactsByNameRequest">
+        <wsdl:part name="parameters" element="ns:listContentArtifactsByName"/>
+    </wsdl:message>
+    <wsdl:message name="listContentArtifactsByNameResponse">
+        <wsdl:part name="parameters" element="ns:listContentArtifactsByNameResponse"/>
+    </wsdl:message>
+    <wsdl:message name="setArtifactUIConfigurationRequest">
+        <wsdl:part name="parameters" element="ns:setArtifactUIConfiguration"/>
+    </wsdl:message>
+    <wsdl:message name="setArtifactUIConfigurationResponse">
+        <wsdl:part name="parameters" element="ns:setArtifactUIConfigurationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getRxtAbsPathFromRxtNameRequest">
+        <wsdl:part name="parameters" element="ns:getRxtAbsPathFromRxtName"/>
+    </wsdl:message>
+    <wsdl:message name="getRxtAbsPathFromRxtNameResponse">
+        <wsdl:part name="parameters" element="ns:getRxtAbsPathFromRxtNameResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getAllLifeCycleStateRequest">
+        <wsdl:part name="parameters" element="ns:getAllLifeCycleState"/>
+    </wsdl:message>
+    <wsdl:message name="getAllLifeCycleStateResponse">
+        <wsdl:part name="parameters" element="ns:getAllLifeCycleStateResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listArtifactsByLCRequest">
+        <wsdl:part name="parameters" element="ns:listArtifactsByLC"/>
+    </wsdl:message>
+    <wsdl:message name="listArtifactsByLCResponse">
+        <wsdl:part name="parameters" element="ns:listArtifactsByLCResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getStoragePathRequest">
+        <wsdl:part name="parameters" element="ns:getStoragePath"/>
+    </wsdl:message>
+    <wsdl:message name="getStoragePathResponse">
+        <wsdl:part name="parameters" element="ns:getStoragePathResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listArtifactsRequest">
+        <wsdl:part name="parameters" element="ns:listArtifacts"/>
+    </wsdl:message>
+    <wsdl:message name="listArtifactsResponse">
+        <wsdl:part name="parameters" element="ns:listArtifactsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="canChangeRequest">
+        <wsdl:part name="parameters" element="ns:canChange"/>
+    </wsdl:message>
+    <wsdl:message name="canChangeResponse">
+        <wsdl:part name="parameters" element="ns:canChangeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ManageGenericArtifactServiceException">
+        <wsdl:part name="parameters" element="ns:ManageGenericArtifactServiceException"/>
+    </wsdl:message>
+    <wsdl:message name="editArtifactRequest">
+        <wsdl:part name="parameters" element="ns:editArtifact"/>
+    </wsdl:message>
+    <wsdl:message name="editArtifactResponse">
+        <wsdl:part name="parameters" element="ns:editArtifactResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getArtifactUIConfigurationRequest">
+        <wsdl:part name="parameters" element="ns:getArtifactUIConfiguration"/>
+    </wsdl:message>
+    <wsdl:message name="getArtifactUIConfigurationResponse">
+        <wsdl:part name="parameters" element="ns:getArtifactUIConfigurationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getAvailableAspectsRequest">
+        <wsdl:part name="parameters" element="ns:getAvailableAspects"/>
+    </wsdl:message>
+    <wsdl:message name="getAvailableAspectsResponse">
+        <wsdl:part name="parameters" element="ns:getAvailableAspectsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listArtifactsByNameRequest">
+        <wsdl:part name="parameters" element="ns:listArtifactsByName"/>
+    </wsdl:message>
+    <wsdl:message name="listArtifactsByNameResponse">
+        <wsdl:part name="parameters" element="ns:listArtifactsByNameResponse"/>
+    </wsdl:message>
+    <wsdl:message name="addArtifactRequest">
+        <wsdl:part name="parameters" element="ns:addArtifact"/>
+    </wsdl:message>
+    <wsdl:message name="addArtifactResponse">
+        <wsdl:part name="parameters" element="ns:addArtifactResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listContentArtifactsByLCRequest">
+        <wsdl:part name="parameters" element="ns:listContentArtifactsByLC"/>
+    </wsdl:message>
+    <wsdl:message name="listContentArtifactsByLCResponse">
+        <wsdl:part name="parameters" element="ns:listContentArtifactsByLCResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getArtifactContentRequest">
+        <wsdl:part name="parameters" element="ns:getArtifactContent"/>
+    </wsdl:message>
+    <wsdl:message name="getArtifactContentResponse">
+        <wsdl:part name="parameters" element="ns:getArtifactContentResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listContentArtifactsRequest">
+        <wsdl:part name="parameters" element="ns:listContentArtifacts"/>
+    </wsdl:message>
+    <wsdl:message name="listContentArtifactsResponse">
+        <wsdl:part name="parameters" element="ns:listContentArtifactsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getArtifactViewRequestParamsRequest">
+        <wsdl:part name="parameters" element="ns:getArtifactViewRequestParams"/>
+    </wsdl:message>
+    <wsdl:message name="getArtifactViewRequestParamsResponse">
+        <wsdl:part name="parameters" element="ns:getArtifactViewRequestParamsResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="ManageGenericArtifactServicePortType">
+        <wsdl:operation name="addRXTResource">
+            <wsdl:input message="ns:addRXTResourceRequest" wsaw:Action="urn:addRXTResource"/>
+            <wsdl:output message="ns:addRXTResourceResponse" wsaw:Action="urn:addRXTResourceResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceRegistryException" name="ManageGenericArtifactServiceRegistryException" wsaw:Action="urn:addRXTResourceManageGenericArtifactServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifactsByName">
+            <wsdl:input message="ns:listContentArtifactsByNameRequest" wsaw:Action="urn:listContentArtifactsByName"/>
+            <wsdl:output message="ns:listContentArtifactsByNameResponse" wsaw:Action="urn:listContentArtifactsByNameResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceRegistryException" name="ManageGenericArtifactServiceRegistryException" wsaw:Action="urn:listContentArtifactsByNameManageGenericArtifactServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="setArtifactUIConfiguration">
+            <wsdl:input message="ns:setArtifactUIConfigurationRequest" wsaw:Action="urn:setArtifactUIConfiguration"/>
+            <wsdl:output message="ns:setArtifactUIConfigurationResponse" wsaw:Action="urn:setArtifactUIConfigurationResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceRegistryException" name="ManageGenericArtifactServiceRegistryException" wsaw:Action="urn:setArtifactUIConfigurationManageGenericArtifactServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getRxtAbsPathFromRxtName">
+            <wsdl:input message="ns:getRxtAbsPathFromRxtNameRequest" wsaw:Action="urn:getRxtAbsPathFromRxtName"/>
+            <wsdl:output message="ns:getRxtAbsPathFromRxtNameResponse" wsaw:Action="urn:getRxtAbsPathFromRxtNameResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getAllLifeCycleState">
+            <wsdl:input message="ns:getAllLifeCycleStateRequest" wsaw:Action="urn:getAllLifeCycleState"/>
+            <wsdl:output message="ns:getAllLifeCycleStateResponse" wsaw:Action="urn:getAllLifeCycleStateResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifactsByLC">
+            <wsdl:input message="ns:listArtifactsByLCRequest" wsaw:Action="urn:listArtifactsByLC"/>
+            <wsdl:output message="ns:listArtifactsByLCResponse" wsaw:Action="urn:listArtifactsByLCResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getStoragePath">
+            <wsdl:input message="ns:getStoragePathRequest" wsaw:Action="urn:getStoragePath"/>
+            <wsdl:output message="ns:getStoragePathResponse" wsaw:Action="urn:getStoragePathResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifacts">
+            <wsdl:input message="ns:listArtifactsRequest" wsaw:Action="urn:listArtifacts"/>
+            <wsdl:output message="ns:listArtifactsResponse" wsaw:Action="urn:listArtifactsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <wsdl:input message="ns:canChangeRequest" wsaw:Action="urn:canChange"/>
+            <wsdl:output message="ns:canChangeResponse" wsaw:Action="urn:canChangeResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceException" name="ManageGenericArtifactServiceException" wsaw:Action="urn:canChangeManageGenericArtifactServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="editArtifact">
+            <wsdl:input message="ns:editArtifactRequest" wsaw:Action="urn:editArtifact"/>
+            <wsdl:output message="ns:editArtifactResponse" wsaw:Action="urn:editArtifactResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceRegistryException" name="ManageGenericArtifactServiceRegistryException" wsaw:Action="urn:editArtifactManageGenericArtifactServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactUIConfiguration">
+            <wsdl:input message="ns:getArtifactUIConfigurationRequest" wsaw:Action="urn:getArtifactUIConfiguration"/>
+            <wsdl:output message="ns:getArtifactUIConfigurationResponse" wsaw:Action="urn:getArtifactUIConfigurationResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceRegistryException" name="ManageGenericArtifactServiceRegistryException" wsaw:Action="urn:getArtifactUIConfigurationManageGenericArtifactServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <wsdl:input message="ns:getAvailableAspectsRequest" wsaw:Action="urn:getAvailableAspects"/>
+            <wsdl:output message="ns:getAvailableAspectsResponse" wsaw:Action="urn:getAvailableAspectsResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceException" name="ManageGenericArtifactServiceException" wsaw:Action="urn:getAvailableAspectsManageGenericArtifactServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifactsByName">
+            <wsdl:input message="ns:listArtifactsByNameRequest" wsaw:Action="urn:listArtifactsByName"/>
+            <wsdl:output message="ns:listArtifactsByNameResponse" wsaw:Action="urn:listArtifactsByNameResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="addArtifact">
+            <wsdl:input message="ns:addArtifactRequest" wsaw:Action="urn:addArtifact"/>
+            <wsdl:output message="ns:addArtifactResponse" wsaw:Action="urn:addArtifactResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceRegistryException" name="ManageGenericArtifactServiceRegistryException" wsaw:Action="urn:addArtifactManageGenericArtifactServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifactsByLC">
+            <wsdl:input message="ns:listContentArtifactsByLCRequest" wsaw:Action="urn:listContentArtifactsByLC"/>
+            <wsdl:output message="ns:listContentArtifactsByLCResponse" wsaw:Action="urn:listContentArtifactsByLCResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceRegistryException" name="ManageGenericArtifactServiceRegistryException" wsaw:Action="urn:listContentArtifactsByLCManageGenericArtifactServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactContent">
+            <wsdl:input message="ns:getArtifactContentRequest" wsaw:Action="urn:getArtifactContent"/>
+            <wsdl:output message="ns:getArtifactContentResponse" wsaw:Action="urn:getArtifactContentResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceRegistryException" name="ManageGenericArtifactServiceRegistryException" wsaw:Action="urn:getArtifactContentManageGenericArtifactServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifacts">
+            <wsdl:input message="ns:listContentArtifactsRequest" wsaw:Action="urn:listContentArtifacts"/>
+            <wsdl:output message="ns:listContentArtifactsResponse" wsaw:Action="urn:listContentArtifactsResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceRegistryException" name="ManageGenericArtifactServiceRegistryException" wsaw:Action="urn:listContentArtifactsManageGenericArtifactServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactViewRequestParams">
+            <wsdl:input message="ns:getArtifactViewRequestParamsRequest" wsaw:Action="urn:getArtifactViewRequestParams"/>
+            <wsdl:output message="ns:getArtifactViewRequestParamsResponse" wsaw:Action="urn:getArtifactViewRequestParamsResponse"/>
+            <wsdl:fault message="ns:ManageGenericArtifactServiceException" name="ManageGenericArtifactServiceException" wsaw:Action="urn:getArtifactViewRequestParamsManageGenericArtifactServiceException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ManageGenericArtifactServiceSoap11Binding" type="ns:ManageGenericArtifactServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="addRXTResource">
+            <soap:operation soapAction="urn:addRXTResource" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setArtifactUIConfiguration">
+            <soap:operation soapAction="urn:setArtifactUIConfiguration" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifactsByName">
+            <soap:operation soapAction="urn:listContentArtifactsByName" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getRxtAbsPathFromRxtName">
+            <soap:operation soapAction="urn:getRxtAbsPathFromRxtName" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifactsByLC">
+            <soap:operation soapAction="urn:listArtifactsByLC" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllLifeCycleState">
+            <soap:operation soapAction="urn:getAllLifeCycleState" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getStoragePath">
+            <soap:operation soapAction="urn:getStoragePath" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifacts">
+            <soap:operation soapAction="urn:listArtifacts" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <soap:operation soapAction="urn:canChange" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="editArtifact">
+            <soap:operation soapAction="urn:editArtifact" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactUIConfiguration">
+            <soap:operation soapAction="urn:getArtifactUIConfiguration" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <soap:operation soapAction="urn:getAvailableAspects" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifactsByName">
+            <soap:operation soapAction="urn:listArtifactsByName" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addArtifact">
+            <soap:operation soapAction="urn:addArtifact" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifactsByLC">
+            <soap:operation soapAction="urn:listContentArtifactsByLC" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactContent">
+            <soap:operation soapAction="urn:getArtifactContent" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifacts">
+            <soap:operation soapAction="urn:listContentArtifacts" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactViewRequestParams">
+            <soap:operation soapAction="urn:getArtifactViewRequestParams" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceException">
+                <soap:fault use="literal" name="ManageGenericArtifactServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ManageGenericArtifactServiceSoap12Binding" type="ns:ManageGenericArtifactServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="addRXTResource">
+            <soap12:operation soapAction="urn:addRXTResource" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setArtifactUIConfiguration">
+            <soap12:operation soapAction="urn:setArtifactUIConfiguration" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifactsByName">
+            <soap12:operation soapAction="urn:listContentArtifactsByName" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getRxtAbsPathFromRxtName">
+            <soap12:operation soapAction="urn:getRxtAbsPathFromRxtName" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifactsByLC">
+            <soap12:operation soapAction="urn:listArtifactsByLC" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllLifeCycleState">
+            <soap12:operation soapAction="urn:getAllLifeCycleState" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getStoragePath">
+            <soap12:operation soapAction="urn:getStoragePath" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifacts">
+            <soap12:operation soapAction="urn:listArtifacts" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <soap12:operation soapAction="urn:canChange" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="editArtifact">
+            <soap12:operation soapAction="urn:editArtifact" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactUIConfiguration">
+            <soap12:operation soapAction="urn:getArtifactUIConfiguration" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <soap12:operation soapAction="urn:getAvailableAspects" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifactsByName">
+            <soap12:operation soapAction="urn:listArtifactsByName" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addArtifact">
+            <soap12:operation soapAction="urn:addArtifact" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifactsByLC">
+            <soap12:operation soapAction="urn:listContentArtifactsByLC" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactContent">
+            <soap12:operation soapAction="urn:getArtifactContent" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifacts">
+            <soap12:operation soapAction="urn:listContentArtifacts" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceRegistryException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactViewRequestParams">
+            <soap12:operation soapAction="urn:getArtifactViewRequestParams" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ManageGenericArtifactServiceException">
+                <soap12:fault use="literal" name="ManageGenericArtifactServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ManageGenericArtifactServiceHttpBinding" type="ns:ManageGenericArtifactServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="addRXTResource">
+            <http:operation location="addRXTResource"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="setArtifactUIConfiguration">
+            <http:operation location="setArtifactUIConfiguration"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifactsByName">
+            <http:operation location="listContentArtifactsByName"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getRxtAbsPathFromRxtName">
+            <http:operation location="getRxtAbsPathFromRxtName"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifactsByLC">
+            <http:operation location="listArtifactsByLC"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAllLifeCycleState">
+            <http:operation location="getAllLifeCycleState"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getStoragePath">
+            <http:operation location="getStoragePath"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifacts">
+            <http:operation location="listArtifacts"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <http:operation location="canChange"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="editArtifact">
+            <http:operation location="editArtifact"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactUIConfiguration">
+            <http:operation location="getArtifactUIConfiguration"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <http:operation location="getAvailableAspects"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listArtifactsByName">
+            <http:operation location="listArtifactsByName"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addArtifact">
+            <http:operation location="addArtifact"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifactsByLC">
+            <http:operation location="listContentArtifactsByLC"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactContent">
+            <http:operation location="getArtifactContent"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listContentArtifacts">
+            <http:operation location="listContentArtifacts"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getArtifactViewRequestParams">
+            <http:operation location="getArtifactViewRequestParams"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ManageGenericArtifactService">
+        <wsdl:port name="ManageGenericArtifactServiceHttpsSoap11Endpoint" binding="ns:ManageGenericArtifactServiceSoap11Binding">
+            <soap:address location="https://10.150.3.68:9443/services/ManageGenericArtifactService.ManageGenericArtifactServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="ManageGenericArtifactServiceHttpsSoap12Endpoint" binding="ns:ManageGenericArtifactServiceSoap12Binding">
+            <soap12:address location="https://10.150.3.68:9443/services/ManageGenericArtifactService.ManageGenericArtifactServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="ManageGenericArtifactServiceHttpsEndpoint" binding="ns:ManageGenericArtifactServiceHttpBinding">
+            <http:address location="https://10.150.3.68:9443/services/ManageGenericArtifactService.ManageGenericArtifactServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

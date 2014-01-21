@@ -1,0 +1,123 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax25="http://beans.wsdltool.governance.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns="http://services.wsdltool.governance.carbon.wso2.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://services.wsdltool.governance.carbon.wso2.org">
+    <wsdl:documentation>WSDLToolService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.wsdltool.governance.carbon.wso2.org/xsd">
+    <xs:complexType name="ServiceInfoBean">
+        <xs:all>
+            <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ownerAddress" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ownerEmail" nillable="true" type="xs:string" />
+
+            <xs:element minOccurs="0" name="ownerName" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ownerTelephone" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="wsdlURL" nillable="true" type="xs:string" />
+        </xs:all>
+    </xs:complexType>
+</xs:schema>
+        <xs:schema xmlns:ax26="http://beans.wsdltool.governance.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.wsdltool.governance.carbon.wso2.org">
+    <xs:import namespace="http://beans.wsdltool.governance.carbon.wso2.org/xsd" />
+    <xs:complexType name="Exception">
+
+        <xs:sequence>
+            <xs:element minOccurs="0" name="Exception" nillable="true" type="xs:anyType" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="Exception">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Exception" nillable="true" type="ns:Exception" />
+            </xs:sequence>
+
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="addMEXService">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                <xs:element minOccurs="0" name="serviceInfo" nillable="true" type="ax26:ServiceInfoBean" />
+            </xs:sequence>
+        </xs:complexType>
+
+    </xs:element>
+</xs:schema>
+    </wsdl:types>
+    <wsdl:message name="addMEXServiceRequest">
+        <wsdl:part name="parameters" element="ns:addMEXService" />
+    </wsdl:message>
+    <wsdl:message name="Exception">
+        <wsdl:part name="parameters" element="ns:Exception" />
+    </wsdl:message>
+
+    <wsdl:portType name="WSDLToolServicePortType">
+        <wsdl:operation name="addMEXService">
+            <wsdl:input message="ns:addMEXServiceRequest" wsaw:Action="urn:addMEXService" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:addMEXServiceException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="WSDLToolServiceSoap11Binding" type="ns:WSDLToolServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="addMEXService">
+
+            <soap:operation soapAction="urn:addMEXService" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:binding name="WSDLToolServiceSoap12Binding" type="ns:WSDLToolServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="addMEXService">
+            <soap12:operation soapAction="urn:addMEXService" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="WSDLToolServiceHttpBinding" type="ns:WSDLToolServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="addMEXService">
+            <http:operation location="WSDLToolService/addMEXService" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="addMEXService" />
+
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="WSDLToolService">
+        <wsdl:port name="WSDLToolServiceHttpsSoap11Endpoint" binding="ns:WSDLToolServiceSoap11Binding">
+            <soap:address location="https://10.202.137.7:9443/services/WSDLToolService.WSDLToolServiceHttpsSoap11Endpoint" />
+        </wsdl:port>
+        <wsdl:port name="WSDLToolServiceHttpsSoap12Endpoint" binding="ns:WSDLToolServiceSoap12Binding">
+            <soap12:address location="https://10.202.137.7:9443/services/WSDLToolService.WSDLToolServiceHttpsSoap12Endpoint" />
+
+        </wsdl:port>
+        <wsdl:port name="WSDLToolServiceHttpsEndpoint" binding="ns:WSDLToolServiceHttpBinding">
+            <http:address location="https://10.202.137.7:9443/services/WSDLToolService.WSDLToolServiceHttpsEndpoint" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

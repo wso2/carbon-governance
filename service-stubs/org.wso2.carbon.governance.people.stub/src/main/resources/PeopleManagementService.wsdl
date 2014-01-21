@@ -1,0 +1,692 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.people.governance.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax2198="http://beans.people.governance.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax2194="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2195="http://api.registry.carbon.wso2.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.people.governance.carbon.wso2.org">
+    <wsdl:documentation>PeopleManagementService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.people.governance.carbon.wso2.org/xsd">
+            <xs:complexType name="PeopleInfoBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="canDelete" nillable="true" type="xs:boolean" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groups" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="names" nillable="true" type="xs:string" />
+
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="paths" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="size" type="xs:int" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="types" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2196="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd" />
+            <xs:complexType name="RegistryException">
+
+                <xs:complexContent>
+                    <xs:extension base="ax2196:RegistryException">
+                        <xs:sequence />
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2197="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2199="http://beans.people.governance.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.people.governance.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd" />
+
+            <xs:import namespace="http://beans.people.governance.carbon.wso2.org/xsd" />
+            <xs:element name="savePeopleUIConfigRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2197:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="savePeopleUIConfig">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="peopleGroup" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="peopleType" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="update" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="savePeopleUIConfigResponse">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="savePeopleArtifactRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2197:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="savePeopleArtifact">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="info" nillable="true" type="xs:string" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="savePeopleArtifactResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="getStoredPeopleArtifactsRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2197:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getStoredPeopleArtifacts">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="criteria" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="filteredTypes" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getStoredPeopleArtifactsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2198:PeopleInfoBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPeopleUIConfigRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2197:RegistryException" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPeopleUIConfig">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="peopleGroup" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="peopleType" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+
+            </xs:element>
+            <xs:element name="getPeopleUIConfigResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPeopleBasePathRegistryException">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2197:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPeopleBasePath">
+                <xs:complexType>
+                    <xs:sequence />
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPeopleBasePathResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="getPeopleArtifactRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2197:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPeopleArtifact">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="artifactPath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPeopleArtifactResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllPeopleArtifactNamesRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2197:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+
+            </xs:element>
+            <xs:element name="getAllPeopleArtifactNames">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllPeopleArtifactNamesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canChangeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="canChangeException" nillable="true" type="ns:Exception" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="canChange">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canChangeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence />
+            </xs:complexType>
+        </xs:schema>
+
+    </wsdl:types>
+    <wsdl:message name="getPeopleArtifactRequest">
+        <wsdl:part name="parameters" element="ns:getPeopleArtifact" />
+    </wsdl:message>
+    <wsdl:message name="getPeopleArtifactResponse">
+        <wsdl:part name="parameters" element="ns:getPeopleArtifactResponse" />
+    </wsdl:message>
+    <wsdl:message name="getPeopleArtifactRegistryException">
+        <wsdl:part name="parameters" element="ns:getPeopleArtifactRegistryException" />
+
+    </wsdl:message>
+    <wsdl:message name="canChangeRequest">
+        <wsdl:part name="parameters" element="ns:canChange" />
+    </wsdl:message>
+    <wsdl:message name="canChangeResponse">
+        <wsdl:part name="parameters" element="ns:canChangeResponse" />
+    </wsdl:message>
+    <wsdl:message name="canChangeException">
+        <wsdl:part name="parameters" element="ns:canChangeException" />
+
+    </wsdl:message>
+    <wsdl:message name="getPeopleUIConfigRequest">
+        <wsdl:part name="parameters" element="ns:getPeopleUIConfig" />
+    </wsdl:message>
+    <wsdl:message name="getPeopleUIConfigResponse">
+        <wsdl:part name="parameters" element="ns:getPeopleUIConfigResponse" />
+    </wsdl:message>
+    <wsdl:message name="getPeopleUIConfigRegistryException">
+        <wsdl:part name="parameters" element="ns:getPeopleUIConfigRegistryException" />
+
+    </wsdl:message>
+    <wsdl:message name="savePeopleArtifactRequest">
+        <wsdl:part name="parameters" element="ns:savePeopleArtifact" />
+    </wsdl:message>
+    <wsdl:message name="savePeopleArtifactResponse">
+        <wsdl:part name="parameters" element="ns:savePeopleArtifactResponse" />
+    </wsdl:message>
+    <wsdl:message name="savePeopleArtifactRegistryException">
+        <wsdl:part name="parameters" element="ns:savePeopleArtifactRegistryException" />
+
+    </wsdl:message>
+    <wsdl:message name="savePeopleUIConfigRequest">
+        <wsdl:part name="parameters" element="ns:savePeopleUIConfig" />
+    </wsdl:message>
+    <wsdl:message name="savePeopleUIConfigResponse">
+        <wsdl:part name="parameters" element="ns:savePeopleUIConfigResponse" />
+    </wsdl:message>
+    <wsdl:message name="savePeopleUIConfigRegistryException">
+        <wsdl:part name="parameters" element="ns:savePeopleUIConfigRegistryException" />
+
+    </wsdl:message>
+    <wsdl:message name="getStoredPeopleArtifactsRequest">
+        <wsdl:part name="parameters" element="ns:getStoredPeopleArtifacts" />
+    </wsdl:message>
+    <wsdl:message name="getStoredPeopleArtifactsResponse">
+        <wsdl:part name="parameters" element="ns:getStoredPeopleArtifactsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getStoredPeopleArtifactsRegistryException">
+        <wsdl:part name="parameters" element="ns:getStoredPeopleArtifactsRegistryException" />
+
+    </wsdl:message>
+    <wsdl:message name="getAllPeopleArtifactNamesRequest">
+        <wsdl:part name="parameters" element="ns:getAllPeopleArtifactNames" />
+    </wsdl:message>
+    <wsdl:message name="getAllPeopleArtifactNamesResponse">
+        <wsdl:part name="parameters" element="ns:getAllPeopleArtifactNamesResponse" />
+    </wsdl:message>
+    <wsdl:message name="getAllPeopleArtifactNamesRegistryException">
+        <wsdl:part name="parameters" element="ns:getAllPeopleArtifactNamesRegistryException" />
+
+    </wsdl:message>
+    <wsdl:message name="getPeopleBasePathRequest">
+        <wsdl:part name="parameters" element="ns:getPeopleBasePath" />
+    </wsdl:message>
+    <wsdl:message name="getPeopleBasePathResponse">
+        <wsdl:part name="parameters" element="ns:getPeopleBasePathResponse" />
+    </wsdl:message>
+    <wsdl:message name="getPeopleBasePathRegistryException">
+        <wsdl:part name="parameters" element="ns:getPeopleBasePathRegistryException" />
+
+    </wsdl:message>
+    <wsdl:portType name="PeopleManagementServicePortType">
+        <wsdl:operation name="getPeopleArtifact">
+            <wsdl:input message="ns:getPeopleArtifactRequest" wsaw:Action="urn:getPeopleArtifact" />
+            <wsdl:output message="ns:getPeopleArtifactResponse" wsaw:Action="urn:getPeopleArtifactResponse" />
+            <wsdl:fault message="ns:getPeopleArtifactRegistryException" name="getPeopleArtifactRegistryException" wsaw:Action="urn:getPeopleArtifactgetPeopleArtifactRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <wsdl:input message="ns:canChangeRequest" wsaw:Action="urn:canChange" />
+
+            <wsdl:output message="ns:canChangeResponse" wsaw:Action="urn:canChangeResponse" />
+            <wsdl:fault message="ns:canChangeException" name="canChangeException" wsaw:Action="urn:canChangecanChangeException" />
+        </wsdl:operation>
+        <wsdl:operation name="getPeopleUIConfig">
+            <wsdl:input message="ns:getPeopleUIConfigRequest" wsaw:Action="urn:getPeopleUIConfig" />
+            <wsdl:output message="ns:getPeopleUIConfigResponse" wsaw:Action="urn:getPeopleUIConfigResponse" />
+            <wsdl:fault message="ns:getPeopleUIConfigRegistryException" name="getPeopleUIConfigRegistryException" wsaw:Action="urn:getPeopleUIConfiggetPeopleUIConfigRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="savePeopleArtifact">
+
+            <wsdl:input message="ns:savePeopleArtifactRequest" wsaw:Action="urn:savePeopleArtifact" />
+            <wsdl:output message="ns:savePeopleArtifactResponse" wsaw:Action="urn:savePeopleArtifactResponse" />
+            <wsdl:fault message="ns:savePeopleArtifactRegistryException" name="savePeopleArtifactRegistryException" wsaw:Action="urn:savePeopleArtifactsavePeopleArtifactRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="savePeopleUIConfig">
+            <wsdl:input message="ns:savePeopleUIConfigRequest" wsaw:Action="urn:savePeopleUIConfig" />
+            <wsdl:output message="ns:savePeopleUIConfigResponse" wsaw:Action="urn:savePeopleUIConfigResponse" />
+            <wsdl:fault message="ns:savePeopleUIConfigRegistryException" name="savePeopleUIConfigRegistryException" wsaw:Action="urn:savePeopleUIConfigsavePeopleUIConfigRegistryException" />
+        </wsdl:operation>
+
+        <wsdl:operation name="getStoredPeopleArtifacts">
+            <wsdl:input message="ns:getStoredPeopleArtifactsRequest" wsaw:Action="urn:getStoredPeopleArtifacts" />
+            <wsdl:output message="ns:getStoredPeopleArtifactsResponse" wsaw:Action="urn:getStoredPeopleArtifactsResponse" />
+            <wsdl:fault message="ns:getStoredPeopleArtifactsRegistryException" name="getStoredPeopleArtifactsRegistryException" wsaw:Action="urn:getStoredPeopleArtifactsgetStoredPeopleArtifactsRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getAllPeopleArtifactNames">
+            <wsdl:input message="ns:getAllPeopleArtifactNamesRequest" wsaw:Action="urn:getAllPeopleArtifactNames" />
+            <wsdl:output message="ns:getAllPeopleArtifactNamesResponse" wsaw:Action="urn:getAllPeopleArtifactNamesResponse" />
+            <wsdl:fault message="ns:getAllPeopleArtifactNamesRegistryException" name="getAllPeopleArtifactNamesRegistryException" wsaw:Action="urn:getAllPeopleArtifactNamesgetAllPeopleArtifactNamesRegistryException" />
+
+        </wsdl:operation>
+        <wsdl:operation name="getPeopleBasePath">
+            <wsdl:input message="ns:getPeopleBasePathRequest" wsaw:Action="urn:getPeopleBasePath" />
+            <wsdl:output message="ns:getPeopleBasePathResponse" wsaw:Action="urn:getPeopleBasePathResponse" />
+            <wsdl:fault message="ns:getPeopleBasePathRegistryException" name="getPeopleBasePathRegistryException" wsaw:Action="urn:getPeopleBasePathgetPeopleBasePathRegistryException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="PeopleManagementServiceSoap11Binding" type="ns:PeopleManagementServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+
+        <wsdl:operation name="getPeopleArtifact">
+            <soap:operation soapAction="urn:getPeopleArtifact" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getPeopleArtifactRegistryException">
+
+                <soap:fault use="literal" name="getPeopleArtifactRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <soap:operation soapAction="urn:canChange" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="canChangeException">
+                <soap:fault use="literal" name="canChangeException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="savePeopleArtifact">
+            <soap:operation soapAction="urn:savePeopleArtifact" style="document" />
+            <wsdl:input>
+
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="savePeopleArtifactRegistryException">
+                <soap:fault use="literal" name="savePeopleArtifactRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="getPeopleUIConfig">
+            <soap:operation soapAction="urn:getPeopleUIConfig" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getPeopleUIConfigRegistryException">
+
+                <soap:fault use="literal" name="getPeopleUIConfigRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="savePeopleUIConfig">
+            <soap:operation soapAction="urn:savePeopleUIConfig" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="savePeopleUIConfigRegistryException">
+                <soap:fault use="literal" name="savePeopleUIConfigRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAllPeopleArtifactNames">
+            <soap:operation soapAction="urn:getAllPeopleArtifactNames" style="document" />
+            <wsdl:input>
+
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getAllPeopleArtifactNamesRegistryException">
+                <soap:fault use="literal" name="getAllPeopleArtifactNamesRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="getStoredPeopleArtifacts">
+            <soap:operation soapAction="urn:getStoredPeopleArtifacts" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getStoredPeopleArtifactsRegistryException">
+
+                <soap:fault use="literal" name="getStoredPeopleArtifactsRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPeopleBasePath">
+            <soap:operation soapAction="urn:getPeopleBasePath" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getPeopleBasePathRegistryException">
+                <soap:fault use="literal" name="getPeopleBasePathRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="PeopleManagementServiceSoap12Binding" type="ns:PeopleManagementServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+
+        <wsdl:operation name="getPeopleArtifact">
+            <soap12:operation soapAction="urn:getPeopleArtifact" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getPeopleArtifactRegistryException">
+
+                <soap12:fault use="literal" name="getPeopleArtifactRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="canChange">
+            <soap12:operation soapAction="urn:canChange" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="canChangeException">
+                <soap12:fault use="literal" name="canChangeException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="savePeopleArtifact">
+            <soap12:operation soapAction="urn:savePeopleArtifact" style="document" />
+            <wsdl:input>
+
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="savePeopleArtifactRegistryException">
+                <soap12:fault use="literal" name="savePeopleArtifactRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="getPeopleUIConfig">
+            <soap12:operation soapAction="urn:getPeopleUIConfig" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getPeopleUIConfigRegistryException">
+
+                <soap12:fault use="literal" name="getPeopleUIConfigRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="savePeopleUIConfig">
+            <soap12:operation soapAction="urn:savePeopleUIConfig" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="savePeopleUIConfigRegistryException">
+                <soap12:fault use="literal" name="savePeopleUIConfigRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAllPeopleArtifactNames">
+            <soap12:operation soapAction="urn:getAllPeopleArtifactNames" style="document" />
+            <wsdl:input>
+
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getAllPeopleArtifactNamesRegistryException">
+                <soap12:fault use="literal" name="getAllPeopleArtifactNamesRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="getStoredPeopleArtifacts">
+            <soap12:operation soapAction="urn:getStoredPeopleArtifacts" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getStoredPeopleArtifactsRegistryException">
+
+                <soap12:fault use="literal" name="getStoredPeopleArtifactsRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getPeopleBasePath">
+            <soap12:operation soapAction="urn:getPeopleBasePath" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getPeopleBasePathRegistryException">
+                <soap12:fault use="literal" name="getPeopleBasePathRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="PeopleManagementServiceHttpBinding" type="ns:PeopleManagementServicePortType">
+        <http:binding verb="POST" />
+
+        <wsdl:operation name="getPeopleArtifact">
+            <http:operation location="getPeopleArtifact" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="canChange">
+            <http:operation location="canChange" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="savePeopleArtifact">
+            <http:operation location="savePeopleArtifact" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getPeopleUIConfig">
+            <http:operation location="getPeopleUIConfig" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="savePeopleUIConfig">
+            <http:operation location="savePeopleUIConfig" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getAllPeopleArtifactNames">
+            <http:operation location="getAllPeopleArtifactNames" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getStoredPeopleArtifacts">
+            <http:operation location="getStoredPeopleArtifacts" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getPeopleBasePath">
+            <http:operation location="getPeopleBasePath" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:binding>
+    <wsdl:service name="PeopleManagementService">
+        <wsdl:port name="PeopleManagementServiceHttpsSoap11Endpoint" binding="ns:PeopleManagementServiceSoap11Binding">
+            <soap:address location="https://10.100.0.25:9443/services/PeopleManagementService.PeopleManagementServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="PeopleManagementServiceHttpsSoap12Endpoint" binding="ns:PeopleManagementServiceSoap12Binding">
+            <soap12:address location="https://10.100.0.25:9443/services/PeopleManagementService.PeopleManagementServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="PeopleManagementServiceHttpsEndpoint" binding="ns:PeopleManagementServiceHttpBinding">
+
+            <http:address location="https://10.100.0.25:9443/services/PeopleManagementService.PeopleManagementServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
+

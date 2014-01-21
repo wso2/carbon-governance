@@ -1,0 +1,109 @@
+== registry.xml Configuration == 
+<aspect name="Checklist" class="org.wso2.carbon.registry.extensions.aspects.ChecklistLifeCycle">
+     <configuration type="resource">/checklists/products</configuration>
+</aspect>
+
+== Resource content ==
+<lifecycle>
+    <state name="Created">
+        <checkitem>Testing option 1</checkitem>
+        <checkitem>Testing option 3</checkitem>
+        <checkitem>Testing option 4</checkitem>
+        <checkitem>Testing option 2</checkitem>
+    </state>
+    <state name="Tested">
+        <checkitem>Deploying option 3</checkitem>
+        <checkitem>Deploying option 5</checkitem>
+        <checkitem>Deploying option 1</checkitem>
+        <checkitem>Deploying option 2</checkitem>
+        <checkitem>Deploying option 4</checkitem>
+    </state>
+    <state name="Deployed">
+        <checkitem>Deprecating option 1</checkitem>
+        <checkitem>Deprecating option 2</checkitem>
+        <checkitem>Deprecating option 3</checkitem>
+    </state>
+    <state name="Deprecated">
+    </state>
+</lifecycle>
+
+=== Proposed ===
+<lifecycle-configuration>
+    <state name="Created">
+        <distributed-configuration>
+            <registry-url>https://10.100.1.1</registry-url>
+            <registry-username>admin</registry-username>
+            <registry-password>admin</registry-password>
+            <location>/workspace/development</location>
+        </distributed-configuration>
+        <vote-configuration>
+            <minimum-votes>4</minimum-votes>
+            <voted>
+                <user></user>
+                <user></user>
+            </voted>
+        </vote-configuration>
+        <checklist>
+            <item>Load Test Completed</item>
+            <item>Documentation Checked</item>
+            <item>Binary Packs Checked</item>
+            <item>UI Issues Checked</item>
+        </checklist>
+        <permissions>
+            <roles>
+                <promote>
+                    <role>everyone</role>
+                </promote>
+                <demote>
+                    <role>administrator</role>
+                    <role>tester</role>
+                </demote>
+                <vote/>
+            </roles>
+            <users>
+                <promote>
+                    <user>annonymous</user>
+                </promote>
+                <demote>
+                    <user>john</user>
+                    <user>jane</user>
+                </demote>
+                <vote/>
+            </users>
+        </permissions>
+    </state>
+		<state name ="Tested">
+			<registry-url>https://10.100.1.1</registry-url>
+            <registry-username>admin</registry-username>
+            <registry-password>admin</registry-password>
+            <location>/workspace/testing</location>
+			<roles>
+				<read>
+					<role>everyone</role>
+				</read>
+				<write>
+					<role>administrator</role>
+					<role>support</role>
+				</write>
+				<delete/>
+				<authorize/>
+			</roles>
+			<users>
+				<read>
+					<user>annonymous</user>
+				</read>
+				<write>
+					<user>bill</user>
+					<user>harold</user>
+				</write>
+				<delete/>
+				<authorize/>
+			</users>
+		</state>
+		<state name="Deployed">
+			<registry-url>https://10.100.1.1</registry-url>
+            <registry-username>admin</registry-username>
+            <registry-password>admin</registry-password>
+            <location>/workspace/support</location>
+      	</state>
+</lifecycle-configuration>

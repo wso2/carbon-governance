@@ -1,0 +1,203 @@
+<!--
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<resource path="/system/dashboards" isCollection="true">
+    <mediaType/><description/>
+    <childs>
+        <resource path="/system/dashboards/governance" isCollection="true">
+            <mediaType/><description/>
+            <childs>
+                <resource path="/system/dashboards/governance/gadgets" isCollection="true">
+                    <mediaType/><description/>
+                    <childs>
+                        <resource path="/system/dashboards/governance/gadgets/23" isCollection="true">
+                            <mediaType/><description/>
+                            <properties>
+                                <property key="gadgetUrl">
+                                    /registry/resource/system/gadgets/life-cycle-info.xml
+                                </property>
+                            </properties>
+                            <childs>
+                                <resource path="/system/dashboards/governance/gadgets/23/gadgetprefs" isCollection="true">
+                                    <mediaType/><description/>
+                                    <properties>
+                                        <property key="gadgetUserPrefs-23"/>
+                                    </properties><childs/>
+                                </resource>
+                            </childs>
+                        </resource>
+                        <resource path="/system/dashboards/governance/gadgets/30" isCollection="true">
+                            <mediaType/><description/>
+                            <properties>
+                                <property key="gadgetUrl">
+                                    /registry/resource/system/gadgets/average-processing-time-per-tx.xml
+                                </property>
+                            </properties>
+                            <childs>
+                                <resource path="/system/dashboards/governance/gadgets/30/gadgetprefs" isCollection="true">
+                                    <mediaType/><description/>
+                                    <properties>
+                                        <property key="gadgetUserPrefs-30"/>
+                                    </properties><childs/>
+                                </resource>
+                            </childs>
+                        </resource>
+						
+						
+						<resource path="/system/dashboards/governance/gadgets/50" isCollection="true"><mediaType/><description/><properties><property key="gadgetUrl">/registry/resource/system/gadgets/latest-average-response-time-for-server.xml</property></properties><childs><resource path="/system/dashboards/governance/gadgets/50/gadgetprefs" isCollection="true"><mediaType/><description/><properties><property key="gadgetUserPrefs-50"/></properties><childs/></resource></childs></resource>
+						
+                        <resource path="/system/dashboards/governance/gadgets/31" isCollection="true">
+                            <mediaType/><description/>
+                            <properties>
+                                <property key="gadgetUrl">
+                                    /registry/resource/system/gadgets/calls-for-last-24hrs.xml
+                                </property>
+                            </properties>
+                            <childs>
+                                <resource path="/system/dashboards/governance/gadgets/31/gadgetprefs" isCollection="true">
+                                    <mediaType/><description/>
+                                    <properties>
+                                        <property key="gadgetUserPrefs-31"/>
+                                    </properties><childs/>
+                                </resource>
+                            </childs>
+                        </resource>
+                        <resource path="/system/dashboards/governance/gadgets/32" isCollection="true">
+                            <mediaType/><description/>
+                            <properties>
+                                <property key="gadgetUrl">
+                                    /registry/resource/system/gadgets/last-minutes-requests.xml
+                                </property>
+                            </properties>
+                            <childs>
+                                <resource path="/system/dashboards/governance/gadgets/32/gadgetprefs" isCollection="true">
+                                    <mediaType/><description/>
+                                    <properties>
+                                        <property key="gadgetUserPrefs-32"/>
+                                    </properties><childs/>
+                                </resource>
+                            </childs>
+                        </resource>
+                        <resource path="/system/dashboards/governance/gadgets/33" isCollection="true">
+                            <mediaType/><description/>
+                            <properties>
+                                <property key="gadgetUrl">
+                                    /registry/resource/system/gadgets/min-max-avg-processing-times.xml
+                                </property>
+                            </properties>
+                            <childs>
+                                <resource path="/system/dashboards/governance/gadgets/33/gadgetprefs" isCollection="true">
+                                    <mediaType/><description/>
+                                    <properties>
+                                        <property key="gadgetUserPrefs-33"/>
+                                    </properties><childs/>
+                                </resource>
+                            </childs>
+                        </resource>
+                        <resource path="/system/dashboards/governance/gadgets/34" isCollection="true">
+                            <mediaType/><description/>
+                            <properties>
+                                <property key="gadgetUrl">
+                                    /registry/resource/system/gadgets/user-logins-and-failures.xml
+                                </property>
+                            </properties>
+                            <childs>
+                                <resource path="/system/dashboards/governance/gadgets/34/gadgetprefs" isCollection="true">
+                                    <mediaType/><description/>
+                                    <properties>
+                                        <property key="gadgetUserPrefs-34"/>
+                                    </properties><childs/>
+                                </resource>
+                            </childs>
+                        </resource>
+                        <resource path="/system/dashboards/governance/gadgets/36" isCollection="true">
+                            <mediaType/><description/>
+                            <properties>
+                                <property key="gadgetUrl">
+                                    /registry/resource/system/gadgets/failure-logins-by-user.xml
+                                </property>
+                            </properties>
+                            <childs>
+                                <resource path="/system/dashboards/governance/gadgets/36/gadgetprefs" isCollection="true">
+                                    <mediaType/><description/>
+                                    <properties>
+                                        <property key="gadgetUserPrefs-36"/>
+                                    </properties><childs/>
+                                </resource>
+                            </childs>
+                        </resource>
+                    </childs>
+                </resource>
+                <resource path="/system/dashboards/governance/nextGadgetId" isCollection="true">
+                    <mediaType/><description/>
+                    <properties>
+                        <property key="nextGadgetId">
+                            37
+                        </property>
+                    </properties>
+                    <childs/>
+                </resource>
+                <resource path="/system/dashboards/governance/tabs" isCollection="true">
+                    <mediaType/><description/>
+                    <properties>
+                        <property key="nextTabId">
+                            9
+                        </property>
+                        <property key="currentTabLayout">
+                            0,8
+                        </property>
+                    </properties>
+                    <childs>
+                        <resource path="/system/dashboards/governance/tabs/0" isCollection="true">
+                            <mediaType/><description/>
+                            <childs>
+                                <resource path="/system/dashboards/governance/tabs/0/currentGadgetLayout" isCollection="true">
+                                    <mediaType/><description/>
+                                    <properties>
+                                        <property key="currentGadgetLayout">
+                                            32,31,30,33,23,50
+                                        </property>
+                                    </properties>
+                                    <childs/>
+                                </resource>
+                            </childs>
+                        </resource>
+                        <resource path="/system/dashboards/governance/tabs/8" isCollection="true">
+                            <mediaType/><description/>
+                            <properties>
+                                <property key="tabTitle">
+                                    Security
+                                </property>
+                            </properties>
+                            <childs>
+                                <resource path="/system/dashboards/governance/tabs/8/currentGadgetLayout" isCollection="true">
+                                    <mediaType/><description/>
+                                    <properties>
+                                        <property key="currentGadgetLayout">
+                                            34,36
+                                        </property>
+                                    </properties>
+                                    <childs/>
+                                </resource>
+                            </childs>
+                        </resource>
+                    </childs>
+                </resource>
+            </childs>
+        </resource>
+    </childs>
+</resource>
