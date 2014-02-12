@@ -47,16 +47,19 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.governance.gadgets.resourceimpact.feature</artifactId>
+	    <version>${project.version}</version>
             <type>zip</type>
 	    </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.governance.gadgets.lifecycle.feature</artifactId>
+	    <version>${project.version}</version>
             <type>zip</type>
 	    </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.governance.gadgets.ui.feature</artifactId>
+	    <version>${project.version}</version>
             <type>zip</type>
 	    </dependency>
     </dependencies>

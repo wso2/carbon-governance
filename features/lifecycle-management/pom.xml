@@ -21,8 +21,9 @@
 
     <parent>
         <groupId>org.wso2.carbon</groupId>
-        <artifactId>registry-governance-features</artifactId>
+        <artifactId>carbon-governance</artifactId>
         <version>4.3.0-SNAPSHOT</version>
+	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -113,7 +114,7 @@
     </dependencyManagement>
 
     <properties>
-        <wso2carbon.version.governance.lifecycle.management>${wso2carbon.version}</wso2carbon.version.governance.lifecycle.management>
+        <wso2carbon.version.governance.lifecycle.management>${project.version}</wso2carbon.version.governance.lifecycle.management>
         <rhino.version.lifecycle.management>${rhino.version}</rhino.version.lifecycle.management>
         <mashup.version.lifecycle.management>${mashup.version}</mashup.version.lifecycle.management>
 	<commons.scxml.wso2.version.lifecycle.management>${commons.scxml.wso2.version}</commons.scxml.wso2.version.lifecycle.management>

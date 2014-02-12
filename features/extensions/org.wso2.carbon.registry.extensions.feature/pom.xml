@@ -40,12 +40,13 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.extensions.server.feature</artifactId>
+	    <version>${project.version}</version>
             <type>zip</type>
             </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.extensions.ui.feature</artifactId>
-            <version>${carbon.platform.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
             </dependency>
     </dependencies>
