@@ -27,6 +27,7 @@ import org.wso2.carbon.governance.api.services.ServiceManager;
 import org.wso2.carbon.governance.api.services.dataobjects.Service;
 import org.wso2.carbon.governance.list.util.GovernanceArtifactFilter;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -43,8 +44,14 @@ public class FilterService extends FilterStrategy {
     @Override
     public GovernanceArtifact[] getArtifacts() throws GovernanceException {
         Service[] service = new Service[0];
+	
+	    ServiceManager serviceManger;
+   	    try {
+                serviceManger = new ServiceManager(this.getGovernanceRegistry());
+	    } catch (RegistryException e) {
+                throw new GovernanceException("Service Manager Initialization Failed", e);
+            }
 
-            ServiceManager serviceManger = new ServiceManager(this.getGovernanceRegistry());
             final Service referenceService;
             if (this.getCriteria() != null && !"".equals(this.getCriteria())) {
                 XMLStreamReader reader = null;

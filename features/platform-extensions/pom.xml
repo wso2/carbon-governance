@@ -37,19 +37,5 @@
         <module>org.wso2.carbon.governance.platform.extensions.feature</module>
     </modules>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.governance.platform.extensions</artifactId>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <properties>
-        <wso2carbon.version.extensions>${project.version}</wso2carbon.version.extensions>
-        <wsdl.validator.version.extensions>${wsdl.validator.version}</wsdl.validator.version.extensions>
-    </properties>
-
 </project>
 

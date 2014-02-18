@@ -35,35 +35,5 @@
     <modules>
         <module>org.wso2.carbon.governance.notifications.configuration.feature</module>
     </modules>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.governance.notifications.ui</artifactId>
-                <version>${wso2carbon.version.governance.notification.configurations}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.governance.notifications.stub</artifactId>
-                <version>${wso2carbon.version.governance.notification.configurations}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.governance.notifications.worklist.stub</artifactId>
-                <version>${wso2carbon.version.governance.notification.configurations}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.humantask.stub</artifactId>
-                <version>${wso2carbon.version.governance.notification.configurations}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <properties>
-        <wso2carbon.version.governance.notification.configurations>${project.version}</wso2carbon.version.governance.notification.configurations>
-    </properties>
-
 </project>
 

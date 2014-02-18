@@ -377,6 +377,11 @@
 		    </exclusion>
 		</exclusions>
 	    </dependency>
+	   <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.registry.extensions.ui</artifactId>
+                <version>${project.version}</version>
+            </dependency> 
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.registry.servlet</artifactId>
@@ -447,6 +452,11 @@
 		<artifactId>org.wso2.carbon.registry.social.api</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.registry.search.ui</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.registry.activities.stub</artifactId>
@@ -526,6 +536,16 @@
 	    </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.governance.generic</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.governance.generic.ui</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
@@ -538,8 +558,12 @@
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.governance.services</artifactId>
 		<version>${project.version}</version>
+	    </dependency> 
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.governance.wsdltool</artifactId>
+		<version>${project.version}</version>
 	    </dependency>
-	    
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.governance.wsdltool.ui</artifactId>
@@ -560,7 +584,56 @@
 		<artifactId>org.wso2.carbon.ntask.core</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
-	    
+	   <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.lcm</artifactId>
+                <version>${project.version}</version>
+            </dependency> 
+	   <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.lcm.ui</artifactId>
+                <version>${project.version}</version>
+            </dependency> 
+	    <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.custom.lifecycles.checklist</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.custom.lifecycles.checklist.ui</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+	   <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.registry.eventing</artifactId>
+                <version>${project.version}</version>
+            </dependency> 
+	   <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.gadgets.impactanalysis</artifactId>
+                <version>${project.version}</version>
+            </dependency> 
+	   <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.gadgets.resourceimpact</artifactId>
+                <version>${project.version}</version>
+            </dependency> 
+	   <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.gadgetsource</artifactId>
+                <version>${project.version}</version>
+            </dependency> 
+	   <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.governance.gadgets.ui</artifactId>
+                <version>${project.version}</version>
+            </dependency> 
 	    
 	    <!-- Governance stubs -->
 	    <dependency>
@@ -580,8 +653,7 @@
 	    </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
-		<artifactId>org.wso2.carbon.governance.custom.lifecycles.distributed.stub
-		</artifactId>
+		<artifactId>org.wso2.carbon.governance.custom.lifecycles.distributed.stub</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
 	    <dependency>
@@ -633,12 +705,12 @@
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.mashup.utils</artifactId>
-		<version>${project.version}</version>
+		<version>${mashup.version}</version>
 	    </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.mashup.javascript.hostobjects.registry</artifactId>
-		<version>${project.version}</version>
+		<version>${mashup.version}</version>
 	    </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
@@ -647,32 +719,17 @@
 	    </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
-		<artifactId>org.wso2.carbon.registry.search.ui</artifactId>
-		<version>${project.version}</version>
-	    </dependency>
-	    <dependency>
-		<groupId>org.wso2.carbon</groupId>
-		<artifactId>org.wso2.carbon.governance.lcm.ui</artifactId>
-		<version>${project.version}</version>
-	    </dependency>
-	    <dependency>
-		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.humantask.stub</artifactId>
-		<version>${project.version}</version>
+		<version>4.2.0</version>
 	    </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.mediation.configadmin.stub</artifactId>
-		<version>${project.version}</version>
+		<version>4.2.0</version>
 	    </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.governance.custom.lifecycles.history.ui</artifactId>
-		<version>${project.version}</version>
-	    </dependency>
-	    <dependency>
-		<groupId>org.wso2.carbon</groupId>
-		<artifactId>org.wso2.carbon.governance.client</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
 	    <dependency>
@@ -738,21 +795,6 @@
 		<version>${commons-logging.version}</version>
 	    </dependency>
 	    <dependency>
-		<groupId>org.wso2.carbon</groupId>
-		<artifactId>org.wso2.carbon.ntask.core</artifactId>
-		<version>${project.version}</version>
-	    </dependency> 
-	    <dependency>
-		<groupId>org.wso2.carbon</groupId>
-		<artifactId>org.wso2.carbon.governance.notifications.worklist.stub</artifactId>
-		<version>${project.version}</version>
-	    </dependency>
-	    <dependency>
-		<groupId>org.wso2.carbon</groupId>
-		<artifactId>org.wso2.carbon.registry.profiles.ui</artifactId>
-		<version>${project.version}</version>
-	    </dependency>
-	    <dependency>
 		<groupId>org.apache.geronimo.specs.wso2</groupId>
 		<artifactId>geronimo-stax-api_1.0_spec</artifactId>
 		<version>${geronimo-stax-api.wso2.version}</version>
@@ -782,11 +824,6 @@
 		<groupId>org.mortbay.jetty</groupId>
 		<artifactId>jetty-util</artifactId>
 		<version>${jetty.version}</version>
-	    </dependency>
-	    <dependency>
-		<groupId>org.apache.ws.commons.schema</groupId>
-		<artifactId>XmlSchema</artifactId>
-		<version>${xmlschema.version}</version>
 	    </dependency>
 	    <dependency>
 		<groupId>org.apache.ws.commons.schema</groupId>
@@ -905,16 +942,6 @@
 		<version>${axiom.version}</version>
 	    </dependency>
 	    <dependency>
-		<groupId>org.apache.ws.commons.axiom</groupId>
-		<artifactId>axiom-api</artifactId>
-		<version>${axiom.version}</version>
-	    </dependency>
-	    <dependency>
-		<groupId>org.apache.ws.commons.axiom</groupId>
-		<artifactId>axiom-impl</artifactId>
-		<version>${axiom.version}</version>
-	    </dependency>
-	    <dependency>
 		<groupId>org.apache.ws.commons.axiom.wso2</groupId>
 		<artifactId>axiom</artifactId>
 		<version>${axiom.wso2.version}</version>
@@ -987,13 +1014,20 @@
 	</dependencies>
     </dependencyManagement>
     <properties>
+	<!-- Carbon platform version comes here-->
+        <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
+        <carbon.platform.package.export.version>4.3.0-SNAPSHOT
+        </carbon.platform.package.export.version>
+        <carbon.platform.package.import.version.range>[4.3.0.SNAPSHOT, 4.4.0)
+        </carbon.platform.package.import.version.range>
+
 	<!-- Carbon P2 plugin Version -->
 	<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 	
 	<!-- Axis2 Version -->
 	<axis2.wso2.version>1.6.1.wso2v11-SNAPSHOT</axis2.wso2.version>
 	<orbit.version.axis2>1.6.1.wso2v11-SNAPSHOT</orbit.version.axis2>
-	<axis2-transports.version>1.6.1.wso2v11-SNAPSHOT</axis2-transports.version>
+	<axis2-transports.version>1.6.1-wso2v11-SNAPSHOT</axis2-transports.version>
 	<orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
 	<orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>
 	<rampart.wso2.version>1.6.1.wso2v9</rampart.wso2.version>
@@ -1028,12 +1062,19 @@
 	<exp.pkg.version.abdera>1.0.0.wso2v2</exp.pkg.version.abdera>
 	<imp.pkg.version.abdera>[1.0.0.wso2v2, 2)</imp.pkg.version.abdera>
 	
+	<!-- Servet Version -->
+        <version.javax.servlet.jsp>2.2.0.v201112011158</version.javax.servlet.jsp>
+
+        <!-- Servlet API -->
+        <exp.pkg.version.javax.servlet>2.6.0</exp.pkg.version.javax.servlet>
+        <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
+
 	<!-- Misc -->
 	<scxml.version>0.9.0.wso2v1</scxml.version>
 	<orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
 	<wsdl.validator.version>1.2.0.wso2v1</wsdl.validator.version>
 	<rhino.version>1.7.0.R4.wso2v1</rhino.version>
-	<mashup.version>${project.version}</mashup.version>
+	<mashup.version>4.2.0</mashup.version>
 	<event.version>${project.version}</event.version>
 	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
 	<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
@@ -1041,7 +1082,7 @@
 	<derby.version>10.4.2.0</derby.version>
 	<activation.version>1.1</activation.version>
 	<javamail.version>1.4</javamail.version>
-	<wss4j.version>1.5.11.wso2v5-SNAPSHOT</wss4j.version>
+	<wss4j.version>1.5.11.wso2v7-SNAPSHOT</wss4j.version>
 	<wsdl4j.wso2.version>1.6.2.wso2v2</wsdl4j.wso2.version>
 	<jetty.version>6.1.5</jetty.version>
 	<xml-apis.version>1.3.04</xml-apis.version>
@@ -1054,7 +1095,6 @@
 	<juddi.wso2.version>3.0.3.wso2v2</juddi.wso2.version>
 	<junit.version>3.8.2</junit.version>
 	<xmlschema.version>1.4.3</xmlschema.version>
-	<version.javax.servlet>3.0.0.v201112011016</version.javax.servlet>
 	<orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
 	<orbit.version.hsqldb>1.8.0.7wso2v1</orbit.version.hsqldb>
 	<version.javax.servlet>3.0.0.v201112011016</version.javax.servlet>

@@ -23,12 +23,18 @@ import org.wso2.carbon.governance.gadgets.impactanalysis.beans.ImpactBean;
 import org.wso2.carbon.governance.gadgets.impactanalysis.services.util.BeanUtils;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 public class ImpactAnalysisAdminService extends RegistryAbstractAdmin {
 
 	public ImpactBean getImpactAnalysisBean() throws GovernanceException {
 		Registry registry = getGovernanceRegistry();
-		ServiceManager manager = new ServiceManager(registry);
+		ServiceManager manager;
+		try {
+	 	    manager = new ServiceManager(registry);
+		} catch (RegistryException e) {	
+		    throw new GovernanceException("ServiceManager initialization failed", e);
+		}
 		return BeanUtils.populateImpactBean(manager);
 	}
 }

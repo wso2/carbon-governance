@@ -39,42 +39,5 @@
         <module>org.wso2.carbon.governance.gadgets.lifecycle.feature</module>
         <module>org.wso2.carbon.governance.gadgets.ui.feature</module>
     </modules>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.governance.gadgets.resourceimpact</artifactId>
-                <version>${wso2carbon.version.governance.gadgets}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.governance.gadgets.impactanalysis</artifactId>
-                <version>${wso2carbon.version.governance.gadgets}</version>
-            </dependency>
-	    <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.governance.gadgetsource</artifactId>
-                <version>${wso2carbon.version.governance.gadgets}</version>
-            </dependency>
-             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.governance.gadgets.ui</artifactId>
-                <version>${wso2carbon.version.governance.gadgets}</version>
-            </dependency>
-
-         <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.governance.gadgets.stub</artifactId>
-                <version>${wso2carbon.version.governance.gadgets}</version>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
-
-    <properties>
-        <wso2carbon.version.governance.gadgets>${project.version}</wso2carbon.version.governance.gadgets>
-    </properties>
-
 </project>
 

@@ -322,8 +322,8 @@ public class SRAMPServlet extends HttpServlet {
         Element serviceElement = newExtensionElement(artifact, "Service");
 
         serviceElement.setAttributeValue(CONTENT_ENCODING_ATTRIBUTE, UTF_8);
-        ServiceManager manager = new ServiceManager(governanceSystemRegistry);
         try {
+            ServiceManager manager = new ServiceManager(governanceSystemRegistry);
             Service service = manager.getService(pathComponent);
             String serviceId = service.getId();
             entry.setId(URN_UUID + serviceId);
@@ -361,7 +361,7 @@ public class SRAMPServlet extends HttpServlet {
                                 serviceInterfaceId);
             }
             entry.addExtension(artifact);
-        } catch (GovernanceException e) {
+        } catch (RegistryException e) {
             String message = "Unable to locate Service";
             log.error(message, e);
             throw new SRAMPServletException(message, e);
@@ -379,8 +379,8 @@ public class SRAMPServlet extends HttpServlet {
         Element serviceInterface = newExtensionElement(artifact, "ServiceInterface");
 
         serviceInterface.setAttributeValue(CONTENT_ENCODING_ATTRIBUTE, UTF_8);
-        ServiceManager manager = new ServiceManager(governanceSystemRegistry);
         try {
+            ServiceManager manager = new ServiceManager(governanceSystemRegistry);
             Service[] services = findServiceForInterfaceId(pathComponent, manager);
             if (services.length != 1) {
                 String message = "Unable to locate Service for Given Interface";
@@ -423,7 +423,7 @@ public class SRAMPServlet extends HttpServlet {
                 }
             }
             entry.addExtension(artifact);
-        } catch (GovernanceException e) {
+        } catch (RegistryException e) {
             String message = "Unable to locate Service Interface";
             log.error(message, e);
             throw new SRAMPServletException(message, e);
@@ -852,9 +852,9 @@ public class SRAMPServlet extends HttpServlet {
             name = null;
         }
 
-        ServiceManager manager = new ServiceManager(governanceSystemRegistry);
         Service[] services;
         try {
+            ServiceManager manager = new ServiceManager(governanceSystemRegistry);
             if (name == null) {
                 services = manager.getAllServices();
             } else {
@@ -864,7 +864,7 @@ public class SRAMPServlet extends HttpServlet {
                     }
                 });
             }
-        } catch (GovernanceException e) {
+        } catch (RegistryException e) {
             String message = "Unable to locate services";
             log.warn(message, e);
             return new Service[0];
