@@ -167,10 +167,10 @@
 		<version>2.16</version>
                 <inherited>true</inherited>
                 <configuration>
-                    <forkMode>pertest</forkMode>
+                    <forkMode>never</forkMode>
                     <argLine>-enableassertions</argLine>
                     <!--<argLine>-Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=512m -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005</argLine>-->
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>false</testFailureIgnore>
                     <excludes>
                         <exclude>**/BaseTestCase.java</exclude>
                         <exclude>**/ServiceTest.java</exclude>
