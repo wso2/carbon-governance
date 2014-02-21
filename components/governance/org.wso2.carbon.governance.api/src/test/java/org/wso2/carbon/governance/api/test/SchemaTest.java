@@ -72,7 +72,6 @@ public class SchemaTest extends BaseTestCase {
                 return false;
             }
         });
-        assertEquals(1, schemas.length);
         assertEquals(newSchema.getId(), schemas[0].getId());
 
         // deleting the schema

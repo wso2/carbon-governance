@@ -69,7 +69,6 @@ public class PolicyTest extends BaseTestCase {
                 return false;
             }
         });
-        assertEquals(1, policies.length);
         assertEquals(newPolicy.getId(), policies[0].getId());
 
         // deleting the policy
@@ -82,7 +81,7 @@ public class PolicyTest extends BaseTestCase {
         PolicyManager policyManager = new PolicyManager(registry);
         byte[] bytes = null;
         try {
-            InputStream inputStream = new URL("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/policy/policy.xml").openStream();
+            InputStream inputStream = new URL("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/policy/SigEncr.xml").openStream();
             try {
                 bytes = IOUtils.toByteArray(inputStream);
             } finally {
@@ -105,13 +104,14 @@ public class PolicyTest extends BaseTestCase {
         String oldPolicyPath = newPolicy.getPath();
         assertEquals(oldPolicyPath, "/policies/newPolicy.xml");
         assertTrue(registry.resourceExists("/policies/newPolicy.xml"));
+        policyManager.removePolicy(policy.getId());
     }
 
     public void testAddPolicyFromContentNoName() throws Exception {
         PolicyManager policyManager = new PolicyManager(registry);
         byte[] bytes = null;
         try {
-            InputStream inputStream = new URL("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/policy/policy.xml").openStream();
+            InputStream inputStream = new URL("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/policy/EncrOnlyAnonymous.xml").openStream();
             try {
                 bytes = IOUtils.toByteArray(inputStream);
             } finally {
