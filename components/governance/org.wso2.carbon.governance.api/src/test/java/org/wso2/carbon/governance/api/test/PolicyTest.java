@@ -63,7 +63,8 @@ public class PolicyTest extends BaseTestCase {
 
         Policy[] policies = policyManager.findPolicies(new PolicyFilter() {
             public boolean matches(Policy policy) throws GovernanceException {
-                if (policy.getAttribute("version").equals("0.01")) {
+                if (policy.getAttribute("version").equals("0.01") &&
+                        policy.getQName().getLocalPart().equals("policy.xml")) {
                     return true;
                 }
                 return false;

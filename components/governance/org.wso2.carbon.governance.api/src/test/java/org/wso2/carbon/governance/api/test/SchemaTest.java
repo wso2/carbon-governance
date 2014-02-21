@@ -66,7 +66,8 @@ public class SchemaTest extends BaseTestCase {
 
         Schema[] schemas = schemaManager.findSchemas(new SchemaFilter() {
             public boolean matches(Schema schema) throws GovernanceException {
-                if (schema.getAttribute("version").equals("0.01")) {
+                if (schema.getAttribute("version").equals("0.01") &&
+                        schema.getQName().getLocalPart().equals("purchasing.xsd")) {
                     return true;
                 }
                 return false;
