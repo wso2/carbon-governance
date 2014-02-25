@@ -11,12 +11,14 @@
     <modules>
 	<module>service-stubs/governance</module>
 	<module>components/governance</module>
+	<module>components/ws-discovery-proxy</module>
 	<module>features/extensions</module>
 	<module>features/lifecycle-management</module>
 	<module>features/meta-data</module>
 	<module>features/platform-extensions</module>
 	<module>features/notifications-configuration</module>
 	<module>features/governance-gadgets</module>
+	<module>features/ws-discovery-proxy</module>
     </modules>
     
     <repositories>
@@ -242,6 +244,11 @@
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.authenticator.stub</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.discovery.core</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
 	    
@@ -735,6 +742,11 @@
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.ntask.solutions</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.discovery.proxy</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
 	    
