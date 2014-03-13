@@ -1032,10 +1032,13 @@
         </carbon.platform.package.export.version>
         <carbon.platform.package.import.version.range>[4.3.0.SNAPSHOT, 4.4.0)
         </carbon.platform.package.import.version.range>
+        
+        <!--Registry versions comes here  -->        
+        <registry.core.feature.version>4.3.0-SNAPSHOT</registry.core.feature.version>
+        <governance.metadata.feature.version>4.3.0-SNAPSHOT</governance.metadata.feature.version>
 
 	<!-- Carbon P2 plugin Version -->
 	<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-	
 	<!-- Axis2 Version -->
 	<axis2.wso2.version>1.6.1.wso2v11-SNAPSHOT</axis2.wso2.version>
 	<orbit.version.axis2>1.6.1.wso2v11-SNAPSHOT</orbit.version.axis2>
