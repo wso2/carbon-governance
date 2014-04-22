@@ -15,13 +15,15 @@
  ~ KIND, either express or implied.  See the License for the
  ~ specific language governing permissions and limitations
  ~ under the License.
- --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon</groupId>
         <artifactId>carbon-governance</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -31,18 +33,18 @@
     <url>http://wso2.org</url>
 
     <modules>
-	<module>org.wso2.carbon.governance.notifications.worklist.stub</module>	
-	<module>org.wso2.carbon.governance.gadgets.stub</module>
-	<module>org.wso2.carbon.governance.generic.stub</module>
-	<module>org.wso2.carbon.governance.custom.lifecycles.checklist.stub</module>
-	<module>org.wso2.carbon.governance.lcm.stub</module>
-	<module>org.wso2.carbon.governance.list.stub</module>
-	<module>org.wso2.carbon.governance.notifications.stub</module>
-	<module>org.wso2.carbon.governance.people.stub</module>
-	<module>org.wso2.carbon.governance.processes.stub</module>
-	<module>org.wso2.carbon.governance.services.stub</module>
-	<module>org.wso2.carbon.governance.sla.stub</module>
-	<module>org.wso2.carbon.governance.wsdltool.stub</module>
+        <module>org.wso2.carbon.governance.notifications.worklist.stub</module>
+        <module>org.wso2.carbon.governance.gadgets.stub</module>
+        <module>org.wso2.carbon.governance.generic.stub</module>
+        <module>org.wso2.carbon.governance.custom.lifecycles.checklist.stub</module>
+        <module>org.wso2.carbon.governance.lcm.stub</module>
+        <module>org.wso2.carbon.governance.list.stub</module>
+        <module>org.wso2.carbon.governance.notifications.stub</module>
+        <module>org.wso2.carbon.governance.people.stub</module>
+        <module>org.wso2.carbon.governance.processes.stub</module>
+        <module>org.wso2.carbon.governance.services.stub</module>
+        <module>org.wso2.carbon.governance.sla.stub</module>
+        <module>org.wso2.carbon.governance.wsdltool.stub</module>
     </modules>
     <build>
         <plugins>
@@ -55,40 +57,40 @@
     </build>
 
     <dependencies>
-      	<dependency>
-                <groupId>wsdl4j.wso2</groupId>
-                <artifactId>wsdl4j</artifactId>
-                <version>${orbit.version.wsdl4j}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.axis2.wso2</groupId>
-                <artifactId>axis2</artifactId>
-            </dependency>
-	    <dependency>
-                <groupId>org.apache.neethi.wso2</groupId>
-                <artifactId>neethi</artifactId>
-                <version>${orbit.version.neethi}</version>
-		<exclusions>
-		    <exclusion>
-			<groupId>org.apache.neethi</groupId>
-		        <artifactId>neethi</artifactId>
-		    </exclusion>
-		</exclusions>
-            </dependency>
-	    <dependency>
-                <groupId>org.apache.ws.commons.schema.wso2</groupId>
-                <artifactId>XmlSchema</artifactId>
-                <version>${orbit.version.xmlschema}</version>
-            </dependency>
-			<dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.1.1</version>
-            </dependency>
-	    <dependency>
-                <groupId>org.apache.ws.commons.axiom.wso2</groupId>
-                <artifactId>axiom</artifactId>
-	        <version>${orbit.version.axiom}</version>
-            </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>wsdl4j.wso2</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>${orbit.version.wsdl4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2.wso2</groupId>
+            <artifactId>axis2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.neethi.wso2</groupId>
+            <artifactId>neethi</artifactId>
+            <version>${orbit.version.neethi}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.neethi</groupId>
+                    <artifactId>neethi</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.schema.wso2</groupId>
+            <artifactId>XmlSchema</artifactId>
+            <version>${orbit.version.xmlschema}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
+            <artifactId>axiom</artifactId>
+            <version>${orbit.version.axiom}</version>
+        </dependency>
+    </dependencies>
 </project>
