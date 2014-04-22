@@ -34,12 +34,10 @@
         <dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
-            <version>3.8</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
             <artifactId>org.eclipse.equinox.registry</artifactId>
-            <version>3.5.100.v20110502</version>
         </dependency>
         <dependency>
             <groupId>com.h2database.wso2</groupId>

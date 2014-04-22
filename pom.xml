@@ -788,6 +788,11 @@
                 <version>${axis2.wso2.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.axis2.wso2</groupId>
+                <artifactId>axis2-client</artifactId>
+                <version>${orbit.version.axis2}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-transport-mail</artifactId>
                 <version>${axis2-transports.version}</version>
@@ -1063,6 +1068,16 @@
                 <groupId>org.apache.maven.scm.wso2</groupId>
                 <artifactId>maven-scm</artifactId>
                 <version>1.7.0.wso2v2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.icu</groupId>
+                <artifactId>icu4j</artifactId>
+                <version>3.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.equinox</groupId>
+                <artifactId>org.eclipse.equinox.registry</artifactId>
+                <version>3.5.100.v20110502</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
