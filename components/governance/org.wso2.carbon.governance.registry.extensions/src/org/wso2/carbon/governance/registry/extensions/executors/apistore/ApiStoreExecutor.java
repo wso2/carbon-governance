@@ -193,7 +193,7 @@ public class ApiStoreExecutor implements Execution {
 
             for (int i = 0; i < service.getAttachedWsdls().length; i++) {
                 String wsdlPath  = service.getAttachedWsdls()[0].getPath();
-                if (wsdlPath.startsWith("http")) {
+                if (wsdlPath != null  && wsdlPath.toLowerCase().startsWith("http")) {
                         params.add(new BasicNameValuePair(API_WSDL, wsdlPath));
                 }
             }
