@@ -191,9 +191,13 @@ public class ApiStoreExecutor implements Execution {
 			params.add(new BasicNameValuePair(API_VISIBLITY, DEFAULT_VISIBILITY));
             params.add(new BasicNameValuePair(API_THROTTLING_TIER, apiThrottlingTier));
 
-			if (service.getAttachedWsdls().length > 0) {
-				params.add(new BasicNameValuePair(API_WSDL, service.getAttachedWsdls()[0].getPath()));
-			}
+            for (int i = 0; i < service.getAttachedWsdls().length; i++) {
+                String wsdlPath  = service.getAttachedWsdls()[0].getPath();
+                if (wsdlPath != null  && wsdlPath.toLowerCase().startsWith("http")) {
+                        params.add(new BasicNameValuePair(API_WSDL, wsdlPath));
+                }
+            }
+
 			
 			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
