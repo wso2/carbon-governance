@@ -19,11 +19,17 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="carbon" uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
+<%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
+<%@ page import="org.wso2.carbon.governance.generic.ui.utils.InstalledRxt" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.InstalledRxt" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
+<%@ page import="org.wso2.carbon.registry.ws.client.registry.WSRegistryServiceClient" %>
+<%@ page import="org.wso2.carbon.user.core.service.RealmService" %>
+<%@ page import="org.wso2.carbon.registry.core.ActionConstants" %>
 
 
 <link type="text/css" rel="stylesheet" href="css/menu.css"/>
@@ -131,7 +137,22 @@
           </script>
 
           <div class="registryWriteOperation" style="height:25px;">
-              <a class="icon-link" style="background-image: url(../admin/images/add.gif);" href="source_artifact.jsp"><fmt:message key="add.new.artifact"/></a>
+                            <%
+                                    String user = (String) session.getAttribute("logged-user");
+                                    String tenantDomain = (String) session.getAttribute("tenantDomain");
+
+                                            WSRegistryServiceClient registry = new WSRegistryServiceClient(tenantDomain, cookie);
+                                    RealmService realmService = registry.getRegistryContext().getRealmService();
+
+                                            String configurationPath = RegistryConstants.CONFIG_REGISTRY_BASE_PATH +
+                                                RegistryConstants.GOVERNANCE_COMPONENT_PATH +
+                                                "/configuration/";
+                                    if(realmService.getTenantUserRealm(realmService.getTenantManager().getTenantId(tenantDomain))
+                                                .getAuthorizationManager().isUserAuthorized(user, configurationPath, ActionConstants.PUT))
+                                {
+                            %>
+                              <a class="icon-link" style="background-image: url(../admin/images/add.gif);" href="source_artifact.jsp"><fmt:message key="add.new.artifact"/></a>
+                            <% } %>
           </div>
       </div>
 
