@@ -47,9 +47,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Private-Package>
+                        <Export-Package>
                             org.wso2.carbon.governance.lcm.*,
-                        </Private-Package>
+                        </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.core.*;version=1.0.1,
                             org.wso2.carbon.core.services.callback.*,
