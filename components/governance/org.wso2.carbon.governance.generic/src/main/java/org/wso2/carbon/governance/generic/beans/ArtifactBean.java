@@ -19,6 +19,10 @@ package org.wso2.carbon.governance.generic.beans;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
+import java.util.Date;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+
 @SuppressWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class ArtifactBean {
 
@@ -28,6 +32,11 @@ public class ArtifactBean {
     private boolean canDelete;
     private String LCName;
     private String LCState;
+
+    private Date createdDate ;
+    private Date lastUpdatedDate ;
+    private String createdBy ;
+    private String lastUpdatedBy ;
 
     public String[] getValuesA() {
         return valuesA;
@@ -75,5 +84,41 @@ public class ArtifactBean {
 
     public void setLCState(String LCState) {
         this.LCState = LCState;
+    }
+
+    public void setCreatedDate(Date date) {
+        this.createdDate = date ;
+    }
+
+    public String getCreatedDate() {
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String createdDateStr = formatter.format(createdDate);
+        return createdDateStr;
+    }
+
+    public void setLastUpdatedDate(Date date) {
+        this.lastUpdatedDate = date ;
+    }
+
+    public String getLastUpdatedDate() {
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String lastUpdatedDateStr = formatter.format(lastUpdatedDate);
+        return lastUpdatedDateStr;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy ;
+    }
+
+    public String getCreatedBy() {
+        return createdBy ;
+    }
+
+    public void setLastUpdatedBy(String lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy ;
+    }
+
+    public String getLastUpdatedBy() {
+        return lastUpdatedBy ;
     }
 }
