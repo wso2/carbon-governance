@@ -1028,6 +1028,8 @@
     <properties>
 	<!-- Carbon platform version comes here-->
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
+	<registry.core.feature.version>4.3.0-SNAPSHOT</registry.core.feature.version>
+        <governance.metadata.feature.version>4.3.0-SNAPSHOT</governance.metadata.feature.version>
         <carbon.platform.package.export.version>4.3.0-SNAPSHOT
         </carbon.platform.package.export.version>
         <carbon.platform.package.import.version.range>[4.3.0.SNAPSHOT, 4.4.0)
