@@ -31,11 +31,16 @@ import org.wso2.carbon.governance.generic.stub.beans.xsd.StoragePathBean;
 import org.wso2.carbon.governance.generic.ui.utils.GenericUtil;
 import org.wso2.carbon.governance.generic.ui.utils.InstalledRxt;
 import org.wso2.carbon.governance.generic.ui.utils.ManageGenericArtifactUtil;
+import org.wso2.carbon.registry.core.ActionConstants;
+import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.utils.ServerConstants;
+import org.wso2.carbon.registry.ws.client.registry.WSRegistryServiceClient;
+import org.wso2.carbon.user.core.service.RealmService;
+
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -236,13 +241,29 @@ public class ManageGenericArtifactServiceClient {
 
     public boolean addRXTResource(HttpServletRequest request, String config,String path)
             throws Exception {
-        boolean result = stub.addRXTResource(config, path);
-        HttpSession session = request.getSession();
-        if (session != null) {
-            GenericUtil.buildMenuItems(request, getSessionParam(session, "logged-user"),
-                    getSessionParam(session, "tenantDomain"),
-                    getSessionParam(session, "ServerURL"));
-        }
+                boolean result = false ;
+                        String user = (String) session.getAttribute("logged-user");
+                String tenantDomain = (String) session.getAttribute("tenantDomain");
+
+                        String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
+                WSRegistryServiceClient registry = new WSRegistryServiceClient(tenantDomain, cookie);
+                RealmService realmService = registry.getRegistryContext().getRealmService();
+
+                        String configurationPath = RegistryConstants.CONFIG_REGISTRY_BASE_PATH +
+                                RegistryConstants.GOVERNANCE_COMPONENT_PATH +
+                                "/configuration/";
+                if(realmService.getTenantUserRealm(realmService.getTenantManager().getTenantId(tenantDomain))
+                                .getAuthorizationManager().isUserAuthorized(user, configurationPath, ActionConstants.PUT))
+                {
+                            result = stub.addRXTResource(config, path);
+                    HttpSession session = request.getSession();
+                    if (session != null) {
+                            GenericUtil.buildMenuItems(request, getSessionParam(session, "logged-user"),
+                                            getSessionParam(session, "tenantDomain"),
+                                            getSessionParam(session, "ServerURL"));
+                    }
+                }
+
         return result;
     }
 

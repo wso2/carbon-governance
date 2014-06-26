@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>extensions-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -33,7 +33,7 @@
     <url>http://wso2.org</url>
     <description>
         Contains several handlers, aspects and related utilities that can be used to extend
-        (and enhance) the behavior of the core registry. 
+        (and enhance) the behavior of the core registry.
     </description>
 
     <dependencies>
@@ -48,16 +48,14 @@
         <dependency>
             <groupId>org.wso2.wsdl.validator.wso2</groupId>
             <artifactId>wsdl-validator</artifactId>
-        </dependency>            
-	<dependency>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.wadl.core.wso2</groupId>
             <artifactId>wadl-core</artifactId>
-	    <version>1.1.3.wso2v2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.scm.wso2</groupId>
             <artifactId>maven-scm</artifactId>
-            <version>1.7.0.wso2v2</version>
         </dependency>
         <dependency>
             <groupId>commons-scxml.wso2</groupId>
@@ -70,7 +68,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-		<version>2.6</version>
+                <version>2.6</version>
                 <executions>
                     <execution>
                         <id>prefilter-resources</id>
@@ -120,12 +118,14 @@
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.wsdl.validator.wso2:wsdl-validator</importBundleDef>
-				<importBundleDef>org.wso2.wadl.core.wso2:wadl-core:1.1.3.wso2v2</importBundleDef>
+                                <importBundleDef>org.wso2.wadl.core.wso2:wadl-core:1.1.3.wso2v2</importBundleDef>
                                 <importBundleDef>org.apache.maven.scm.wso2:maven-scm</importBundleDef>
                                 <importBundleDef>commons-scxml.wso2:commons-scxml</importBundleDef>
                             </importBundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.server:${registry.core.feature.version}</importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.registry.core.server:${registry.core.feature.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

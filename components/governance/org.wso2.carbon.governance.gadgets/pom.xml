@@ -26,7 +26,6 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon</groupId>
     <artifactId>org.wso2.carbon.governance.gadgets</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Governance - Gadgets BE Module</name>

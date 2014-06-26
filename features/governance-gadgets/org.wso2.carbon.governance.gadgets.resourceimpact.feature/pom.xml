@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>governance.gadgets-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -31,7 +31,9 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Governance Gadgets Resource Impact Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for Back-end Governance Resource Impact Gadget functionality</description>
+    <description>This feature contains the bundles required for Back-end Governance Resource Impact Gadget
+        functionality
+    </description>
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -64,8 +66,12 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.gadgets.resourceimpact</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.server:${registry.core.feature.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.governance.metadata.server:${governance.metadata.feature.version}</importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.registry.core.server:${registry.core.feature.version}
+                                </importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.governance.metadata.server:${governance.metadata.feature.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>
