@@ -16,37 +16,26 @@
 ~ under the License.
 -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>--%>
-<%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar"
-           prefix="carbon" %>
+<%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 
-<%@ page
-        import="org.apache.axiom.om.OMElement" %>
+<%@ page import="org.apache.axiom.om.OMElement" %>
 
 <%@ page import="org.apache.axiom.om.OMNode" %>
-<%@ page
-        import="org.apache.axiom.om.impl.builder.StAXOMBuilder" %>
-<%@ page
-        import="org.apache.axiom.om.xpath.AXIOMXPath" %>
-<%@ page
-        import="org.wso2.carbon.governance.custom.lifecycles.checklist.stub.beans.xsd.LifecycleBean" %>
+<%@ page import="org.apache.axiom.om.impl.builder.StAXOMBuilder" %>
+<%@ page import="org.apache.axiom.om.xpath.AXIOMXPath" %>
+<%@ page import="org.wso2.carbon.governance.custom.lifecycles.checklist.stub.beans.xsd.LifecycleBean" %>
 
 
 <%@ page import="org.wso2.carbon.governance.custom.lifecycles.checklist.stub.util.xsd.Property" %>
-<%@ page
-        import="org.wso2.carbon.governance.custom.lifecycles.history.ui.clients.LifecycleServiceClient" %>
-<%@ page
-        import="org.wso2.carbon.governance.custom.lifecycles.history.ui.clients.ResourceServiceClient" %>
-<%@ page
-        import="org.wso2.carbon.governance.custom.lifecycles.history.ui.clients.WSRegistryServiceClient" %>
-<%@ page
-        import="org.wso2.carbon.governance.custom.lifecycles.history.ui.utils.DurationCalculator" %>
+<%@ page import="org.wso2.carbon.governance.custom.lifecycles.history.ui.clients.LifecycleServiceClient" %>
+<%@ page import="org.wso2.carbon.governance.custom.lifecycles.history.ui.clients.ResourceServiceClient" %>
+<%@ page import="org.wso2.carbon.governance.custom.lifecycles.history.ui.clients.WSRegistryServiceClient" %>
+<%@ page import="org.wso2.carbon.governance.custom.lifecycles.history.ui.utils.DurationCalculator" %>
 <%@ page import="org.wso2.carbon.registry.common.utils.RegistryUtil" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 
-<%@ page
-        import="javax.xml.namespace.QName" %>
+<%@ page import="javax.xml.namespace.QName" %>
 <%@ page import="java.io.ByteArrayInputStream" %>
 <%@ page import="java.util.List" %>
 

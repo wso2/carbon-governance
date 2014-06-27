@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>governance.lifecycle.management-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -31,7 +31,8 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Governance Lifecycle Management Server Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for Back-end Governance Lifecycle Management functionality</description>
+    <description>This feature contains the bundles required for Back-end Governance Lifecycle Management functionality
+    </description>
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -41,10 +42,6 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.governance.lcm</artifactId>
         </dependency>
-        <!--dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.registry.lifecycles</artifactId>
-        </dependency-->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.governance.registry.eventing</artifactId>
@@ -61,7 +58,7 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.mashup.javascript.hostobjects.registry</artifactId>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>rhino.wso2</groupId>
             <artifactId>js</artifactId>
         </dependency>
@@ -75,7 +72,7 @@
 
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-		<version>2.6</version>
+                <version>2.6</version>
                 <executions>
                     <execution>
                         <id>prefilter-resources</id>
@@ -91,7 +88,7 @@
                                     <includes>
                                         <include>**/*</include>
                                         <include>p2.inf</include>
-                                        <include>build.properties</include>                                        
+                                        <include>build.properties</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -120,20 +117,26 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.custom.lifecycles.checklist</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.custom.lifecycles.checklist
+                                </bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.lcm</bundleDef>
-                                <!--bundleDef>org.wso2.carbon:org.wso2.carbon.registry.lifecycles</bundleDef-->
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.registry.eventing</bundleDef>
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.carbon:org.wso2.carbon.mashup.utils</importBundleDef>
-                                <importBundleDef>org.wso2.carbon:org.wso2.carbon.mashup.javascript.hostobjects.registry</importBundleDef>
+                                <importBundleDef>
+                                    org.wso2.carbon:org.wso2.carbon.mashup.javascript.hostobjects.registry
+                                </importBundleDef>
                                 <importBundleDef>rhino.wso2:js</importBundleDef>
                                 <importBundleDef>commons-scxml.wso2:commons-scxml</importBundleDef>
                             </importBundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.server:${registry.core.feature.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.registry.community.features.server:${registry.core.feature.version}</importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.registry.core.server:${registry.core.feature.version}
+                                </importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.registry.community.features.server:${registry.core.feature.version}
+                                </importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.registry.extensions.server</importFeatureDef>
                             </importFeatures>
                         </configuration>
@@ -153,7 +156,7 @@
                             <tasks>
                                 <delete dir="src/main/resources"/>
                                 <delete dir="src/main"/>
-                                <delete dir="src"/>                                
+                                <delete dir="src"/>
                             </tasks>
                         </configuration>
                         <goals>

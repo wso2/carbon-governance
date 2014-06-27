@@ -438,7 +438,7 @@ public class GovernanceArtifactManager {
             resource.setUUID(artifactId);
             registry.put(path, resource);
 //            artifact.setId(resource.getUUID()); //This is done to get the UUID of a existing resource.
-            addRelationships(oldPath, artifact);
+            addRelationships(path, artifact);
             ((GovernanceArtifactImpl)artifact).updatePath(artifactId);
             succeeded = true;
         } catch (RegistryException e) {

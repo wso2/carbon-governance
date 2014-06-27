@@ -14,13 +14,14 @@
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon</groupId>
         <artifactId>governance</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -31,16 +32,14 @@
 
     <dependencies>
         <dependency>
-          <groupId>com.ibm.icu</groupId>
-          <artifactId>icu4j</artifactId>
-          <version>3.8</version>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
         </dependency>
-   <dependency>
-        <groupId>org.eclipse.equinox</groupId>
-        <artifactId>org.eclipse.equinox.registry</artifactId>
-        <version>3.5.100.v20110502</version>
-      </dependency>
-      <dependency>
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.registry</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.h2database.wso2</groupId>
             <artifactId>h2-database-engine</artifactId>
             <scope>test</scope>
@@ -57,18 +56,18 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
- 	<dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.user.core</artifactId>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.user.api</artifactId>
         </dependency>
         <dependency>
-                <groupId>eclipse</groupId>
-                <artifactId>validateutility</artifactId>
-            </dependency>
+            <groupId>eclipse</groupId>
+            <artifactId>validateutility</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>axiom-api</artifactId>
@@ -85,58 +84,58 @@
             <groupId>org.apache.juddi.wso2</groupId>
             <artifactId>juddi</artifactId>
         </dependency>
-            <dependency>
-                <groupId>org.apache.abdera.wso2</groupId>
-                <artifactId>abdera</artifactId>
-		        <scope>test</scope>
-            </dependency>
+        <dependency>
+            <groupId>org.apache.abdera.wso2</groupId>
+            <artifactId>abdera</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.common</artifactId>
         </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.user.mgt</artifactId>
-		        <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.wsdl.validator.wso2</groupId>
-                <artifactId>wsdl-validator</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.wso2.wsdl.validator</groupId>
-                        <artifactId>wsdl-validator</artifactId>
-                    </exclusion>
-                </exclusions>
-		<scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>wsdl4j.wso2</groupId>
-                <artifactId>wsdl4j</artifactId>
-		<scope>test</scope>
-            </dependency>
-	   <dependency>
-             <groupId>org.wso2.carbon</groupId>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.mgt</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.wsdl.validator.wso2</groupId>
+            <artifactId>wsdl-validator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.wso2.wsdl.validator</groupId>
+                    <artifactId>wsdl-validator</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j.wso2</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.admin.api</artifactId>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.registry.indexing</artifactId>           
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
-		<version>1.6.0</version>
+                <version>1.6.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.0</version> 
+                <version>1.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -163,10 +162,10 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-		<version>2.12</version>
+                <version>2.12</version>
                 <inherited>true</inherited>
                 <configuration>
-		    <forkMode>pertest</forkMode>
+                    <forkMode>pertest</forkMode>
                     <argLine>-enableassertions</argLine>
                     <!--<argLine>-Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=512m -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005</argLine>-->
                     <testFailureIgnore>false</testFailureIgnore>
@@ -176,7 +175,7 @@
                         <exclude>**/EndpointTest.java</exclude>
                     </excludes>
                     <!--<includes>-->
-                        <!--<include>**/*WSDLTest.java</include>-->
+                    <!--<include>**/*WSDLTest.java</include>-->
                     <!--</includes>-->
                 </configuration>
             </plugin>

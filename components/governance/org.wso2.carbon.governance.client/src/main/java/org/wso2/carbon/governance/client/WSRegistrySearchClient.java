@@ -53,63 +53,13 @@ public class WSRegistrySearchClient {
     private String cookie;
     private String epr;
     private ContentSearchAdminServiceStub stub;
+    protected static int count;
 
-    /**
-     *
-     * @param serverURL service url
-     * @param username userName
-     * @param password password
-     * @param configContext ConfigurationContext
-     * @throws RegistryException if failed to initialize the WSRegistrySearchClient.
-     */
-    public WSRegistrySearchClient(String serverURL, String username, String password,ConfigurationContext configContext)
-            throws RegistryException {
-        epr = serverURL + "ContentSearchAdminService";
-        try {
-            authenticate(configContext, serverURL, username, password);
-            stub = new ContentSearchAdminServiceStub(configContext, epr);
-            ServiceClient client = stub._getServiceClient();
-            Options options = client.getOptions();
-            options.setManageSession(true);
-            options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
-            stub._getServiceClient().getOptions().setProperty(Constants.Configuration.ENABLE_MTOM, Constants.VALUE_TRUE);
-            stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(1000000);
 
-        } catch (Exception axisFault) {
-            String msg = "Failed to initiate WSRegistrySearchClient. " + axisFault.getMessage();
-            log.error(msg, axisFault);
-            throw new RegistryException(msg, axisFault);
+        public static int getCount() {
+                return count;
         }
-    }
 
-    /**
-     * Since user provided the cookie no need to authenticate with username and password
-     * @param serverURL serverURL
-     * @param cookie COOKIE_STRING
-     * @throws RegistryException
-     */
-    public WSRegistrySearchClient(String serverURL, String cookie)throws RegistryException{
-        epr = serverURL + "ContentSearchAdminService";
-        setCookie(cookie);
-        try{
-            if (CarbonUtils.isRunningOnLocalTransportMode()) {
-                stub = new ContentSearchAdminServiceStub(
-                        WSRegistrySearchUtils.getConfigurationContext(), epr);
-            } else {
-                stub = new ContentSearchAdminServiceStub(epr);
-            }
-            ServiceClient client = stub._getServiceClient();
-            Options options = client.getOptions();
-            options.setManageSession(true);
-            options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
-            stub._getServiceClient().getOptions().setProperty(Constants.Configuration.ENABLE_MTOM, Constants.VALUE_TRUE);
-            stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(1000000);
-        }catch (Exception axisFault){
-            String msg = "Failed to initiate WSRegistrySearchClient . " + axisFault.getMessage();
-            log.error(msg, axisFault);
-            throw new RegistryException(msg, axisFault);
-        }
-    }
 
     /**
      *
@@ -121,21 +71,22 @@ public class WSRegistrySearchClient {
      * @throws AxisFault
      * @throws AuthenticationException
      */
-    private boolean authenticate(ConfigurationContext ctx, String serverURL, String username, String password)
+      public String authenticate(ConfigurationContext ctx, String serverURL, String username, String password)
             throws AxisFault, AuthenticationException {
         String serviceEPR = serverURL + "AuthenticationAdmin";
+        String cookie = null;
 
-        AuthenticationAdminStub stub = new AuthenticationAdminStub(ctx, serviceEPR);
+          AuthenticationAdminStub stub = new AuthenticationAdminStub(ctx, serviceEPR);
         ServiceClient client = stub._getServiceClient();
         Options options = client.getOptions();
         options.setManageSession(true);
         try {
             boolean result = stub.login(username, password, new URL(serviceEPR).getHost());
             if (result) {
-                setCookie((String) stub._getServiceClient().getServiceContext().
-                        getProperty(HTTPConstants.COOKIE_STRING));
+               return (String) stub._getServiceClient().getServiceContext().getProperty(HTTPConstants.COOKIE_STRING);
+
             }
-            return result;
+            return cookie;
         } catch (Exception e) {
             String msg = "Error occurred while logging in";
             throw new AuthenticationException(msg, e);
@@ -143,21 +94,14 @@ public class WSRegistrySearchClient {
     }
 
     /**
-     * Initialize the AttributeSearchService and copy pagination context.
+     * Initialize the AttributeSearchService and copy pagination context to search.
      * @throws RegistryException if failed to Initialize.
      */
-    public void init() throws RegistryException{
+     public void init(final String cookie, final String serverURL, final ConfigurationContext configContext)
+                        throws RegistryException {
 
-        try {
-            if(PaginationContext.getInstance()!=null){
-                PaginationUtils.copyPaginationContext(stub._getServiceClient());
-            }
-        } catch (AxisFault axisFault) {
-            axisFault.printStackTrace();
-        }
         GovernanceUtils.setAttributeSearchService(new AttributeSearchService() {
 
-            public org.wso2.carbon.registry.indexing.stub.generated.xsd.ResourceData[] resourceDatas;
 
             @Override
             public ResourceData[] search(UserRegistry userRegistry, Map<String, String> stringStringMap) throws RegistryException {
@@ -172,6 +116,7 @@ public class WSRegistrySearchClient {
             @Override
             public ResourceData[] search(Map<String, String> stringStringMap) throws RegistryException {
 
+                ContentSearchAdminServiceStub stub = null;
                 List<ResourceData> resourceDataList = new ArrayList<ResourceData>();
                 List<ArrayOfString> arrayOfStringList = new ArrayList<ArrayOfString>();
                 try {
@@ -181,45 +126,80 @@ public class WSRegistrySearchClient {
                         arrayOfString.setArray(new String[]{map.getKey(), map.getValue()});
                         arrayOfStringList.add(arrayOfString);
                     }
+
+                    org.wso2.carbon.registry.indexing.stub.generated.xsd.ResourceData[] resourceDatas;
+
+                    epr = serverURL + "ContentSearchAdminService";
+                    try {
+                        stub = new ContentSearchAdminServiceStub(configContext, epr);
+                        ServiceClient client = stub._getServiceClient();
+                        Options options = client.getOptions();
+                        options.setManageSession(true);
+                        options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
+                        stub._getServiceClient().getOptions().setProperty(Constants.Configuration.ENABLE_MTOM,
+                                Constants.VALUE_TRUE);
+                        stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(1000000);
+
+                        if (PaginationContext.getInstance() != null) {
+                            PaginationUtils.copyPaginationContext(stub._getServiceClient());
+                        }
+
+                    } catch (Exception axisFault) {
+                        String msg = "Failed to initiate WSRegistrySearchClient. " + axisFault.getMessage();
+                        log.error(msg, axisFault);
+                        throw new RegistryException(msg, axisFault);
+                    }
+
                     SearchResultsBean searchResultsBean =
                             stub.getAttributeSearchResults(arrayOfStringList.toArray(
                                     new ArrayOfString[arrayOfStringList.size()]));
                     resourceDatas = searchResultsBean.getResourceDataList();
-                    if(resourceDatas!=null && resourceDatas.length >0){
-                    for (org.wso2.carbon.registry.indexing.stub.generated.xsd.ResourceData data : resourceDatas) {
-                        ResourceData resourceData = new ResourceData();
-                        resourceData.setAbsent(data.getAbsent());
-                        resourceData.setAuthorUserName(data.getAuthorUserName());
-                        resourceData.setAverageRating(data.getAverageRating());
-                        resourceData.setAverageStars(data.getAverageStars());
-                        resourceData.setCreatedOn(data.getCreatedOn());
-                        resourceData.setDeleteAllowed(data.isDeleteAllowedSpecified());
-                        resourceData.setDescription(data.getDescription());
-                        resourceData.setExternalLink(data.getExternalLink());
-                        resourceData.setGetAllowed(data.getGetAllowed());
-                        resourceData.setLink(data.getLink());
-                        resourceData.setMounted(data.isMountedSpecified());
-                        resourceData.setName(data.getName());
-                        resourceData.setDeleteAllowed(data.getDeleteAllowed());
-                        resourceData.setResourceType(data.getResourceType());
-                        resourceData.setResourcePath(data.getResourcePath());
-                        resourceData.setRealPath(data.getRealPath());
-                        resourceData.setPutAllowed(data.getPutAllowed());
-                        resourceDataList.add(resourceData);
-                    }
-                    }else {
+
+                    if (resourceDatas != null && resourceDatas.length > 0) {
+                        for (org.wso2.carbon.registry.indexing.stub.generated.xsd.ResourceData data : resourceDatas) {
+                            ResourceData resourceData = new ResourceData();
+                            resourceData.setAbsent(data.getAbsent());
+                            resourceData.setAuthorUserName(data.getAuthorUserName());
+                            resourceData.setAverageRating(data.getAverageRating());
+                            resourceData.setAverageStars(data.getAverageStars());
+                            resourceData.setCreatedOn(data.getCreatedOn());
+                            resourceData.setDeleteAllowed(data.isDeleteAllowedSpecified());
+                            resourceData.setDescription(data.getDescription());
+                            resourceData.setExternalLink(data.getExternalLink());
+                            resourceData.setGetAllowed(data.getGetAllowed());
+                            resourceData.setLink(data.getLink());
+                            resourceData.setMounted(data.isMountedSpecified());
+                            resourceData.setName(data.getName());
+                            resourceData.setDeleteAllowed(data.getDeleteAllowed());
+                            resourceData.setResourceType(data.getResourceType());
+                            resourceData.setResourcePath(data.getResourcePath());
+                            resourceData.setRealPath(data.getRealPath());
+                            resourceData.setPutAllowed(data.getPutAllowed());
+                            resourceDataList.add(resourceData);
+                        }
+                    } else {
+
                         return new ResourceData[0];
                     }
+                      count = PaginationUtils.getRowCount(stub._getServiceClient());
+
                 } catch (RemoteException e) {
                     String msg = "Failed to get results";
-                    log.error("Failed to get results ",e);
-                    throw new RegistryException(msg,e);
+                    log.error("Failed to get results ", e);
+                    throw new RegistryException(msg, e);
+
+                } finally {
+                    if (stub != null) {
+                        try {
+                            stub._getServiceClient().cleanupTransport();
+                        } catch (AxisFault axisFault) {
+                            log.warn("failed to cleanup transport");
+                        }
+                    }
                 }
                 return resourceDataList.toArray(new ResourceData[resourceDataList.size()]);
             }
         });
-    }
-    public void setCookie(String cookie) {
-        this.cookie = cookie;
-    }
+
+     }
 }
