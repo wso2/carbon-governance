@@ -484,6 +484,12 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
                                         path, ActionConstants.DELETE));
                 artifactBean.setLCName(((GenericArtifactImpl) artifact).getLcName());
                 artifactBean.setLCState(((GenericArtifactImpl) artifact).getLcState());
+
+                artifactBean.setCreatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getCreatedTime());
+                artifactBean.setLastUpdatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastModified());
+                artifactBean.setCreatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getAuthorUserName());
+                artifactBean.setLastUpdatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastUpdaterUserName());
+
                 artifactBeans.add(artifactBean);
             }
             bean.setArtifacts(artifactBeans.toArray(new ArtifactBean[artifactBeans.size()]));
@@ -575,6 +581,12 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
                                                       path, ActionConstants.DELETE));
                     artifactBean.setLCName(artifact.getLifecycleName());
                     artifactBean.setLCState(artifact.getLifecycleState());
+
+                    artifactBean.setCreatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getCreatedTime());
+                    artifactBean.setLastUpdatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastModified());
+                    artifactBean.setCreatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getAuthorUserName());
+                    artifactBean.setLastUpdatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastUpdaterUserName());
+
                     artifactBeans.add(artifactBean);
                 }
                 bean.setArtifacts(artifactBeans.toArray(new ArtifactBean[artifactBeans.size()]));
@@ -779,6 +791,12 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
                                             path, ActionConstants.DELETE));
                     artifactBean.setLCName(artifact.getLifecycleName());
                     artifactBean.setLCState(artifact.getLifecycleState());
+
+                    artifactBean.setCreatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getCreatedTime());
+                    artifactBean.setLastUpdatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastModified());
+                    artifactBean.setCreatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getAuthorUserName());
+                    artifactBean.setLastUpdatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastUpdaterUserName());
+
                     artifactBeans.add(artifactBean);
                 }
                 bean.setArtifacts(artifactBeans.toArray(new ArtifactBean[artifactBeans.size()]));
