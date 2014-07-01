@@ -485,10 +485,10 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
                 artifactBean.setLCName(((GenericArtifactImpl) artifact).getLcName());
                 artifactBean.setLCState(((GenericArtifactImpl) artifact).getLcState());
 
-                artifactBean.setCreatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getCreatedTime());
-                artifactBean.setLastUpdatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastModified());
-                artifactBean.setCreatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getAuthorUserName());
-                artifactBean.setLastUpdatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastUpdaterUserName());
+                artifactBean.setCreatedDate(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getCreatedTime());
+                artifactBean.setLastUpdatedDate(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getLastModified());
+                artifactBean.setCreatedBy(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getAuthorUserName());
+                artifactBean.setLastUpdatedBy(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getLastUpdaterUserName());
 
                 artifactBeans.add(artifactBean);
             }
@@ -582,10 +582,10 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
                     artifactBean.setLCName(artifact.getLifecycleName());
                     artifactBean.setLCState(artifact.getLifecycleState());
 
-                    artifactBean.setCreatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getCreatedTime());
-                    artifactBean.setLastUpdatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastModified());
-                    artifactBean.setCreatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getAuthorUserName());
-                    artifactBean.setLastUpdatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastUpdaterUserName());
+                    artifactBean.setCreatedDate(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getCreatedTime());
+                    artifactBean.setLastUpdatedDate(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getLastModified());
+                    artifactBean.setCreatedBy(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getAuthorUserName());
+                    artifactBean.setLastUpdatedBy(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getLastUpdaterUserName());
 
                     artifactBeans.add(artifactBean);
                 }
@@ -792,10 +792,10 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
                     artifactBean.setLCName(artifact.getLifecycleName());
                     artifactBean.setLCState(artifact.getLifecycleState());
 
-                    artifactBean.setCreatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getCreatedTime());
-                    artifactBean.setLastUpdatedDate(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastModified());
-                    artifactBean.setCreatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getAuthorUserName());
-                    artifactBean.setLastUpdatedBy(governanceRegistry.getMetaData(((GenericArtifactImpl) artifact).getArtifactPath()).getLastUpdaterUserName());
+                    artifactBean.setCreatedDate(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getCreatedTime());
+                    artifactBean.setLastUpdatedDate(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getLastModified());
+                    artifactBean.setCreatedBy(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getAuthorUserName());
+                    artifactBean.setLastUpdatedBy(governanceRegistry.get(((GenericArtifactImpl) artifact).getArtifactPath()).getLastUpdaterUserName());
 
                     artifactBeans.add(artifactBean);
                 }

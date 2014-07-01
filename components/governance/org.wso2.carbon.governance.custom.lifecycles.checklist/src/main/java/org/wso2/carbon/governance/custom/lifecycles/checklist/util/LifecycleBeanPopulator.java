@@ -232,6 +232,10 @@ public class LifecycleBeanPopulator {
                         String connectionId = (dataBaseConfiguration.getUserName() != null
                                 ? dataBaseConfiguration.getUserName().split("@")[0]:dataBaseConfiguration.getUserName()) + "@" + dataBaseConfiguration.getDbUrl();
                         cacheKey = RegistryUtils.buildRegistryCacheKey(connectionId, tenantId, path);
+
+                        if (cacheKey != null && cache.containsKey(cacheKey)) {
+                            cache.remove(cacheKey);
+                        }
                     }
                 }
             }
@@ -240,10 +244,10 @@ public class LifecycleBeanPopulator {
             String connectionId = (dataBaseConfiguration.getUserName() != null
                     ? dataBaseConfiguration.getUserName().split("@")[0]:dataBaseConfiguration.getUserName()) + "@" + dataBaseConfiguration.getDbUrl();
             cacheKey = RegistryUtils.buildRegistryCacheKey(connectionId, tenantId, path);
-        }
 
-        if (cacheKey != null && cache.containsKey(cacheKey)) {
-            cache.remove(cacheKey);
+            if (cacheKey != null && cache.containsKey(cacheKey)) {
+                cache.remove(cacheKey);
+            }
         }
     }
 }
