@@ -27,6 +27,7 @@
     ContentArtifactsBean bean;
     String mediatype = request.getParameter("mediaType");
     String resource_Name = request.getParameter("resourceName");
+    String version = request.getParameter("version");
     try {
         
              ManageGenericArtifactServiceClient listservice = new ManageGenericArtifactServiceClient(config, session);
@@ -36,11 +37,21 @@
 				for(int i = 0; i < bean.getSize(); i++)
 				{
 					String resourceName = bean.getName()[i];
-					if(resourceName.equals(resource_Name))
+                    String path     = bean.getPath()[i];
+					if(version != null)
 					{
+                        //This fix was added to resolve the problem of false resource exists message when a different
+                        //version of the  resource exists.
+                        if(path.contains(version) && resource_Name.equals(resourceName)) {
 						%>----ResourceExists----<%
-				
-					}
+                    }
+
+					}else{
+                        //Else is introduced to preserve original functionality
+                           if(resource_Name.equals(resourceName)){
+                        %>----ResourceExists----<%
+                           }
+                    }
 				}
 
 	    	}

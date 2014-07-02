@@ -130,7 +130,7 @@
 
     function submitImportFormAsync() {
         var storagePath = '<%=RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH%>' + document.getElementById("irStoragePath").value;
-        var properties = document.getElementById("irProperties").value + '^|^';
+        var properties = document.getElementById("irProperties").value;
         <% for (int i = 0; i < bean.getSize(); i++) {
         %>
         storagePath = storagePath.replace("@{<%=bean.getNames()[i]%>}", document.getElementById('ir<%=bean.getNames()[i]%>').value);
@@ -150,7 +150,7 @@
 
     function submitUploadForm() {
         var storagePath = '<%=RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH%>' + document.getElementById("uStoragePath").value;
-        var properties = document.getElementById("uProperties").value + '^|^';
+        var properties = document.getElementById("uProperties").value;
         <% for (int i = 0; i < bean.getSize(); i++) {
         %>
         storagePath = storagePath.replace("@{<%=bean.getNames()[i]%>}", document.getElementById('u<%=bean.getNames()[i]%>').value);
@@ -172,6 +172,7 @@
         document.getElementById('uResourceName').value = "";
         document.getElementById('irFetchURL').value = "";
         document.getElementById('irResourceName').value = "";
+        document.getElementById('irversion').value = "";
     }
 
     function addFile() {
@@ -206,9 +207,10 @@
             %>
             var resourceName= rForm.filename.value;
             var mediatype = rForm.mediaType.value;
+            var version = document.getElementById('uversion').value;
             
             if (reason == "") {
-               reason += validateGenericResourceExists(resourceName,mediatype);
+               reason += validateGenericResourceExists(resourceName,mediatype,version);
             }
 
             if (reason != "") {
@@ -243,9 +245,10 @@
             %>
 	    var resourceName= rForm.resourceName.value;
             var mediatype = rForm.mediaType.value;
+           var version = document.getElementById('irversion').value;
             
             if (reason == "") {
-               reason += validateGenericResourceExists(resourceName,mediatype);
+               reason += validateGenericResourceExists(resourceName,mediatype,version);
             }
             if (reason != "") {
                 CARBON.showWarningDialog(reason);
@@ -264,14 +267,14 @@
         }, org_wso2_carbon_governance_generic_ui_jsi18n["session.timed.out"]);
     }
 
-    function validateGenericResourceExists(resourceName,mediaType) 
+    function validateGenericResourceExists(resourceName,mediaType,version)
     {
     var error = "";
     var differentiate = "differentiate";
     new Ajax.Request('generic_resource_exists_ajaxprocessor.jsp',
         {
             method:'post',
-            parameters: {resourceName:resourceName,mediaType:mediaType, differentiate:differentiate,random:getRandom()},
+            parameters: {resourceName:resourceName,mediaType:mediaType,version:version, differentiate:differentiate,random:getRandom()},
             asynchronous:false,
             onSuccess: function(transport) {
                 var returnValue = transport.responseText;
@@ -309,7 +312,7 @@
             // so it is a zip
             document.getElementById('uMediaType').value = "application/vnd.wso2.governance-archive";
             document.getElementById('uploadName').style.display = "none";
-            document.getElementById('uProperties').value = 'registry.mediaType^^<%=mediaType%>';
+            document.getElementById('uProperties').value = 'registry.mediaType^^<%=mediaType%>' + '^|^';
         } else {
             document.getElementById('uResourceFile').value = "";
             CARBON.showWarningDialog("<fmt:message key="only.filetypes.allowed"><fmt:param value="<%=extension%>"/></fmt:message>");
