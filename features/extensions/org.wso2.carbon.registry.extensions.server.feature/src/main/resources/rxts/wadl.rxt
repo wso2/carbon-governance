@@ -1,8 +1,0 @@
-<artifactType type="application/wadl+xml" fileExtension="wadl" shortName="wadl" singularLabel="WADL" pluralLabel="WADLs" hasNamespace="false" iconSet="12">
-<storagePath>/trunk/wadls/@{version}/@{name}</storagePath>
-    <content href="../generic/wadl_view_ajaxprocessor.jsp?hideStandardView=true">
-    <field type="text">
-                <name label="Version">Version</name>
-            </field>
-             </content>
-</artifactType>

@@ -1,8 +1,0 @@
-<artifactType type="application/x-xsd+xml" fileExtension="xsd" shortName="schema" singularLabel="Schema" pluralLabel="Schemas" hasNamespace="true" iconSet="29">
-<storagePath>/trunk/schemas/@{version}/@{name}</storagePath>
-    <content href="../generic/schema_view_ajaxprocessor.jsp?hideStandardView=true">
-    <field type="text">
-                <name label="Version">Version</name>
-            </field>
-             </content>
-</artifactType>
