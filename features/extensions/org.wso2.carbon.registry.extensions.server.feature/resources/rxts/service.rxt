@@ -1,6 +1,6 @@
 <artifactType type="application/vnd.wso2-service+xml" shortName="service" singularLabel="Service" pluralLabel="Services"
               hasNamespace="false" iconSet="27">
-    <storagePath>/trunk/services/@{namespace}/@{name}</storagePath>
+    <storagePath>/trunk/services/@{namespace}/@{overview_version}/@{name}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
     <namespaceAttribute>overview_namespace</namespaceAttribute>
     <lifecycle>ServiceLifeCycle</lifecycle>
@@ -25,7 +25,7 @@
             <field type="text" required="true" readonly="true">
                 <name label="Namespace">Namespace</name>
             </field>
-            <field type="text">
+            <field type="text" required="true">
                 <name label="Version">Version</name>
             </field>
             <field type="text">
