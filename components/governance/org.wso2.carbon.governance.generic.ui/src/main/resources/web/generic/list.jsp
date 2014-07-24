@@ -34,6 +34,9 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="org.wso2.carbon.registry.core.pagination.PaginationContext" %>
 
+<%@ page import="java.util.Comparator" %>
+<%@ page import="java.util.Arrays" %>
+
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
 <link type="text/css" rel="stylesheet" href="css/menu.css"/>
 <link type="text/css" rel="stylesheet" href="css/style.css"/>
@@ -445,6 +448,22 @@
                            String[] artifactKeys = bean.getKeys();
                            String[] artifactNames = bean.getNames();
 
+                            String creationDateArtifactName = null ;
+                            boolean displayingCreationDate = false ;
+                            int creationDateIgnoreIndex = -1 ;
+
+                            String lastUpdatedDateArtifactName = null ;
+                            boolean displayingLastUpdatedDate = false ;
+                            int lastUpdatedDateIgnoreIndex = -1 ;
+
+                            String createdByArtifactName = null ;
+                            boolean displayingCreatedBy = false ;
+                            int createdByIgnoreIndex = -1 ;
+
+                            String lastUpdatedByArtifactName = null ;
+                            boolean displayinglastUpdatedBy = false ;
+                            int lastUpdatedByIgnoreIndex = -1 ;
+
                             for (int i=0;i <artifactNames.length;i++) {
                                 String displayStr;
                                 String imgType;
@@ -459,12 +478,40 @@
                                 } else {
                                     imgType ="../admin/images/up-arrow.gif";
                                 }
-                        %>
-                         <th id="<%=artifactKeys[i]%>">
-                             <a onclick="sortAndOrder(
-                                     '<%=pageNumber%>',
-                                     '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
-                                     '<%=artifactKeys[i]%>')" title="Sort By <%=artifactNames[i]%>">
+
+                                if(artifactKeys[i].equalsIgnoreCase("meta_created_date")) {
+                                    creationDateArtifactName = artifactNames[i] ;
+                                    displayingCreationDate = true ;
+                                    creationDateIgnoreIndex = i ;
+                                    continue;
+                                }
+
+                                if(artifactKeys[i].equalsIgnoreCase("meta_last_updated_date")) {
+                                    lastUpdatedDateArtifactName = artifactNames[i] ;
+                                    displayingLastUpdatedDate = true ;
+                                    lastUpdatedDateIgnoreIndex = i ;
+                                    continue;
+                                }
+
+                                if(artifactKeys[i].equalsIgnoreCase("meta_created_by")) {
+                                    createdByArtifactName = artifactNames[i] ;
+                                    displayingCreatedBy = true ;
+                                    createdByIgnoreIndex = i ;
+                                    continue;
+                                }
+
+                                if(artifactKeys[i].equalsIgnoreCase("meta_last_updated_by")) {
+                                    lastUpdatedByArtifactName = artifactNames[i] ;
+                                    displayinglastUpdatedBy = true ;
+                                    lastUpdatedByIgnoreIndex = i ;
+                                    continue;
+                                }
+            %>
+            <th id="<%=artifactKeys[i]%>">
+                <a onclick="sortAndOrder(
+                        '<%=pageNumber%>',
+                        '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
+                        '<%=artifactKeys[i]%>')" title="Sort By <%=artifactNames[i]%>">
 
                                  <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>"
                                        id="<%=artifactKeys[i]%>" alt="up">
@@ -472,6 +519,48 @@
                         <%
                             }
                         %>
+            <%
+                String imgType;
+                if(sortOrder.equals("DES")){
+                    imgType ="../admin/images/down-arrow.gif";
+                } else {
+                    imgType ="../admin/images/up-arrow.gif";
+                }
+
+                if(displayingCreationDate) {
+            %>
+
+            <th id="CreatedDate">
+                <a onclick="sortAndOrder(
+                        '<%=pageNumber%>',
+                        '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
+                        'meta_created_date')" title="Sort By Creation Date">
+
+                    <img  src="<%=imgType%>" border="0" align="right" style="display:'';margin-top:4px;margin-right:2px;"
+                          id="Created Date" alt="up">
+                    <%=creationDateArtifactName%>
+                </a>
+            </th>
+
+            <% } if(displayingLastUpdatedDate) { %>
+
+            <th id="LastUpdatedDate">
+                <a onclick="sortAndOrder(
+                        '<%=pageNumber%>',
+                        '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
+                        'meta_last_updated_date')" title="Sort By Last Updated Date">
+
+                    <img  src="<%=imgType%>" border="0" align="right" style="display:'';margin-top:4px;margin-right:2px;"
+                          id="LastUpdatedDate" alt="up">
+                    <%=lastUpdatedDateArtifactName%>
+                </a>
+            </th>
+
+            <% } if(displayingCreatedBy) { %>
+            <th><%=createdByArtifactName%></th>
+            <% } if(displayinglastUpdatedBy) { %>
+            <th><%=lastUpdatedByArtifactName%></th>
+            <% } %>
                         <% if (isLCAvailable) {%><th><fmt:message key="lifecycle.info"/></th><%} %>
                         <%
                             if (isBrowseAuthorized) {%>
@@ -489,6 +578,9 @@
                         <%
                             if (isBrowseAuthorized) {
                                 for (int i = 0; i < bean.getNames().length; i++) {
+                                    if(creationDateIgnoreIndex == i || lastUpdatedDateIgnoreIndex == i || createdByIgnoreIndex == i || lastUpdatedByIgnoreIndex == i) {
+                                        continue ;
+                                    }
                                     if (bean.getTypes()[i].equals("path")) {
                         %>
                         <td>
@@ -510,11 +602,29 @@
                                 }
                             }
                         %>
-                        <% String LCState = "";
+                        <%
+                            String createdDate = artifact.getCreatedDate();
+                            String lastUpdatedDate = artifact.getLastUpdatedDate();
+                            String createdBy = artifact.getCreatedBy();
+                            String lastUpdatedBy = artifact.getLastUpdatedBy();
+
+                            String LCState = "";
                             if (isLCAvailable && artifact.getLCName() != null && !artifact.getLCName().equals("")) {
                                 LCState = artifact.getLCName() + " / " + artifact.getLCState();
                             }
+
+				            if(displayingCreationDate) {
                         %>
+
+                        <td><%=createdDate%></td>
+                        <% } if(displayingLastUpdatedDate) {%>
+                        <td><%=lastUpdatedDate%></td>
+                        <% } if(displayingCreatedBy) {%>
+                        <td><%=createdBy%></td>
+                        <% } if(displayinglastUpdatedBy) {%>
+                        <td><%=lastUpdatedBy%></td>
+                        <% } %>
+
                         <% if (isLCAvailable) {%><td><%=LCState%></td><%} %>
                         <td><% if (artifact.getCanDelete()) { %><a title="<fmt:message key="delete"/>"
                                                                    onclick="deleteArtifact('<%=artifact.getPath()%>','/','../generic/list.jsp?region=<%=region%>&item=<%=item%><%=queryTrailer%>')"

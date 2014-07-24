@@ -30,6 +30,16 @@ import org.wso2.carbon.user.core.UserRealm;
 
 import java.util.*;
 
+import javax.cache.Cache;
+import org.wso2.carbon.registry.core.config.DataBaseConfiguration;
+import org.wso2.carbon.registry.api.GhostResource;
+import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.core.caching.RegistryCacheKey;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.registry.core.config.Mount;
+import org.wso2.carbon.registry.core.config.RemoteConfiguration;
+
 public class LifecycleBeanPopulator {
 
     private static final Log log = LogFactory.getLog(LifecycleBeanPopulator.class);
@@ -124,6 +134,13 @@ public class LifecycleBeanPopulator {
                 lifecycleBean.setAspectsToAdd(lifecycleAspectsToAdd.toArray(
                         new String[lifecycleAspectsToAdd.size()]));
 
+                // TODO - Following line that calls removeCache is to fix the issue related to life-cycle view not getting updated in the UI. The issue
+                // happens mainly in the mount setup and also in non H2 databases, due to getLifeCyclebean method been called before the invokeAspect returns, making the
+                // following registry.get() below the removeCache to get the non updated resource and updating the cache with old resource.
+                // Further this issue doesn't seems like a caching issue. The issue to be traced is, why that this getLifecycleBean method getcalled before
+                //  the invokeAspect, only in mount and non H2 DB setups. When that's found, remove the following line
+                removeCache(registry, path);
+
                 resource = registry.get(path);
                 Properties props = resource.getProperties();
                 List<Property> propList = new ArrayList<Property>();
@@ -200,5 +217,37 @@ public class LifecycleBeanPopulator {
         }
 
         return lifecycleBean;
+    }
+
+    private static void removeCache(Registry registry, String path) {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Cache<RegistryCacheKey, GhostResource> cache = RegistryUtils.getResourceCache(RegistryConstants.REGISTRY_CACHE_BACKED_ID);
+        RegistryCacheKey cacheKey = null ;
+
+        if(registry.getRegistryContext().getRemoteInstances().size() > 0) {
+            for (Mount mount : registry.getRegistryContext().getMounts()) {
+                for(RemoteConfiguration configuration : registry.getRegistryContext().getRemoteInstances()) {
+                    if (path.startsWith(mount.getPath())) {
+                        DataBaseConfiguration dataBaseConfiguration = registry.getRegistryContext().getDBConfig(configuration.getDbConfig());
+                        String connectionId = (dataBaseConfiguration.getUserName() != null
+                                ? dataBaseConfiguration.getUserName().split("@")[0]:dataBaseConfiguration.getUserName()) + "@" + dataBaseConfiguration.getDbUrl();
+                        cacheKey = RegistryUtils.buildRegistryCacheKey(connectionId, tenantId, path);
+
+                        if (cacheKey != null && cache.containsKey(cacheKey)) {
+                            cache.remove(cacheKey);
+                        }
+                    }
+                }
+            }
+        } else {
+            DataBaseConfiguration dataBaseConfiguration = registry.getRegistryContext().getDefaultDataBaseConfiguration();
+            String connectionId = (dataBaseConfiguration.getUserName() != null
+                    ? dataBaseConfiguration.getUserName().split("@")[0]:dataBaseConfiguration.getUserName()) + "@" + dataBaseConfiguration.getDbUrl();
+            cacheKey = RegistryUtils.buildRegistryCacheKey(connectionId, tenantId, path);
+
+            if (cacheKey != null && cache.containsKey(cacheKey)) {
+                cache.remove(cacheKey);
+            }
+        }
     }
 }

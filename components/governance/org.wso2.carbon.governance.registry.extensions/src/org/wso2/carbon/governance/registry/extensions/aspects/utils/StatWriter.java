@@ -165,6 +165,9 @@ public class StatWriter {
             OMElement actionValueElement = factory.createOMElement("value", actionElement.getNamespace(), actionElement);
             actionValueElement.setText(currentCollection.getActionValue());
         }
+        if(log.isDebugEnabled())  {
+            log.debug(currentOmElement.getFirstElement().toString());
+        }
 
         return currentOmElement.toString();
     }
