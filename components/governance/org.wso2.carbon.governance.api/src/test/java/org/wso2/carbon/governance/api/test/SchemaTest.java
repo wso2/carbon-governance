@@ -43,21 +43,21 @@ public class SchemaTest extends BaseTestCase {
 
         // change the target namespace and check
         String oldSchemaPath = newSchema.getPath();
-        assertEquals(oldSchemaPath, "/schemas/org/bar/purchasing/purchasing.xsd");
-        assertTrue(registry.resourceExists("/schemas/org/bar/purchasing/purchasing.xsd"));
+        assertEquals(oldSchemaPath, "/schemas/org/bar/purchasing/0.01/purchasing.xsd");
+        assertTrue(registry.resourceExists("/schemas/org/bar/purchasing/0.01/purchasing.xsd"));
 
         OMElement schemaElement = newSchema.getSchemaElement();
         schemaElement.addAttribute("targetNamespace", "http://ww2.wso2.org/schema-test", null);
         schemaElement.declareNamespace("http://ww2.wso2.org/schema-test", "tns");
         schemaManager.updateSchema(newSchema);
 
-        assertEquals("/schemas/org/wso2/ww2/schema_test/purchasing.xsd", newSchema.getPath());
-        assertFalse(registry.resourceExists("/test_schemas/org/bar/purchasing.xsd"));
+        assertEquals("/schemas/org/wso2/ww2/schema_test/0.01/purchasing.xsd", newSchema.getPath());
+        assertFalse(registry.resourceExists("/test_schemas/org/bar/0.01/purchasing.xsd"));
 
         // doing an update without changing anything.
         schemaManager.updateSchema(newSchema);
 
-        assertEquals("/schemas/org/wso2/ww2/schema_test/purchasing.xsd", newSchema.getPath());
+        assertEquals("/schemas/org/wso2/ww2/schema_test/0.01/purchasing.xsd", newSchema.getPath());
         assertEquals("0.01", newSchema.getAttribute("version"));
 
         newSchema = schemaManager.getSchema(schema.getId());
@@ -106,8 +106,8 @@ public class SchemaTest extends BaseTestCase {
 
         // change the target namespace and check
         String oldSchemaPath = newSchema.getPath();
-        assertEquals(oldSchemaPath, "/schemas/org/bar/purchasing/newPurchasing.xsd");
-        assertTrue(registry.resourceExists("/schemas/org/bar/purchasing/newPurchasing.xsd"));
+        assertEquals(oldSchemaPath, "/schemas/org/bar/purchasing/0.01/newPurchasing.xsd");
+        assertTrue(registry.resourceExists("/schemas/org/bar/purchasing/0.01/newPurchasing.xsd"));
     }
 
     public void testAddSchemaFromContentNoName() throws Exception {
@@ -135,7 +135,7 @@ public class SchemaTest extends BaseTestCase {
 
         // change the target namespace and check
         String oldSchemaPath = newSchema.getPath();
-        assertEquals(oldSchemaPath, "/schemas/org/bar/purchasing/" + schema.getId() + ".xsd");
-        assertTrue(registry.resourceExists("/schemas/org/bar/purchasing/" + schema.getId() + ".xsd"));
+        assertEquals(oldSchemaPath, "/schemas/org/bar/purchasing/0.01/" + schema.getId() + ".xsd");
+        assertTrue(registry.resourceExists("/schemas/org/bar/purchasing/0.01/" + schema.getId() + ".xsd"));
     }
 }
