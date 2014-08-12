@@ -538,6 +538,6 @@
     </script>
     <script type="text/javascript">
         // call after page loaded to generate LC state list.
-        window.onload=changeLC();
+        window.onload=changeLC;
     </script>
 </fmt:bundle>
