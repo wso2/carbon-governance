@@ -81,7 +81,7 @@
     boolean filter = request.getParameter("filter") != null;
     if (filter) {
         filterKey = request.getParameter("artby_name");
-        listURL += "&filter=" + filter + "&artby_name=" + filterKey;
+        listURL += "&filter=" + request.getParameter("filter") + "&artby_name=" + filterKey;
     }
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     String[] temp = null;
@@ -518,7 +518,16 @@
         alternateTableRows('customTable','tableEvenRow','tableOddRow');
 
         function loadPagedList(page) {
-            window.location = '<%="../generic/"+listURL+"&page="%>'+page;
+            window.location = '<%="../generic/"+listURL+
+            ((request.getParameter("lc_name")!=null)?"&lc_name=" + request.getParameter("lc_name"):"") +
+            ((request.getParameter("lc_state")!=null)?"&lc_state=" + request.getParameter("lc_state"):"") +
+            ((request.getParameter("lc_in_out")!=null)?"&lc_in_out=" + request.getParameter("lc_in_out"):"") +
+            ((request.getParameter("lc_state_in_out")!=null)?"&lc_state_in_out=" + request.getParameter("lc_state_in_out"):"") +
+            ((request.getParameter("filterBy")!=null)?"&filterBy=" + request.getParameter("filterBy"):"")+
+            ((request.getParameter("searchValue")!=null)?"&searchValue=" + request.getParameter("searchValue"):"")+
+            ((request.getParameter("sortOrder")!=null)?"&sortOrder=" + request.getParameter("sortOrder"):"")+
+            ((request.getParameter("sortBy")!=null)?"&sortBy=" + request.getParameter("sortBy"):"")+
+            "&page="%>'+page;
         }
         function sortContentList(sortBy, sortOrder) {
 
