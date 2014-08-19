@@ -49,21 +49,21 @@ public class WSDLTest extends BaseTestCase {
 
         // change the target namespace and check
         String oldWSDLPath = newWsdl.getPath();
-        assertEquals(oldWSDLPath, "/wsdls/com/foo/BizService.wsdl");
-        assertTrue(registry.resourceExists("/wsdls/com/foo/BizService.wsdl"));
+        assertEquals(oldWSDLPath, "/wsdls/com/foo/0.01/BizService.wsdl");
+        assertTrue(registry.resourceExists("/wsdls/com/foo/0.01/BizService.wsdl"));
 
         OMElement wsdlElement = newWsdl.getWsdlElement();
         wsdlElement.addAttribute("targetNamespace", "http://ww2.wso2.org/test", null);
         wsdlElement.declareNamespace("http://ww2.wso2.org/test", "tns");
         wsdlManager.updateWsdl(newWsdl);
 
-        assertEquals("/wsdls/org/wso2/ww2/test/BizService.wsdl", newWsdl.getPath());
+        assertEquals("/wsdls/org/wso2/ww2/test/0.01/BizService.wsdl", newWsdl.getPath());
         //assertFalse(registry.resourceExists("/wsdls/http/foo/com/BizService.wsdl"));
 
         // doing an update without changing anything.
         wsdlManager.updateWsdl(newWsdl);
 
-        assertEquals("/wsdls/org/wso2/ww2/test/BizService.wsdl", newWsdl.getPath());
+        assertEquals("/wsdls/org/wso2/ww2/test/0.01/BizService.wsdl", newWsdl.getPath());
         assertEquals("0.01", newWsdl.getAttribute("version"));
 
         newWsdl = wsdlManager.getWsdl(wsdl.getId());
@@ -86,7 +86,7 @@ public class WSDLTest extends BaseTestCase {
         wsdlManager.updateWsdl(newWsdl);
 
         Schema[] schemas = newWsdl.getAttachedSchemas();
-        assertEquals("/schemas/org/bar/purchasing_dup/purchasing_dup.xsd",
+        assertEquals("/schemas/org/bar/purchasing_dup/0.01/purchasing_dup.xsd",
                 schemas[schemas.length - 1].getPath());
 
 
@@ -94,7 +94,7 @@ public class WSDLTest extends BaseTestCase {
             public boolean matches(Wsdl wsdl) throws GovernanceException {
                 Schema[] schemas = wsdl.getAttachedSchemas();
                 for (Schema schema: schemas) {
-                    if (schema.getPath().equals("/schemas/org/bar/purchasing_dup/purchasing_dup.xsd")) {
+                    if (schema.getPath().equals("/schemas/org/bar/purchasing_dup/0.01/purchasing_dup.xsd")) {
                         return true;
                     }
                 }

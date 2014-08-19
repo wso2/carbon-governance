@@ -55,6 +55,7 @@ import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
@@ -129,7 +130,7 @@ public class GovernanceUtils {
      */
     public static String[] findGovernanceArtifacts(String mediaType, Registry registry)
             throws RegistryException {
-        String[] paths = getResultPaths(registry, mediaType);
+        String[] paths = MediaTypesUtils.getResultPaths(registry, mediaType);
         if (paths == null) {
             paths = new String[0];
         }
@@ -201,59 +202,13 @@ public class GovernanceUtils {
      * @throws GovernanceException if the operation failed.
      */
     public static String[] getResultPaths(Registry registry, String mediaType) throws GovernanceException {
-        String[] result;
-        String[] paginatedResult;
         try {
-            Map<String, String> parameter = new HashMap<String, String>();
-            parameter.put("1", mediaType);
-            parameter.put("query", "SELECT DISTINCT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_MEDIA_TYPE=?");
-            result = (String[]) registry.executeQuery(null, parameter).getContent();
-            if (result == null || result.length == 0) {
-                return new String[0];
-            }
-            result = removeMountPaths(result, registry);
-            MessageContext messageContext = MessageContext.getCurrentMessageContext();
-            if (PaginationUtils.isPaginationAnnotationFound("getPaginatedGovernanceArtifacts") &&
-                    ((messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext)) || PaginationContext.getInstance() != null)) {
-
-                int rowCount = result.length;
-                PaginationContext paginationContext;
-                try {
-                    if (messageContext != null) {
-                        PaginationUtils.setRowCount(messageContext, Integer.toString(rowCount));
-                        paginationContext = PaginationUtils.initPaginationContext(messageContext);
-                    } else {
-                        paginationContext = PaginationContext.getInstance();
-                    }
-
-                    int start = paginationContext.getStart();
-                    int count = paginationContext.getCount();
-
-                    int startIndex;
-                    if (start == 1) {
-                        startIndex = 0;
-                    } else {
-                        startIndex = start;
-                    }
-                    if (rowCount < start + count) {
-                        paginatedResult = new String[rowCount - startIndex];
-                        System.arraycopy(result, startIndex, paginatedResult, 0, (rowCount - startIndex));
-                    } else {
-                        paginatedResult = new String[count];
-                        System.arraycopy(result, startIndex, paginatedResult, 0, count);
-                    }
-                    return paginatedResult;
-
-                } finally {
-                    PaginationContext.destroy();
-                }
-            }
+            return MediaTypesUtils.getResultPaths(registry, mediaType);
         } catch (RegistryException e) {
             String msg = "Error in getting the result for media type: " + mediaType + ".";
             log.error(msg, e);
             throw new GovernanceException(msg, e);
         }
-        return result;
     }
 
     // remove symbolic links in search items.
@@ -276,18 +231,6 @@ public class GovernanceUtils {
         return fixedPaths.toArray(new String[fixedPaths.size()]);
     }
 
-    private static String[] removeMountPaths(String[] paths, Registry governanceRegistry) {
-                if (paths == null) {
-                        return new String[0];
-                    }
-                List<String> fixedPaths = new LinkedList<String>();
-                for (String path : paths) {
-                            if (!path.contains(RegistryConstants.SYSTEM_MOUNT_PATH)) {
-                                    fixedPaths.add(path);
-                                }
-                    }
-                return fixedPaths.toArray(new String[fixedPaths.size()]);
-            }
     /**
      * Method to load the Governance Artifacts to be used by the API operations.
      *

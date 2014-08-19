@@ -185,8 +185,8 @@
                             parameters: {path: path},
 
                             onSuccess: function(transport) {
-                                var str = transport.responseText.trim();
-                                var resp = str.substring(str.indexOf('{')+1).split('}')[0].trim();
+                                var str = jQuery.trim(transport.responseText);
+                                var resp = jQuery.trim(str.substring(str.indexOf('{')+1).split('}')[0]);
                                 var url = resp.split('**')[0];
                                 var hasDependencies = resp.split('**')[1];
                                 downloadWithDependencies(url,hasDependencies);
@@ -709,7 +709,7 @@
 		        request.getParameter("dataNamespace") + "&key=" + request.getParameter("key") + "&breadcrumb=" +
 		        request.getParameter("breadcrumb") + (filter ? "&filter=filter" : "") + "&page=" %>'+ page +
 		        '<%="&sortOrder="%>' +sortOrder+ '<%="&sortBy="%>' +sortBy;
-        	
+
         	}else{
         		window.location = '<%="../generic/list.jsp?" + ((request.getParameter("filterBy")!=null)?"filterBy=" + 
         		request.getParameter("filterBy"):"") + ((request.getParameter("searchValue")!=null)?"&searchValue=" + 
@@ -724,6 +724,6 @@
     </script>
     <script type="text/javascript">
         //        call after page loaded
-        window.onload=changeLC();
+        window.onload=changeLC;
     </script>
 </fmt:bundle>
