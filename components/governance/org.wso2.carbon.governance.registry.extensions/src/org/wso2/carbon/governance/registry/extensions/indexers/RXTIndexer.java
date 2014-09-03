@@ -67,7 +67,7 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
                 setAttributesToLowerCase(attributes);
                 fields.putAll(attributes);
             } else {
-                fields.put("overview_name", Arrays.asList(RegistryUtils.getResourceName(fileData.path)));
+                fields.put("overview_name", Arrays.asList(RegistryUtils.getResourceName(fileData.path).toLowerCase()));
             }
             indexedDocument.setFields(fields);
         } catch (XMLStreamException e) {
