@@ -30,6 +30,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
+import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.FileUtil;
 
@@ -192,12 +193,11 @@ public class CommonUtil {
 
                 Resource rxtCollection = systemRegistry.get(rxtConfigRelativePath);
                 String rxtName = resourcePath.substring(resourcePath.lastIndexOf("/") + 1).split("\\.")[0];
-                String rxt = null;
                 if (!systemRegistry.resourceExists(resourcePath)) {
                     String propertyName = "registry." + rxtName;
                     if (rxtCollection.getProperty(propertyName) == null) {
                         rxtCollection.setProperty(propertyName, "true");
-                        rxt = FileUtil.readFileToString(rxtDir + File.separator + rxtPath);
+                        String rxt = FileUtil.readFileToString(rxtDir + File.separator + rxtPath);
                         Resource resource = systemRegistry.newResource();
                         resource.setContent(rxt.getBytes());
                         resource.setMediaType(CommonConstants.RXT_MEDIA_TYPE);
@@ -205,7 +205,7 @@ public class CommonUtil {
                     }
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug("RXT " + rxt + "already added ");
+                        log.debug("RXT " + rxtName + " already exists.");
                     }
                 }
 
