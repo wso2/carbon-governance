@@ -43,7 +43,7 @@ import java.util.Map;
 
 public class RXTIndexer extends XMLIndexer implements Indexer {
 
-    public static final Log log = LogFactory.getLog(XMLIndexer.class);
+    public static final Log log = LogFactory.getLog(RXTIndexer.class);
 
     public IndexDocument getIndexedDocument(AsyncIndexer.File2Index fileData) throws SolrException, RegistryException {
         IndexDocument indexedDocument = super.getIndexedDocument(fileData);
@@ -70,6 +70,10 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
                 fields.put("overview_name", Arrays.asList(RegistryUtils.getResourceName(fileData.path).toLowerCase()));
             }
             indexedDocument.setFields(fields);
+            if (log.isDebugEnabled()) {
+                log.debug("Registry RXT Indexer is running");
+            }
+            
         } catch (XMLStreamException e) {
             log.error("Unable to parse XML", e);
         }
