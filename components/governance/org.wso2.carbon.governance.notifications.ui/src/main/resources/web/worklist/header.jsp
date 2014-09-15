@@ -31,7 +31,7 @@ under the License.
         return;
     }
 %>
-<!-- <script type="text/javascript" src="../ajax/js/prototype.js"></script> -->
+<script type="text/javascript" src="../ajax/js/prototype.js"></script>
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
 <script type="text/javascript" src="../registry_common/js/registry_common.js"></script>
