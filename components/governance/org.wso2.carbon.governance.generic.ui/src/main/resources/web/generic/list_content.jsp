@@ -400,7 +400,7 @@
                         boolean isBrowseAuthorized = CarbonUIUtil.isUserAuthorized(request,
                                 "/permission/admin/manage/resources/browse");
                         boolean isLCAvailable = false;
-                        for(int i=(pageNumber - 1) * itemsPerPage;i<pageNumber * itemsPerPage && i<bean.getName().length;i++) {
+                        for(int i=0;i<bean.getName().length;i++) {
                             if (bean.getLCName()[i]!=null && !bean.getLCName()[i].equals("")) {
                                 isLCAvailable = true;
                                 break;
