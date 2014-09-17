@@ -21,6 +21,7 @@ import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
+import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -30,10 +31,12 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
+import org.wso2.carbon.registry.uddi.utils.GovernanceUtil;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.FileUtil;
 
+import javax.cache.Cache;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -190,7 +193,7 @@ public class CommonUtil {
                     Collection collection = systemRegistry.newCollection();
                     systemRegistry.put(rxtConfigRelativePath, collection);
                 }
-
+                Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCacheWithLiteners(GovernanceConstants.RXT_CONFIG_CACHE_ID);
                 Resource rxtCollection = systemRegistry.get(rxtConfigRelativePath);
                 String rxtName = resourcePath.substring(resourcePath.lastIndexOf("/") + 1).split("\\.")[0];
                 if (!systemRegistry.resourceExists(resourcePath)) {
@@ -202,6 +205,7 @@ public class CommonUtil {
                         resource.setContent(rxt.getBytes());
                         resource.setMediaType(CommonConstants.RXT_MEDIA_TYPE);
                         systemRegistry.put(resourcePath, resource);
+                        rxtConfigCache.put(resourcePath,true);
                     }
                 } else {
                     if (log.isDebugEnabled()) {

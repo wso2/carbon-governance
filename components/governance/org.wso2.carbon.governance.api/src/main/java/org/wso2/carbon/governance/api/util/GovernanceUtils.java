@@ -26,8 +26,8 @@ import org.jaxen.JaxenException;
 import org.wso2.carbon.base.CarbonContextHolderBase;
 import org.wso2.carbon.base.UnloadTenantTask;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.governance.api.cache.ArtifactCache;
-import org.wso2.carbon.governance.api.cache.ArtifactCacheManager;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.governance.api.cache.*;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.common.util.ApproveItemBean;
@@ -62,12 +62,17 @@ import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import javax.cache.Cache;
+import javax.cache.CacheConfiguration;
+import javax.cache.CacheManager;
+import javax.cache.Caching;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,6 +94,10 @@ public class GovernanceUtils {
     private static AttributeSearchService attributeSearchService;
 
     private static final ThreadLocal<Registry>  tenantGovernanceSystemRegistry  = new ThreadLocal<Registry>();
+    private final static RXTConfigCacheEntryCreatedListener<String, Boolean> entryCreatedListener =  new RXTConfigCacheEntryCreatedListener<String, Boolean>();
+    private final static RXTConfigCacheEntryRemovedListener<String, Boolean> entryRemovedListener =  new RXTConfigCacheEntryRemovedListener<String, Boolean>();
+    private final static RXTConfigCacheEntryUpdatedListener<String, Boolean>  entryUpdatedListener=  new RXTConfigCacheEntryUpdatedListener<String, Boolean>();
+
     /**
      * Setting the registry service.
      *
@@ -118,6 +127,36 @@ public class GovernanceUtils {
         });
     }
 
+    /**
+     * This method is used to add artifact configurations into the artifact configuration map given the registry path
+     * @param registry
+     * @param tenantId
+     * @param path
+     * @throws RegistryException
+     */
+    protected static void registerArtifactConfigurationByPath(Registry registry, int tenantId,String path) throws RegistryException{
+
+        GovernanceArtifactConfiguration governanceArtifactConfiguration;
+        Resource resource = registry.get(path);
+        Object content = resource.getContent();
+        String elementString;
+        if (content instanceof String) {
+            elementString = (String) content;
+        } else {
+            elementString = RegistryUtils.decodeBytes((byte[])content);
+        }
+        governanceArtifactConfiguration = getGovernanceArtifactConfiguration(elementString);
+        List<GovernanceArtifactConfiguration> configurations = artifactConfigurations.get(tenantId);
+
+        if(configurations != null){
+            configurations.add(governanceArtifactConfiguration);
+        }else{
+            configurations = new LinkedList<GovernanceArtifactConfiguration>();
+            configurations.add(governanceArtifactConfiguration);
+        }
+        artifactConfigurations.put(tenantId,configurations);
+
+    }
     /**
      * Query to search for governance artifacts.
      *
@@ -160,8 +199,12 @@ public class GovernanceUtils {
     public static GovernanceArtifactConfiguration findGovernanceArtifactConfigurationByMediaType(
             String mediaType, Registry registry)
             throws RegistryException {
-        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations =
-                findGovernanceArtifactConfigurations(registry);
+
+        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+
+        if (governanceArtifactConfigurations == null) {
+            governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
+        }
         for (GovernanceArtifactConfiguration configuration : governanceArtifactConfigurations) {
             if (mediaType.equals(configuration.getMediaType())) {
                 return configuration;
@@ -183,8 +226,12 @@ public class GovernanceUtils {
     public static GovernanceArtifactConfiguration findGovernanceArtifactConfiguration(
             String key, Registry registry)
             throws RegistryException {
-        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations =
-                findGovernanceArtifactConfigurations(registry);
+
+        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+
+        if (governanceArtifactConfigurations == null) {
+            governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
+        }
         for (GovernanceArtifactConfiguration configuration : governanceArtifactConfigurations) {
             if (key.equals(configuration.getKey())) {
                 return configuration;
@@ -252,7 +299,9 @@ public class GovernanceUtils {
      * @throws RegistryException if the operation failed.
      */
     public static void loadGovernanceArtifacts(UserRegistry registry) throws RegistryException {
-        loadGovernanceArtifacts(registry, Collections.unmodifiableList(findGovernanceArtifactConfigurations(registry)));
+        if(!artifactConfigurations.containsKey(registry.getTenantId())) {
+            loadGovernanceArtifacts(registry, Collections.unmodifiableList(findGovernanceArtifactConfigurations(registry)));
+        }
     }
     public static GovernanceArtifactConfiguration getGovernanceArtifactConfiguration(String elementString){
         GovernanceArtifactConfiguration configuration = null;
@@ -1537,6 +1586,58 @@ public class GovernanceUtils {
 
         }
         return artifacts;
+    }
+
+    /**
+     * Method used to retrieve cache object for RXT Configs and register the listeners.
+     * @param name the name of the cache
+     * @return the cache object for the given cache manger and cache name with listeners registered
+     */
+    public static Cache<String, Boolean> getRXTConfigCacheWithLiteners(String name){
+        Cache<String, Boolean> cache = getRXTConfigCache(name);
+        //We need to unregister this because otherwise the same listener will be called multiple times if this
+        //method is called multiple times
+        cache.unregisterCacheEntryListener(entryCreatedListener);
+        cache.unregisterCacheEntryListener(entryUpdatedListener);
+        cache.unregisterCacheEntryListener(entryRemovedListener);
+
+        cache.registerCacheEntryListener(entryCreatedListener);
+        cache.registerCacheEntryListener(entryUpdatedListener);
+        cache.registerCacheEntryListener(entryRemovedListener);
+
+        return cache;
+    }
+
+    /**
+     * Method used to retrieve cache object for RXT Configs.
+     * @param name the name of the cache
+     * @return the cache object for the given cache manger and cache name
+     */
+    public static Cache<String, Boolean> getRXTConfigCache(String name){
+        CacheManager manager = getCacheManager();
+        manager.<String, Boolean>createCacheBuilder(name).
+                setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
+                setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
+                setStoreByValue(false).build();
+
+
+        return (manager != null) ? manager.<String, Subscription>createCacheBuilder(cacheName).
+                setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
+                setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
+                setStoreByValue(false).build(); :
+                Caching.getCacheManager().<String, Boolean><String, Subscription>createCacheBuilder(cacheName).
+                        setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
+                        setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
+                        setStoreByValue(false).build();;
+    }
+
+    /**
+     * Get the Cache Manager for Registry
+     * @return
+     */
+    private static CacheManager getCacheManager() {
+        return Caching.getCacheManagerFactory().getCacheManager(
+                RegistryConstants.REGISTRY_CACHE_MANAGER);
     }
 
     /*
