@@ -161,30 +161,7 @@ public class GovernanceUtils {
 
     }
 
-    /**
-     * This method is used to add artifact configurations into the artifact configuration map given the registry path
-     *
-     * @param registry
-     * @param tenantId
-     * @param path
-     * @throws RegistryException
-     */
-    public static void unRegisterArtifactConfigurationByPath(Registry registry, int tenantId, String path) throws RegistryException {
-
-        List<GovernanceArtifactConfiguration> configurations = artifactConfigurations.get(tenantId);
-MediaTypesUtils.getMediaType(path);
-        if (configurations != null) {
-            return;
-        } else {
-            for (GovernanceArtifactConfiguration configuration : configurations) {
-
-            }
-        }
-        artifactConfigurations.put(tenantId, configurations);
-
-    }
-
-    /**
+   /**
      * Query to search for governance artifacts.
      *
      * @param mediaType the media type of the artifacts to be searched for.
