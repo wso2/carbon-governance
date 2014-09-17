@@ -193,10 +193,11 @@ public class CommonUtil {
                     Collection collection = systemRegistry.newCollection();
                     systemRegistry.put(rxtConfigRelativePath, collection);
                 }
-                Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCacheWithLiteners(GovernanceConstants.RXT_CONFIG_CACHE_ID);
+
                 Resource rxtCollection = systemRegistry.get(rxtConfigRelativePath);
                 String rxtName = resourcePath.substring(resourcePath.lastIndexOf("/") + 1).split("\\.")[0];
                 if (!systemRegistry.resourceExists(resourcePath)) {
+                    Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
                     String propertyName = "registry." + rxtName;
                     if (rxtCollection.getProperty(propertyName) == null) {
                         rxtCollection.setProperty(propertyName, "true");
