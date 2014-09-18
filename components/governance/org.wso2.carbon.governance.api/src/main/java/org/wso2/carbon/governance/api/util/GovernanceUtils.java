@@ -1583,25 +1583,18 @@ public class GovernanceUtils {
      */
     public static Cache<String, Boolean> getRXTConfigCache(String name) {
         CacheManager manager = getCacheManager();
-        if(rxtCacheInitiated){
-            return (manager != null) ? manager.<String, Boolean>getCache(name) :
-                    Caching.getCacheManager().<String, Boolean>getCache(name);
-        }else {
-            Cache<String, Boolean> cache = (manager != null) ? manager.<String, Boolean>createCacheBuilder(name).
-                    setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
-                    setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
-                    setStoreByValue(false).build() :
-                    Caching.getCacheManager().<String, Boolean>createCacheBuilder(name).
-                            setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
-                            setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.Duration(TimeUnit.SECONDS, 1000 * 24 * 3600)).
-                            setStoreByValue(false).build();
 
+        Cache<String, Boolean> cache = (manager != null) ? manager.<String, Boolean>getCache(name) :
+                Caching.getCacheManager().<String, Boolean>getCache(name);
+
+        if (rxtCacheInitiated) {
             cache.registerCacheEntryListener(entryCreatedListener);
             cache.registerCacheEntryListener(entryUpdatedListener);
             cache.registerCacheEntryListener(entryRemovedListener);
             rxtCacheInitiated = true;
-            return cache;
         }
+
+        return cache;
     }
 
     /**

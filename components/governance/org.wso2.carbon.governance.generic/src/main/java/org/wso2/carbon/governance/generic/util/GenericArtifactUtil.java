@@ -89,13 +89,13 @@ public class GenericArtifactUtil {
             resource.setMediaType(CommonConstants.RXT_MEDIA_TYPE);
             registry.beginTransaction();
             registry.put(rxtStoragePath, resource);
+            registry.commitTransaction();
+
             if(rxtConfigCache.containsKey(rxtStoragePath)){
                 rxtConfigCache.put(rxtStoragePath,rxtConfigCache.get(rxtStoragePath)^true);
             }else{
                 rxtConfigCache.put(rxtStoragePath,true);
             }
-
-            registry.commitTransaction();
 
         } catch (RegistryException e) {
             registry.rollbackTransaction();

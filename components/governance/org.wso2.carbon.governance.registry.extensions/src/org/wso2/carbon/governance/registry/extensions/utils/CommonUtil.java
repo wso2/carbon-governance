@@ -154,6 +154,7 @@ public class CommonUtil {
     }
 
     public static void addRxtConfigs(Registry systemRegistry, int tenantId) throws RegistryException {
+        Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
         String rxtDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
                 "resources" + File.separator + "rxts";
         File file = new File(rxtDir);
@@ -197,7 +198,6 @@ public class CommonUtil {
                 Resource rxtCollection = systemRegistry.get(rxtConfigRelativePath);
                 String rxtName = resourcePath.substring(resourcePath.lastIndexOf("/") + 1).split("\\.")[0];
                 if (!systemRegistry.resourceExists(resourcePath)) {
-                    Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
                     String propertyName = "registry." + rxtName;
                     if (rxtCollection.getProperty(propertyName) == null) {
                         rxtCollection.setProperty(propertyName, "true");
