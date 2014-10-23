@@ -21,6 +21,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
+import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
@@ -30,6 +31,7 @@ import org.apache.axiom.om.util.AXIOMUtil;
 import org.wso2.carbon.governance.list.util.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
+import javax.cache.Cache;
 import javax.xml.namespace.QName;
 
 
@@ -81,12 +83,19 @@ public class GenericArtifactUtil {
                   resource = registry.get(getGovernanceRelativePath(path));
                   rxtStoragePath = getGovernanceRelativePath(path);
                 }
+            Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
 
             resource.setContent(rxtConfig.getBytes());
             resource.setMediaType(CommonConstants.RXT_MEDIA_TYPE);
             registry.beginTransaction();
             registry.put(rxtStoragePath, resource);
             registry.commitTransaction();
+
+            if(rxtConfigCache.containsKey(rxtStoragePath)){
+                rxtConfigCache.put(rxtStoragePath,rxtConfigCache.get(rxtStoragePath)^true);
+            }else{
+                rxtConfigCache.put(rxtStoragePath,true);
+            }
 
         } catch (RegistryException e) {
             registry.rollbackTransaction();

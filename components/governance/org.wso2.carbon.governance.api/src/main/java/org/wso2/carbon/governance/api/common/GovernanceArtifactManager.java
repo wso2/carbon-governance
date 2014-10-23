@@ -343,7 +343,6 @@ public class GovernanceArtifactManager {
 
     /**
      * Updates the given artifact on the registry.
-     *
      * @param artifact the artifact.
      *
      * @throws GovernanceException if the operation failed.
@@ -397,7 +396,8 @@ public class GovernanceArtifactManager {
                 resource.setProperties(properties);
 
                 // then set updated properties
-                String[] attributeKeys = artifact.getAttributeKeys();
+                // Stop the attributes been added as properties
+                /*String[] attributeKeys = artifact.getAttributeKeys();
                 if (attributeKeys != null) {
                     for (String aggregatedKey : attributeKeys) {
                         if (!aggregatedKey.equals(artifactNameAttribute) &&
@@ -406,7 +406,7 @@ public class GovernanceArtifactManager {
                                     Arrays.asList(artifact.getAttributes(aggregatedKey)));
                         }
                     }
-                }
+                }*/
 
                 //persisting resource description at artifact update
                 String description = oldResource.getDescription();
@@ -613,7 +613,9 @@ public class GovernanceArtifactManager {
     private void setContentAndProperties(GovernanceArtifact artifact, Resource resource, Object content)
             throws RegistryException {
         resource.setContent(content);
-        String[] attributeKeys = artifact.getAttributeKeys();
+
+        // Stop the attributes been added as properties
+      /*  String[] attributeKeys = artifact.getAttributeKeys();
         if (attributeKeys != null) {
             for (String aggregatedKey : attributeKeys) {
                 if (!aggregatedKey.equals(artifactNameAttribute) &&
@@ -622,7 +624,7 @@ public class GovernanceArtifactManager {
                             Arrays.asList(artifact.getAttributes(aggregatedKey)));
                 }
             }
-        }
+        }*/
     }
 
 

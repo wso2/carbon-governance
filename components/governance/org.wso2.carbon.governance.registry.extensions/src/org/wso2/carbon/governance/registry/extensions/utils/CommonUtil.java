@@ -21,6 +21,7 @@ import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
+import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -30,9 +31,12 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
+import org.wso2.carbon.registry.uddi.utils.GovernanceUtil;
+import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.FileUtil;
 
+import javax.cache.Cache;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -150,6 +154,7 @@ public class CommonUtil {
     }
 
     public static void addRxtConfigs(Registry systemRegistry, int tenantId) throws RegistryException {
+        Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
         String rxtDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
                 "resources" + File.separator + "rxts";
         File file = new File(rxtDir);
@@ -192,20 +197,20 @@ public class CommonUtil {
 
                 Resource rxtCollection = systemRegistry.get(rxtConfigRelativePath);
                 String rxtName = resourcePath.substring(resourcePath.lastIndexOf("/") + 1).split("\\.")[0];
-                String rxt = null;
                 if (!systemRegistry.resourceExists(resourcePath)) {
                     String propertyName = "registry." + rxtName;
                     if (rxtCollection.getProperty(propertyName) == null) {
                         rxtCollection.setProperty(propertyName, "true");
-                        rxt = FileUtil.readFileToString(rxtDir + File.separator + rxtPath);
+                        String rxt = FileUtil.readFileToString(rxtDir + File.separator + rxtPath);
                         Resource resource = systemRegistry.newResource();
                         resource.setContent(rxt.getBytes());
                         resource.setMediaType(CommonConstants.RXT_MEDIA_TYPE);
                         systemRegistry.put(resourcePath, resource);
+                        rxtConfigCache.put(resourcePath,true);
                     }
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug("RXT " + rxt + "already added ");
+                        log.debug("RXT " + rxtName + " already exists.");
                     }
                 }
 

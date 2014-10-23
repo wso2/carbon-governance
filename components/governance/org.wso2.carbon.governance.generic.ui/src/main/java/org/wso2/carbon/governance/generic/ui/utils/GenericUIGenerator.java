@@ -1543,18 +1543,32 @@ public class GenericUIGenerator {
                 	builder.append("var td3Inner = '<a class=\"icon-link\" title=\"delete\" onclick=\"delete"+widgetName+"_"+widgetName+"(this.parentNode.parentNode.rowIndex)\" style=\"background-image:url(../admin/images/delete.gif);\">Delete</a>';");
                 	builder.append("theTddelete.innerHTML = td3Inner;");
                 	builder.append("theTr.appendChild(theTddelete);");
-                	
-                	
-                	builder.append("var elem=theTr.getElementsByTagName('*'), i=0, e;");
+
                 	builder.append("var dateArr = new Array();");
                 	builder.append("var dateArrSize = 0;");
-                	builder.append("for (var i = 0; i < elem.length; ++i) {");
-                	
-                	builder.append("if (elem[i].id) {var idNewValue = elem[i].id + '_' + "+widgetName+"Count;var jdateId = '#' + elem[i].id;if (theTr.innerHTML.indexOf(jdateId) !== -1) {dateArr[dateArrSize] = idNewValue;dateArrSize++;}var reg = new RegExp(elem[i].id.toLowerCase(), 'g');theTr.innerHTML = theTr.innerHTML.replace(reg,idNewValue);reg = new RegExp(elem[i].id, 'g');theTr.innerHTML = theTr.innerHTML.replace(reg, idNewValue);}");
-                	builder.append("if(elem[i].name){var idNewValue = elem[i].name +'_'+ "+widgetName+"Count;	elem[i].name = idNewValue;}");
-                	                	
-                	builder.append("}");
-                	
+
+                    /*Following code segment contains a loop to make ids and names of elements appearing
+                    * in the row, unique.
+                    * The way they are made unique is for "_' + "+widgetName+"Count is appended
+                    * to each name and id.*/
+
+                	builder.append("jQuery('*',theTr).each(function(){" +
+                            "var idAttr = jQuery(this).attr('id');" +
+                            "if (typeof idAttr !== typeof undefined && idAttr !== false && idAttr != \"\") {" +
+                            "idAttr = jQuery(this).attr('id') + '_' + "+widgetName+"Count;" +
+                            "var jdateId = '#' + jQuery(this).id;" +
+                            "if (theTr.innerHTML.indexOf(jdateId) !== -1) {" +
+                            "dateArr[dateArrSize] = idAttr;" +
+                            "dateArrSize++;" +
+                            "}" +
+                            "jQuery(this).attr('id',idAttr);" +
+                            "}" +
+                            "var nameAttr = jQuery(this).attr('name');" +
+                            "if (typeof nameAttr !== typeof undefined && nameAttr !== false && nameAttr != \"\") {" +
+                            "nameAttr = jQuery(this).attr('name') +'_'+ "+widgetName+"Count;" +
+                            "jQuery(this).attr('name',nameAttr);" +
+                            "}" +
+                            "});");
                 	
                     builder.append("endpointMgt.appendChild(theTr);");
                     

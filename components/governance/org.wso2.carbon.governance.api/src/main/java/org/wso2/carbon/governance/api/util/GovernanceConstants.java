@@ -63,7 +63,10 @@ public class GovernanceConstants {
      */
     public static final String SUB_GROUP = "subGroup";
 
-
+    /**
+     * The id of the cache that will be used sync RXT configurations
+     */
+    public static final String RXT_CONFIG_CACHE_ID = "RXT_CONFIG_CACHE";
     /**
      *
      */
