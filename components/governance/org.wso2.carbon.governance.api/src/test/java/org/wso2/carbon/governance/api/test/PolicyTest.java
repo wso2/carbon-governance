@@ -16,17 +16,24 @@
 package org.wso2.carbon.governance.api.test;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.policies.PolicyFilter;
 import org.wso2.carbon.governance.api.policies.PolicyManager;
 import org.wso2.carbon.governance.api.policies.dataobjects.Policy;
 import org.wso2.carbon.governance.api.test.utils.BaseTestCase;
+import org.wso2.carbon.registry.extensions.handlers.utils.WSDLProcessor;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 public class PolicyTest extends BaseTestCase {
+	
+	private static Log log = LogFactory.getLog(WSDLProcessor.class);
+	
+	
     public void testAddPolicy() throws Exception {
         PolicyManager policyManager = new PolicyManager(registry);
 
@@ -42,8 +49,8 @@ public class PolicyTest extends BaseTestCase {
 
         // change the target namespace and check
         String oldPolicyPath = newPolicy.getPath();
-        assertEquals(oldPolicyPath, "/policies/policy.xml");
-        assertTrue(registry.resourceExists("/policies/policy.xml"));
+        assertEquals(oldPolicyPath, "/policies/0.01/policy.xml");
+        assertTrue(registry.resourceExists("/policies/0.01/policy.xml"));
 
 //        newPolicy.setName("my-policy.xml");
 //        policyManager.updatePolicy(newPolicy);
@@ -53,8 +60,8 @@ public class PolicyTest extends BaseTestCase {
 
         // doing an update without changing anything.
         policyManager.updatePolicy(newPolicy);
-
-        assertEquals("/policies/policy.xml", newPolicy.getPath());
+        log.info(newPolicy.getPath());
+        assertEquals("/policies/0.01/policy.xml", newPolicy.getPath());
         assertEquals("0.01", newPolicy.getAttribute("version"));
 
         newPolicy = policyManager.getPolicy(policy.getId());
@@ -103,8 +110,8 @@ public class PolicyTest extends BaseTestCase {
 
         // change the target namespace and check
         String oldPolicyPath = newPolicy.getPath();
-        assertEquals(oldPolicyPath, "/policies/newPolicy.xml");
-        assertTrue(registry.resourceExists("/policies/newPolicy.xml"));
+        assertEquals(oldPolicyPath, "/policies/0.01/newPolicy.xml");
+        assertTrue(registry.resourceExists("/policies/0.01/newPolicy.xml"));
         policyManager.removePolicy(policy.getId());
     }
 
@@ -133,7 +140,7 @@ public class PolicyTest extends BaseTestCase {
 
         // change the target namespace and check
         String oldPolicyPath = newPolicy.getPath();
-        assertEquals(oldPolicyPath, "/policies/"+ policy.getId() + ".xml");
-        assertTrue(registry.resourceExists("/policies/"+ policy.getId() + ".xml"));
+        assertEquals(oldPolicyPath, "/policies/0.01/"+ policy.getId() + ".xml");
+        assertTrue(registry.resourceExists("/policies/0.01/"+ policy.getId() + ".xml"));
     }
 }
