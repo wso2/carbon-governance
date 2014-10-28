@@ -21,21 +21,21 @@ package org.wso2.carbon.governance.registry.extensions.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.core.services.callback.LoginSubscriptionManagerService;
 import org.wso2.carbon.governance.registry.extensions.listeners.RxtLoader;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.securevault.SecretCallbackHandlerService;
+import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 
 /**
  * @scr.component name="org.wso2.governance.registry.extensions.services" immediate="true"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1" policy="dynamic"  bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="login.subscription.service"
- * interface="org.wso2.carbon.core.services.callback.LoginSubscriptionManagerService" cardinality="0..1"
- * policy="dynamic" bind="setLoginSubscriptionManagerService" unbind="unsetLoginSubscriptionManagerService"
  *  @scr.reference name="secret.callback.handler.service"
  * interface="org.wso2.carbon.securevault.SecretCallbackHandlerService"
  * cardinality="1..1"  policy="dynamic"
@@ -51,9 +51,19 @@ public class GovernanceRegistryExtensionsComponent {
     private static SecretCallbackHandlerService secretCallbackHandlerService = null;
 
     protected void activate(ComponentContext componentContext) {
-       if(log.isDebugEnabled()){
-           log.debug("GovernanceRegistryExtensionsComponent activated");
-       }
+        BundleContext bundleCtx = componentContext.getBundleContext();
+        RxtLoader rxtLoader = new RxtLoader();
+        ServiceRegistration tenantMgtListenerSR = bundleCtx.registerService(
+                Axis2ConfigurationContextObserver.class.getName(), rxtLoader, null);
+        if (tenantMgtListenerSR != null) {
+            log.debug("Identity Provider Management - RXTLoader registered");
+        } else {
+            log.error("Identity Provider Management - RXTLoader could not be registered");
+        }
+
+        if(log.isDebugEnabled()){
+            log.debug("GovernanceRegistryExtensionsComponent activated");
+        }
     }
 
     protected void setRegistryService(RegistryService registryService) {
@@ -69,15 +79,6 @@ public class GovernanceRegistryExtensionsComponent {
 
     public static RegistryService getRegistryService() throws RegistryException {
         return registryService;
-    }
-
-    protected void setLoginSubscriptionManagerService(LoginSubscriptionManagerService loginManager) {
-        log.debug("******* LoginSubscriptionManagerServic is set ******* ");
-        loginManager.subscribe(new RxtLoader());
-    }
-
-    protected void unsetLoginSubscriptionManagerService(LoginSubscriptionManagerService loginManager) {
-        log.debug("******* LoginSubscriptionManagerServic is unset ******* ");
     }
 
     protected void setSecretCallbackHandlerService(SecretCallbackHandlerService secretCallbackHandlerService){

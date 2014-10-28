@@ -61,32 +61,34 @@ function changeVisibility() {
  */
 
 function changeLC() {
-    if(document.getElementById('filterBy').value == "null"||document.getElementById('filterBy').value == "1"){
-        var visible = $('lifeCycleList').value;
-        var inout = $('inoutListLC').value;
-        var lc_state = document.getElementById('searchVal3').value;
-        if(visible == "Any"|| inout=="out" ){
-            $('stateList').style.display = "none";
-            $('inoutListLCState').style.display = "none";
-        }else{
-            var stateHtml = null;
-            new Ajax.Request('../generic/lc_state_list_gen_ajaxprocessor.jsp', {
-                method:'post',
-                parameters: {LCName: visible, LCState: lc_state},
+    if(document.getElementById('filterBy')){
+        if(document.getElementById('filterBy').value == "null"||document.getElementById('filterBy').value == "1"){
+            var visible = $('lifeCycleList').value;
+            var inout = $('inoutListLC').value;
+            var lc_state = document.getElementById('searchVal3').value;
+            if(visible == "Any"|| inout=="out" ){
+                $('stateList').style.display = "none";
+                $('inoutListLCState').style.display = "none";
+            }else{
+                var stateHtml = null;
+                new Ajax.Request('../generic/lc_state_list_gen_ajaxprocessor.jsp', {
+                    method:'post',
+                    parameters: {LCName: visible, LCState: lc_state},
 
-                onSuccess: function(data) {
-                    stateHtml =  eval(data).responseText;
-                    $('stateList').outerHTML = "<select id='stateList'>" + stateHtml + "</select>";
-                    $('stateList').style.display = "";
-                    $('inoutListLCState').style.display = "";
-                },
-                onFailure: function(transport) {
-                    CARBON.showErrorDialog("Failed to load all states of "+visible);
-                }
-            });
+                    onSuccess: function(data) {
+                        stateHtml =  eval(data).responseText;
+                        $('stateList').outerHTML = "<select id='stateList'>" + stateHtml + "</select>";
+                        $('stateList').style.display = "";
+                        $('inoutListLCState').style.display = "";
+                    },
+                    onFailure: function(transport) {
+                        CARBON.showErrorDialog("Failed to load all states of "+visible);
+                    }
+                });
+            }
+        }else{
+            setVisibility();
         }
-    }else{
-        setVisibility();
     }
 }
 
