@@ -636,8 +636,7 @@
                             <a onclick="downloadDependencies('<%=artifact.getPath()%>')"  href="#"
                                 class="icon-link registryWriteOperation" style="background-image:url(../resources/images/icon-download.jpg);"><fmt:message key="download"/></a>
                             <a  href="../../greg-impact/?path=<%=URLEncoder.encode(artifact.getPath(), "UTF-8")%>"
-                                class="icon-link registryWriteOperation" style="background-image:url(../generic/images/services1.gif);"><fmt:message key="impact.analysis"/></a>
-
+                                class="icon-link" style="background-image:url(../relations/images/dep-tree.gif);"><fmt:message key="impact.analysis"/></a>
                         </td>
                         <%
                         } else {
