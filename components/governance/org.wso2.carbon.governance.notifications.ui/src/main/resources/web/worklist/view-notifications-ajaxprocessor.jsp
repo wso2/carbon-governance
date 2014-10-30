@@ -59,7 +59,6 @@ under the License.
                 <div class="notificationElement <% if(index%2 == 0) {%>odd<% } %>">
                     <ul>
                         <li class="notificationCell1">#<%=workItem.getId()%></li>
-                        <li class="notificationCell2"><fmt:message key="work.list.role"/>: <%=workItem.getRole()%></li>
                         <li class="notificationCell3"><%=workItem.getCreatedTime().getTime()%></li>
                     </ul>
                     <div style="clear:both"></div>
