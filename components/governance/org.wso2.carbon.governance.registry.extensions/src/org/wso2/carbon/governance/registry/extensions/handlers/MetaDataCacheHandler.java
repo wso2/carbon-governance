@@ -3,7 +3,6 @@ package org.wso2.carbon.governance.registry.extensions.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.governance.api.cache.ArtifactCache;
 import org.wso2.carbon.governance.api.cache.ArtifactCacheManager;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
