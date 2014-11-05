@@ -648,6 +648,49 @@ public class GovernanceUtils {
      */
     public static String getArtifactPath(Registry registry, String artifactId)
             throws GovernanceException {
+        Cache<String, String> cache  = RegistryUtils.getUUIDCache(RegistryConstants.UUID_CACHE_ID);
+        if(cache.containsKey(artifactId)){
+            return cache.get(artifactId);
+        }else {
+            try {
+
+                String sql = "SELECT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_UUID = ?";
+
+                String[] result;
+                Map<String, String> parameter = new HashMap<String, String>();
+                parameter.put("1", artifactId);
+                parameter.put("query", sql);
+                result = registry.executeQuery(null, parameter).getChildren();
+
+                if (result != null && result.length == 1) {
+                    cache.put(artifactId,result[0]);
+                    return result[0];
+                }
+                return null;
+            } catch (RegistryException e) {
+                String msg = "Error in getting the path from the registry. Execute query failed with message : "
+                        + e.getMessage();
+                log.error(msg, e);
+                throw new GovernanceException(msg, e);
+            }
+        }
+    }
+
+
+    /**
+     * Method to obtain the artifact path of a governance artifact on the registry.
+     * without going through the UUID cache
+     *
+     * @param registry   the registry instance.
+     * @param artifactId the identifier of the artifact.
+     * @return the artifact path.
+     * @throws GovernanceException if the operation failed.
+     * TODO: This method is added since UUID cache cannot be properly implemented without proper
+     * TODO: changes in the registry core. getArtifactPath needs to be moved into the registry core
+     * TODO: and UUID caching should be handled by the cacheBackedRegistry and cachingHandler
+     */
+    public static String getDirectArtifactPath(Registry registry, String artifactId)
+            throws GovernanceException {
 
         try {
             String sql = "SELECT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_UUID = ?";
