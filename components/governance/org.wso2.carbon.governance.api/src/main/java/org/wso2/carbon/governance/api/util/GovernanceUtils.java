@@ -60,6 +60,7 @@ import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.cache.Cache;
 import javax.cache.CacheManager;
@@ -68,6 +69,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
 import java.io.StringReader;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -643,32 +645,41 @@ public class GovernanceUtils {
      */
     public static String getArtifactPath(Registry registry, String artifactId)
             throws GovernanceException {
-        Cache<String, String> cache  = RegistryUtils.getUUIDCache(RegistryConstants.UUID_CACHE_ID);
-        if(cache.containsKey(artifactId)){
-            return cache.get(artifactId);
-        }else {
-            try {
-
-                String sql = "SELECT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_UUID = ?";
-
-                String[] result;
-                Map<String, String> parameter = new HashMap<String, String>();
-                parameter.put("1", artifactId);
-                parameter.put("query", sql);
-                result = registry.executeQuery(null, parameter).getChildren();
-
-                if (result != null && result.length == 1) {
-                    cache.put(artifactId,result[0]);
-                    return result[0];
-                }
-                return null;
-            } catch (RegistryException e) {
-                String msg = "Error in getting the path from the registry. Execute query failed with message : "
-                        + e.getMessage();
-                log.error(msg, e);
-                throw new GovernanceException(msg, e);
-            }
-        }
+    	Cache<String, String> cache;
+    	try{
+    		PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(((UserRegistry) registry).getTenantId());
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantUtils.getTenantDomain(((UserRegistry) registry).getUserName()));
+            cache  = RegistryUtils.getUUIDCache(RegistryConstants.UUID_CACHE_ID);
+            if(cache.containsKey(artifactId)){
+                return cache.get(artifactId);
+            }           
+    	    	
+    		try {
+    
+    			String sql = "SELECT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_UUID = ?";
+    
+    			String[] result;
+    			Map<String, String> parameter = new HashMap<String, String>();
+    			parameter.put("1", artifactId);
+    			parameter.put("query", sql);
+    			result = registry.executeQuery(null, parameter).getChildren();
+    
+    			if (result != null && result.length == 1) {
+    				cache.put(artifactId, result[0]);
+    				return result[0];
+    			}
+    			return null;
+    		} catch (RegistryException e) {
+    			String msg =
+    			             "Error in getting the path from the registry. Execute query failed with message : " +
+    			                     e.getMessage();
+    			log.error(msg, e);
+    			throw new GovernanceException(msg, e);
+    		}
+		} finally {
+    		PrivilegedCarbonContext.endTenantFlow();
+    	}
     }
 
 
