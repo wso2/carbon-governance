@@ -11,11 +11,13 @@ import org.wso2.carbon.governance.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 
+import javax.cache.Cache;
 import java.lang.String;
 
 /**
@@ -51,7 +53,9 @@ public class MetaDataCacheHandler extends Handler {
         String mediaType = resource.getMediaType();
         String artifactPath = null;
         try {
-            artifactPath = GovernanceUtils.getArtifactPath(requestContext.getRegistry(), resource.getUUID());
+            //  artifactPath = GovernanceUtils.getArtifactPath(requestContext.getRegistry(), resource.getUUID());
+            artifactPath = GovernanceUtils.getDirectArtifactPath(RegistryCoreServiceComponent.
+                    getRegistryService().getGovernanceSystemRegistry(), resource.getUUID());
         } catch (GovernanceException e) {
             String msg = "Failed to get path of artifact id = " + resource.getUUID();
             log.error(msg, e);

@@ -20,6 +20,7 @@
     
     <readOnly>false</readOnly>
     <registryRoot>/</registryRoot>
+    <enableCache>true</enableCache>
 
     <dbConfig name="derby-embedded-db">
         <url>jdbc:derby:databasetest/CARBON_TEST;create=true</url>
