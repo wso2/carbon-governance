@@ -31,7 +31,7 @@ under the License.
         return;
     }
 %>
-<script type="text/javascript" src="../ajax/js/prototype.js"></script>
+<!-- <script type="text/javascript" src="../ajax/js/prototype.js"></script> -->
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
 <script type="text/javascript" src="../registry_common/js/registry_common.js"></script>
@@ -45,42 +45,43 @@ under the License.
         var description = jQuery('#workListDescriptionInput').val();
         var priority = jQuery('#workListPriorityInput').val();
         sessionAwareFunction(function() {
-            new Ajax.Request('../worklist/create-task-ajaxprocessor.jsp', {
-				asynchronous: false,
-                method: 'post',
-                parameters: {role: role, description: description, priority: priority},
-                onSuccess: function(transport) {
-                },
-                onFailure: function(transport) {
-                    showRegistryError(transport.responseText);
-                }
-            });
+            jQuery.ajax({
+                url:"../worklist/create-task-ajaxprocessor.jsp",
+                async: false,
+                type: "post",
+                data:{role: role, description: description, priority: priority}
+            })
+                    .fail(function (jqXHR, textStatus, errorThrown){
+                        showRegistryError(jqXHR.responseText);
+                    });
         }, org_wso2_carbon_governance_notifications_ui_jsi18n["session.timed.out"]);
     }
 
     function completeTask(id) {
         sessionAwareFunction(function() {
-            new Ajax.Request('../worklist/complete-task-ajaxprocessor.jsp', {
-                method: 'post',
-                parameters: {id: id},
-                onSuccess: function(transport) {
-                	updateNotifications();
-                },
-                onFailure: function(transport) {
-                    showRegistryError(transport.responseText);
-                }
-            });
+            jQuery.ajax({
+                url:"../worklist/complete-task-ajaxprocessor.jsp",
+                type: "post",
+                data:{id: id}
+            })
+                .done(function() {
+                    updateNotifications();
+                })
+                .fail(function (jqXHR, textStatus, errorThrown){
+                    showRegistryError(jqXHR.responseText);
+                });
         }, org_wso2_carbon_governance_notifications_ui_jsi18n["session.timed.out"]);
         jQuery('#notificationPopupView').toggle('slow');
     }
 
     function updateNotifications() {
-    	 new Ajax.Request('../worklist/view-notifications-ajaxprocessor.jsp', {
-    		method: 'post',
-         	onSuccess: function(transport) {
-         		jQuery('#view-notifications-container').html(transport.responseText);
-            }
-         });
+    	jQuery.ajax({
+            url:"../worklist/view-notifications-ajaxprocessor.jsp",
+            type: "post"
+        })
+            .done(function (response, textStatus, jqXHR){
+                jQuery('#view-notifications-container').html(response);
+            });
     }
 
 </script>

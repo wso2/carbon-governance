@@ -23,6 +23,7 @@
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+<%@ page import="org.wso2.carbon.registry.extensions.utils.CommonConstants" %>
 <script type="text/javascript" src="../resources/js/resource_util.js"></script>
 <script type="text/javascript" src="../yui/build/utilities/utilities.js"></script>
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
@@ -209,6 +210,15 @@
             var mediatype = rForm.mediaType.value;
             var version = document.getElementById('uversion').value;
             
+            //validating the version field.
+            if (version.length > 0) {
+                var regexp = new RegExp("<%=CommonConstants.SERVICE_VERSION_REGEX.replace("\\","\\\\") %>", "i");
+                if (!version.match(regexp)) {
+                    CARBON.showWarningDialog(org_wso2_carbon_governance_generic_ui_jsi18n["version.error.1"]
+                            + " " + version + " " + org_wso2_carbon_governance_generic_ui_jsi18n["version.error.2"]);
+                    return;
+                }
+            }
             if (reason == "") {
                reason += validateGenericResourceExists(resourceName,mediatype,version);
             }

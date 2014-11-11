@@ -19,7 +19,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
-import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jaxen.JaxenException;
@@ -42,14 +41,12 @@ import org.wso2.carbon.governance.api.schema.dataobjects.Schema;
 import org.wso2.carbon.governance.api.schema.dataobjects.SchemaImpl;
 import org.wso2.carbon.governance.api.wsdls.dataobjects.Wsdl;
 import org.wso2.carbon.governance.api.wsdls.dataobjects.WsdlImpl;
-import org.wso2.carbon.registry.api.GhostResource;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
-import org.wso2.carbon.registry.core.caching.RegistryCacheKey;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
@@ -63,18 +60,18 @@ import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.cache.Cache;
-import javax.cache.CacheConfiguration;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
 import java.io.StringReader;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -647,6 +644,58 @@ public class GovernanceUtils {
      * @throws GovernanceException if the operation failed.
      */
     public static String getArtifactPath(Registry registry, String artifactId)
+            throws GovernanceException {
+    	Cache<String, String> cache;
+    	try{
+    		PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(((UserRegistry) registry).getTenantId());
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantUtils.getTenantDomain(((UserRegistry) registry).getUserName()));
+            cache  = RegistryUtils.getUUIDCache(RegistryConstants.UUID_CACHE_ID);
+            if(cache.containsKey(artifactId)){
+                return cache.get(artifactId);
+            }           
+    	    	
+    		try {
+    
+    			String sql = "SELECT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_UUID = ?";
+    
+    			String[] result;
+    			Map<String, String> parameter = new HashMap<String, String>();
+    			parameter.put("1", artifactId);
+    			parameter.put("query", sql);
+    			result = registry.executeQuery(null, parameter).getChildren();
+    
+    			if (result != null && result.length == 1) {
+    				cache.put(artifactId, result[0]);
+    				return result[0];
+    			}
+    			return null;
+    		} catch (RegistryException e) {
+    			String msg =
+    			             "Error in getting the path from the registry. Execute query failed with message : " +
+    			                     e.getMessage();
+    			log.error(msg, e);
+    			throw new GovernanceException(msg, e);
+    		}
+		} finally {
+    		PrivilegedCarbonContext.endTenantFlow();
+    	}
+    }
+
+
+    /**
+     * Method to obtain the artifact path of a governance artifact on the registry.
+     * without going through the UUID cache
+     *
+     * @param registry   the registry instance.
+     * @param artifactId the identifier of the artifact.
+     * @return the artifact path.
+     * @throws GovernanceException if the operation failed.
+     * TODO: This method is added since UUID cache cannot be properly implemented without proper
+     * TODO: changes in the registry core. getArtifactPath needs to be moved into the registry core
+     * TODO: and UUID caching should be handled by the cacheBackedRegistry and cachingHandler
+     */
+    public static String getDirectArtifactPath(Registry registry, String artifactId)
             throws GovernanceException {
 
         try {

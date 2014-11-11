@@ -440,8 +440,8 @@ public class DefaultLifeCycle extends Aspect {
 	            return;
 	        }
 	//        Persisting the old resource
-	        if(requestContext.getResourcePath().getPath().equals(resourcePath)
-	               && requestContext.getResource().equals(resource))
+	        if(!requestContext.getResourcePath().getPath().equals(resourcePath)
+	               && !requestContext.getResource().equals(resource))
 	            requestContext.getRegistry().put(resourcePath,resource);
 	
 	        resource = requestContext.getResource();
@@ -464,6 +464,7 @@ public class DefaultLifeCycle extends Aspect {
 	        if (!preserveOldResource) {
 	            requestContext.getRegistry().delete(resourcePath);
 	        }
+    //            Persisting the new resource
 	        requestContext.getRegistry().put(newResourcePath, resource);
 	        
 	//        adding the logs to the registry

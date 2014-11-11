@@ -1552,23 +1552,23 @@ public class GenericUIGenerator {
                     * The way they are made unique is for "_' + "+widgetName+"Count is appended
                     * to each name and id.*/
 
-                	builder.append("jQuery('*',theTr).each(function(){" +
-                            "var idAttr = jQuery(this).attr('id');" +
-                            "if (typeof idAttr !== typeof undefined && idAttr !== false && idAttr != \"\") {" +
-                            "idAttr = jQuery(this).attr('id') + '_' + "+widgetName+"Count;" +
-                            "var jdateId = '#' + jQuery(this).id;" +
-                            "if (theTr.innerHTML.indexOf(jdateId) !== -1) {" +
-                            "dateArr[dateArrSize] = idAttr;" +
-                            "dateArrSize++;" +
-                            "}" +
-                            "jQuery(this).attr('id',idAttr);" +
-                            "}" +
-                            "var nameAttr = jQuery(this).attr('name');" +
-                            "if (typeof nameAttr !== typeof undefined && nameAttr !== false && nameAttr != \"\") {" +
-                            "nameAttr = jQuery(this).attr('name') +'_'+ "+widgetName+"Count;" +
-                            "jQuery(this).attr('name',nameAttr);" +
-                            "}" +
-                            "});");
+                	builder.append("jQuery('*',theTr).each(function(){");
+                    builder.append("var idAttr = jQuery(this).attr('id');");
+                    builder.append("if (typeof idAttr !== typeof undefined && idAttr !== false && idAttr != \"\") {");
+                    builder.append("idAttr = jQuery(this).attr('id')); '_' + "+widgetName+"Count;");
+                    builder.append("var jdateId = '#' + jQuery(this).id;");
+                    builder.append("if (theTr.innerHTML.indexOf(jdateId) !== -1) {");
+                    builder.append("dateArr[dateArrSize] = idAttr;");
+                    builder.append("dateArrSize++;");
+                    builder.append("}");
+                    builder.append("jQuery(this).attr('id',idAttr);");
+                    builder.append("}");
+                    builder.append("var nameAttr = jQuery(this).attr('name');");
+                    builder.append("if (typeof nameAttr !== typeof undefined && nameAttr !== false && nameAttr != \"\") {");
+                    builder.append("nameAttr = jQuery(this).attr('name') +'_'+ "+widgetName+"Count;");
+                    builder.append("jQuery(this).attr('name',nameAttr);");
+                    builder.append("}");
+                    builder.append("});");
                 	
                     builder.append("endpointMgt.appendChild(theTr);");
                     

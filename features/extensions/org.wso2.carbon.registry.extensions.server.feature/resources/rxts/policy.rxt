@@ -1,4 +1,8 @@
 <artifactType type="application/policy+xml" fileExtension="xml" shortName="policy" singularLabel="Policy" pluralLabel="Policies" hasNamespace="false" iconSet="30">
     <storagePath>/trunk/policies/@{name}</storagePath>
-    <content href="default"/>
+    <content href="default">
+            <field type="text">
+                <name label="Version">Version</name>
+            </field>
+    </content>
 </artifactType>
