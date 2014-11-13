@@ -97,7 +97,6 @@ public class DiscoveryServiceUtils {
         Service newService = serviceManager.newService(new QName(
                 DiscoveryConstants.WS_DISCOVERY_NAMESPACE, serviceName));
         newService.setId(serviceId);
-        newService.addAttribute("overview_version", "1.0.0");
 
         // Set the version if provided
         if (service.getMetadataVersion() != -1) {
