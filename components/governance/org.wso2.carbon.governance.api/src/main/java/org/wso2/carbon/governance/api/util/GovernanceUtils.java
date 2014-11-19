@@ -935,7 +935,7 @@ public class GovernanceUtils {
                                 GenericArtifactImpl artifact;
                                 if (mediaType.matches("application/vnd\\.[a-zA-Z0-9.-]+\\+xml")) {
                                     byte[] contentBytes = (byte[]) artifactResource.getContent();
-                                    if (contentBytes == null) {
+                                    if (contentBytes == null || contentBytes.length == 0) {
                                         throw new GovernanceException(
                                                 "Unable to read payload of governance artifact " +
                                                         "at path: " + artifactPath
@@ -1585,8 +1585,9 @@ public class GovernanceUtils {
      * @return search result
      * @throws GovernanceException if the operation failed
      */
-    public static List<GovernanceArtifact> findGovernanceArtifacts(
-            Map<String, List<String>> criteria, Registry registry, String mediaType) throws GovernanceException {
+    public static List<GovernanceArtifact> findGovernanceArtifacts(Map<String, List<String>> criteria,
+                                                                   Registry registry, String mediaType)
+            throws GovernanceException {
         if (getAttributeSearchService() == null) {
             throw new GovernanceException("Attribute Search Service not Found");
         }
@@ -1609,17 +1610,27 @@ public class GovernanceUtils {
 
         try {
             ResourceData[] results = getAttributeSearchService().search(fields);
+            int errorCount = 0; // We use this to check how many errors occurred.
             for (ResourceData result : results) {
-                GovernanceArtifact governanceArtifact = retrieveGovernanceArtifactByPath(
-                        registry,
-                        result.getResourcePath().substring(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH.length()));
+                GovernanceArtifact governanceArtifact = null;
+                String path = result.getResourcePath().substring(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH.length());
+                try {
+                    governanceArtifact = retrieveGovernanceArtifactByPath(registry, path);
+                } catch (GovernanceException e) {
+                    // We do not through any exception here. Only logging is done.
+                    // We increase the error count for each error. If all the paths failed, then we throw an error
+                    errorCount++;
+                    log.error("Error occurred while retrieving governance artifact by path : " + path, e);
+                }
                 if (governanceArtifact != null) {
                     artifacts.add(governanceArtifact);
                 }
+            } if (errorCount == results.length) {
+                // This means that all the paths have failed. So we throw an error.
+                throw new GovernanceException("Error occurred while retrieving all the governance artifacts");
             }
         } catch (RegistryException e) {
             throw new GovernanceException("Unable to search by attribute", e);
-
         }
         return artifacts;
     }
