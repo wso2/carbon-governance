@@ -1151,7 +1151,7 @@
         <event.version>${project.version}</event.version>
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>1.4.1.wso2v1</version.solr>
+        <version.solr>4.7.2.wso2v1</version.solr>
         <derby.version>10.4.2.0</derby.version>
         <activation.version>1.1</activation.version>
         <javamail.version>1.4</javamail.version>
