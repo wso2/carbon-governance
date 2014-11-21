@@ -272,8 +272,7 @@ public class CommonUtil {
 
         if (isLifecycleNameInUse(name, registry, rootRegistry)){
             String msg = String.format("The lifecycle name %s is already in use", name);
-            log.error(msg);
-            return false;
+            throw new RegistryException(msg);
         }
 
         String path = getContextRoot() + name;
@@ -447,6 +446,17 @@ public class CommonUtil {
         CommonUtil.contextRoot = contextRoot;
     }
 
+    /**
+     * This method reads all the lifecycle configuration files from a folder and add the already added configurations
+     * as aspects.
+     *
+     * @param registry     tenant registry
+     * @param rootRegistry root registry
+     * @return
+     * @throws RegistryException
+     * @throws FileNotFoundException
+     * @throws XMLStreamException
+     */
     public static boolean addDefaultLifecyclesIfNotAvailable(Registry registry, Registry rootRegistry)
             throws RegistryException, FileNotFoundException, XMLStreamException {
 
@@ -486,10 +496,24 @@ public class CommonUtil {
                     log.error(msg, e);
                 }
                 if ((fileContent != null) && !fileContent.isEmpty()) {
-                    addLifecycle(fileContent, registry, rootRegistry);
+                    try {
+                        addLifecycle(fileContent, registry, rootRegistry);
+                    } catch (RegistryException e) {
+                        String msg = String.format("Error while adding aspect %s ", fileName);
+                        log.error(msg, e);
+                        /* The exception is not thrown, because if we throw the error, the for loop will be broken and
+                        other files won't be read */
+                    }
                 }
             } else {
-                generateAspect(resourceName, registry);
+                try {
+                    generateAspect(resourceName, registry);
+                } catch (Exception e) {
+                    String msg = String.format("Error while generating aspect %s ", fileName);
+                    log.error(msg, e);
+                    /* The exception is not thrown, because if we throw the error, the for loop will be broken and
+                        other aspects won't be added */
+                }
             }
         }
 

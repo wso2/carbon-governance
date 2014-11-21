@@ -47,7 +47,9 @@ public class LCMServiceComponent {
         ServiceRegistration tenantMgtListenerSR = bundleContext.registerService(
                 Axis2ConfigurationContextObserver.class.getName(), lifecycleLoader, null);
         if (tenantMgtListenerSR != null) {
-            log.debug("Governance Life Cycle Management - LifecycleLoader registered");
+            if(log.isDebugEnabled()) {
+                log.debug("Governance Life Cycle Management - LifecycleLoader registered");
+            }
         } else {
             log.error("Governance Life Cycle Management - LifecycleLoader could not be registered");
         }
