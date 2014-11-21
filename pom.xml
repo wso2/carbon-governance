@@ -793,14 +793,14 @@
                 <version>${orbit.version.axis2}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.axis2</groupId>
+                <groupId>org.apache.axis2.transport</groupId>
                 <artifactId>axis2-transport-mail</artifactId>
                 <version>${axis2-transports.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-transport-base</artifactId>
-                <version>${axis2-transports.version}</version>
+                <version>${axis2.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.neethi.wso2</groupId>
@@ -1098,20 +1098,20 @@
         <!-- Axis2 Version -->
         <axis2.wso2.version>1.6.1.wso2v11-SNAPSHOT</axis2.wso2.version>
         <orbit.version.axis2>1.6.1.wso2v11-SNAPSHOT</orbit.version.axis2>
-        <axis2-transports.version>1.6.1-wso2v11-SNAPSHOT</axis2-transports.version>
+        <axis2-transports.version>1.1.0-wso2v10-SNAPSHOT</axis2-transports.version>
         <axis2.osgi.version.range>[1.6.1.wso2v11-SNAPSHOT, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>
         <rampart.wso2.version>1.6.1.wso2v9</rampart.wso2.version>
 
         <!-- Apache Axiom -->
-        <axiom.version>1.2.11-wso2v5-SNAPSHOT</axiom.version>
-        <orbit.version.axiom>1.2.11.wso2v5-SNAPSHOT</orbit.version.axiom>
-        <axiom.wso2.version>1.2.11.wso2v5-SNAPSHOT</axiom.wso2.version>
-        <exp.pkg.version.axiom>1.2.11.wso2v5-SNAPSHOT</exp.pkg.version.axiom>
-        <imp.pkg.version.axiom>[1.2.11.wso2v5-SNAPSHOT, 1.3.0)</imp.pkg.version.axiom>
-        <axiom.osgi.version.range>[1.2.11.wso2v5-SNAPSHOT, 1.3.0)</axiom.osgi.version.range>
-        <version.axiom>1.2.11-wso2v5-SNAPSHOT</version.axiom>
+        <axiom.version>1.2.11-wso2v5</axiom.version>
+        <orbit.version.axiom>1.2.11.wso2v5</orbit.version.axiom>
+        <axiom.wso2.version>1.2.11.wso2v5</axiom.wso2.version>
+        <exp.pkg.version.axiom>1.2.11.wso2v5</exp.pkg.version.axiom>
+        <imp.pkg.version.axiom>[1.2.11.wso2v5, 1.3.0)</imp.pkg.version.axiom>
+        <axiom.osgi.version.range>[1.2.11.wso2v5, 1.3.0)</axiom.osgi.version.range>
+        <version.axiom>1.2.11-wso2v5</version.axiom>
 
         <!-- XmlSchema Versions -->
         <orbit.version.xmlschema>1.4.7.wso2v2</orbit.version.xmlschema>
