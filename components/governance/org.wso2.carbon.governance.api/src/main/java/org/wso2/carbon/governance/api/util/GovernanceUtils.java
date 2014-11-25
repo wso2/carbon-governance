@@ -58,6 +58,9 @@ import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
+import org.wso2.carbon.user.api.TenantManager;
+import org.wso2.carbon.user.api.UserRealmService;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -649,7 +652,12 @@ public class GovernanceUtils {
     	try{
     		PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(((UserRegistry) registry).getTenantId());
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantUtils.getTenantDomain(((UserRegistry) registry).getUserName()));
+            String tenantDomain  = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+            if (tenantDomain == null) {            	
+            	tenantDomain = MultitenantUtils.getTenantDomain(((UserRegistry) registry).getUserName());
+            }
+            
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             cache  = RegistryUtils.getUUIDCache(RegistryConstants.UUID_CACHE_ID);
             if(cache.containsKey(artifactId)){
                 return cache.get(artifactId);
