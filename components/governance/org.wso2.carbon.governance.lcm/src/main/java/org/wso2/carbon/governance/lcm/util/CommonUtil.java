@@ -20,16 +20,22 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.governance.lcm.beans.LifecycleBean;
-import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.Aspect;
 import org.wso2.carbon.registry.core.Collection;
+import org.wso2.carbon.registry.core.CollectionImpl;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.config.RegistryConfigurationProcessor;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.config.StaticConfiguration;
@@ -49,8 +55,18 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class CommonUtil {
 
@@ -268,8 +284,10 @@ public class CommonUtil {
         validateOMContent(element);
         name = element.getAttributeValue(new QName("name"));
 
-        if (isLifecycleNameInUse(name, registry, rootRegistry))
-            throw new RegistryException("The added lifecycle name is already in use!");
+        if (isLifecycleNameInUse(name, registry, rootRegistry)){
+            String msg = String.format("The lifecycle name %s is already in use", name);
+            throw new RegistryException(msg);
+        }
 
         String path = getContextRoot() + name;
         Resource resource;
@@ -442,46 +460,86 @@ public class CommonUtil {
         CommonUtil.contextRoot = contextRoot;
     }
 
-    public static boolean addDefaultLifecyclesIfNotAvailable(Registry registry, Registry rootRegistry,
-                                                             boolean generateOnly)
+    /**
+     * This method reads all the lifecycle configuration files from a folder and add the already added configurations
+     * as aspects.
+     *
+     * @param registry     tenant registry
+     * @param rootRegistry root registry
+     * @return
+     * @throws RegistryException
+     * @throws FileNotFoundException
+     * @throws XMLStreamException
+     */
+    public static boolean addDefaultLifecyclesIfNotAvailable(Registry registry, Registry rootRegistry)
             throws RegistryException, FileNotFoundException, XMLStreamException {
-        if (!generateOnly && !registry.resourceExists(RegistryConstants.LIFECYCLE_CONFIGURATION_PATH)) {
+
+        if (!registry.resourceExists(RegistryConstants.LIFECYCLE_CONFIGURATION_PATH)) {
             Collection lifeCycleConfigurationCollection = new CollectionImpl();
-            String description = "Lifecycle configurations are stored here.";
-            lifeCycleConfigurationCollection.setDescription(description);
             registry.put(RegistryConstants.LIFECYCLE_CONFIGURATION_PATH, lifeCycleConfigurationCollection);
-
-            String defaultLifecycleConfig = System.getProperty(ServerConstants.CARBON_HOME) + File.separator+ "repository" +
-                    File.separator + "resources" + File.separator + "lifecycles" + File.separator + "configurations.xml";
-
-            StringBuilder sb = new StringBuilder();
-            try {
-                BufferedReader in = new BufferedReader(new FileReader(defaultLifecycleConfig));
-                String str;
-                while ((str = in.readLine()) != null) {
-                    sb.append(str).append("\n");
-                }
-                in.close();
-            } catch (IOException e) {
-                throw new RegistryException(e.toString());
-            }
-
-            addLifecycle(sb.toString(), registry, rootRegistry);
         }
-        else {
-            // invoke all the aspects with configurations for lifecycles
-            Resource lifecycleRoot = registry.get(getContextRoot());
-            if (!(lifecycleRoot instanceof Collection)) {
-                String msg = "Failed to continue as the lifecycle configuration root: " + getContextRoot() +
-                        " is not a collection.";
-                log.error(msg);
-                throw new RegistryException(msg);
+
+        String defaultLifecycleConfigLocation = getDefaltLifecycleConfigLocation();
+        File defaultLifecycleConfigDirectory = new File(defaultLifecycleConfigLocation);
+        if (!defaultLifecycleConfigDirectory.exists()) {
+            return false;
+        }
+
+        FilenameFilter filenameFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String name) {
+                return name.endsWith(".xml");
             }
-            Collection lifecycleRootCol = (Collection)lifecycleRoot;
-            String[] lifecycleConfigPaths = lifecycleRootCol.getChildren();
-            if (lifecycleConfigPaths != null) {
-                for (String lifecycleConfigPath: lifecycleConfigPaths) {
-                    generateAspect(lifecycleConfigPath, registry);
+        };
+        File[] lifecycleConfigFiles = defaultLifecycleConfigDirectory.listFiles(filenameFilter);
+        if (lifecycleConfigFiles.length == 0) {
+            return false;
+        }
+
+        for (File lifecycleConfigFile : lifecycleConfigFiles) {
+            String fileName = FilenameUtils.removeExtension(lifecycleConfigFile.getName());
+            //here configuration file name should be same as aspect name
+            String resourcePath = RegistryConstants.LIFECYCLE_CONFIGURATION_PATH + fileName;
+            String fileContent = null;
+
+            //here we are checking whether the resource is already exists in registry. Otherwise we have to read all the
+            //files and check
+            if (!registry.resourceExists(resourcePath)) {
+                try {
+                    fileContent = FileUtils.readFileToString(lifecycleConfigFile);
+                } catch (IOException e) {
+                    String msg = String.format("Error while reading lifecycle config file %s ", fileName);
+                    log.error(msg, e);
+                    /* The exception is not thrown, because if we throw the error, the for loop will be broken and
+                    other files won't be read */
+                }
+                if ((fileContent != null) && !fileContent.isEmpty()) {
+                    try {
+                        //here we are checking the file name and aspect name to enforce that, both are same
+                        OMElement omElement = buildOMElement(fileContent);
+                        String aspectName = omElement.getAttributeValue(new QName("name"));
+                        if(!fileName.equalsIgnoreCase(aspectName)){
+                            String msg = String.format("Configuration file name %s not matched with aspect name %s ", fileName, aspectName );
+                            log.error(msg);
+                            /* The error is not thrown, because if we throw the error, the for loop will be broken and
+                            other files won't be read */
+                        }
+                        addLifecycle(fileContent, registry, rootRegistry);
+                    } catch (RegistryException e) {
+                        String msg = String.format("Error while adding aspect %s ", fileName);
+                        log.error(msg, e);
+                        /* The exception is not thrown, because if we throw the error, the for loop will be broken and
+                        other files won't be read */
+                    }
+                }
+            } else {
+                try {
+                    generateAspect(resourcePath, registry);
+                } catch (Exception e) {
+                    String msg = String.format("Error while generating aspect %s ", fileName);
+                    log.error(msg, e);
+                    /* The exception is not thrown, because if we throw the error, the for loop will be broken and
+                        other aspects won't be added */
                 }
             }
         }
@@ -489,7 +547,13 @@ public class CommonUtil {
         return true;
     }
 
-    public static boolean isLifecycleNameInUse(String name, Registry registry, Registry rootRegistry) throws RegistryException, XMLStreamException {
+    public static String getDefaltLifecycleConfigLocation() {
+        return System.getProperty(ServerConstants.CARBON_HOME) + File.separator + "repository" +
+               File.separator + "resources" + File.separator + "lifecycles";
+    }
+
+    public static boolean isLifecycleNameInUse(String name, Registry registry, Registry rootRegistry)
+            throws RegistryException, XMLStreamException {
         if (name.contains("<aspect")) {
             OMElement element = AXIOMUtil.stringToOM(name);
             if (element != null) {
