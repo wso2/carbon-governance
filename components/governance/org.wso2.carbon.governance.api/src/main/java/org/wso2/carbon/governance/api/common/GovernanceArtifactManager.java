@@ -874,7 +874,7 @@ public class GovernanceArtifactManager {
                 log.error("Error occurred while retrieving governance artifact by path : " + path, e);
             }
         }
-        if (errorCount == paths.length) {
+        if (errorCount != 0 && errorCount == paths.length) {
             // This means that all the paths have failed. So we throw an error.
             throw new GovernanceException("Error occurred while retrieving all the governance artifacts");
         }

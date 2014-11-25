@@ -1625,7 +1625,7 @@ public class GovernanceUtils {
                 if (governanceArtifact != null) {
                     artifacts.add(governanceArtifact);
                 }
-            } if (errorCount == results.length) {
+            } if (errorCount != 0 && errorCount == results.length) {
                 // This means that all the paths have failed. So we throw an error.
                 throw new GovernanceException("Error occurred while retrieving all the governance artifacts");
             }
