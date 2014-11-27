@@ -65,6 +65,13 @@
         </xs:sequence>
         <xs:attribute name="default" type="xs:string"/>
         <xs:attribute name="template" type="xs:string"/>
+        <xs:attribute name="type" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="text"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
     </xs:complexType>
 
     <xs:complexType mixed="true" name="nameType">
