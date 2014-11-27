@@ -518,13 +518,16 @@ public class CommonUtil {
                         //here we are checking the file name and aspect name to enforce that, both are same
                         OMElement omElement = buildOMElement(fileContent);
                         String aspectName = omElement.getAttributeValue(new QName("name"));
-                        if(!fileName.equalsIgnoreCase(aspectName)){
-                            String msg = String.format("Configuration file name %s not matched with aspect name %s ", fileName, aspectName );
+                        if (fileName.equalsIgnoreCase(aspectName)) {
+                            addLifecycle(fileContent, registry, rootRegistry);
+                        } else {
+                            String msg = String.format("Configuration file name %s not matched with aspect name %s ",
+                                                       fileName, aspectName);
                             log.error(msg);
                             /* The error is not thrown, because if we throw the error, the for loop will be broken and
                             other files won't be read */
                         }
-                        addLifecycle(fileContent, registry, rootRegistry);
+
                     } catch (RegistryException e) {
                         String msg = String.format("Error while adding aspect %s ", fileName);
                         log.error(msg, e);
