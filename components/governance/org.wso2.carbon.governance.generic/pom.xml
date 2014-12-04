@@ -54,7 +54,7 @@
                             org.wso2.carbon.governance.generic.services.*,
                         </Export-Package>
                         <Import-Package>
-                            org.wso2.carbon.registry.core.*;version=1.0.1,
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.wso2.carbon.registry.extensions.utils.*,
                             org.wso2.carbon.registry.common.*,
                             org.wso2.carbon.governance.api.*,
