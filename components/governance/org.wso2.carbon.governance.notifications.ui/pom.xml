@@ -45,7 +45,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.common.ui.*;version=1.0.1,
-                            org.wso2.carbon.registry.core.*;version=1.0.1,
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.wso2.carbon.registry.resource.ui.*,
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
