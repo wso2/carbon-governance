@@ -177,8 +177,8 @@
 
         invokeAspect(path, aspect, action, callBack, versionString,org_wso2_carbon_governance_custom_lifecycles_checklist_ui_jsi18n["proceed"]);
     }
-    cancelVersionBox = function (path) {
-        refreshLifecyclesSection(path);
+    cancelVersionBox = function (path, aspect) {
+        refreshLifecyclesSection(path, aspect);
     }
 </script>
 
@@ -239,7 +239,7 @@
                                    '<%=preserveOriginal%>' ,<%=callBack%>)"/>
                     <input class="button registryWriteOperation" type="button"
                            value="<fmt:message key="cancel"/>"
-                           onclick="cancelVersionBox('<%=path%>')"/>
+                           onclick="cancelVersionBox('<%=path%>', '<%=aspect%>')"/>
                 </td>
             </tr>
             <%

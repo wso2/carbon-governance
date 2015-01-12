@@ -251,7 +251,7 @@ public class ServiceVersionExecutor implements Execution {
             StatCollection statCollection = (StatCollection) requestContext.getProperty(LifecycleConstants.STAT_COLLECTION);
 
 //            keeping the old path due to logging purposes
-            newResource.setProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH,
+            newResource.setProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName,
                     statCollection.getOriginalPath());
             statCollection.addExecutors(this.getClass().getName(), historyOperation);
 
