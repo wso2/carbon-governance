@@ -20,7 +20,6 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
@@ -30,8 +29,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.governance.lcm.beans.LifecycleBean;
-import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.Aspect;
 import org.wso2.carbon.registry.core.Collection;
+import org.wso2.carbon.registry.core.CollectionImpl;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.config.RegistryConfigurationProcessor;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.config.StaticConfiguration;
@@ -51,8 +55,18 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class CommonUtil {
 
@@ -485,19 +499,34 @@ public class CommonUtil {
         for (File lifecycleConfigFile : lifecycleConfigFiles) {
             String fileName = FilenameUtils.removeExtension(lifecycleConfigFile.getName());
             //here configuration file name should be same as aspect name
-            String resourceName = RegistryConstants.LIFECYCLE_CONFIGURATION_PATH + fileName;
+            String resourcePath = RegistryConstants.LIFECYCLE_CONFIGURATION_PATH + fileName;
             String fileContent = null;
 
-            if (!registry.resourceExists(resourceName)) {
+            //here we are checking whether the resource is already exists in registry. Otherwise we have to read all the
+            //files and check
+            if (!registry.resourceExists(resourcePath)) {
                 try {
                     fileContent = FileUtils.readFileToString(lifecycleConfigFile);
                 } catch (IOException e) {
                     String msg = String.format("Error while reading lifecycle config file %s ", fileName);
                     log.error(msg, e);
+                    /* The exception is not thrown, because if we throw the error, the for loop will be broken and
+                    other files won't be read */
                 }
                 if ((fileContent != null) && !fileContent.isEmpty()) {
                     try {
-                        addLifecycle(fileContent, registry, rootRegistry);
+                        //here we are checking the file name and aspect name to enforce that, both are same
+                        OMElement omElement = buildOMElement(fileContent);
+                        String aspectName = omElement.getAttributeValue(new QName("name"));
+                        if (fileName.equalsIgnoreCase(aspectName)) {
+                            addLifecycle(fileContent, registry, rootRegistry);
+                        } else {
+                            String msg = String.format("Configuration file name %s not matched with aspect name %s ",
+                                                       fileName, aspectName);
+                            log.error(msg);
+                            /* The error is not thrown, because if we throw the error, the for loop will be broken and
+                            other files won't be read */
+                        }
                     } catch (RegistryException e) {
                         String msg = String.format("Error while adding aspect %s ", fileName);
                         log.error(msg, e);
@@ -507,7 +536,7 @@ public class CommonUtil {
                 }
             } else {
                 try {
-                    generateAspect(resourceName, registry);
+                    generateAspect(resourcePath, registry);
                 } catch (Exception e) {
                     String msg = String.format("Error while generating aspect %s ", fileName);
                     log.error(msg, e);
