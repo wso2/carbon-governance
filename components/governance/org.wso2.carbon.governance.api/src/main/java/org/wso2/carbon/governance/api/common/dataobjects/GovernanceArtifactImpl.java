@@ -157,7 +157,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 }
             }
         } else {
-        	if(contentElement != null && !contentElement.getChildElements().hasNext()){
+        	if(!contentElement.getChildElements().hasNext()){
         		addAttribute(parentAttributeName, null);
         	}
         }
@@ -256,6 +256,45 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     }
 
     /**
+     * Returns the name of the lifecycle associated with this artifact.
+     *
+     * @return the name of the lifecycle associated with this artifact.
+     * @throws GovernanceException if an error occurred.
+     */
+    @Override
+    public String[] getLifecycleNames() throws GovernanceException {
+        String path = getPath();
+        if (path != null) {
+            try {
+                if (!registry.resourceExists(path)) {
+                    String msg =
+                            "The artifact is not added to the registry. Please add the artifact " +
+                                    "before reading lifecycle information.";
+                    log.error(msg);
+                    throw new GovernanceException(msg);
+                }
+
+                List<String> lifeCycleNames = new ArrayList<String>();
+                Resource resource = registry.get(path);
+                for (Object object : resource.getProperties().keySet()) {
+                    String property = (String) object;
+                    if (property.startsWith("registry.LC.name.")) {
+                        lifeCycleNames.add(resource.getProperty(property));
+                    }
+                }
+
+                return lifeCycleNames.toArray(new String[lifeCycleNames.size()]);
+            } catch (RegistryException e) {
+                String msg = "Error in obtaining lifecycle names for the artifact. id: " + id +
+                        ", path: " + path + ".";
+                log.error(msg, e);
+                throw new GovernanceException(msg, e);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Associates the named lifecycle with the artifact
      *
      * @param name the name of the lifecycle to be associated with this artifact.
@@ -263,16 +302,8 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      */
     @Override
     public void attachLifecycle(String name) throws GovernanceException {
-        lcName = getLifecycleName();
         try {
-            if (name == null) {
-                GovernanceUtils.removeAspect(path, lcName, registry);
-                return;
-            }
-            if (!name.equals(lcName)) {
-                if (lcName != null) {
-                    GovernanceUtils.removeAspect(path, lcName, registry);
-                }
+            if(name != null) {
                 registry.associateAspect(path, name);
             }
         } catch (RegistryException e) {
@@ -281,7 +312,6 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             log.error(msg, e);
             throw new GovernanceException(msg, e);
         }
-
     }
 
 
@@ -290,24 +320,16 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      *
      * @throws GovernanceException if an error occurred.
      */
-    public void detachLifecycle() throws GovernanceException {
-        String lifecycleName = getLifecycleName();
-        if (lifecycleName == null) {
-            throw new GovernanceException("No lifecycle associated with the artifact");
-        }
+    public void detachLifecycle(String lifecycleName) throws GovernanceException {
         try {
             GovernanceUtils.removeAspect(path, lifecycleName, registry);
-            lcName = null;
-            lcState = null;
         } catch (RegistryException e) {
             String msg = "Error in de-associating lifecycle for the artifact. id: " + id +
                     ", path: " + path + ".";
             log.error(msg, e);
             throw new GovernanceException(msg, e);
         }
-
     }
-
 
     /**
      * Returns the state of the lifecycle associated with this artifact.
@@ -330,9 +352,44 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 Resource resource = registry.get(path);
                 for (Object object : resource.getProperties().keySet()) {
                     String property = (String) object;
-                    if (property.startsWith("registry.lifecycle.") && property.endsWith(".state")) {
+                    if (property.startsWith("registry.lifecycle.") && property.endsWith(".state") && getLifecycleName() != null && property.contains((getLifecycleName()))) {
                         lcState = resource.getProperty(property);
                         return lcState;
+                    }
+                }
+            } catch (RegistryException e) {
+                String msg = "Error in obtaining lifecycle state for the artifact. id: " + id +
+                        ", path: " + path + ".";
+                log.error(msg, e);
+                throw new GovernanceException(msg, e);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the state of the lifecycle associated with this artifact.
+     *
+     * @return the state of the lifecycle associated with this artifact.
+     * @throws GovernanceException if an error occurred.
+     */
+    @Override
+    public String getLifecycleState(String lifeCycleName) throws GovernanceException {
+        String path = getPath();
+        if (path != null) {
+            try {
+                if (!registry.resourceExists(path)) {
+                    String msg =
+                            "The artifact is not added to the registry. Please add the artifact " +
+                                    "before reading lifecycle information.";
+                    log.error(msg);
+                    throw new GovernanceException(msg);
+                }
+                Resource resource = registry.get(path);
+                for (Object object : resource.getProperties().keySet()) {
+                    String property = (String) object;
+                    if (property.startsWith("registry.lifecycle.") && property.endsWith(".state") && property.contains(lifeCycleName)) {
+                        return resource.getProperty(property);
                     }
                 }
             } catch (RegistryException e) {
@@ -357,7 +414,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     /**
      * update the path after moving the resource.
      *
-     * @param artifactId
+     * @param artifactId id of the artifact
      * @throws GovernanceException if an error occurred.
      */
     public void updatePath(String artifactId) throws GovernanceException {
@@ -478,9 +535,6 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     @Override
     public String[] getAttributeKeys() throws GovernanceException {
         Set<String> attributeKeys = attributes.keySet();
-        if (attributeKeys == null) {
-            return null;
-        }
         return attributeKeys.toArray(new String[attributeKeys.size()]);
     }
 
@@ -578,18 +632,19 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     /**
      * Get all lifecycle actions for the current state of the lifecycle
      *
+     * @param lifeCycleName lifecycle name of which actions are needed
      * @return Action set which can be invoked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public String[] getAllLifecycleActions() throws GovernanceException {
-        String lifecycleName = getLifecycleName();
+    public String[] getAllLifecycleActions(String lifeCycleName) throws GovernanceException {
+//        String lifecycleName = getLifecycleName();
         try {
-            return registry.getAspectActions(path, lifecycleName);
+            return registry.getAspectActions(path, lifeCycleName);
         } catch (RegistryException e) {
-            String lifecycleState = getLifecycleState();
+            String lifecycleState = getLifecycleState(lifeCycleName);
             String msg = "Error while retrieving the lifecycle actions " +
-                    "for lifecycle: " + lifecycleName + " in lifecycle state: " + lifecycleState;
+                    "for lifecycle: " + lifeCycleName + " in lifecycle state: " + lifecycleState;
             throw new GovernanceException(msg, e);
         }
     }
@@ -730,10 +785,8 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                                        CheckListItemBean[] checkListItemBeans) throws RegistryException {
         checkListItemBeans[order].setValue(value);
         Map<String, String> parameters = new HashMap<String, String>();
-        if (checkListItemBeans != null) {
-            for (CheckListItemBean checkListItemBean : checkListItemBeans) {
-                parameters.put(checkListItemBean.getOrder() + ".item", checkListItemBean.getValue().toString());
-            }
+        for (CheckListItemBean checkListItemBean : checkListItemBeans) {
+            parameters.put(checkListItemBean.getOrder() + ".item", checkListItemBean.getValue().toString());
         }
         registry.invokeAspect(getArtifactPath(), getLcName(), "itemClick", parameters);
     }

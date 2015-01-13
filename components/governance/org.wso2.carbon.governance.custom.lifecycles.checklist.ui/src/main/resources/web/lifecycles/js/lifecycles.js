@@ -20,7 +20,7 @@ function addAspect() {
             onSuccess : function() {
                 reloadLifecycleHistoryView(path);
                 lifecyleOperationStarted = false;
-                refreshLifecyclesSection(path);
+                refreshLifecyclesSection(path, aspect);
                 refreshPropertiesSection(path);
                 alternateTableRows('myTable', 'tableEvenRow', 'tableOddRow');
             },
@@ -54,7 +54,7 @@ function removeAspect() {
                     reloadLifecycleHistoryView(path);
                     lifecyleOperationStarted = false;
                     if (transport) {
-                        refreshLifecyclesSection(path);
+                        refreshLifecyclesSection(path, "");
                     }
                 },
                 onFailure: function(transport) {
@@ -179,20 +179,20 @@ function invokeAspect(path, aspect, action, callBack, parameterString,customUIAc
                     if (callBack && typeof callBack == "function") {
                         CARBON.showInfoDialog(message, function () {
                             callBack();
-                            refreshLifecyclesSection(path, action);
+                            refreshLifecyclesSection(path, aspect);
                         }, function () {
                             callBack();
-                            refreshLifecyclesSection(path, action);
+                            refreshLifecyclesSection(path, aspect);
                         });
                     } else {
                         CARBON.showInfoDialog(message, function () {
-                            refreshLifecyclesSection(path, action);
+                            refreshLifecyclesSection(path, aspect);
                         }, function () {
-                            refreshLifecyclesSection(path, action);
+                            refreshLifecyclesSection(path, aspect);
                         });
                     }
                 }else{
-                    refreshLifecyclesSection(path,action);
+                    refreshLifecyclesSection(path, aspect);
                 }
             },
             onFailure : function(transport) {
@@ -205,7 +205,7 @@ function invokeAspect(path, aspect, action, callBack, parameterString,customUIAc
             }
         });
 }
-function refreshLifecyclesSection(path) {
+function refreshLifecyclesSection(path, aspect) {
     sessionAwareFunction(function() {
         new Ajax.Updater(
                 'lifecyclesDiv',
@@ -213,7 +213,8 @@ function refreshLifecyclesSection(path) {
         {
             method : 'post',
             parameters : {
-                path : path
+                path : path,
+                aspect : aspect
             },
             evalScripts : true,
 
@@ -289,4 +290,61 @@ function reloadLifecycleHistoryView(path) {
             }
         });
     }, org_wso2_carbon_governance_custom_lifecycles_checklist_ui_jsi18n["session.timed.out"]);
+}
+
+function refreshUpdatedLifeCyclesSection(path) {
+    var aspect = document.getElementById('attachedAspect').value;
+    sessionAwareFunction(function() {
+        new Ajax.Updater(
+            'lifecyclesDiv',
+            '../lifecycles/lifecycles_ajaxprocessor.jsp',
+            {
+                method : 'post',
+                parameters : {
+                    path : path,
+                    aspect : aspect
+                },
+                evalScripts : true,
+
+                onSuccess : function(transport) {
+
+                },
+
+                onFailure : function(transport) {
+                    showRegistryError(transport.responseText);
+                }
+
+            });
+    }, org_wso2_carbon_governance_custom_lifecycles_checklist_ui_jsi18n["session.timed.out"]);
+}
+
+function onChangeDefaultLifeCycle(event, path, aspect) {
+//    var checkbox = event.target;
+//    if (checkbox.checked) {
+    if (document.getElementById("defaultLcCheckBox").checked==true) {
+        sessionAwareFunction(function() {
+            new Ajax.Request(
+                '../lifecycles/setDefault_aspect_ajaxprocessor.jsp',
+                {
+                    method : 'post',
+                    parameters : {
+                        path : path,
+                        aspect : aspect
+                    }
+
+                    /*
+                    onSuccess : function() {
+                        reloadLifecycleHistoryView(path);
+                        lifecyleOperationStarted = false;
+                        refreshLifecyclesSection(path, aspect);
+                        refreshPropertiesSection(path);
+                        alternateTableRows('myTable', 'tableEvenRow', 'tableOddRow');
+                    },
+                    onFailure : function(transport) {
+                        lifecyleOperationStarted = false;
+                        showRegistryError(org_wso2_carbon_governance_custom_lifecycles_checklist_ui_jsi18n["failed.to.add.aspect"] + ' ' + transport.responseText);
+                    }*/
+                });
+        }, org_wso2_carbon_governance_custom_lifecycles_checklist_ui_jsi18n["session.timed.out"]);
+    }
 }

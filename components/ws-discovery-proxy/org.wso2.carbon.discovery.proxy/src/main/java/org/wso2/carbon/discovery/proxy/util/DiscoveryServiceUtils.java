@@ -49,9 +49,6 @@ import java.util.*;
  * Carbon governance components create and manage services discovered through WS-D.
  */
 public class DiscoveryServiceUtils {
-	
-	private static final String DEFAULT_SERVICE_VERSION = "1.0.0";
-	private static final String SERVICE_VERSION_PREFIX = "overview_version";
 
     private static Registry getRegistry() throws DiscoveryException {
         return (Registry) PrivilegedCarbonContext.getThreadLocalCarbonContext().
@@ -100,7 +97,7 @@ public class DiscoveryServiceUtils {
         Service newService = serviceManager.newService(new QName(
                 DiscoveryConstants.WS_DISCOVERY_NAMESPACE, serviceName));
         newService.setId(serviceId);
-        newService.addAttribute(SERVICE_VERSION_PREFIX, DEFAULT_SERVICE_VERSION);
+
         // Set the version if provided
         if (service.getMetadataVersion() != -1) {
             newService.addAttribute(DiscoveryConstants.ATTR_METADATA_VERSION,

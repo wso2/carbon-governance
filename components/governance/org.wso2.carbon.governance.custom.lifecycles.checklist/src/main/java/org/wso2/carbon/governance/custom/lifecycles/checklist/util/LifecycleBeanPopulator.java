@@ -151,7 +151,7 @@ public class LifecycleBeanPopulator {
 
                     if (propKey.startsWith("registry.lifecycle.")
 //                            || propKey.equals(Aspect.AVAILABLE_ASPECTS)
-                            || propKey.startsWith("registry.custom_lifecycle.checklist.") ){
+                            || propKey.startsWith("registry.custom_lifecycle.checklist.") || propKey.equals("registry.LC.name")){
 //                            || propKey.startsWith("registry.custom_lifecycle.js.")) {
                         Property property = new Property();
                         property.setKey(propKey);
@@ -179,8 +179,6 @@ public class LifecycleBeanPopulator {
                     }
                 }
                
-                
-
                 lifecycleBean.setLifecycleProperties(propList.toArray(new Property[propList.size()]));
                 lifecycleBean.setLifecycleApproval(voteList.toArray(new Property[voteList.size()]));
 

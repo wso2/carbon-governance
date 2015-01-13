@@ -1,5 +1,5 @@
 <!--
-~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+~ Copyright (c) 2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 ~
 ~ WSO2 Inc. licenses this file to you under the Apache License,
 ~ Version 2.0 (the "License"); you may not use this file except
@@ -91,8 +91,8 @@
         List<OMNode> associationNodesList = null;
         String content = null;
         //if log file for the particular resource exists read the content
-        if (wsRegistryServiceClient.resourceExists(LOG_DEFAULT_PATH + originalPath)) {
 
+        if (wsRegistryServiceClient.resourceExists(LOG_DEFAULT_PATH + originalPath)) {
             content = resourceServiceClient.getTextContent(LOG_DEFAULT_PATH + originalPath);
 
             if (content != null) {
@@ -144,6 +144,7 @@
     <table class="styledLeft">
         <thead>
         <tr>
+            <th>LC Name</th>
             <th>Target State</th>
             <th>User</th>
             <th>Timestamp</th>
@@ -159,32 +160,50 @@
                     initialUser = null;
             String[] splitByColon;
             //get the latest association action and obtain the 'item' OMElement of it.
-            OMElement initialStateOMElement = (OMElement) associationNodesList.get(0).getParent();
-            initialState
-                    = initialStateOMElement.getAttribute(new QName("state")).getAttributeValue();
-            initialUser = initialStateOMElement.getAttribute(new QName("user")).getAttributeValue();
-            associationTimestamp = initialStateOMElement.getAttribute(new QName("timestamp")).getAttributeValue();
-            //split the timestamp by colon and view only up-to minutes
-            splitByColon = associationTimestamp.split(":");
 
-            String associationTimestampToPrint = splitByColon[0] + ":" + splitByColon[1];
             DurationCalculator durationCalculator = new DurationCalculator();
 
-            if (transitionNodesList.size() == 0) {
-                initialStateDuration = NOT_AVAILABLE;
-            } else {
-                OMElement firstTransitionNode = (OMElement)
-                        transitionNodesList.get(transitionNodesList.size() - 1);
-                String firstTransitionTimestamp =
-                        firstTransitionNode.getAttribute(new QName("timestamp")).getAttributeValue();
-                //calculate the time duration in the initial state
-                initialStateDuration = durationCalculator.calculateDifference(firstTransitionTimestamp, associationTimestamp);
+            for(int k = 0 ; k < associationNodesList.size(); k++) {
+                OMElement initialStateOMElement = (OMElement) associationNodesList.get(k).getParent();
 
-            }
+                String aspectName = "";
+
+                if(initialStateOMElement.getAttribute(new QName("aspect")) != null){
+                    aspectName = initialStateOMElement.getAttribute(new QName("aspect")).getAttributeValue();
+                }
+
+                initialState = initialStateOMElement.getAttribute(new QName("state")).getAttributeValue();
+                initialUser = initialStateOMElement.getAttribute(new QName("user")).getAttributeValue();
+                associationTimestamp = initialStateOMElement.getAttribute(new QName("timestamp")).getAttributeValue();
+                //split the timestamp by colon and view only up-to minutes
+                splitByColon = associationTimestamp.split(":");
+
+                String associationTimestampToPrint = splitByColon[0] + ":" + splitByColon[1];
+
+                if (transitionNodesList.size() == 0) {
+                    initialStateDuration = NOT_AVAILABLE;
+                } else {
+                    for(int j = transitionNodesList.size() - 1 ; j >= 0 ; j--) {
+                        OMElement firstTransitionNode = (OMElement) transitionNodesList.get(j);
+                        if(firstTransitionNode.getAttribute(new QName("aspect")) != null &&
+                                aspectName.equals(firstTransitionNode.getAttribute(new QName("aspect")).getAttributeValue())){
+                            String firstTransitionTimestamp =
+                                    firstTransitionNode.getAttribute(new QName("timestamp")).getAttributeValue();
+                            //calculate the time duration in the initial state
+                            initialStateDuration = durationCalculator.calculateDifference(firstTransitionTimestamp, associationTimestamp);
+                            break;
+                        }
+                    }
+
+                    if(initialStateDuration == null) {
+                        initialStateDuration = NOT_AVAILABLE;
+                    }
+                }
         %>
 
         <tr>
-
+            <td><%=aspectName%>
+            </td>
             <td><%=initialState%>
             </td>
             <td><%=initialUser%>
@@ -201,14 +220,19 @@
             <%}%>
         </tr>
 
-
         <%
+            }
             String targetState = null, startTimestamp = null, timeDurationString = null, user =
                     null;
 
-
             for (int i = transitionNodesList.size() - 1; i >= 0; i--) {
                 OMElement currentOMElement = (OMElement) transitionNodesList.get(i);
+
+                String lctName = "";
+                if(currentOMElement.getAttribute(new QName("aspect")) != null){
+                    lctName = currentOMElement.getAttribute(new QName("aspect")).getAttributeValue();
+                }
+
                 targetState = currentOMElement.getAttribute(new QName("targetState")).getAttributeValue();
                 user = currentOMElement.getAttribute(new QName("user")).getAttributeValue();
                 startTimestamp =
@@ -217,16 +241,30 @@
 
                 String timeStampToPrint = splitByColon[0] + ":" + splitByColon[1];
 
+                /*
                 if ((i - 1) >= 0) {
                     OMElement nextOMElement = (OMElement) transitionNodesList.get(i - 1);
                     String endTimestamp =
                             nextOMElement.getAttribute(new QName("timestamp")).getAttributeValue();
                     //get the time duration elapsed in the current state
                     timeDurationString = durationCalculator.calculateDifference(endTimestamp, startTimestamp);
+                }*/
+
+                for(int k = 0 ; k < i ; k++) {
+                    OMElement nextOMElement = (OMElement) transitionNodesList.get(k);
+
+                    if(nextOMElement.getAttribute(new QName("aspect")) != null && lctName.equals(nextOMElement.getAttribute(new QName("aspect")).getAttributeValue())) {
+                        String endTimestamp = nextOMElement.getAttribute(new QName("timestamp")).getAttributeValue();
+                        //get the time duration elapsed in the current state
+                        timeDurationString = durationCalculator.calculateDifference(endTimestamp, startTimestamp);
+                        break;
+                    }
                 }
         %>
         <tr>
 
+            <td><%=lctName%>
+            </td>
             <td><%=targetState%>
             </td>
             <td><%=user%>

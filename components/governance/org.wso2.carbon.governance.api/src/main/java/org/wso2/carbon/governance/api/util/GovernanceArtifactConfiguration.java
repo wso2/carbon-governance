@@ -63,6 +63,8 @@ public class GovernanceArtifactConfiguration {
     public static final String TEXT_FIELD = "text";
     public static final String ENTRY_FIELD = "entry";
 
+    private Map<String, String> contextToLifeCycleMap = new HashMap<String, String>();
+
     /**
      * Method to obtain the media type.
      *
@@ -408,6 +410,30 @@ public class GovernanceArtifactConfiguration {
      */
     public String getLifecycle() {
         return lifecycle;
+    }
+
+    /**
+     *
+     * @param context name of the context which life cycle is needed
+     * @return lifecycle name of the context. Or the default attached lifecycle
+     */
+    public String getLifeCycleOfContext(String context) {
+        String lc = contextToLifeCycleMap.get(context);
+
+        if(lc == null) {
+            lc = getLifecycle();
+        }
+
+        return lc;
+    }
+
+    /**
+     *
+     * @param context context name
+     * @param lcName life-cyle name
+     */
+    public void addLifeCycleToContext(String context, String lcName) {
+        contextToLifeCycleMap.put(context, lcName);
     }
 
     /**

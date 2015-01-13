@@ -36,7 +36,13 @@ import java.io.File;
 import java.io.FileInputStream;
 
 public class ServiceTest extends BaseTestCase {
-    
+
+    public void testSearchServiceWithNoServices() throws Exception{
+        ServiceManager serviceManager = new ServiceManager(registry);
+        Service[] allServices = serviceManager.getAllServices();
+
+        assertEquals("invalid service count received", 0, allServices.length);
+    }
     public void testAddService() throws Exception {
         ServiceManager serviceManager = new ServiceManager(registry);
 
