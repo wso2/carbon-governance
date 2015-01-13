@@ -15,6 +15,8 @@
  */
 package org.wso2.carbon.governance.lcm.internal;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -25,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.core.services.callback.LoginSubscriptionManagerService;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
+import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 /**
@@ -33,20 +36,32 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="login.subscription.service"
- * interface="org.wso2.carbon.core.services.callback.LoginSubscriptionManagerService" cardinality="0..1"
- * policy="dynamic" bind="setLoginSubscriptionManagerService" unbind="unsetLoginSubscriptionManagerService"
  */
 public class LCMServiceComponent {
 
     private static Log log = LogFactory.getLog(LCMServiceComponent.class);
 
     protected void activate(ComponentContext context) {
-        log.debug("******* Governance Life Cycle Management Service bundle is activated ******* ");
+        BundleContext bundleContext = context.getBundleContext();
+        LifecycleLoader lifecycleLoader = new LifecycleLoader();
+        ServiceRegistration tenantMgtListenerSR = bundleContext.registerService(
+                Axis2ConfigurationContextObserver.class.getName(), lifecycleLoader, null);
+        if (tenantMgtListenerSR != null) {
+            if(log.isDebugEnabled()) {
+                log.debug("Governance Life Cycle Management - LifecycleLoader registered");
+            }
+        } else {
+            log.error("Governance Life Cycle Management - LifecycleLoader could not be registered");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Governance Life Cycle Management Service bundle is activated");
+        }
     }
 
     protected void deactivate(ComponentContext context) {
-        log.debug("******* Governance Life Cycle Management Service bundle is deactivated ******* ");
+        if(log.isDebugEnabled()) {
+            log.debug("Governance Life Cycle Management Service bundle is deactivated");
+        }
     }
 
     protected void setRegistryService(RegistryService registryService) {
@@ -58,7 +73,7 @@ public class LCMServiceComponent {
         // Generate LCM search query if it doesn't exist.
         try {
             CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(),
-                    registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME), false);
+                    registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME));
         } catch (Exception e) {
             log.error("An error occurred while setting up Governance Life Cycle Management", e);
         }
@@ -66,14 +81,5 @@ public class LCMServiceComponent {
 
     protected void unsetRegistryService(RegistryService registryService) {
         CommonUtil.setRegistryService(null);
-    }
-
-    protected void setLoginSubscriptionManagerService(LoginSubscriptionManagerService loginManager) {
-        log.debug("******* LoginSubscriptionManagerServic is set ******* ");
-        loginManager.subscribe(new LifecycleLoader());
-    }
-
-    protected void unsetLoginSubscriptionManagerService(LoginSubscriptionManagerService loginManager) {
-        log.debug("******* LoginSubscriptionManagerServic is unset ******* ");
     }
 }
