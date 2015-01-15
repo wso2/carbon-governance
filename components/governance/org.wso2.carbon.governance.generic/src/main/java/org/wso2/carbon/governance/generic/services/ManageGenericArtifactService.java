@@ -844,7 +844,7 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
         try {
             LifeCycleStates = CommonUtil.getAllLifeCycleStates(getRootRegistry(), LCName);
         } catch (org.wso2.carbon.registry.api.RegistryException e) {
-            log.error("An error occurred while obtaining the list of sates in "+LCName, e);
+            log.error("An error occurred while obtaining the list of states in "+LCName, e);
         }
         return LifeCycleStates;
     }
