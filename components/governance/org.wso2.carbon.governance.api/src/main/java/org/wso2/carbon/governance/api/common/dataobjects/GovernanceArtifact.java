@@ -54,9 +54,19 @@ public interface GovernanceArtifact {
     String getPath() throws GovernanceException;
 
     /**
-     * Returns the name of the lifecycle associated with this artifact.
+     * Returns the names of the lifecycle associated with this artifact.
      *
-     * @return the name of the lifecycle associated with this artifact.
+     * @return the names of the lifecycle associated with this artifact as an array
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException
+     *          if an error occurred.
+     */
+    @SuppressWarnings("unused")
+    String[] getLifecycleNames() throws GovernanceException;
+
+    /**
+     * Returns the name of the default lifecycle associated with this artifact.
+     *
+     * @return the names of the lifecycle associated with this artifact.
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          if an error occurred.
      */
@@ -72,13 +82,24 @@ public interface GovernanceArtifact {
     void attachLifecycle(String name) throws GovernanceException;
 
     /**
-     * Returns the state of the lifecycle associated with this artifact.
+     * Returns the state of the default lifecycle associated with this artifact.
      *
-     * @return the state of the lifecycle associated with this artifact.
+     * @return the state of the default lifecycle associated with this artifact.
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          if an error occurred.
      */
     String getLifecycleState() throws GovernanceException;
+
+    /**
+     * Returns the state of the lifecycle associated with this artifact.
+     *
+     * @param lifeCycleName the name of the lifecycle of which the state is required
+     * @return the state of the lifecycle associated with this artifact.
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException
+     *          if an error occurred.
+     */
+    @SuppressWarnings("unused")
+    String getLifecycleState(String lifeCycleName) throws GovernanceException;
 
     /**
      * Adding an attribute to the artifact. The artifact should be saved to get effect the change.
@@ -155,6 +176,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     void removeAttribute(String key) throws GovernanceException;
 
     /**
@@ -178,11 +200,13 @@ public interface GovernanceArtifact {
     /**
      * Get all lifecycle actions for the current state of the lifecycle
      *
+     * @param lifeCycleName lifecycle name of which actions are needed
      * @return Action set which can be invoked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public String[] getAllLifecycleActions() throws GovernanceException;
+    @SuppressWarnings("unused")
+    public String[] getAllLifecycleActions(String lifeCycleName) throws GovernanceException;
 
     /**
      * Promote the artifact to the next state of the lifecycle
@@ -191,6 +215,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     void invokeAction(String action) throws GovernanceException;
 
     /**
@@ -201,6 +226,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     void invokeAction(String action, Map<String, String> parameters) throws GovernanceException;
 
     /**
@@ -210,6 +236,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     String[] getAllCheckListItemNames() throws GovernanceException;
 
     /**
@@ -219,6 +246,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     void checkLCItem(int order) throws GovernanceException;
 
     /**
@@ -229,6 +257,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     public boolean isLCItemChecked(int order) throws GovernanceException;
 
     /**
@@ -238,6 +267,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     void uncheckLCItem(int order) throws GovernanceException;
 
     /**
@@ -247,6 +277,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     public String[] getAllVotingItems() throws GovernanceException;
 
     /**
@@ -266,15 +297,17 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     public boolean isVoted(int order) throws GovernanceException;
 
     /**
      * Unvote for an action
      *
-     * @param order order of the action which need to be unvoted
+     * @param order order of the action which need to be un voted
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
+    @SuppressWarnings("unused")
     public void unvote(int order) throws GovernanceException;
 
 }

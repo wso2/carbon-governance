@@ -64,7 +64,15 @@ public class LifecyclesAdminService extends RegistryAbstractAdmin implements ICh
         RegistryUtils.recordStatistics(path, aspect);
         GovernanceUtils.removeAspect(path, aspect, getRootRegistry());
     }
+
+    @SuppressWarnings("unused")
     public String[] getAllDependencies(String path) throws Exception{
         return CommonUtil.getAllDependencies(path,getRootRegistry());
+    }
+
+    @SuppressWarnings("unused")
+    public void setDefaultAspect(String path, String aspect) throws Exception {
+        RegistryUtils.recordStatistics(path, aspect);
+        GovernanceUtils.setDefaultLifeCycle(path, aspect, getRootRegistry());
     }
 }

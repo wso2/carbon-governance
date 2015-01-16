@@ -20,6 +20,7 @@ public class StatCollection {
     private String actionValue;
     private String targetState;
     private long timeMillis;
+    private String aspectName;
 
     public String getTargetState() {
         return targetState;
@@ -62,6 +63,7 @@ public class StatCollection {
         return validations;
     }
 
+    @SuppressWarnings("unused")
     public void setValidations(Map<String,OMElement> validations) {
         this.validations = validations;
     }
@@ -127,5 +129,13 @@ public class StatCollection {
 
     public void setTimeMillis(long timeMillis) {
         this.timeMillis = timeMillis;
+    }
+
+    public String getAspectName() {
+        return aspectName;
+    }
+
+    public void setAspectName(String aspectName) {
+        this.aspectName = aspectName;
     }
 }

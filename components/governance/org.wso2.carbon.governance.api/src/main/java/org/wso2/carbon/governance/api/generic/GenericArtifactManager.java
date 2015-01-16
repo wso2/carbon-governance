@@ -19,6 +19,7 @@
 package org.wso2.carbon.governance.api.generic;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.wso2.carbon.governance.api.common.GovernanceArtifactManager;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
@@ -31,6 +32,10 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -154,6 +159,30 @@ public class GenericArtifactManager {
 //                    "please ensure that the content passed in matches the configuration.");
         }
         return genericArtifact;
+    }
+
+
+    /**
+     * Creates a new artifact from the given string content.
+     *
+     * @param omContent the artifact content in string
+     *
+     * @return the artifact added.
+     * @throws GovernanceException if the operation failed.
+     */
+    public GenericArtifact newGovernanceArtifact(String omContent) throws GovernanceException {
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        factory.setProperty(XMLInputFactory.IS_COALESCING, true);
+
+        try {
+            XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(omContent));
+            GenericArtifact artifact = this.newGovernanceArtifact(new StAXOMBuilder(reader).getDocumentElement());
+            artifact.setContent(omContent.getBytes());
+
+            return artifact;
+        } catch (XMLStreamException e) {
+            throw new GovernanceException("Error in creating the content from the parameters", e);
+        }
     }
 
     /**

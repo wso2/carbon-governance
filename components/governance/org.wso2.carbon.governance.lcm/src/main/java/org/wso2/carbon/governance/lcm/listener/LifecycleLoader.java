@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.governance.lcm.listener;
 
+import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -25,34 +26,26 @@ import org.wso2.carbon.core.services.callback.LoginEvent;
 import org.wso2.carbon.core.services.callback.LoginListener;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.utils.AbstractAxis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class LifecycleLoader implements LoginListener {
+public class LifecycleLoader extends AbstractAxis2ConfigurationContextObserver {
     
     private static Log log = LogFactory.getLog(LifecycleLoader.class);
 
-    private List<Integer> initializedTenants = new LinkedList<Integer>();
-
-    public void onLogin(Registry configRegistry, LoginEvent loginEvent) {
+    @Override
+    public void createdConfigurationContext(ConfigurationContext configContext) {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        RegistryService service = RegistryCoreServiceComponent.getRegistryService();
         try {
-            boolean initialized = initializedTenants.contains(loginEvent.getTenantId());
-            if (!initialized) {
-                initializedTenants.add(loginEvent.getTenantId());
-            }
-            PrivilegedCarbonContext.startTenantFlow();
-            try {
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(loginEvent.getTenantDomain());
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(loginEvent.getTenantId());
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(loginEvent.getUsername());
-                CommonUtil.addDefaultLifecyclesIfNotAvailable(configRegistry,
-                        CommonUtil.getRootSystemRegistry(loginEvent.getTenantId()), initialized);
-            } finally {
-                PrivilegedCarbonContext.endTenantFlow();
-            }
+            CommonUtil.addDefaultLifecyclesIfNotAvailable(service.getConfigSystemRegistry(tenantId),
+                                                          CommonUtil.getRootSystemRegistry(tenantId));
         } catch (Exception e) {
             String msg = "Error in adding the default lifecycles";
             log.error(msg, e);
