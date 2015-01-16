@@ -303,7 +303,8 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     @Override
     public void attachLifecycle(String name) throws GovernanceException {
         try {
-            if(name != null) {
+            String path = getPath();
+            if(name != null && path != null) {
                 registry.associateAspect(path, name);
             }
         } catch (RegistryException e) {
