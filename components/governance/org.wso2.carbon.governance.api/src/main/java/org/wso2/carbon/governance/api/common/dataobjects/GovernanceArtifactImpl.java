@@ -306,6 +306,13 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             String path = getPath();
             if(name != null && path != null) {
                 registry.associateAspect(path, name);
+
+                Resource resource = registry.get(path);
+                if(resource.getAspects().size() == 1) {
+                    // Since this is the first life-cycle we make it default
+                    resource.setProperty("registry.LC.name", name);
+                    registry.put(path, resource);
+                }
             }
         } catch (RegistryException e) {
             String msg = "Error in associating lifecycle for the artifact. id: " + id +
@@ -654,11 +661,12 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * Invoke lifecycle action
      *
      * @param action lifecycle action tobe invoked
+     * @param aspectName aspect name of which the action need to be invoked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public void invokeAction(String action) throws GovernanceException {
-        invokeAction(action, new HashMap<String, String>());
+    public void invokeAction(String action, String aspectName) throws GovernanceException {
+        invokeAction(action, new HashMap<String, String>(), aspectName);
     }
 
     /**
@@ -666,19 +674,20 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      *
      * @param action     lifecycle action tobe invoked
      * @param parameters extra parameters needed when promoting
+     * @param aspectName aspect name of which the action need to be invoked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public void invokeAction(String action, Map<String, String> parameters) throws GovernanceException {
+    public void invokeAction(String action, Map<String, String> parameters, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
-        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this);
+        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this, aspectName);
         try {
             if (checkListItemBeans != null) {
                 for (CheckListItemBean checkListItemBean : checkListItemBeans) {
                     parameters.put(checkListItemBean.getOrder() + ".item", checkListItemBean.getValue().toString());
                 }
             }
-            registry.invokeAspect(getArtifactPath(), getLcName(), action, parameters);
+            registry.invokeAspect(getArtifactPath(), aspectName, action, parameters);
         } catch (RegistryException e) {
             String msg = "Invoking lifecycle action \"" + action + "\" failed";
             log.error(msg, e);
@@ -689,15 +698,16 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     /**
      * Retrieve name set of the checklist items
      *
+     * @param aspectName lifecycle name of which action to be invoked
      * @return Checklist item name set
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public String[] getAllCheckListItemNames() throws GovernanceException {
+    public String[] getAllCheckListItemNames(String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
-        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this);
+        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this, aspectName);
         if (checkListItemBeans == null) {
-            throw new GovernanceException("No checklist item found for the lifecycle: " + getLcName() +
+            throw new GovernanceException("No checklist item found for the lifecycle: " + aspectName +
                     " lifecycle state: " + getLcState() + " in the artifact " + getQName().getLocalPart());
         }
         String[] checkListItemNames = new String[checkListItemBeans.length];
@@ -710,13 +720,14 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     /**
      * Check the checklist item
      *
+     * @param aspectName lifecycle name of which action to be invoked
      * @param order order of the checklist item need to checked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public void checkLCItem(int order) throws GovernanceException {
+    public void checkLCItem(int order, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
-        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this);
+        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this, aspectName);
         if (checkListItemBeans == null || order < 0 || order >= checkListItemBeans.length) {
             throw new GovernanceException("Invalid check list item.");
         } else if (checkListItemBeans[order].getValue()) {
@@ -724,7 +735,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                     checkListItemBeans[order].getName() + "\" already checked");
         }
         try {
-            setCheckListItemValue(order, true, checkListItemBeans);
+            setCheckListItemValue(order, true, checkListItemBeans, aspectName);
         } catch (RegistryException e) {
             String msg = "Checking LC item failed for check list item " + checkListItemBeans[order].getName();
             log.error(msg, e);
@@ -736,13 +747,14 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * Check whether the given ordered lifecycle checklist item is checked or not
      *
      * @param order order of the checklist item need to unchecked
+     * @param aspectName lifecycle name of which action to be invoked
      * @return whether the given ordered lifecycle checklist item is checked or not
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public boolean isLCItemChecked(int order) throws GovernanceException {
+    public boolean isLCItemChecked(int order, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
-        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this);
+        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this, aspectName);
         if (checkListItemBeans == null || order < 0 || order >= checkListItemBeans.length) {
             throw new GovernanceException("Invalid check list item.");
         }
@@ -754,12 +766,13 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * Un-check the checklist item
      *
      * @param order order of the checklist item need to unchecked
+     * @param aspectName lifecycle name of which action to be invoked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public void uncheckLCItem(int order) throws GovernanceException {
+    public void uncheckLCItem(int order, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
-        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this);
+        CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this, aspectName);
         if (checkListItemBeans == null || order < 0 || order >= checkListItemBeans.length) {
             throw new GovernanceException("Invalid check list item.");
         } else if (!checkListItemBeans[order].getValue()) {
@@ -767,7 +780,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                     checkListItemBeans[order].getName() + "\" not checked");
         }
         try {
-            setCheckListItemValue(order, false, checkListItemBeans);
+            setCheckListItemValue(order, false, checkListItemBeans, aspectName);
         } catch (RegistryException e) {
             String msg = "Unchecking LC item failed for check list item: " + checkListItemBeans[order].getName();
             log.error(msg, e);
@@ -780,16 +793,17 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      *
      * @param order order of the checklist item
      * @param value value of the checklist item
+     * @param aspectName aspect name
      * @throws RegistryException throws if the operation failed.
      */
     private void setCheckListItemValue(int order, boolean value,
-                                       CheckListItemBean[] checkListItemBeans) throws RegistryException {
+                                       CheckListItemBean[] checkListItemBeans, String aspectName) throws RegistryException {
         checkListItemBeans[order].setValue(value);
         Map<String, String> parameters = new HashMap<String, String>();
         for (CheckListItemBean checkListItemBean : checkListItemBeans) {
             parameters.put(checkListItemBean.getOrder() + ".item", checkListItemBean.getValue().toString());
         }
-        registry.invokeAspect(getArtifactPath(), getLcName(), "itemClick", parameters);
+        registry.invokeAspect(getArtifactPath(), aspectName, "itemClick", parameters);
     }
 
     /**
