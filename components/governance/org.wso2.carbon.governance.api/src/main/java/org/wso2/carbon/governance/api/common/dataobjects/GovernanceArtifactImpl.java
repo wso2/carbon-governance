@@ -646,7 +646,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      *          throws if the operation failed.
      */
     public String[] getAllLifecycleActions(String lifeCycleName) throws GovernanceException {
-//        String lifecycleName = getLifecycleName();
+    	String path = getPath();
         try {
             return registry.getAspectActions(path, lifeCycleName);
         } catch (RegistryException e) {
@@ -685,8 +685,14 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             if (checkListItemBeans != null) {
                 for (CheckListItemBean checkListItemBean : checkListItemBeans) {
                     parameters.put(checkListItemBean.getOrder() + ".item", checkListItemBean.getValue().toString());
+                    log.error(checkListItemBean.getOrder() + ".item");
+                    log.error(checkListItemBean.getValue().toString());
                 }
             }
+            for (int i = 0; i < parameters.size(); i++) {
+				String value = parameters.get(i);
+				log.error(value);
+			}
             registry.invokeAspect(getArtifactPath(), aspectName, action, parameters);
         } catch (RegistryException e) {
             String msg = "Invoking lifecycle action \"" + action + "\" failed";
