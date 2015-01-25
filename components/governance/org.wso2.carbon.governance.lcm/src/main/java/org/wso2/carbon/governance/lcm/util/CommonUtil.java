@@ -477,71 +477,86 @@ public class CommonUtil {
         if (!registry.resourceExists(RegistryConstants.LIFECYCLE_CONFIGURATION_PATH)) {
             Collection lifeCycleConfigurationCollection = new CollectionImpl();
             registry.put(RegistryConstants.LIFECYCLE_CONFIGURATION_PATH, lifeCycleConfigurationCollection);
-        }
 
-        String defaultLifecycleConfigLocation = getDefaltLifecycleConfigLocation();
-        File defaultLifecycleConfigDirectory = new File(defaultLifecycleConfigLocation);
-        if (!defaultLifecycleConfigDirectory.exists()) {
-            return false;
-        }
-
-        FilenameFilter filenameFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String name) {
-                return name.endsWith(".xml");
+            String defaultLifecycleConfigLocation = getDefaltLifecycleConfigLocation();
+            File defaultLifecycleConfigDirectory = new File(defaultLifecycleConfigLocation);
+            if (!defaultLifecycleConfigDirectory.exists()) {
+                return false;
             }
-        };
-        File[] lifecycleConfigFiles = defaultLifecycleConfigDirectory.listFiles(filenameFilter);
-        if (lifecycleConfigFiles.length == 0) {
-            return false;
-        }
 
-        for (File lifecycleConfigFile : lifecycleConfigFiles) {
-            String fileName = FilenameUtils.removeExtension(lifecycleConfigFile.getName());
-            //here configuration file name should be same as aspect name
-            String resourcePath = RegistryConstants.LIFECYCLE_CONFIGURATION_PATH + fileName;
-            String fileContent = null;
+            FilenameFilter filenameFilter = new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String name) {
+                    return name.endsWith(".xml");
+                }
+            };
+            File[] lifecycleConfigFiles = defaultLifecycleConfigDirectory.listFiles(filenameFilter);
+            if (lifecycleConfigFiles.length == 0) {
+                return false;
+            }
 
-            //here we are checking whether the resource is already exists in registry. Otherwise we have to read all the
-            //files and check
-            if (!registry.resourceExists(resourcePath)) {
-                try {
-                    fileContent = FileUtils.readFileToString(lifecycleConfigFile);
-                } catch (IOException e) {
-                    String msg = String.format("Error while reading lifecycle config file %s ", fileName);
-                    log.error(msg, e);
+            for (File lifecycleConfigFile : lifecycleConfigFiles) {
+                String fileName = FilenameUtils.removeExtension(lifecycleConfigFile.getName());
+                //here configuration file name should be same as aspect name
+                String resourcePath = RegistryConstants.LIFECYCLE_CONFIGURATION_PATH + fileName;
+                String fileContent = null;
+
+                //here we are checking whether the resource is already exists in registry. Otherwise we have to read all the
+                //files and check
+                if (!registry.resourceExists(resourcePath)) {
+                    try {
+                        fileContent = FileUtils.readFileToString(lifecycleConfigFile);
+                    } catch (IOException e) {
+                        String msg = String.format("Error while reading lifecycle config file %s ", fileName);
+                        log.error(msg, e);
                     /* The exception is not thrown, because if we throw the error, the for loop will be broken and
                     other files won't be read */
-                }
-                if ((fileContent != null) && !fileContent.isEmpty()) {
-                    try {
-                        //here we are checking the file name and aspect name to enforce that, both are same
-                        OMElement omElement = buildOMElement(fileContent);
-                        String aspectName = omElement.getAttributeValue(new QName("name"));
-                        if (fileName.equalsIgnoreCase(aspectName)) {
-                            addLifecycle(fileContent, registry, rootRegistry);
-                        } else {
-                            String msg = String.format("Configuration file name %s not matched with aspect name %s ",
-                                                       fileName, aspectName);
-                            log.error(msg);
+                    }
+                    if ((fileContent != null) && !fileContent.isEmpty()) {
+                        try {
+                            //here we are checking the file name and aspect name to enforce that, both are same
+                            OMElement omElement = buildOMElement(fileContent);
+                            String aspectName = omElement.getAttributeValue(new QName("name"));
+                            if (fileName.equalsIgnoreCase(aspectName)) {
+                                addLifecycle(fileContent, registry, rootRegistry);
+                            } else {
+                                String msg = String.format("Configuration file name %s not matched with aspect name %s ",
+                                        fileName, aspectName);
+                                log.error(msg);
                             /* The error is not thrown, because if we throw the error, the for loop will be broken and
                             other files won't be read */
-                        }
-                    } catch (RegistryException e) {
-                        String msg = String.format("Error while adding aspect %s ", fileName);
-                        log.error(msg, e);
+                            }
+                        } catch (RegistryException e) {
+                            String msg = String.format("Error while adding aspect %s ", fileName);
+                            log.error(msg, e);
                         /* The exception is not thrown, because if we throw the error, the for loop will be broken and
                         other files won't be read */
+                        }
                     }
-                }
-            } else {
-                try {
-                    generateAspect(resourcePath, registry);
-                } catch (Exception e) {
-                    String msg = String.format("Error while generating aspect %s ", fileName);
-                    log.error(msg, e);
+                } else {
+                    try {
+                        generateAspect(resourcePath, registry);
+                    } catch (Exception e) {
+                        String msg = String.format("Error while generating aspect %s ", fileName);
+                        log.error(msg, e);
                     /* The exception is not thrown, because if we throw the error, the for loop will be broken and
                         other aspects won't be added */
+                    }
+                }
+            }
+        } else {
+            Resource lifecycleRoot = registry.get(getContextRoot());
+            if (!(lifecycleRoot instanceof Collection)) {
+                String msg = "Failed to continue as the lifecycle configuration root: " + getContextRoot() +
+                            " is not a collection.";
+                log.error(msg);
+                throw new RegistryException(msg);
+            }
+            Collection lifecycleRootCol = (Collection)lifecycleRoot;
+            String[] lifecycleConfigPaths = lifecycleRootCol.getChildren();
+            if (lifecycleConfigPaths != null) {
+                for (String lifecycleConfigPath: lifecycleConfigPaths) {
+                    generateAspect(lifecycleConfigPath, registry);
                 }
             }
         }

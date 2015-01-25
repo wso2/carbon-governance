@@ -646,7 +646,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      *          throws if the operation failed.
      */
     public String[] getAllLifecycleActions(String lifeCycleName) throws GovernanceException {
-//        String lifecycleName = getLifecycleName();
+    	String path = getPath();
         try {
             return registry.getAspectActions(path, lifeCycleName);
         } catch (RegistryException e) {
