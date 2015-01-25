@@ -707,8 +707,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
         Resource artifactResource = getArtifactResource();
         CheckListItemBean[] checkListItemBeans = GovernanceUtils.getAllCheckListItemBeans(artifactResource, this, aspectName);
         if (checkListItemBeans == null) {
-            throw new GovernanceException("No checklist item found for the lifecycle: " + aspectName +
-                    " lifecycle state: " + getLcState() + " in the artifact " + getQName().getLocalPart());
+            return null;
         }
         String[] checkListItemNames = new String[checkListItemBeans.length];
         for (CheckListItemBean checkListItemBean : checkListItemBeans) {

@@ -1052,10 +1052,7 @@ public class GovernanceUtils {
     public static CheckListItemBean[] getAllCheckListItemBeans(Resource artifactResource,
                                                                GovernanceArtifact artifact, String artifactLC) throws GovernanceException {
         String defaultLC = artifactResource.getProperty("registry.LC.name");
-//        if (artifactLC == null) {
-//            throw new GovernanceException("No lifecycle associated with the artifact path " +
-//                    artifactResource.getPath());
-//        }
+
         String artifactLCState = artifactResource.getProperty("registry.lifecycle." + artifactLC + ".state");
 
         if(artifactLC.equals(defaultLC)) {
