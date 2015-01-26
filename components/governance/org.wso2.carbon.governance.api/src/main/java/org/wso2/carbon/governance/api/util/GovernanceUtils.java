@@ -1045,18 +1045,20 @@ public class GovernanceUtils {
      *
      * @param artifactResource resource related to the artifact
      * @param artifact         artifact which related to the resource
+     * @param artifactLC       aspect name of which check list item bean is needed
      * @return CheckListItemBean array extracted from the resource
      * @throws GovernanceException GovernanceException  if the operation failed.
      */
     public static CheckListItemBean[] getAllCheckListItemBeans(Resource artifactResource,
-                                                               GovernanceArtifact artifact) throws GovernanceException {
-        String artifactLC = artifactResource.getProperty("registry.LC.name");
-        if (artifactLC == null) {
-            throw new GovernanceException("No lifecycle associated with the artifact path " +
-                    artifactResource.getPath());
-        }
+                                                               GovernanceArtifact artifact, String artifactLC) throws GovernanceException {
+        String defaultLC = artifactResource.getProperty("registry.LC.name");
+
         String artifactLCState = artifactResource.getProperty("registry.lifecycle." + artifactLC + ".state");
-        ((GovernanceArtifactImpl) artifact).setLcState(artifactLCState);
+
+        if(artifactLC.equals(defaultLC)) {
+            ((GovernanceArtifactImpl) artifact).setLcState(artifactLCState);
+        }
+
         ArrayList<CheckListItemBean> checkListItemList = new ArrayList<CheckListItemBean>();
         Properties lifecycleProps = artifactResource.getProperties();
         Set propertyKeys = lifecycleProps.keySet();
@@ -1066,7 +1068,7 @@ public class GovernanceUtils {
             String checkListPrefix = "registry.custom_lifecycle.checklist.";
             String checkListSuffix = ".item";
 
-            if (propertyKey.startsWith(checkListPrefix) && propertyKey.endsWith(checkListSuffix)) {
+            if (propertyKey.startsWith(checkListPrefix) && propertyKey.endsWith(checkListSuffix) && propertyKey.contains(artifactLC)) {
                 List<String> propValues = (List<String>) lifecycleProps.get(propertyKey);
                 CheckListItemBean checkListItem = new CheckListItemBean();
                 if (propValues != null && propValues.size() > 2) {

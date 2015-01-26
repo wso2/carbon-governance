@@ -826,7 +826,8 @@ public class DefaultLifeCycle extends Aspect {
         	int order = 0;
             for (ApprovalBean approvalBean : transitionApproval.get(currentState)) {
             	if (action.equals(approvalBean.getForEvent())) {
-            		String resourcePropertyNameForItem = LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + order + LifecycleConstants.VOTE;
+            		String resourcePropertyNameForItem = LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION 
+            				+ aspectName + "." + order + LifecycleConstants.VOTE;
             		List<String> list = resource.getPropertyValues(resourcePropertyNameForItem);
             		for (String value : list) {
             			if (value.startsWith("current:")) {

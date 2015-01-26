@@ -33,7 +33,6 @@
 <%@ page import="java.util.Collections" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
-<%@ page import="org.apache.juddi.v3.error.RegistryException" %>
 
 <%
     class CheckListItem implements Comparable {
@@ -178,7 +177,7 @@
         LifecycleServiceClient lifecycleServiceClient = new LifecycleServiceClient(config, session);
 
         bean = lifecycleServiceClient.getLifecycleBean(path);
-    } catch (RegistryException e) {
+    } catch (Exception e) {
         bean = null;
     }
 

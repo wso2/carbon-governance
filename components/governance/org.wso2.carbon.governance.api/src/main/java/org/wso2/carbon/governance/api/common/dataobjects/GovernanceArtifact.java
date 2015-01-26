@@ -212,63 +212,69 @@ public interface GovernanceArtifact {
      * Promote the artifact to the next state of the lifecycle
      *
      * @param action lifecycle action tobe invoked
+     * @param aspectName lifecycle name of which action to be invoked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
     @SuppressWarnings("unused")
-    void invokeAction(String action) throws GovernanceException;
+    void invokeAction(String action, String aspectName) throws GovernanceException;
 
     /**
      * Promote the artifact to the next state of the lifecycle
      *
      * @param action     lifecycle action tobe invoked
+     * @param aspectName lifecycle name of which action to be invoked
      * @param parameters extra parameters needed when promoting
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
     @SuppressWarnings("unused")
-    void invokeAction(String action, Map<String, String> parameters) throws GovernanceException;
+    void invokeAction(String action, Map<String, String> parameters, String aspectName) throws GovernanceException;
 
     /**
      * Retrieve name set of the checklist items
      *
      * @return Checklist item name set
+     * @param aspectName lifecycle name of which action to be invoked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
     @SuppressWarnings("unused")
-    String[] getAllCheckListItemNames() throws GovernanceException;
+    String[] getAllCheckListItemNames(String aspectName) throws GovernanceException;
 
     /**
      * Check the checklist item
      *
      * @param order order of the checklist item need to checked
+     * @param aspectName lifecycle name of which action to be invoked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
     @SuppressWarnings("unused")
-    void checkLCItem(int order) throws GovernanceException;
+    void checkLCItem(int order, String aspectName) throws GovernanceException;
 
     /**
      * Check whether the given ordered lifecycle checklist item is checked or not
      *
      * @param order order of the checklist item need to unchecked
+     * @param aspectName lifecycle name of which action to be invoked
      * @return whether the given ordered lifecycle checklist item is checked or not
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
     @SuppressWarnings("unused")
-    public boolean isLCItemChecked(int order) throws GovernanceException;
+    public boolean isLCItemChecked(int order, String aspectName) throws GovernanceException;
 
     /**
      * Un-check the checklist item
      *
      * @param order order of the checklist item need to unchecked
+     * @param aspectName lifecycle name of which action to be invoked
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
     @SuppressWarnings("unused")
-    void uncheckLCItem(int order) throws GovernanceException;
+    void uncheckLCItem(int order, String aspectName) throws GovernanceException;
 
     /**
      * Retrieve action set which need votes
