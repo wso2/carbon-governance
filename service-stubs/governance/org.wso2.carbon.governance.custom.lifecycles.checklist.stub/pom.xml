@@ -29,7 +29,6 @@
     <artifactId>org.wso2.carbon.governance.custom.lifecycles.checklist.stub</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Governance - Custom Lifecycle Checklist Stub</name>
-   <version>4.3.0-SNAPSHOT</version>
     <url>http://wso2.org</url>
 
     <build>
