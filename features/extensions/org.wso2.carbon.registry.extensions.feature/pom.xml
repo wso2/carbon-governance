@@ -38,15 +38,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.registry</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.registry.extensions.server.feature</artifactId>
-            <version>${carbon.registry.version}</version>
+            <version>${carbon.governance.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.registry</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.registry.extensions.ui.feature</artifactId>
-            <version>${carbon.registry.version}</version>
+            <version>${carbon.governance.version}</version>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -72,10 +72,10 @@
                                 </importFeatureDef>
                             </importFeatures>
                             <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon.registry:org.wso2.carbon.registry.extensions.server.feature
+                                <includedFeatureDef>org.wso2.carbon.governance:org.wso2.carbon.registry.extensions.server.feature
                                 </includedFeatureDef>
                                 <includedFeatureDef>
-                                    org.wso2.carbon.registry:org.wso2.carbon.registry.extensions.ui.feature:${carbon.registry.version}
+                                    org.wso2.carbon.governance:org.wso2.carbon.registry.extensions.ui.feature:${carbon.governance.version}
                                 </includedFeatureDef>
                             </includedFeatures>
                         </configuration>
