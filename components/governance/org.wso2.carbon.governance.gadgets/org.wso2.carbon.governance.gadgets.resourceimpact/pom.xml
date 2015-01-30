@@ -24,7 +24,6 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon.governance</groupId>
     <artifactId>org.wso2.carbon.governance.gadgets.resourceimpact</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Governance - Resource Impact Gadget</name>
