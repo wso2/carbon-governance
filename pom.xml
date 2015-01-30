@@ -499,11 +499,6 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.governance</groupId>
-                <artifactId>org.wso2.carbon.governance.platform.extensions</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.carbon.registry</groupId>
                 <artifactId>org.wso2.carbon.registry.extensions.ui</artifactId>
                 <version>${carbon.registry.version}</version>
