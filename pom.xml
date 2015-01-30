@@ -653,179 +653,179 @@
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.api</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.generic</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.generic.ui</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.services.ui</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.services</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.wsdltool</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.wsdltool.ui</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.wsdl.ui</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.list</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.commons</groupId>
-                <artifactId>org.wso2.carbon.ntask.core</artifactId>
-                <version>${carbon.commons.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.lcm</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.lcm.ui</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.client</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.custom.lifecycles.checklist</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.custom.lifecycles.checklist.ui</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.registry.eventing</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.gadgets.impactanalysis</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.gadgets.resourceimpact</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.gadgetsource</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.gadgets.ui</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
 
             <!-- Governance stubs -->
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.gadgets.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.generic.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.custom.lifecycles.checklist.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.custom.lifecycles.distributed.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.lcm.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.list.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.notifications.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.notifications.ui</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.notifications.worklist.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.people.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.processes.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.services.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.sla.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.wsdltool.stub</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.governance</groupId>
+                <artifactId>org.wso2.carbon.governance.custom.lifecycles.history.ui</artifactId>
+                <version>${carbon.governance.version}</version>
             </dependency>
 
             <dependency>
@@ -837,6 +837,11 @@
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.mashup.javascript.hostobjects.registry</artifactId>
                 <version>${mashup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.ntask.core</artifactId>
+                <version>${carbon.commons.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
@@ -859,7 +864,7 @@
                 <version>${carbon.commons.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.businessprocess</groupId>
+                <groupId>org.wso2.carbon.business-process</groupId>
                 <artifactId>org.wso2.carbon.humantask.stub</artifactId>
                 <version>${carbon.business.process.version}</version>
             </dependency>
@@ -868,11 +873,7 @@
                 <artifactId>org.wso2.carbon.mediation.configadmin.stub</artifactId>
                 <version>4.2.0</version>
             </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.governance</groupId>
-                <artifactId>org.wso2.carbon.governance.custom.lifecycles.history.ui</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.ntask.solutions</artifactId>
@@ -881,7 +882,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.discovery.proxy</artifactId>
-                <version>${project.version}</version>
+                <version>${carbon.governance.version}</version>
             </dependency>
 
             <!-- Misc -->
@@ -1275,7 +1276,6 @@
         <wsdl.validator.version>1.2.0.wso2v1</wsdl.validator.version>
         <rhino.version>1.7.0.R4.wso2v1</rhino.version>
         <mashup.version>4.2.0</mashup.version>
-        <event.version>${project.version}</event.version>
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <version.solr>1.4.1.wso2v1</version.solr>
