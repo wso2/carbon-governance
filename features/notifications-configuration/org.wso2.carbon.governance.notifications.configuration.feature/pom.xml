@@ -48,7 +48,7 @@
             <artifactId>org.wso2.carbon.governance.notifications.worklist.stub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.businessprocess</groupId>
+            <groupId>org.wso2.carbon.business-process</groupId>
             <artifactId>org.wso2.carbon.humantask.stub</artifactId>
         </dependency>
     </dependencies>
