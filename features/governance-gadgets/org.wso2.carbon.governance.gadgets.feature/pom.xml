@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance.gadgets-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -39,25 +39,25 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.gadgets.impactanalysis.feature</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.gadgets.resourceimpact.feature</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.gadgets.lifecycle.feature</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.gadgets.ui.feature</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
@@ -86,15 +86,15 @@
                             </importFeatures>
                             <includedFeatures>
                                 <includedFeatureDef>
-                                    org.wso2.carbon:org.wso2.carbon.governance.gadgets.impactanalysis.feature
+                                    org.wso2.carbon.governance:org.wso2.carbon.governance.gadgets.impactanalysis.feature
                                 </includedFeatureDef>
                                 <includedFeatureDef>
-                                    org.wso2.carbon:org.wso2.carbon.governance.gadgets.lifecycle.feature
+                                    org.wso2.carbon.governance:org.wso2.carbon.governance.gadgets.lifecycle.feature
                                 </includedFeatureDef>
                                 <includedFeatureDef>
-                                    org.wso2.carbon:org.wso2.carbon.governance.gadgets.resourceimpact.feature
+                                    org.wso2.carbon.governance:org.wso2.carbon.governance.gadgets.resourceimpact.feature
                                 </includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.governance.gadgets.ui.feature
+                                <includedFeatureDef>org.wso2.carbon.governance:org.wso2.carbon.governance.gadgets.ui.feature
                                 </includedFeatureDef>
                             </includedFeatures>
                         </configuration>

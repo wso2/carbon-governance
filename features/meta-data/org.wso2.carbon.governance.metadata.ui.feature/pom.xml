@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance.metadata-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
@@ -34,19 +34,19 @@
     <description>This feature contains the bundles required for Front-end Governance Metadata functionality</description>
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.generic.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.generic.stub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.wsdltool.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.wsdltool.stub</artifactId>
         </dependency>
     </dependencies>
@@ -73,10 +73,10 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.wsdltool.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.wsdltool.stub</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.generic.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.generic.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.wsdltool.ui</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.wsdltool.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.generic.ui</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.generic.stub</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.ui:${registry.core.feature.version}</importFeatureDef>

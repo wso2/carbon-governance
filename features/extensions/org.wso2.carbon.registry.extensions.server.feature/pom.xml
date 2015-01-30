@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>extensions-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -38,11 +38,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.extensions</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
         </dependency>
         <dependency>
@@ -113,8 +113,8 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.extensions</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.registry.extensions</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.extensions</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.registry.extensions</bundleDef>
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.wsdl.validator.wso2:wsdl-validator</importBundleDef>
