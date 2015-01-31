@@ -40,13 +40,13 @@
         <dependency>
             <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.metadata.server.feature</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.governance.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.metadata.ui.feature</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.governance.version}</version>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -68,7 +68,7 @@
                             <id>org.wso2.carbon.governance.metadata</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core:${registry.core.feature.version}
+                                <importFeatureDef>org.wso2.carbon.registry.core:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
                             <includedFeatures>

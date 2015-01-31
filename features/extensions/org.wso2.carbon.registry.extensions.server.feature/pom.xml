@@ -124,7 +124,7 @@
                             </importBundles>
                             <importFeatures>
                                 <importFeatureDef>
-                                    org.wso2.carbon.registry.core.server:${registry.core.feature.version}
+                                    org.wso2.carbon.registry.core.server:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
                         </configuration>

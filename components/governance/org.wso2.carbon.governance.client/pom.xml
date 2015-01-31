@@ -46,22 +46,22 @@
         <dependency>
             <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.api</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.governance.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.indexing</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.registry.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.common</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.registry.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.indexing.stub</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.registry.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
