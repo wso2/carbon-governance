@@ -16,7 +16,6 @@
         <module>features/extensions</module>
         <module>features/lifecycle-management</module>
         <module>features/meta-data</module>
-        <module>features/platform-extensions</module>
         <module>features/notifications-configuration</module>
         <module>features/governance-gadgets</module>
         <module>features/ws-discovery-proxy</module>
