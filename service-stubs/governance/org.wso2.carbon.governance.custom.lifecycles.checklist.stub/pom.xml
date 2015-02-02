@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>carbon-service-stubs</artifactId>
-        <version>4.3.0</version>
+        <version>4.3.1-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -54,7 +54,7 @@
                                 </path>
 
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/CustomLifecyclesChecklistAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.governance.custom.lifecycles.checklist.stub                                     -ns2p http://util.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd=org.wso2.carbon.governance.custom.lifecycles.checklist.stub.util.xsd,http://beans.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd=org.wso2.carbon.governance.custom.lifecycles.checklist.stub.beans.xsd,http://services.checklist.lifecycles.custom.governance.carbon.wso2.org=org.wso2.carbon.governance.custom.lifecycles.checklist.stub.services" />
+                                    <arg line="-uri src/main/resources/CustomLifecyclesChecklistAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.governance.custom.lifecycles.checklist.stub -ns2p http://util.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd=org.wso2.carbon.governance.custom.lifecycles.checklist.stub.util.xsd,http://beans.checklist.lifecycles.custom.governance.carbon.wso2.org/xsd=org.wso2.carbon.governance.custom.lifecycles.checklist.stub.beans.xsd,http://services.checklist.lifecycles.custom.governance.carbon.wso2.org=org.wso2.carbon.governance.custom.lifecycles.checklist.stub.services" />
                               
                                <classpath refid="wsdl2java.classpath" /> 
                                </java>
