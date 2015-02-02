@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -11,7 +10,7 @@
     <groupId>org.wso2.carbon.governance</groupId>
     <artifactId>carbon-governance</artifactId>
     <packaging>pom</packaging>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>4.3.0</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -19,7 +18,7 @@
         <url>https://github.com/wso2/carbon-governance.git</url>
         <developerConnection>scm:git:https://github.com/wso2/carbon-governance.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/carbon-governance.git</connection>
-        <tag>HEAD</tag>
+        <tag>carbon-governance-4.3.0</tag>
     </scm>
 
     <modules>
@@ -1247,7 +1246,7 @@
         <carbon.registry.imp.pkg.version>[4.3.0, 4.4.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon platform version comes here-->
-        <carbon.governance.version>4.3.0-SNAPSHOT</carbon.governance.version>
+        <carbon.governance.version>4.3.0</carbon.governance.version>
         <carbon.governance.package.export.version>4.3.0
         </carbon.governance.package.export.version>
         <carbon.governance.package.import.version.range>[4.3.0, 4.4.0)
