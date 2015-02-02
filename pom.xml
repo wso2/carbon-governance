@@ -172,15 +172,10 @@
 
     <distributionManagement>
         <repository>
-            <id>wso2.releases</id>
-            <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/repositories/releases/</url>
+            <id>nexus-releases</id>
+            <name>WSO2 Release Distribution Repository</name>
+            <url>http://maven.wso2.org/nexus/service/local/staging/deploy/maven2/</url>
         </repository>
-        <snapshotRepository>
-            <id>wso2.snapshots</id>
-            <name>Apache Snapshot Repository</name>
-            <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
     </distributionManagement>
 
     <dependencyManagement>
@@ -1339,6 +1334,9 @@
         <version.javax.servlet>3.0.0.v201112011016</version.javax.servlet>
         <rhino.wso2.version>1.7.0.R4.wso2v1</rhino.wso2.version>
         <orbit.version.json>2.0.0.wso2v1</orbit.version.json>
+
+        <project.scm.id>my-scm-server</project.scm.id>
+
     </properties>
 </project>
 
