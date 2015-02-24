@@ -66,18 +66,18 @@ public interface LifecycleNotificationDAO {
     /**
      * This holds the interface method to get checkpoint notification schedulers.
      *
-     * @param registry  core registry.
-     * @return Array list of checkpoint notification data object.
-     * @throws GovernanceException
+     * @param registry              core registry.
+     * @return                      Array list of checkpoint notification data object.
+     * @throws GovernanceException  Throws when a GovernanceException occurs while getting valid notifications.
      */
     public ArrayList<LCNotification> getValidNotifications(Registry registry) throws GovernanceException;
 
     /**
      * This holds the interface method to add checkpoint notification schedulers.
      *
-     * @param registry  core registry.
-     * @param schedulerBean checkpoint notification scheduler bean.
-     * @return boolean true is scheduler added successfully.
+     * @param registry              core registry.
+     * @param schedulerBean         checkpoint notification scheduler bean.
+     * @return                      boolean true is scheduler added successfully.
      */
     public boolean addScheduler(Registry registry, LCNotification schedulerBean)
             throws GovernanceException;

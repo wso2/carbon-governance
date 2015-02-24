@@ -38,14 +38,49 @@ import java.util.Calendar;
  */
 public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDAO {
 
+    /**
+     * MySQL SELECT used in queries.
+     */
     private final String sqlSelect = "SELECT ";
+
+    /**
+     * MySQL FROM used in queries.
+     */
     private final String sqlFrom = " FROM ";
+
+    /**
+     * MySQL INSERT INTO used in queries.
+     */
     private final String sqlInsertInto = "INSERT INTO ";
+
+    /**
+     * MySQL VALUES used in queries.
+     */
     private final String sqlValues = " VALUES ";
+
+    /**
+     * MySQL WHERE used in queries.
+     */
     private final String sqlWhere = " WHERE ";
+
+    /**
+     * Equals sign used in MySQL queries.
+     */
     private final String equals = " = ";
+
+    /**
+     * Comma used in MySQL queries.
+     */
     private final String comma = ",";
+
+    /**
+     * Question mark sign used in MySQL queries.
+     */
     private final String questionMark = "?";
+
+    /**
+     * Date format used in MySQL queries.
+     */
     private final String dateFormat = "yyyy-M-d";
 
     /**
