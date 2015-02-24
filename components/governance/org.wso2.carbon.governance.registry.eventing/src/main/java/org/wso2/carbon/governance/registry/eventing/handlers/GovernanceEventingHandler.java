@@ -20,6 +20,8 @@ package org.wso2.carbon.governance.registry.eventing.handlers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
+import org.wso2.carbon.governance.lcm.tasks.events.LifecycleNotificationEvent;
+import org.wso2.carbon.governance.lcm.tasks.LCNotificationScheduler;
 import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.CheckListItemCheckedEvent;
 import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.CheckListItemUncheckedEvent;
 import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleApprovalNeededEvent;
@@ -33,6 +35,7 @@ import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
@@ -77,6 +80,7 @@ public class GovernanceEventingHandler extends Handler {
             Utils.getRegistryNotificationService().registerEventType("lifecycle.approved", LifeCycleApprovedEvent.EVENT_NAME, LifeCycleApprovedEvent.EVENT_NAME);
             Utils.getRegistryNotificationService().registerEventType("lifecycle.approval.need", LifeCycleApprovalNeededEvent.EVENT_NAME, LifeCycleApprovalNeededEvent.EVENT_NAME);
             Utils.getRegistryNotificationService().registerEventType("lifecycle.approval.withdrawn", LifeCycleApprovalWithdrawnEvent.EVENT_NAME, LifeCycleApprovalWithdrawnEvent.EVENT_NAME);
+            Utils.getRegistryNotificationService().registerEventType("lifecycle.checkpoint.notification", LifecycleNotificationEvent.EVENT_NAME, LifecycleNotificationEvent.EVENT_NAME);
         } catch (Exception e) {
             handleException("Unable to register Event Types", e);
         }
@@ -269,6 +273,15 @@ public class GovernanceEventingHandler extends Handler {
             requestContext.getRegistry().put(path,resource);
         }
         String newState = resource.getProperty(stateKey);
+       // Add lifecycle checkpoint notification scheduler data.
+       String action = requestContext.getAction();
+       // Filtering lifecycle actions.
+       if ((!action.equals("voteClick") && !action.equals("itemClick"))) {
+           LCNotificationScheduler lifecycleNotificationScheduler =
+                   new LCNotificationScheduler();
+           lifecycleNotificationScheduler.addScheduler((ResourceImpl) resource, lcName, CurrentSession
+                   .getCallerTenantId(), newState);
+       }
         if (oldState != null && oldState.equalsIgnoreCase(newState)) {
             return;
         }

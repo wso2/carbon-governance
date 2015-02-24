@@ -10,12 +10,14 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.StatCollection;
+import org.wso2.carbon.governance.registry.extensions.aspects.utils.StatWriter;
 import org.wso2.carbon.governance.registry.extensions.executors.utils.Utils;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
@@ -41,6 +43,10 @@ public class ServiceVersionExecutor implements Execution {
     private boolean copyAllAssociations = false;
     private boolean copyDependencies = true;
     private boolean override = false;
+
+    private static final String ASSOCIATION = "association";
+    private static final String LIFECYCLE_ASPECT_NAME= "registry.LC.name";
+    private boolean isAuditEnabled = true;
 
     private Map parameterMap = new HashMap();
 
@@ -226,6 +232,25 @@ public class ServiceVersionExecutor implements Execution {
 //                This is to handle the original resource and put it to the new path
                 registry.put(newPathMappings.get(resourcePath), newResource);
                 historyOperation.addChild(getHistoryInfoElement(newPathMappings.get(resourcePath) + " created"));
+
+                // Initializing statCollection object
+                StatCollection statCollection = new StatCollection();
+                // Set action type="association"
+                statCollection.setActionType(ASSOCIATION);
+                statCollection.setAction("");
+                statCollection.setRegistry(registry.getRegistryContext().getEmbeddedRegistryService()
+                        .getSystemRegistry(CurrentSession.getTenantId()));
+                statCollection.setTimeMillis(System.currentTimeMillis());
+                statCollection.setState(currentState);
+                statCollection.setResourcePath(newPathMappings.get(resourcePath));
+                statCollection.setUserName(CurrentSession.getUser());
+                statCollection.setOriginalPath(newPathMappings.get(resourcePath));
+                statCollection.setTargetState(targetState);
+                statCollection.setAspectName(resource.getProperty(LIFECYCLE_ASPECT_NAME));
+                // Writing the logs to the registry as history
+                if (isAuditEnabled) {
+                    StatWriter.writeHistory(statCollection);
+                }
 
             } finally {
                 CommonUtil.releaseUpdateLock();

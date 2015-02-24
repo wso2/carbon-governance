@@ -126,6 +126,14 @@
                     "                        </data>-->\n" +
                     "                    </datamodel>\n" +
                     "                    <transition event=\"Promote\" target=\"Tested\"/>                  \n" +
+                    "                    <checkpoints>\n"+
+                    "                           <checkpoint id=\"DevelopmentOne\" durationColour=\"green\">\n"+
+                    "                               <boundary min=\"0d:0h:0m:0s\" max=\"1d:0h:00m:20s\"/>\n"+
+                    "                           </checkpoint>\n"+
+                    "                           <checkpoint id=\"DevelopmentTwo\" durationColour=\"red\">\n"+
+                    "                               <boundary min=\"1d:0h:00m:20s\" max=\"23d:2h:5m:52s\"/>\n"+
+                    "                           </checkpoint>\n"+
+                    "                    </checkpoints>\n"+
                     "                </state>\n" +
                     "                <state id=\"Tested\">\n" +
                     "                    <datamodel>\n" +

@@ -17,9 +17,12 @@
 */
 package org.wso2.carbon.governance.lcm.services;
 
+import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.lcm.beans.DurationBean;
 import org.wso2.carbon.governance.lcm.beans.LifecycleBean;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.governance.lcm.util.LifecycleBeanPopulator;
+import org.wso2.carbon.governance.lcm.util.LifecycleStateDurationUtils;
 import org.wso2.carbon.registry.admin.api.governance.ILifecycleManagementService;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
@@ -71,5 +74,20 @@ public class LifeCycleManagementService extends RegistryAbstractAdmin implements
         return CommonUtil.getLifecycleConfigurationVersion(name, getConfigSystemRegistry());
     }
 
+    /**
+     * This method provides the lifecycle current state duration.
+     *
+     * @param registryPathToResource    registry path to the lifecycle associated resource.
+     * @param lifecycleName             name of the lifecycle associated to the resource. In multiple lifecycle
+     *                                  scenario this service is called once at a time.
+     * @return                          duration timestamp of the lifecycle current state respective to the latest state
+     *                                  update.
+     * @throws GovernanceException      Throws when an GovernanceException is thrown from method
+     *                                  LifecycleStateDurationUtils.getCurrentLifecycleStateDuration.
+     */
+    public DurationBean getLifecycleCurrentStateDuration(String registryPathToResource, String lifecycleName)
+            throws GovernanceException {
+        return LifecycleStateDurationUtils
+                .getCurrentLifecycleStateDuration(registryPathToResource, lifecycleName, getRootRegistry());
+    }
 }
-                                                         
