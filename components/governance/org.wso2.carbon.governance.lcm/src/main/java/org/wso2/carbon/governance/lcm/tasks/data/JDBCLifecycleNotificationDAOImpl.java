@@ -113,11 +113,10 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
             while (resultSet.next()) {
                 LCNotification schedulerBean = new LCNotification();
                 schedulerBean.setRegPath(resultSet.getString(LifecycleNotificationDAO.REG_PATH));
-                schedulerBean.setLcName(resultSet.getString(LifecycleNotificationDAO.LC_NAME));
-                schedulerBean.setLcCheckpointId(resultSet.getString(LifecycleNotificationDAO
-                        .SCH_LC_CHECKPOINT_ID));
+                schedulerBean.setLcName(resultSet.getString(LifecycleNotificationDAO.REG_LC_NAME));
+                schedulerBean.setLcCheckpointId(resultSet.getString(LifecycleNotificationDAO.REG_LC_CHECKPOINT_ID));
                 schedulerBean.setNotificationDate(resultSet.getString(LifecycleNotificationDAO
-                        .SCH_LC_NOTIFICATION_DATE));
+                        .REG_LC_NOTIFICATION_DATE));
                 schedulerBean.setTenantId(resultSet.getInt(LifecycleNotificationDAO.REG_TENANT_ID));
                 schedulerBeans.add(schedulerBean);
             }
@@ -141,8 +140,8 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
 
     /**
      * This method builds the SQL query to select schedulers from database.
-     * Ex: "SELECT REG_PATH,LC_NAME,SCH_LC_CHECKPOINT_ID,REG_TENANT_ID FROM REG_CHECKPOINT_SCHEDULER WHERE
-     * SCH_LC_NOTIFICATION_DATE = ?".
+     * Ex: "SELECT REG_PATH,REG_LC_NAME,REG_LC_CHECKPOINT_ID,REG_TENANT_ID FROM REG_CHECKPOINT_SCHEDULER WHERE
+     * REG_LC_NOTIFICATION_DATE = ?".
      *
      * @return  SQL query to select schedulers from database.
      */
@@ -152,17 +151,17 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
         queryBuilder.append(sqlSelect);
         queryBuilder.append(LifecycleNotificationDAO.REG_PATH);
         queryBuilder.append(comma);
-        queryBuilder.append(LifecycleNotificationDAO.LC_NAME);
+        queryBuilder.append(LifecycleNotificationDAO.REG_LC_NAME);
         queryBuilder.append(comma);
-        queryBuilder.append(LifecycleNotificationDAO.SCH_LC_CHECKPOINT_ID);
+        queryBuilder.append(LifecycleNotificationDAO.REG_LC_CHECKPOINT_ID);
         queryBuilder.append(comma);
         queryBuilder.append(LifecycleNotificationDAO.REG_TENANT_ID);
         queryBuilder.append(comma);
-        queryBuilder.append(LifecycleNotificationDAO.SCH_LC_NOTIFICATION_DATE);
+        queryBuilder.append(LifecycleNotificationDAO.REG_LC_NOTIFICATION_DATE);
         queryBuilder.append(sqlFrom);
         queryBuilder.append(LifecycleNotificationDAO.TABLE_NAME);
         queryBuilder.append(sqlWhere);
-        queryBuilder.append(LifecycleNotificationDAO.SCH_LC_NOTIFICATION_DATE);
+        queryBuilder.append(LifecycleNotificationDAO.REG_LC_NOTIFICATION_DATE);
         queryBuilder.append(equals);
         queryBuilder.append(questionMark);
         return queryBuilder.toString();
@@ -186,10 +185,10 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
             throws GovernanceException {
 
         String sql = sqlInsertInto + LifecycleNotificationDAO.TABLE_NAME + "(" +
-                LifecycleNotificationDAO.REG_PATH + "," + LifecycleNotificationDAO.LC_NAME + ","
-                + LifecycleNotificationDAO.SCH_LC_CHECKPOINT_ID + "," + LifecycleNotificationDAO.UUID + "," +
+                LifecycleNotificationDAO.REG_PATH + "," + LifecycleNotificationDAO.REG_LC_NAME + ","
+                + LifecycleNotificationDAO.REG_LC_CHECKPOINT_ID + "," + LifecycleNotificationDAO.REG_UUID + "," +
                 LifecycleNotificationDAO.REG_TENANT_ID + "," + LifecycleNotificationDAO
-                .SCH_LC_NOTIFICATION_DATE + ")" + sqlValues + "(?,?,?,?,?,?)";
+                .REG_LC_NOTIFICATION_DATE + ")" + sqlValues + "(?,?,?,?,?,?)";
         try {
             registry.beginTransaction();
         } catch (RegistryException e) {

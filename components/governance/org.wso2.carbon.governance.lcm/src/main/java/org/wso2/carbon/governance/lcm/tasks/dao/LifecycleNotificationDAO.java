@@ -41,22 +41,22 @@ public interface LifecycleNotificationDAO {
     /**
      * Lifecycle name column name.
      */
-    public static final String LC_NAME = "LC_NAME";
+    public static final String REG_LC_NAME = "REG_LC_NAME";
 
     /**
      * Lifecycle checkpoint id column name.
      */
-    public static final String SCH_LC_CHECKPOINT_ID = "SCH_LC_CHECKPOINT_ID";
+    public static final String REG_LC_CHECKPOINT_ID = "REG_LC_CHECKPOINT_ID";
 
     /**
      * Lifecycle state checkpoint notification date.
      */
-    public static final String SCH_LC_NOTIFICATION_DATE = "SCH_LC_NOTIFICATION_DATE";
+    public static final String REG_LC_NOTIFICATION_DATE = "REG_LC_NOTIFICATION_DATE";
 
     /**
-     * UUID column name.
+     * REG_UUID column name.
      */
-    public static final String UUID = "UUID";
+    public static final String REG_UUID = "REG_UUID";
 
     /**
      * Registry tenant id column name.
