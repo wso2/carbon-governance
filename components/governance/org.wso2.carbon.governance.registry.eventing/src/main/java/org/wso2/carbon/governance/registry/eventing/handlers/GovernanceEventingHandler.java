@@ -52,6 +52,16 @@ import java.util.Set;
 public class GovernanceEventingHandler extends Handler {
     private static final Log log = LogFactory.getLog(GovernanceEventingHandler.class);
 
+    /**
+     * Constant used to validate vote click.
+     */
+    private final String vote_click = "voteClick";
+
+    /**
+     * Constant used to validate item click.
+     */
+    private final String item_click = "itemClick";
+
     public void init(String defaultNotificationEndpoint) {
         Utils.setDefaultNotificationServiceURL(defaultNotificationEndpoint);
     }
@@ -295,7 +305,7 @@ public class GovernanceEventingHandler extends Handler {
        // Add lifecycle checkpoint notification scheduler data when lifecycle state changes.
        String action = requestContext.getAction();
        // Filtering lifecycle actions.
-       if ((!action.equals("voteClick") && !action.equals("itemClick"))) {
+       if ((!vote_click.equals(action) && !item_click.equals(action))) {
            addLCNotificationScheduler(resource, lcName, newState);
        }
         if (oldState != null && oldState.equalsIgnoreCase(newState)) {
