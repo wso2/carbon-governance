@@ -165,7 +165,7 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
      *
      * @param timeStampOne  lower duration.
      * @param timeStampTwo  higher duration.
-     * @return long    duration difference in timestamp format.
+     * @return long         duration difference in timestamp format.
      */
     private long getDurationDifference(String timeStampOne, String timeStampTwo) {
         return LifecycleStateDurationUtils.getMillySecondsByDuration(timeStampTwo) - LifecycleStateDurationUtils

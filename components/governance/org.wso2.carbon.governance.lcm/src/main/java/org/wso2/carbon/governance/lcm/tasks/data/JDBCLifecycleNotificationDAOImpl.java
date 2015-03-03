@@ -216,13 +216,14 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
                 throw new GovernanceException("Error while committing transaction of adding checkpoint notification "
                         + "scheduler query: " + sql, e);
             }
-        } catch (SQLException e1) {
+        } catch (SQLException sqlException) {
             try {
                 registry.rollbackTransaction();
-            } catch (RegistryException e2) {
-                throw new GovernanceException("Error while transaction rollback for query: " + sql, e2);
+            } catch (RegistryException registryException) {
+                throw new GovernanceException("Error while transaction rollback for query: " + sql, registryException);
             }
-            throw new GovernanceException("SQL error while creating scheduler data entry using query: " + sql, e1);
+            throw new GovernanceException("SQL error while creating scheduler data entry using query: " + sql,
+                    sqlException);
         }
     }
 
