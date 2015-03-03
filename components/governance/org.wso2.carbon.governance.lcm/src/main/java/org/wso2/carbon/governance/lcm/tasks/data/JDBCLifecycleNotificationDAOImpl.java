@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.governance.lcm.tasks.data;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.lcm.tasks.LCNotification;
 import org.wso2.carbon.governance.lcm.tasks.dao.LifecycleNotificationDAO;
@@ -37,6 +39,11 @@ import java.util.Calendar;
  * This class is the JDBC implementation of LifecycleNotificationDAO which is used to add schedulers and read schedules.
  */
 public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDAO {
+
+    /**
+     * Variable used to log.
+     */
+    private static final Log log = LogFactory.getLog(JDBCLifecycleNotificationDAOImpl.class);
 
     /**
      * MySQL SELECT used in queries.
@@ -103,11 +110,11 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
             throw new GovernanceException("Error while reading data from registry while invoking beginTransaction for"
                     + " query: " + sql, e);
         }
+        JDBCDatabaseTransaction.ManagedRegistryConnection connection =
+                JDBCDatabaseTransaction.getConnection();
+        PreparedStatement preparedStatement = null;
         try {
-            JDBCDatabaseTransaction.ManagedRegistryConnection connection =
-                    JDBCDatabaseTransaction.getConnection();
-
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, getCurrentDate());
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -136,6 +143,14 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
                         registryException);
             }
             throw new GovernanceException("SQL error while getting schedulers from query: " + sql, sqlException);
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    log.error("SQL error while closing the prepared statement for sql :" + sql, e);
+                }
+            }
         }
     }
 
@@ -200,8 +215,9 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
 
         JDBCDatabaseTransaction.ManagedRegistryConnection connection =
                 JDBCDatabaseTransaction.getConnection();
+        PreparedStatement preparedStatement = null;
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, schedulerBean.getRegPath());
             preparedStatement.setString(2, schedulerBean.getLcName());
             preparedStatement.setString(3, schedulerBean.getLcCheckpointId());
@@ -224,6 +240,14 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
             }
             throw new GovernanceException("SQL error while creating scheduler data entry using query: " + sql,
                     sqlException);
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    log.error("SQL error while closing the prepared statement for sql :" + sql, e);
+                }
+            }
         }
     }
 

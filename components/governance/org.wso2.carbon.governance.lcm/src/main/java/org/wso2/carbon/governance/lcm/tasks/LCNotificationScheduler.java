@@ -26,11 +26,12 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.lcm.tasks.dao.LifecycleNotificationDAO;
 import org.wso2.carbon.governance.lcm.tasks.data.JDBCLifecycleNotificationDAOImpl;
 import org.wso2.carbon.governance.lcm.tasks.events.LifecycleNotificationEvent;
+import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.governance.lcm.util.LifecycleStateDurationUtils;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
 import org.wso2.carbon.registry.common.eventing.NotificationService;
-import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.ResourceImpl;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.eventing.services.EventingServiceImpl;
 
 import javax.xml.namespace.QName;
@@ -41,7 +42,7 @@ import java.util.List;
 /**
  * This Util class holds methods to send checkpoint notifications and add schedulers.
  */
-public class LCNotificationScheduler extends RegistryAbstractAdmin {
+public class LCNotificationScheduler {
 
     private static final Log log = LogFactory.getLog(LCNotificationScheduler.class);
 
@@ -62,12 +63,12 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
      * scheduler task CheckpointNotificationSchedulerTask.
      */
     public void run() {
-
         LifecycleNotificationDAO lifecycleNotificationDAO = new JDBCLifecycleNotificationDAOImpl();
+        ArrayList<LCNotification> notifications = new ArrayList<LCNotification>();
 
-        ArrayList<LCNotification> notifications;
         try {
-            notifications = lifecycleNotificationDAO.getValidNotifications(getRootRegistry());
+            notifications = lifecycleNotificationDAO
+                    .getValidNotifications(CommonUtil.getRegistryService().getRegistry());
         } catch (GovernanceException e) {
             log.error("Error while getting notifications. Hold notification sending job.", e);
             /*
@@ -75,29 +76,32 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
              org.wso2carbon.ntask.core.Task interface which doesn't throw exceptions from execute() method signature.
              */
             return;
+        } catch (RegistryException e) {
+            log.error("Error while getting notifications to send Lifecycle checkpoint notifications.", e);
         }
 
-        // Parse this for a another method.
-        for (LCNotification schedulerBean : notifications) {
-            // Creating a Checkpoint notification event.
-            StringBuilder stringBuilder = new StringBuilder("Resource / Service lifecycle: ").append(schedulerBean
-                    .getLcName()).append(" is reaching ").append("checkpoint '").append(schedulerBean
-                    .getLcCheckpointId()).append("' tomorrow");
-            LifecycleNotificationEvent<String> notificationEvent = new LifecycleNotificationEvent<String>
-                    (stringBuilder.toString());
-            notificationEvent.setTenantId(schedulerBean.getTenantId());
-            notificationEvent.setResourcePath(schedulerBean.getRegPath());
-            // Sending notification using notification service.
-            NotificationService notificationService = new EventingServiceImpl();
-            try {
-                notificationService.notify(notificationEvent);
-                if(log.isDebugEnabled()){
-                    log.debug("Notification " + stringBuilder + "sent to notification service.");
+        // Send notifications if exists.
+        if (notifications.size() > 0) {
+            // Parse this for a another method.
+            for (LCNotification schedulerBean : notifications) {
+                // Creating a Checkpoint notification event.
+                String notificationMessage = getNotificationMessage(schedulerBean);
+                LifecycleNotificationEvent<String> notificationEvent = new LifecycleNotificationEvent<String>
+                        (notificationMessage);
+                notificationEvent.setTenantId(schedulerBean.getTenantId());
+                notificationEvent.setResourcePath(schedulerBean.getRegPath());
+                // Sending notification using notification service.
+                NotificationService notificationService = new EventingServiceImpl();
+                try {
+                    notificationService.notify(notificationEvent);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Notification '" + notificationMessage + "' sent to notification service.");
+                    }
+                    // Exception is caught because notificationService.notify method throws the exception from Exception
+                    // class. This will be refactored after fixing this JIRA: https://wso2.org/jira/browse/REGISTRY-2433
+                } catch (Exception e) {
+                    log.error("Error getting registry while getting scheduler objects to send notifications", e);
                 }
-                // Exception is caught because notificationService.notify method throws the exception from Exception
-                // class. This will be refactored after fixing this JIRA: https://wso2.org/jira/browse/REGISTRY-2433
-            } catch (Exception e) {
-                log.error("Error while getting scheduler objects to send notifications", e);
             }
         }
     }
@@ -110,7 +114,8 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
      * @param lifecycleName         lifecycle name.
      * @param tenantId              tenant Id.
      * @param lifecycleState        new lifecycle state after the state changed.
-     * @throws GovernanceException  Thrown if scheduler addition fails.
+     * @throws GovernanceException  Throws when an error occurred while adding a lifecycle notification scheduler to
+     *                              the database.
      */
     public void addScheduler(ResourceImpl resource, String lifecycleName, int tenantId, String lifecycleState)
             throws GovernanceException {
@@ -144,10 +149,13 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
 
                     LifecycleNotificationDAO scheduler = new JDBCLifecycleNotificationDAOImpl();
                     try {
-                        scheduler.addScheduler(getRootRegistry(), schedulerBean);
+                        scheduler.addScheduler(CommonUtil.getRegistryService().getRegistry(), schedulerBean);
                     } catch (GovernanceException e) {
                         log.error("Error while adding scheduler belongs to " + lifecycleName + "'s state '"
                                 + lifecycleState + "'to database", e);
+                    } catch (RegistryException e) {
+                        log.error("Error getting registry while adding notification schedulers belongs to "
+                                + lifecycleName + "'s state '" + lifecycleState + "' to database", e);
                     }
                 }
             } else {
@@ -177,7 +185,7 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
      * @param durationDifference    duration difference of the lifecycle checkpoint.
      * @return                      notification date in the format of yyyy-MM-dd.
      */
-    private String getNotificationDate(long durationDifference){
+    private String getNotificationDate(long durationDifference) {
         // Getting current time
         long currentTimeInMillySeconds = Calendar.getInstance().getTimeInMillis();
 
@@ -195,5 +203,28 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
         dateBuilder.append(dateSeparator);
         dateBuilder.append(mDay);
         return dateBuilder.toString();
+    }
+
+    /**
+     * This method is used to create notification message.
+     *
+     * @param schedulerBean     scheduler bean need to create the notification message.
+     * @return                  notification message.
+     */
+    private String getNotificationMessage(LCNotification schedulerBean) {
+
+        String[] pathParams = schedulerBean.getRegPath().split("/");
+        String resourceName;
+        if (pathParams.length > 1) {
+            resourceName = pathParams[pathParams.length - 1];
+        } else {
+            resourceName = "/";
+        }
+
+        StringBuilder stringBuilder = new StringBuilder("Resource '").append(resourceName).append
+                ("' ").append(schedulerBean.getLcName()).append(" is reaching ").append("lifecycle checkpoint '")
+                .append(schedulerBean.getLcCheckpointId()).append("' on ")
+                .append(schedulerBean.getNotificationDate()).append(".");
+        return stringBuilder.toString();
     }
 }
