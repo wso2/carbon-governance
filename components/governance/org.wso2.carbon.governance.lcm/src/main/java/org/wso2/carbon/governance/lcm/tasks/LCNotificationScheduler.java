@@ -39,7 +39,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * THis Util class holds methods to send checkpoint notifications and add schedulers.
+ * This Util class holds methods to send checkpoint notifications and add schedulers.
  */
 public class LCNotificationScheduler extends RegistryAbstractAdmin {
 
@@ -58,10 +58,8 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
     private final int dateLength = 10;
 
     /**
-     * THis method is used to send notifications for checkpoints in lifecycle. This method is called using the
+     * This method is used to send notifications for checkpoints in lifecycle. This method is called using the
      * scheduler task CheckpointNotificationSchedulerTask.
-     *
-     * @throws GovernanceException
      */
     public void run() {
 
@@ -79,7 +77,7 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
             return;
         }
 
-        //Parse this for a another method
+        // Parse this for a another method.
         for (LCNotification schedulerBean : notifications) {
             // Creating a Checkpoint notification event.
             StringBuilder stringBuilder = new StringBuilder("Resource / Service lifecycle: ").append(schedulerBean
@@ -96,7 +94,8 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
                 if(log.isDebugEnabled()){
                     log.debug("Notification " + stringBuilder + "sent to notification service.");
                 }
-                //TODO refactor org.wso2.carbon.registry.common.eventing.NotificationService.
+                // Exception is caught because notificationService.notify method throws the exception from Exception
+                // class. This will be refactored after fixing this JIRA: https://wso2.org/jira/browse/REGISTRY-2433
             } catch (Exception e) {
                 log.error("Error while getting scheduler objects to send notifications", e);
             }
@@ -107,11 +106,11 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
      * This method is used to add checkpoint notification schedulers to the database. These schedulers are used to
      * send notifications when they reaches the checkpoints defined in the attached lifecycle.
      *
-     * @param resource  resource which the lifecycle is attached.
-     * @param lifecycleName lifecycle name.
-     * @param tenantId  tenant Id.
-     * @param lifecycleState    new lifecycle state after the state changed.
-     * @throws GovernanceException
+     * @param resource              resource which the lifecycle is attached.
+     * @param lifecycleName         lifecycle name.
+     * @param tenantId              tenant Id.
+     * @param lifecycleState        new lifecycle state after the state changed.
+     * @throws GovernanceException  Thrown if scheduler addition fails.
      */
     public void addScheduler(ResourceImpl resource, String lifecycleName, int tenantId, String lifecycleState)
             throws GovernanceException {
@@ -153,7 +152,7 @@ public class LCNotificationScheduler extends RegistryAbstractAdmin {
                 }
             } else {
                 if (log.isDebugEnabled()) {
-                    log.error("Invalid arguments supplied as lifecycle name: " + lifecycleName + ", lifecycle state: "
+                    log.debug("Invalid arguments supplied as lifecycle name: " + lifecycleName + ", lifecycle state: "
                             + lifecycleState);
                 }
             }

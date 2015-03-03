@@ -21,7 +21,7 @@ package org.wso2.carbon.governance.lcm.tasks.events;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 
 /**
- * THis Event class holds the events when a checkpoint needs to send notifications.
+ * This Event class holds the events when a checkpoint needs to send notifications.
  */
 public class LifecycleNotificationEvent<T> extends RegistryEvent<T> {
 

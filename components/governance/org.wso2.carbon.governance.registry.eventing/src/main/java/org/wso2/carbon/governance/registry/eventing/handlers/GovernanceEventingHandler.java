@@ -506,7 +506,7 @@ public class GovernanceEventingHandler extends Handler {
 	}
 
     /**
-     * THis method is used to add schedulers to lifecycle checkpoints. These schedulers will be triggered by a
+     * This method is used to add schedulers to lifecycle checkpoints. These schedulers will be triggered by a
      * schedule task. Checkpoints are added with to the lifecycle state and lifecycle name.
      *
      * @param resource          resource which the scheduler needs to be added.

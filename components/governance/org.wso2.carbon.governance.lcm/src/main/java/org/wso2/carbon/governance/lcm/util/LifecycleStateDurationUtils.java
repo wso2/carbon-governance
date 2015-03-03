@@ -404,7 +404,7 @@ public class LifecycleStateDurationUtils {
     }
 
     /**
-     * THis method is used to get history item node list while reading history file.
+     * This method is used to get history item node list while reading history file.
      *
      * @param targetStateXpath      xPath to the history item node list.
      * @param documentElement       history file document element.
