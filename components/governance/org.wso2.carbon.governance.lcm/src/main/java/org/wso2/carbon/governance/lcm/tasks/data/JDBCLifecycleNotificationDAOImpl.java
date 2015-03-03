@@ -90,7 +90,8 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
      * @return                      Array list of scheduler data objects.
      * @throws GovernanceException  Throws when an error occurs reading data and committing transaction.
      */
-    @Override public ArrayList<LCNotification> getValidNotifications(Registry registry)
+    @Override
+    public ArrayList<LCNotification> getValidNotifications(Registry registry)
             throws GovernanceException {
 
         String sql = getValidNotificationQuery();
@@ -181,7 +182,8 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
      *                                  error.</li>
      *                              </ul>
      */
-    @Override public boolean addScheduler(Registry registry, LCNotification schedulerBean)
+    @Override
+    public boolean addScheduler(Registry registry, LCNotification schedulerBean)
             throws GovernanceException {
 
         String sql = sqlInsertInto + LifecycleNotificationDAO.TABLE_NAME + "(" +
