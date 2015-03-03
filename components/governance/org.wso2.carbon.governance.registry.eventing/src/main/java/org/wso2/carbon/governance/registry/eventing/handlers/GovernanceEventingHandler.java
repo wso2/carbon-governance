@@ -520,7 +520,7 @@ public class GovernanceEventingHandler extends Handler {
             lifecycleNotificationScheduler.addScheduler((ResourceImpl) resource, lifecycleName, CurrentSession
                     .getCallerTenantId(), lifecycleState);
         } catch (GovernanceException e) {
-            log.error("Lifecycle '" + lifecycleName + "'checkpoint addition failed for state " + lifecycleState);
+            log.error("Lifecycle '" + lifecycleName + "'checkpoint addition failed for state " + lifecycleState, e);
         }
     }
 }

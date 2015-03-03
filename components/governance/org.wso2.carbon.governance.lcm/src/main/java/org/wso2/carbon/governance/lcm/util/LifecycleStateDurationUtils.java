@@ -105,7 +105,7 @@ public class LifecycleStateDurationUtils {
                 }
             } catch (RegistryException e) {
                 throw new GovernanceException(
-                        "Error while checking resource exists for: '" + registryPathToResource + "'");
+                        "Error while checking resource exists for: '" + registryPathToResource + "'", e);
             }
         return durationBean;
     }
