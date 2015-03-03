@@ -214,16 +214,13 @@ public class LCNotificationScheduler {
     private String getNotificationMessage(LCNotification schedulerBean) {
 
         String[] pathParams = schedulerBean.getRegPath().split("/");
-        String resourceName;
-        if (pathParams.length > 1) {
-            resourceName = pathParams[pathParams.length - 1];
-        } else {
-            resourceName = "/";
-        }
+        // Lifecycle cannot be applied to registry path "/". Hence pathParams.length is always greater than or equals
+        // to one. Hence (pathParams.length - 1) cannot be a minus value.
+        String resourceName = pathParams[pathParams.length - 1];
 
         StringBuilder stringBuilder = new StringBuilder("Resource '").append(resourceName).append
-                ("' ").append(schedulerBean.getLcName()).append(" is reaching ").append("lifecycle checkpoint '")
-                .append(schedulerBean.getLcCheckpointId()).append("' on ")
+                ("'s lifecycle '").append(schedulerBean.getLcName()).append("' is reaching ").append("lifecycle "
+                + "checkpoint '").append(schedulerBean.getLcCheckpointId()).append("' on ")
                 .append(schedulerBean.getNotificationDate()).append(".");
         return stringBuilder.toString();
     }
