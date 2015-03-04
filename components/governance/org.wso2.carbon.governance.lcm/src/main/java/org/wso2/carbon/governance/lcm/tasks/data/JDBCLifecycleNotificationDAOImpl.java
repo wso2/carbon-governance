@@ -86,6 +86,21 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
     private final String questionMark = "?";
 
     /**
+     * Open bracket used to build sql query.
+     */
+    private final String openBracket = "(";
+
+    /**
+     * Close bracket used to build sql query.
+     */
+    private final String closeBracket = ")";
+
+    /**
+     * String used in sql add scheduler to build parameter string.
+     */
+    private final String addSchedulerParameterString = "(?,?,?,?,?,?)";
+
+    /**
      * Date format used in MySQL queries.
      */
     private final String dateFormat = "yyyy-M-d";
@@ -163,8 +178,7 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
      */
     private String getValidNotificationQuery() {
 
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append(sqlSelect);
+        StringBuilder queryBuilder = new StringBuilder(sqlSelect);
         queryBuilder.append(LifecycleNotificationDAO.REG_PATH);
         queryBuilder.append(comma);
         queryBuilder.append(LifecycleNotificationDAO.REG_LC_NAME);
@@ -201,11 +215,7 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
     public boolean addScheduler(Registry registry, LCNotification schedulerBean)
             throws GovernanceException {
 
-        String sql = sqlInsertInto + LifecycleNotificationDAO.TABLE_NAME + "(" +
-                LifecycleNotificationDAO.REG_PATH + "," + LifecycleNotificationDAO.REG_LC_NAME + ","
-                + LifecycleNotificationDAO.REG_LC_CHECKPOINT_ID + "," + LifecycleNotificationDAO.REG_UUID + "," +
-                LifecycleNotificationDAO.REG_TENANT_ID + "," + LifecycleNotificationDAO
-                .REG_LC_NOTIFICATION_DATE + ")" + sqlValues + "(?,?,?,?,?,?)";
+        String sql = getAddSchedulerQuery();
         try {
             registry.beginTransaction();
         } catch (RegistryException e) {
@@ -261,5 +271,31 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
         //get current date time with Calendar()
         Calendar cal = Calendar.getInstance();
         return dateFormat.format(cal.getTime());
+    }
+
+    /**
+     * This method is used to build add scheduler query.
+     *
+     * @return  add scheduler query.
+     */
+    private String getAddSchedulerQuery() {
+        StringBuilder queryBuilder = new StringBuilder(sqlInsertInto);
+        queryBuilder.append(LifecycleNotificationDAO.TABLE_NAME);
+        queryBuilder.append(openBracket);
+        queryBuilder.append(LifecycleNotificationDAO.REG_PATH);
+        queryBuilder.append(comma);
+        queryBuilder.append(LifecycleNotificationDAO.REG_LC_NAME);
+        queryBuilder.append(comma);
+        queryBuilder.append(LifecycleNotificationDAO.REG_LC_CHECKPOINT_ID);
+        queryBuilder.append(comma);
+        queryBuilder.append(LifecycleNotificationDAO.REG_UUID);
+        queryBuilder.append(comma);
+        queryBuilder.append(LifecycleNotificationDAO.REG_TENANT_ID);
+        queryBuilder.append(comma);
+        queryBuilder.append(LifecycleNotificationDAO.REG_LC_NOTIFICATION_DATE);
+        queryBuilder.append(closeBracket);
+        queryBuilder.append(sqlValues);
+        queryBuilder.append(addSchedulerParameterString);
+        return queryBuilder.toString();
     }
 }
