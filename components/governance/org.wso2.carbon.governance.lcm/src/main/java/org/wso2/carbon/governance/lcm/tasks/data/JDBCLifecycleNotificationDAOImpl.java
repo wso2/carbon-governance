@@ -115,6 +115,9 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
     @Override
     public ArrayList<LCNotification> getValidNotifications(Registry registry)
             throws GovernanceException {
+        if (registry == null) {
+            return null;
+        }
 
         String sql = getValidNotificationQuery();
 
@@ -128,11 +131,12 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
         JDBCDatabaseTransaction.ManagedRegistryConnection connection =
                 JDBCDatabaseTransaction.getConnection();
         PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         try {
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, getCurrentDate());
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 LCNotification schedulerBean = new LCNotification();
                 schedulerBean.setRegPath(resultSet.getString(LifecycleNotificationDAO.REG_PATH));
@@ -164,6 +168,13 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
                     preparedStatement.close();
                 } catch (SQLException e) {
                     log.error("SQL error while closing the prepared statement for sql :" + sql, e);
+                }
+            }
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    log.error("SQL error while closing the result set after executing sql :" + sql, e);
                 }
             }
         }
@@ -214,7 +225,9 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
     @Override
     public boolean addScheduler(Registry registry, LCNotification schedulerBean)
             throws GovernanceException {
-
+        if (registry == null && schedulerBean == null) {
+            return false;
+        }
         String sql = getAddSchedulerQuery();
         try {
             registry.beginTransaction();
@@ -223,6 +236,7 @@ public class JDBCLifecycleNotificationDAOImpl implements LifecycleNotificationDA
                     + " query: " + sql, e);
         }
 
+        // Get database connection.
         JDBCDatabaseTransaction.ManagedRegistryConnection connection =
                 JDBCDatabaseTransaction.getConnection();
         PreparedStatement preparedStatement = null;

@@ -81,7 +81,7 @@ public class LCNotificationScheduler {
         }
 
         // Send notifications if exists.
-        if (notifications.size() > 0) {
+        if (notifications != null && notifications.size() > 0) {
             // Parse this for a another method.
             for (LCNotification schedulerBean : notifications) {
                 // Creating a Checkpoint notification event.
@@ -149,7 +149,14 @@ public class LCNotificationScheduler {
 
                     LifecycleNotificationDAO scheduler = new JDBCLifecycleNotificationDAOImpl();
                     try {
-                        scheduler.addScheduler(CommonUtil.getRegistryService().getRegistry(), schedulerBean);
+                        boolean result = scheduler.addScheduler(CommonUtil.getRegistryService().getRegistry(),
+                                schedulerBean);
+                        if (result) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("scheduler belongs to " + lifecycleName + "'s state '" + lifecycleState
+                                        + "'to database");
+                            }
+                        }
                     } catch (GovernanceException e) {
                         log.error("Error while adding scheduler belongs to " + lifecycleName + "'s state '"
                                 + lifecycleState + "'to database", e);
