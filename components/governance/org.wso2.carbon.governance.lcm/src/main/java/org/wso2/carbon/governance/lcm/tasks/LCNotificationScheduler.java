@@ -218,10 +218,10 @@ public class LCNotificationScheduler {
         // to one. Hence (pathParams.length - 1) cannot be a minus value.
         String resourceName = pathParams[pathParams.length - 1];
 
-        StringBuilder stringBuilder = new StringBuilder("Resource '").append(resourceName).append
-                ("'s lifecycle '").append(schedulerBean.getLcName()).append("' is reaching ").append("lifecycle "
-                + "checkpoint '").append(schedulerBean.getLcCheckpointId()).append("' on ")
-                .append(schedulerBean.getNotificationDate()).append(".");
+        StringBuilder stringBuilder = new StringBuilder("Resource '").append(resourceName).append("'s lifecycle '")
+                .append(schedulerBean.getLcName()).append("' is reaching lifecycle checkpoint '")
+                .append(schedulerBean.getLcCheckpointId()).append("' on ").append(schedulerBean.getNotificationDate())
+                .append(".");
         return stringBuilder.toString();
     }
 }
