@@ -114,8 +114,9 @@ public class GovernanceEventingHandler extends Handler {
         List oldLifecycleList = (List) props.get("registry.Aspects");
         List newLifecycleList = (List) newProps.get("registry.Aspects");
         if (lcName == null && oldLcName != null) {
-            RegistryEvent<String> event = new LifeCycleDeletedEvent<String>(
-                    "[" + oldLcName + "] The LifeCycle was deleted for resource at "+relativePath+".");
+            StringBuilder messageBuilder = new StringBuilder("[").append(oldLcName)
+                    .append("] The LifeCycle was deleted for resource at ").append(relativePath).append(".");
+            RegistryEvent<String> event = new LifeCycleDeletedEvent<String>(messageBuilder.toString());
             ((LifeCycleDeletedEvent)event).setResourcePath(relativePath);
             event.setParameter("LifecycleName", oldLcName);
             event.setTenantId(CurrentSession.getCallerTenantId());
@@ -142,8 +143,9 @@ public class GovernanceEventingHandler extends Handler {
                 String lifecycleState = (String) statesList.get(0);
                 addLCNotificationScheduler(newResource, lcName, lifecycleState);
             }
-            RegistryEvent<String> event = new LifeCycleCreatedEvent<String>(
-                    "[" + lcName + "] The LifeCycle was created for resource at "+relativePath+".");
+            StringBuilder messageBuilder = new StringBuilder("[").append(lcName)
+                    .append("] The LifeCycle was created for resource at ").append(relativePath).append(".");
+            RegistryEvent<String> event = new LifeCycleCreatedEvent<String>(messageBuilder.toString());
             ((LifeCycleCreatedEvent)event).setResourcePath(relativePath);
             event.setParameter("LifecycleName", lcName);
             event.setTenantId(CurrentSession.getCallerTenantId());
