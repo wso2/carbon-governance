@@ -107,9 +107,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.predic8.wso2</groupId>
+            <groupId>org.wso2.orbit.com.predic8</groupId>
             <artifactId>soa.model.core</artifactId>
-            <version>1.5.0.wso2v1</version>
         </dependency>
     </dependencies>
 
