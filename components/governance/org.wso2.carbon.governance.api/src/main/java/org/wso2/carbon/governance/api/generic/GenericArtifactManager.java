@@ -20,6 +20,8 @@ package org.wso2.carbon.governance.api.generic;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.GovernanceArtifactManager;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
@@ -52,6 +54,8 @@ public class GenericArtifactManager {
     private GovernanceArtifactManager manager;
     private String mediaType;
 
+    private static final Log log = LogFactory.getLog(GenericArtifactManager.class);
+
     /**
      * Constructor accepting an instance of the registry, and also details on the type of manager.
      *
@@ -83,25 +87,35 @@ public class GenericArtifactManager {
 
     /**
      * Constructor accepting an instance of the registry, and key identifying the type of manager.
-     * 
-     * @param registry the instance of the registry.
-     * @param key      the key short name of the artifact type.
+     *
+     * @param registry              the instance of the registry.
+     * @param key                   the key short name of the artifact type.
+     * @throws RegistryException    Thrown when rxt configuration is not in registry.
      */
     public GenericArtifactManager(Registry registry, String key) throws RegistryException {
         try {
             GovernanceArtifactConfiguration configuration =
                     GovernanceUtils.findGovernanceArtifactConfiguration(key, registry);
-            this.artifactNameAttribute = configuration.getArtifactNameAttribute();
-            this.artifactNamespaceAttribute = configuration.getArtifactNamespaceAttribute();
-            this.artifactElementNamespace = configuration.getArtifactElementNamespace();
-            manager = new GovernanceArtifactManager(registry, configuration.getMediaType(),
-                    this.artifactNameAttribute, this.artifactNamespaceAttribute,
-                    configuration.getArtifactElementRoot(), this.artifactElementNamespace,
-                    configuration.getPathExpression(), configuration.getLifecycle(),
-                    configuration.getValidationAttributes(), configuration.getRelationshipDefinitions());
-            this.mediaType = configuration.getMediaType();
+            if (configuration != null) {
+                artifactNameAttribute = configuration.getArtifactNameAttribute();
+                artifactNamespaceAttribute = configuration.getArtifactNamespaceAttribute();
+                artifactElementNamespace = configuration.getArtifactElementNamespace();
+                manager = new GovernanceArtifactManager(registry, configuration.getMediaType(),
+                        artifactNameAttribute, artifactNamespaceAttribute,
+                        configuration.getArtifactElementRoot(), artifactElementNamespace,
+                        configuration.getPathExpression(), configuration.getLifecycle(),
+                        configuration.getValidationAttributes(), configuration.getRelationshipDefinitions());
+                mediaType = configuration.getMediaType();
+            } else {
+                String message = "Artifact type '" + key
+                        + "' is not in registry or unable to find relevant configuration.";
+                log.error(message);
+                throw new GovernanceException(message);
+            }
         } catch (RegistryException e) {
-            throw new GovernanceException("Unable to obtain governance artifact configuration", e);
+            String message = "Unable to obtain governance artifact configuration for rxt: " + key;
+            log.error(message, e);
+            throw new GovernanceException(message, e);
         }
     }
 
@@ -181,7 +195,9 @@ public class GenericArtifactManager {
 
             return artifact;
         } catch (XMLStreamException e) {
-            throw new GovernanceException("Error in creating the content from the parameters", e);
+            String message = "Error in creating the content from the parameters.";
+            log.error(message, e);
+            throw new GovernanceException(message, e);
         }
     }
 
