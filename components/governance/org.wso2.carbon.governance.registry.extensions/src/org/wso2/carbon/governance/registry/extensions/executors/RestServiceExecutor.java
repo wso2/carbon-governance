@@ -33,14 +33,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.api.services.dataobjects.Service;
 import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
-import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
@@ -130,20 +128,7 @@ public class RestServiceExecutor implements Execution{
 			                                                            "api");
 
 			GenericArtifact api = manager.getGenericArtifact(context.getResource().getUUID());
-			GovernanceArtifact[] dependencies = api.getDependencies();
-
-			Resource swagger = context.getRegistry().get(
-					RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + dependencies[0].getPath());
-
-			Object contentObj = swagger.getContent();
-
-			String swaggerContent = null;
-			if (contentObj instanceof String) {
-				swaggerContent = (String) contentObj;
-			} else if (contentObj instanceof byte[]) {
-				swaggerContent = RegistryUtils.decodeBytes((byte[]) contentObj);
-			}
-			publishData(api, serviceName, swaggerContent);
+			publishData(api, serviceName);
 
 		} catch (RegistryException e) {
 			log.error("Failed to publish service to API store ", e);
@@ -161,7 +146,7 @@ public class RestServiceExecutor implements Execution{
 	 * @param api
 	 * @param serviceName
 	 */
-	private void publishData(GenericArtifact api, String serviceName, String swaggerContent)
+	private void publishData(GenericArtifact api, String serviceName)
 			throws RegistryException {
 
 		if (apimEndpoint == null || apimUsername == null || apimPassword == null) {
@@ -177,7 +162,7 @@ public class RestServiceExecutor implements Execution{
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 
 		authenticateAPIM(httpContext);
-		String addAPIendpoint = apimEndpoint + "/publisher/site/blocks/item-design/ajax/add.jag";
+		String addAPIendpoint = apimEndpoint + "publisher/site/blocks/item-add/ajax/add.jag";
 
 		try {
 			// create a post request to addAPI.
@@ -192,24 +177,25 @@ public class RestServiceExecutor implements Execution{
 				log.warn(msg);
 			}
 
-			//params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT, api.getAttribute("overview_endpointURL")));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION, "design"));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT, api.getAttribute("overview_endpointURL")));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION, ExecutorConstants.API_ADD_ACTION));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_NAME, serviceName));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_CONTEXT, serviceName));
-			params.add(new BasicNameValuePair("swagger", swaggerContent));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION, api.getAttribute(ExecutorConstants.SERVICE_VERSION)));
-			params.add(new BasicNameValuePair("provider", CarbonContext.getThreadLocalCarbonContext()
+			params.add(new BasicNameValuePair("API_PROVIDER", CarbonContext.getThreadLocalCarbonContext()
 			                                                               .getUsername()));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_TIER, defaultTier));
-			//params.add(new BasicNameValuePair(ExecutorConstants.API_URI_PATTERN, ExecutorConstants.DEFAULT_URI_PATTERN));
-			//params.add(new BasicNameValuePair(ExecutorConstants.API_URI_HTTP_METHOD, ExecutorConstants.DEFAULT_HTTP_VERB));
-			//params.add(new BasicNameValuePair(ExecutorConstants.API_URI_AUTH_TYPE, ExecutorConstants.DEFAULT_AUTH_TYPE));
+
+			//TODO: LOOP THROUGH API URI PATTERN, HTTP_VERB AND AUTH_TYPE
+			params.add(new BasicNameValuePair(ExecutorConstants.API_URI_PATTERN, ExecutorConstants.DEFAULT_URI_PATTERN));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_URI_HTTP_METHOD, ExecutorConstants.DEFAULT_HTTP_VERB));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_URI_AUTH_TYPE, ExecutorConstants.DEFAULT_AUTH_TYPE));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_VISIBLITY, ExecutorConstants.DEFAULT_VISIBILITY));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_THROTTLING_TIER, apiThrottlingTier));
 
 			String endpointConfigJson = "{\"production_endpoints\":{\"url\":\"" + api.getAttribute("overview_endpointURL") +
 			                            "\",\"config\":null},\"endpoint_type\":\"http\"}";
-			//params.add(new BasicNameValuePair("endpoint_config", endpointConfigJson));
+			params.add(new BasicNameValuePair("endpoint_config", endpointConfigJson));
 
 
 			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
