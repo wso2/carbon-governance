@@ -1228,6 +1228,11 @@
                 <artifactId>soa.model.core</artifactId>
                 <version>${orbit.version.predic8}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.asm4</groupId>
+                <artifactId>asm4-all</artifactId>
+                <version>${orbit.version.asm}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1239,7 +1244,7 @@
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.3.0</carbon.commons.version>
+        <carbon.commons.version>4.3.5</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Business Process -->
@@ -1247,7 +1252,7 @@
         <carbon.business.process.imp.pkg.version>[4.3.0, 4.4.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.3.0</carbon.registry.version>
+        <carbon.registry.version>4.3.2-SNAPSHOT</carbon.registry.version>
         <carbon.registry.imp.pkg.version>[4.3.0, 4.4.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon platform version comes here-->
@@ -1339,6 +1344,7 @@
         <rhino.wso2.version>1.7.0.R4.wso2v1</rhino.wso2.version>
         <orbit.version.json>2.0.0.wso2v1</orbit.version.json>
         <orbit.version.predic8>1.5.0.wso2v1</orbit.version.predic8>
+        <orbit.version.asm>4.0.0.wso2v1</orbit.version.asm>
         <project.scm.id>my-scm-server</project.scm.id>
 
     </properties>
