@@ -15,14 +15,12 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance.lifecycle.management-feature</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>4.3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -36,23 +34,23 @@
     </description>
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.custom.lifecycles.checklist.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.custom.lifecycles.history.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.custom.lifecycles.checklist.stub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.lcm.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.lcm.stub</artifactId>
         </dependency>
     </dependencies>
@@ -79,23 +77,23 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.custom.lifecycles.checklist.ui
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.custom.lifecycles.checklist.ui
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.custom.lifecycles.history.ui
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.custom.lifecycles.history.ui
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.custom.lifecycles.checklist.stub
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.custom.lifecycles.checklist.stub
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.lcm.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.lcm.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.lcm.ui</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.lcm.stub</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${registry.core.feature.version}
+                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.registry.version}
                                 </importFeatureDef>
                                 <importFeatureDef>
-                                    org.wso2.carbon.registry.extensions.ui:${registry.core.feature.version}
+                                    org.wso2.carbon.registry.extensions.ui:${carbon.registry.version}
                                 </importFeatureDef>
                                 <importFeatureDef>
-                                    org.wso2.carbon.registry.community.features.ui:${registry.core.feature.version}
+                                    org.wso2.carbon.registry.community.features.ui:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
                         </configuration>

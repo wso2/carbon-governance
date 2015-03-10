@@ -15,14 +15,12 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>extensions-feature</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>4.3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -38,11 +36,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.extensions</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
         </dependency>
         <dependency>
@@ -113,8 +111,8 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.extensions</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.registry.extensions</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.extensions</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.registry.extensions</bundleDef>
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.wsdl.validator.wso2:wsdl-validator</importBundleDef>
@@ -124,7 +122,7 @@
                             </importBundles>
                             <importFeatures>
                                 <importFeatureDef>
-                                    org.wso2.carbon.registry.core.server:${registry.core.feature.version}
+                                    org.wso2.carbon.registry.core.server:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
                         </configuration>

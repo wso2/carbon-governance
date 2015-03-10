@@ -141,4 +141,8 @@ public class LifecycleServiceClient {
     public String[] getAllDependencies(String path) throws Exception{
         return stub.getAllDependencies(path);
     }
+
+    public void setDefaultAspect(String path, String aspect) throws Exception {
+        stub.setDefaultAspect(path, aspect);
+    }
 }

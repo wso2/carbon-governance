@@ -102,6 +102,11 @@ public class StatWriter {
 //        Adding the user attribute
         itemChildElement.addAttribute("user", currentCollection.getUserName(), null);
 
+        // Adding the aspect name
+        if(currentCollection.getAspectName() != null) {
+            itemChildElement.addAttribute("aspect", currentCollection.getAspectName(), null);
+        }
+
 //        Adding the state attribute
         itemChildElement.addAttribute("state", currentCollection.getState(), null);
 

@@ -53,9 +53,7 @@ public class MetaDataCacheHandler extends Handler {
         String mediaType = resource.getMediaType();
         String artifactPath = null;
         try {
-            //  artifactPath = GovernanceUtils.getArtifactPath(requestContext.getRegistry(), resource.getUUID());
-            artifactPath = GovernanceUtils.getDirectArtifactPath(RegistryCoreServiceComponent.
-                    getRegistryService().getGovernanceSystemRegistry(), resource.getUUID());
+            artifactPath = GovernanceUtils.getDirectArtifactPath(requestContext.getRegistry(), resource.getUUID());
         } catch (GovernanceException e) {
             String msg = "Failed to get path of artifact id = " + resource.getUUID();
             log.error(msg, e);

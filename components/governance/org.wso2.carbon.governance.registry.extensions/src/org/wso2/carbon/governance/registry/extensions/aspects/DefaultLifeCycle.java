@@ -40,6 +40,7 @@ import org.wso2.carbon.governance.registry.extensions.beans.CheckItemBean;
 import org.wso2.carbon.governance.registry.extensions.beans.CustomCodeBean;
 import org.wso2.carbon.governance.registry.extensions.beans.PermissionsBean;
 import org.wso2.carbon.governance.registry.extensions.beans.ScriptBean;
+import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants;
 import org.wso2.carbon.governance.registry.extensions.interfaces.CustomValidations;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.mashup.javascript.hostobjects.registry.CollectionHostObject;
@@ -107,6 +108,7 @@ public class DefaultLifeCycle extends Aspect {
         aspectName = currentAspectName;
         currentAspectName = currentAspectName.replaceAll("\\s", "");
         stateProperty = LifecycleConstants.REGISTRY_LIFECYCLE + currentAspectName + ".state";
+        lifecycleProperty = lifecycleProperty + "." + currentAspectName ;
 
         Iterator configChildElements = config.getChildElements();
         while (configChildElements.hasNext()) {
@@ -208,10 +210,13 @@ public class DefaultLifeCycle extends Aspect {
                 return;
             }
 
+            resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
             List<String> propertyValues = resource.getPropertyValues(lifecycleProperty);
+
             if (propertyValues != null && propertyValues.size() > 0) {
                 return;
             }
+
             if (states.size() == 0) {
                 populateItems();
             }
@@ -219,10 +224,10 @@ public class DefaultLifeCycle extends Aspect {
 //            Creating the checklist
 //            this is the first time the life cycle is associated with a resource.
             String initialState = scxml.getInitial();
-            addCheckItems(resource, checkListItems.get(initialState), initialState);
-            addTransitionApprovalItems(resource, transitionApproval.get(initialState), initialState);
-            addScripts(initialState, resource,scriptElements.get(initialState));
-            addTransitionUI(resource,transitionUIs.get(initialState));
+            addCheckItems(resource, checkListItems.get(initialState), initialState, aspectName);
+            addTransitionApprovalItems(resource, transitionApproval.get(initialState), initialState, aspectName);
+            addScripts(initialState, resource,scriptElements.get(initialState), aspectName);
+            addTransitionUI(resource,transitionUIs.get(initialState), aspectName);
 
         } catch (Exception e) {
             String message = "Resource does not contain a valid XML configuration: " + e.toString();
@@ -231,6 +236,7 @@ public class DefaultLifeCycle extends Aspect {
         }
 
         resource.setProperty(stateProperty, scxml.getInitial().replace(".", " "));
+
         resource.setProperty(lifecycleProperty, aspectName);
 
 //      Initializing statCollection object
@@ -247,6 +253,7 @@ public class DefaultLifeCycle extends Aspect {
         statCollection.setResourcePath(resource.getPath());
         statCollection.setUserName(CurrentSession.getUser());
         statCollection.setOriginalPath(resource.getPath());
+        statCollection.setAspectName(aspectName);
 
 //      writing the logs to the registry
         if (isAuditEnabled) {
@@ -329,11 +336,9 @@ public class DefaultLifeCycle extends Aspect {
         Resource resource = requestContext.getResource();
         String currentState = resource.getProperty(stateProperty).replace(" ", ".");
         String resourcePath = requestContext.getResourcePath().getPath();
-
-          
         
 //        Checking whether the lifecycles variables are properly initialized. If not, we initialize them again.
-	        initializeAspect(requestContext,currentState);
+	        initializeAspect(requestContext, currentState);
 	
 	        
 	        String newResourcePath;
@@ -369,6 +374,7 @@ public class DefaultLifeCycle extends Aspect {
 	        statCollection.setResourcePath(resourcePath);
 	        statCollection.setUserName(user);
 	        statCollection.setOriginalPath(resourcePath);
+            statCollection.setAspectName(aspectName);
 	
 	//        Here we are doing the checkitem related operations.
 	        if("voteClick".equals(action)){
@@ -393,9 +399,9 @@ public class DefaultLifeCycle extends Aspect {
 	//                              adding log
 	                                statCollection.setActionType(LifecycleConstants.TRANSITION);
 	                                if (resource.getProperty(
-	                                        LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH) != null) {
+	                                        LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName) != null) {
 	                                    statCollection.setOriginalPath(resource.getProperty(
-	                                                    LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH));
+	                                                    LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName));
 	                                }
 	//                              The transition happens here.
 	                                nextState = ((Transition) o).getNext();
@@ -450,13 +456,14 @@ public class DefaultLifeCycle extends Aspect {
 	        if (!currentState.equals(nextState)) {
 	            State state = (State) scxml.getChildren().get(nextState);
 	            resource.setProperty(stateProperty, state.getId().replace(".", " "));
-	
-	            clearCheckItems(resource);
-	            clearTransitionApprovals(resource);
-	            addCheckItems(resource, checkListItems.get(state.getId()), state.getId());
-	            addTransitionApprovalItems(resource, transitionApproval.get(state.getId()), state.getId());
-	            addScripts(state.getId(), resource,scriptElements.get(state.getId()));
-	            addTransitionUI(resource, transitionUIs.get(state.getId()));
+
+                resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
+	            clearCheckItems(resource, aspectName);
+	            clearTransitionApprovals(resource, aspectName);
+	            addCheckItems(resource, checkListItems.get(state.getId()), state.getId(), aspectName);
+	            addTransitionApprovalItems(resource, transitionApproval.get(state.getId()), state.getId(), aspectName);
+	            addScripts(state.getId(), resource,scriptElements.get(state.getId()), aspectName);
+	            addTransitionUI(resource, transitionUIs.get(state.getId()), aspectName);
 	
 	//            For auditing purposes
 	            statCollection.setTargetState(nextState);
@@ -536,7 +543,7 @@ public class DefaultLifeCycle extends Aspect {
                 Map.Entry entry = (Map.Entry) propIterator.next();
                 String propertyName = (String) entry.getKey();
 
-                if (propertyName.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION)) {
+                if (propertyName.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName)) {
                     List<String> propValues = (List<String>) entry.getValue();
                     for (String propValue : propValues)
                         if (propValue.startsWith("name:"))
@@ -682,7 +689,7 @@ public class DefaultLifeCycle extends Aspect {
             throws RegistryException{
         for (Map.Entry<String, String> entry : itemParameterMap.entrySet()) {
             List<String> propertyValues = resource.getPropertyValues(
-                    LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + entry.getKey());
+                    LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "." + entry.getKey());
             if (propertyValues != null) {
                 String name = null;
 
@@ -719,9 +726,9 @@ public class DefaultLifeCycle extends Aspect {
                         String replace = propertyValue.replace(Boolean.toString(!Boolean.valueOf(entry.getValue()))
                                 , entry.getValue());
                         newProps.add(replace);
-                        resource.removeProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION
+                        resource.removeProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "."
                                 + entry.getKey());
-                        resource.setProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION
+                        resource.setProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "."
                                 + entry.getKey(),newProps);
 
                         //                    logging
@@ -730,9 +737,9 @@ public class DefaultLifeCycle extends Aspect {
                         statCollection.setActionType(LifecycleConstants.ITEM_CLICK);
                         statCollection.setActionValue(replace);
 
-                        if(resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH) != null){
+                        if(resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName) != null){
                             statCollection.setOriginalPath(
-                                    resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH));
+                                    resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName));
                         }
                     }
                 }
@@ -743,7 +750,7 @@ public class DefaultLifeCycle extends Aspect {
     private void handleApprovalClick(Resource resource, String currentState, Map<String, String> itemParameterMap,String user, String[] roles,
 			RequestContext requestContext) {
     	for (Map.Entry<String, String> entry : itemParameterMap.entrySet()) {
-            List<String> propertyValues = resource.getPropertyValues(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + entry.getKey());
+            List<String> propertyValues = resource.getPropertyValues(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "." + entry.getKey());
             
             String userPropertyValue = "";
             boolean userVoted = false;
@@ -791,9 +798,9 @@ public class DefaultLifeCycle extends Aspect {
                         newProps.remove(userPropertyValue);
                         newProps.add("users:"+sb.toString());
                         
-                        resource.removeProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION
+                        resource.removeProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "."
                                 + entry.getKey());
-                        resource.setProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION
+                        resource.setProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "."
                                 + entry.getKey(),newProps);                        
                         //resource.setProperty(userSpecificVote,Boolean.toString(Boolean.valueOf(entry.getValue())));
                         
@@ -803,8 +810,8 @@ public class DefaultLifeCycle extends Aspect {
                         statCollection.setActionType(LifecycleConstants.VOTE);
                         statCollection.setActionValue(entry.getValue());
 
-                        if(resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH) != null){
-                            statCollection.setOriginalPath(resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH));
+                        if(resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName) != null){
+                            statCollection.setOriginalPath(resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName));
                         }
                         break;
                 	}                	
@@ -819,7 +826,8 @@ public class DefaultLifeCycle extends Aspect {
         	int order = 0;
             for (ApprovalBean approvalBean : transitionApproval.get(currentState)) {
             	if (action.equals(approvalBean.getForEvent())) {
-            		String resourcePropertyNameForItem = LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + order+ LifecycleConstants.VOTE;
+            		String resourcePropertyNameForItem = LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION 
+            				+ aspectName + "." + order + LifecycleConstants.VOTE;
             		List<String> list = resource.getPropertyValues(resourcePropertyNameForItem);
             		for (String value : list) {
             			if (value.startsWith("current:")) {

@@ -677,12 +677,7 @@ public class GovernanceArtifactManager {
      */
     public GovernanceArtifact[] getAllGovernanceArtifacts() throws GovernanceException {
         List<String> paths = getPaginatedGovernanceArtifacts();
-
-        GovernanceArtifact[] artifacts = new GovernanceArtifact[paths.size()];
-        for (int i = 0; i < paths.size(); i++) {
-            artifacts[i] = GovernanceUtils.retrieveGovernanceArtifactByPath(registry, paths.get(i));
-        }
-        return artifacts;
+        return getGovernanceArtifacts(paths.toArray(new String[paths.size()]));
     }
 
     @Paginate("getPaginatedGovernanceArtifacts")
@@ -767,15 +762,10 @@ public class GovernanceArtifactManager {
      */
     public GovernanceArtifact[] getAllGovernanceArtifactsByLifecycle(String lcName) throws GovernanceException {
         String[] paths = GovernanceUtils.getAllArtifactPathsByLifecycle(registry, lcName, mediaType);
-        if (paths == null){
+        if (paths == null) {
             return new GovernanceArtifact[0];
         }
-        GovernanceArtifact[] artifacts = new GovernanceArtifact[paths.length];
-        for(int i=0; i<paths.length; i++){
-            artifacts[i] = GovernanceUtils.retrieveGovernanceArtifactByPath(registry, paths[i]);
-        }
-
-        return artifacts;
+        return getGovernanceArtifacts(paths);
     }
 
     /**
@@ -790,15 +780,10 @@ public class GovernanceArtifactManager {
     public GovernanceArtifact[] getAllGovernanceArtifactsByLIfecycleStatus(String lcName, String lcState)
             throws GovernanceException {
         String[] paths = GovernanceUtils.getAllArtifactPathsByLifecycleState(registry, lcName, lcState, mediaType);
-        if (paths == null){
+        if (paths == null) {
             return new GovernanceArtifact[0];
         }
-        GovernanceArtifact[] artifacts = new GovernanceArtifact[paths.length];
-        for(int i=0; i<paths.length; i++){
-            artifacts[i] = GovernanceUtils.retrieveGovernanceArtifactByPath(registry, paths[i]);
-        }
-
-        return artifacts;
+        return getGovernanceArtifacts(paths);
     }
 
     private void validateArtifact(GovernanceArtifact artifact)
@@ -864,5 +849,35 @@ public class GovernanceArtifactManager {
             } 
         }
         return keyElement;
+    }
+
+    /**
+     * This method is used to fetch all the {@link GovernanceArtifact} for a given set of paths.
+     * If there are exceptions in retrieving artifacts for a given path, we ignore those exceptions.
+     * If all the paths failed due to errors, then we throw a {@link GovernanceException}
+     *
+     * @param paths Array of paths of the governance artifacts
+     * @return Array of {@link GovernanceArtifact} for the given paths
+     * @throws GovernanceException if fetching artifacts for all the given paths failed
+     */
+    private GovernanceArtifact[] getGovernanceArtifacts(String[] paths) throws GovernanceException {
+        int errorCount = 0;
+
+        List<GovernanceArtifact> artifactList = new ArrayList<GovernanceArtifact>();
+        for (String path : paths) {
+            try {
+                artifactList.add(GovernanceUtils.retrieveGovernanceArtifactByPath(registry, path));
+            } catch (GovernanceException e) {
+                // We do not through any exception here. Only logging is done.
+                // We increase the error count for each error. If all the paths failed, then we throw an error
+                errorCount++;
+                log.error("Error occurred while retrieving governance artifact by path : " + path, e);
+            }
+        }
+        if (errorCount != 0 && errorCount == paths.length) {
+            // This means that all the paths have failed. So we throw an error.
+            throw new GovernanceException("Error occurred while retrieving all the governance artifacts");
+        }
+        return artifactList.toArray(new GovernanceArtifact[artifactList.size()]);
     }
 }

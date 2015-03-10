@@ -1,4 +1,4 @@
-package org.wso2.carbon.governance.registry.extensions.aspects.utils;/*
+/*
  * Copyright (c) 2006, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +14,13 @@ package org.wso2.carbon.governance.registry.extensions.aspects.utils;/*
  * limitations under the License.
  */
 
+package org.wso2.carbon.governance.registry.extensions.aspects.utils;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.governance.registry.extensions.beans.ApprovalBean;
-import org.wso2.carbon.governance.registry.extensions.beans.CheckItemBean;
-import org.wso2.carbon.governance.registry.extensions.beans.CustomCodeBean;
-import org.wso2.carbon.governance.registry.extensions.beans.PermissionsBean;
-import org.wso2.carbon.governance.registry.extensions.beans.ScriptBean;
+import org.wso2.carbon.governance.registry.extensions.beans.*;
 import org.wso2.carbon.governance.registry.extensions.interfaces.CustomValidations;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.registry.core.Resource;
@@ -141,17 +138,17 @@ public class Utils {
         return customCodeBean;
     }
 
-    public static void clearCheckItems(Resource resource){
+    public static void clearCheckItems(Resource resource, String aspectName){
         Properties properties = (Properties) resource.getProperties().clone();
         for (Object o : properties.keySet()) {
             String key = (String) o;
-            if(key.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION)){
+            if(key.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName)){
                 resource.removeProperty(key);
             }
         }
     }
     
-    public static void addCheckItems(Resource resource, List<CheckItemBean> currentStateCheckItems, String state){
+    public static void addCheckItems(Resource resource, List<CheckItemBean> currentStateCheckItems, String state, String aspectName){
 
         if (currentStateCheckItems != null) {
             int order = 0;
@@ -169,11 +166,12 @@ public class Utils {
                 items.add("name:" + currentStateCheckItem.getName());
                 items.add("value:false");
                 items.add("order:" + order);
+
                 String resourcePropertyNameForItem =
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + order
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "." + order
                                 + LifecycleConstants.ITEM;
                 String resourcePropertyNameForItemPermission =
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + order
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "." + order
                                 + LifecycleConstants.ITEM_PERMISSION;
 
                 resource.setProperty(resourcePropertyNameForItem, items);
@@ -188,7 +186,7 @@ public class Utils {
         }
     }   
 
-    public static void addScripts(String state, Resource resource, List<ScriptBean> scriptList) {
+    public static void addScripts(String state, Resource resource, List<ScriptBean> scriptList, String aspectName) {
         if (scriptList != null) {
             for (ScriptBean scriptBean : scriptList) {
                 if (scriptBean.isConsole()) {
@@ -197,7 +195,7 @@ public class Utils {
                     items.add(scriptBean.getFunctionName());
 
                     String resourcePropertyNameForScript =
-                            LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_JS_SCRIPT_CONSOLE + state
+                            LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_JS_SCRIPT_CONSOLE + aspectName + "." + state
                                     + "." + scriptBean.getEventName();
                     resource.setProperty(resourcePropertyNameForScript, items);
                 }
@@ -205,11 +203,11 @@ public class Utils {
         }
     }
 
-    public static void addTransitionUI(Resource resource,Map<String,String> transitionUI){
+    public static void addTransitionUI(Resource resource,Map<String,String> transitionUI, String aspectName){
         List<String> tobeRemoved = new ArrayList<String>();
         Properties properties = resource.getProperties();
         for (Object key : properties.keySet()) {
-            if(key.toString().startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_TRANSITION_UI)){
+            if(key.toString().startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_TRANSITION_UI + aspectName)){
                 tobeRemoved.add(key.toString());
             }
         }
@@ -220,7 +218,7 @@ public class Utils {
         if (transitionUI != null) {
             for (Map.Entry<String, String> entry : transitionUI.entrySet()) {
                 resource.setProperty(
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_TRANSITION_UI +entry.getKey()
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_TRANSITION_UI + aspectName + "." + entry.getKey()
                         ,entry.getValue());
             }
         }
@@ -447,7 +445,7 @@ public class Utils {
 		}
 	}
 	
-	public static void addTransitionApprovalItems(Resource resource, List<ApprovalBean> approvalBeans, String state){
+	public static void addTransitionApprovalItems(Resource resource, List<ApprovalBean> approvalBeans, String state, String aspectName){
         if (approvalBeans != null) {
         	int order = 0;
             for (ApprovalBean approvalBean : approvalBeans) {
@@ -462,11 +460,12 @@ public class Utils {
                 items.add("votes:" + approvalBean.getVotes());
                 items.add("users:");
                 items.add("order:" + order);
+
                 String resourcePropertyNameForItem =
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + order
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "." + order
                                 + LifecycleConstants.VOTE;
                 String resourcePropertyNameForVotePermission =
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + order
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "." + order
                                 + LifecycleConstants.VOTE_PERMISSION;
 
                 resource.setProperty(resourcePropertyNameForItem, items);
@@ -479,7 +478,8 @@ public class Utils {
             }
         }
     }
-	
+
+    @SuppressWarnings("unused")
 	public static boolean isTransitionApprovalAllowed(String[] roles, List<ApprovalBean> approvalBeans, String eventName, int currentVotes) {
         boolean approvalAllowed = false;
         if (approvalBeans != null) {
@@ -492,13 +492,13 @@ public class Utils {
         return approvalAllowed;
     }
 	
-	public static void clearTransitionApprovals(Resource resource) {
+	public static void clearTransitionApprovals(Resource resource, String aspectName) {
         Properties properties = (Properties) resource.getProperties().clone();
         for (Object o : properties.keySet()) {
             String key = (String) o;
-            if (key.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION)) {
+            if (key.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName)) {
                 resource.removeProperty(key);
-            } else if (key.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_USER_VOTE)) {
+            } else if (key.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_USER_VOTE + aspectName)) {
                 resource.removeProperty(key);
             }
         }

@@ -169,38 +169,40 @@ public class GovernanceEventingHandler extends Handler {
                             newValue = param.substring(6);
                         }
                     }
-                    if (oldName.equalsIgnoreCase(newName) &&
-                        oldLifeCycleState.equalsIgnoreCase(newLifeCycleState) &&
-                        !oldValue.equalsIgnoreCase(newValue)) {
-                        RegistryEvent<String> event = null;
-                        if (oldValue.equals(Boolean.toString(Boolean.TRUE)) ||
-                            oldValue.equals(Boolean.toString(Boolean.FALSE))) {                            
-                            if (oldValue.equals(Boolean.toString(Boolean.TRUE))) {
-                                event = new CheckListItemUncheckedEvent<String>(
-                                    "[" + lcName + "] The CheckList item '" + oldName + "' of LifeCycle State '" +
-                                    oldLifeCycleState + "' was Unchecked for resource at "+relativePath +".");
-                                ((CheckListItemUncheckedEvent)event).setResourcePath(relativePath);
+                    if(oldName!=null && oldValue!=null) {
+                        if (oldName.equalsIgnoreCase(newName) &&
+                                oldLifeCycleState.equalsIgnoreCase(newLifeCycleState) &&
+                                !oldValue.equalsIgnoreCase(newValue)) {
+                            RegistryEvent<String> event = null;
+                            if (oldValue.equals(Boolean.toString(Boolean.TRUE)) ||
+                                    oldValue.equals(Boolean.toString(Boolean.FALSE))) {
+                                if (oldValue.equals(Boolean.toString(Boolean.TRUE))) {
+                                    event = new CheckListItemUncheckedEvent<String>(
+                                            "[" + lcName + "] The CheckList item '" + oldName + "' of LifeCycle State '" +
+                                                    oldLifeCycleState + "' was Unchecked for resource at "+relativePath +".");
+                                    ((CheckListItemUncheckedEvent)event).setResourcePath(relativePath);
+                                } else {
+                                    event = new CheckListItemCheckedEvent<String>(
+                                            "[" + lcName + "] The CheckList item '" + oldName + "' of LifeCycle State '" +
+                                                    oldLifeCycleState + "' was Checked for resource at "+relativePath +".");
+                                    ((CheckListItemCheckedEvent)event).setResourcePath(relativePath);
+                                }
                             } else {
+                                // In here we are un-aware of the changes that happened.
                                 event = new CheckListItemCheckedEvent<String>(
-                                    "[" + lcName + "] The CheckList item '" + oldName + "' of LifeCycle State '" +
-                                    oldLifeCycleState + "' was Checked for resource at "+relativePath +".");
+                                        "[" + lcName + "] The State of the CheckList item '" + oldName + "' of LifeCycle State '" +
+                                                oldLifeCycleState + "' was changed for resource at "+relativePath +".");
                                 ((CheckListItemCheckedEvent)event).setResourcePath(relativePath);
                             }
-                        } else {
-                            // In here we are un-aware of the changes that happened.
-                            event = new CheckListItemCheckedEvent<String>(
-                                    "[" + lcName + "] The State of the CheckList item '" + oldName + "' of LifeCycle State '" +
-                                    oldLifeCycleState + "' was changed for resource at "+relativePath +".");
-                            ((CheckListItemCheckedEvent)event).setResourcePath(relativePath);
-                        }
-                        event.setParameter("LifecycleName", lcName);
-                        event.setParameter("LifecycleState", oldLifeCycleState);
-                        event.setParameter("CheckItem", oldName);
-                        event.setTenantId(CurrentSession.getCallerTenantId());
-                        try {
-                            notify(event, requestContext.getRegistry(), relativePath);
-                        } catch (Exception ex) {
-                            handleException("Unable to send notification for Put Operation", ex);
+                            event.setParameter("LifecycleName", lcName);
+                            event.setParameter("LifecycleState", oldLifeCycleState);
+                            event.setParameter("CheckItem", oldName);
+                            event.setTenantId(CurrentSession.getCallerTenantId());
+                            try {
+                                notify(event, requestContext.getRegistry(), relativePath);
+                            } catch (Exception ex) {
+                                handleException("Unable to send notification for Put Operation", ex);
+                            }
                         }
                     }
                 }
@@ -399,31 +401,33 @@ public class GovernanceEventingHandler extends Handler {
 	                         newVote = Integer.parseInt(newValue);
 	                     }
 	                 }
-	                 if (oldName.equalsIgnoreCase(newName) &&
-	                         oldLifeCycleState.equalsIgnoreCase(newLifeCycleState) &&
-	                         !oldValue.equalsIgnoreCase(newValue)) {
-	                	 RegistryEvent<String> event = null;
-	                	 if(newVote > oldVote){
-	                		 event = new LifeCycleApprovedEvent<String>(
-	                                 "[" + lcName + "] LifeCycle State '" + oldLifeCycleState + "', transitions event '" + oldName + "'" +
-	                                 		 " was approved for resource at "+relativePath +".");
-	                             ((LifeCycleApprovedEvent)event).setResourcePath(relativePath);
-	                	 }else{
-	                		 event = new LifeCycleApprovalWithdrawnEvent<String>(
-	                				 "[" + lcName + "] LifeCycle State '" + oldLifeCycleState + "' transitions event '" + oldName + "'" +
-	                                 		 " approvel was removed for resource at "+relativePath +".");
-	                             ((LifeCycleApprovalWithdrawnEvent)event).setResourcePath(relativePath);
-	                	 }
-	                	 event.setParameter("LifecycleName", lcName);
-	                     event.setParameter("LifecycleState", oldLifeCycleState);
-	                     event.setParameter("CheckItem", oldName);
-	                     event.setTenantId(CurrentSession.getCallerTenantId());
-	                     try {
-	                         notify(event, requestContext.getRegistry(), relativePath);
-	                     } catch (Exception ex) {
-	                         handleException("Unable to send notification for Put Operation", ex);
-	                     }                	 
-	                 }
+                     if(oldName!=null && oldValue!=null){
+                         if (oldName.equalsIgnoreCase(newName) &&
+                                 oldLifeCycleState.equalsIgnoreCase(newLifeCycleState) &&
+                                 !oldValue.equalsIgnoreCase(newValue)) {
+                             RegistryEvent<String> event = null;
+                             if(newVote > oldVote){
+                                 event = new LifeCycleApprovedEvent<String>(
+                                         "[" + lcName + "] LifeCycle State '" + oldLifeCycleState + "', transitions event '" + oldName + "'" +
+                                                 " was approved for resource at "+relativePath +".");
+                                 ((LifeCycleApprovedEvent)event).setResourcePath(relativePath);
+                             }else{
+                                 event = new LifeCycleApprovalWithdrawnEvent<String>(
+                                         "[" + lcName + "] LifeCycle State '" + oldLifeCycleState + "' transitions event '" + oldName + "'" +
+                                                 " approvel was removed for resource at "+relativePath +".");
+                                 ((LifeCycleApprovalWithdrawnEvent)event).setResourcePath(relativePath);
+                             }
+                             event.setParameter("LifecycleName", lcName);
+                             event.setParameter("LifecycleState", oldLifeCycleState);
+                             event.setParameter("CheckItem", oldName);
+                             event.setTenantId(CurrentSession.getCallerTenantId());
+                             try {
+                                 notify(event, requestContext.getRegistry(), relativePath);
+                             } catch (Exception ex) {
+                                 handleException("Unable to send notification for Put Operation", ex);
+                             }
+                         }
+                     }
                  }  
             }
     	}

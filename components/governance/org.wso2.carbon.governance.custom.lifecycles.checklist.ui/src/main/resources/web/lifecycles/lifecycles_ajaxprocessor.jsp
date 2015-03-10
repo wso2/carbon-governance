@@ -1,5 +1,5 @@
 <!--
-~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+~ Copyright (c) 2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 ~
 ~ WSO2 Inc. licenses this file to you under the Apache License,
 ~ Version 2.0 (the "License"); you may not use this file except
@@ -34,7 +34,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 
-
 <%
     class CheckListItem implements Comparable {
         String lifeCycleStatus;
@@ -52,14 +51,17 @@
             this.visible = visible;
         }
 
+        @SuppressWarnings("unused")
         public String getPropertyName() {
             return propertyName;
         }
 
+        @SuppressWarnings("unused")
         public void setPropertyName(String propertyName) {
             this.propertyName = propertyName;
         }
 
+        @SuppressWarnings("unused")
         public String getLifeCycleStatus() {
             return lifeCycleStatus;
         }
@@ -92,6 +94,7 @@
             this.order = order;
         }
 
+        @SuppressWarnings("unused")
         public CheckListItem(String lifeCycleStatus, String name, String value, String order) {
             this.lifeCycleStatus = lifeCycleStatus;
             this.name = name;
@@ -157,16 +160,19 @@
 	}
 
     String path = RegistryUtil.getPath(request);
+    String lcName = request.getParameter("aspect");
 
-    // lifecycle portlet is not displayed for root or items under system. 
+    // lifecycle portlet is not displayed for root or items under system.
     if (path.equals(RegistryConstants.ROOT_PATH) || path.equals(RegistryConstants.SYSTEM_COLLECTION_BASE_PATH)
             || path.equals(RegistryConstants.CONFIG_REGISTRY_BASE_PATH)
             || path.equals(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH)
-            || path.equals(RegistryConstants.LOCAL_REPOSITORY_BASE_PATH))
+            || path.equals(RegistryConstants.LOCAL_REPOSITORY_BASE_PATH)) {
         return;
+    }
 
     LifecycleBean bean;
     String[] roleNames;
+
     try {
         LifecycleServiceClient lifecycleServiceClient = new LifecycleServiceClient(config, session);
 
@@ -179,8 +185,10 @@
         if (bean.getLink()) {
             return;
         }
+
         Property[] lifecycleProps = bean.getLifecycleProperties();
         roleNames =  bean.getRolesOfUser();
+
         if (lifecycleProps == null) {
             lifecycleProps = new Property[0];
         }
@@ -190,8 +198,25 @@
         	lifecycleVotes = new Property[0];
         }
 
-//    List<String> lifecycleProps = propertiesBean.getLifecycleProperties();
-//    Properties props = propertiesBean.getProperties();
+        LifecycleActions[] actionsAvailable = bean.getAvailableActions();
+        List<String> actionsNameList = new ArrayList<String>();
+
+        for (int lcIndex = 0; lcIndex < actionsAvailable.length; lcIndex++) {
+            if(actionsAvailable[lcIndex] != null) {
+                actionsNameList.add(actionsAvailable[lcIndex].getLifecycle());
+            }
+        }
+
+        String[] aspectsToAdd = bean.getAspectsToAdd();
+        List<String> availableAspectsToAdd = new ArrayList<String>();
+
+        for(int aspectList = 0 ; aspectList < aspectsToAdd.length ; aspectList++) {
+            if(!actionsNameList.contains(aspectsToAdd[aspectList])) {
+                availableAspectsToAdd.add(aspectsToAdd[aspectList]);
+            }
+        }
+
+        String[] availableAspectsToAddArray = availableAspectsToAdd.toArray(new String[availableAspectsToAdd.size()]);
 %>
 <carbon:jsi18n
         resourceBundle="org.wso2.carbon.governance.custom.lifecycles.checklist.ui.i18n.JSResources"
@@ -233,15 +258,19 @@
 <div class="box1-mid" id="lifecycleExpanded">
 <% } %>
 <div id="lifecycleSum"></div>
-<!-- Life cycle add box --> <% if (bean.getLoggedIn() && !bean.getVersionView() && bean.getPutAllowed() && bean.getShowAddDelete() &&
-        lifecycleProps.length == 0 && bean.getAspectsToAdd() != null && bean.getAspectsToAdd().length != 0) { %>
+
+<!-- Life cycle add box -->
+<% if (availableAspectsToAddArray.length > 0 && bean.getLoggedIn() && !bean.getVersionView() && bean.getPutAllowed() && bean.getShowAddDelete() &&
+        bean.getAspectsToAdd() != null && bean.getAspectsToAdd().length != 0) { %>
 <div class="icon-link-ouside registryWriteOperation"><a class="icon-link registryWriteOperation"
                                                         style="background-image: url(../admin/images/add.gif);"
                                                         href="javascript:void(0)"
                                                         onclick="javascript:showHideCommon('add-lifecycle-div');if($('add-lifecycle-div').style.display!='none')$('aspect').focus();">
     <fmt:message key="add.lifecycle"/></a></div>
+
 <div class="registryWriteOperation" id="add-lifecycle-div"
-     style="display: none; padding-bottom: 10px;">
+     <%--style="display: none; padding-bottom: 10px;">--%>
+     style="padding-bottom: 10px;">
     <form>
         <table class="styledLeft">
             <thead>
@@ -255,15 +284,12 @@
                            name="resourcePath" value="<%=bean.getPathWithVersion()%>"/> <select
                         id="aspect" name="aspect" style="width: 130px">
                     <%
-                        String[] aspectsToAdd = bean.getAspectsToAdd();
-                        if (aspectsToAdd == null) aspectsToAdd = new String[0];
-                        for (int aspIndex = 0; aspIndex < aspectsToAdd.length; aspIndex++) {
+                        for (String anAspectsToAdd : availableAspectsToAddArray) {
                     %>
-                    <option value="<%=aspectsToAdd[aspIndex]%>"><%=aspectsToAdd[aspIndex]%>
+                    <option value="<%=anAspectsToAdd%>"><%=anAspectsToAdd%>
                     </option>
                     <%
                         }
-
                     %>
                 </select></td>
             </tr>
@@ -276,11 +302,12 @@
             </tbody>
         </table>
     </form>
-
-    <!-- Life cycle add box ends --></div>
-<div id="lifecyclesSummary" class="summeryStyle"><fmt:message
+</div>
+    <%if (lifecycleProps.length == 0) { %>
+    <!-- Life cycle add box ends -->
+    <div id="lifecyclesSummary" class="summeryStyle"><fmt:message
         key="no.lifecycles"/></div>
-
+    <% } %>
 <%
 } else if (lifecycleProps.length == 0) {
 %>
@@ -289,36 +316,67 @@
 <%
     }
     if (lifecycleProps.length > 0) {
-%> <!-- START life cycle listing box -->
+%>
+
+<!-- Showing associated life cycles to view -->
+<div class="registryShowOperation" id="show-lifecycle-div">
+    <form>
+        <table class="styledLeft">
+            <thead>
+            <tr>
+                <th>Attached Life-Cycles</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <select id="attachedAspect" name="attachedAspect" onchange="refreshUpdatedLifeCyclesSection('<%=path%>')" style="width: 130px">
+                        <%
+                            int lifeCycleIndex = 0;
+
+                            for (int aspIndex = 0; aspIndex < actionsAvailable.length; aspIndex++) {
+                                String lifeCycleName = actionsAvailable[aspIndex].getLifecycle();
+                                boolean isSelected = (lcName != null && lifeCycleName.equalsIgnoreCase(lcName)) ;
+                                if(isSelected) {
+                                    lifeCycleIndex = aspIndex ;
+                                }
+                        %>
+                        <option value="<%=lifeCycleName%>" <%if(isSelected) {%>selected<%}%> ><%=lifeCycleName%>
+                        </option>
+                        <%
+                            }
+                        %>
+                    </select></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div> <!-- END of associated lifecycle listing------>
+
+<!-- START life cycle listing box -->
 <div id="aspectList">
 <table class="styledLeft">
 <tbody>
 <tr>
     <td>
         <%
+            if(lcName == null || ("".equals(lcName))) {
+                lcName = actionsAvailable[0].getLifecycle();
+                lifeCycleIndex = 0;
+            }
 
             String lifeCycleLongName = "";
             String lifeCycleState = "";
-            for (Property property : lifecycleProps) {
-                String propName = property.getKey();
-                String[] propValues = property.getValues();
-                if (propValues != null && propValues.length != 0) {
-                    String value = propValues[0];
-                    if (propName.equals("registry.LC.name")) {
-                        lifeCycleLongName = value;
-                    }
-                }
-            }
-
 
             for (Property property : lifecycleProps) {
                 String propName = property.getKey();
                 String[] propValues = property.getValues();
+
                 if (propValues != null && propValues.length != 0) {
                     String value = propValues[0];
                     String prefix = "registry.lifecycle.";
                     String suffix = ".state";
-                    if (propName.startsWith(prefix) && propName.endsWith(suffix)) {
+                    if (propName.startsWith(prefix) && propName.endsWith(suffix) && propName.contains(lcName)) {
                         lifeCycleState = value;
                         // Grab the text in between...
                         String lifecycleName = propName.substring(prefix.length(),
@@ -332,17 +390,18 @@
 
             String lifecycleName = "";
             LifecycleActions[] availableActions = bean.getAvailableActions();
+
             if (availableActions != null && availableActions.length > 0) {
-                LifecycleActions lifecycleActions = availableActions[0];
+                LifecycleActions lifecycleActions = availableActions[lifeCycleIndex];
                 if (lifecycleActions != null) {
                     lifecycleName = lifecycleActions.getLifecycle();
                 }
             }
 
             ArrayList<CheckListItem> checkListItems = new ArrayList<CheckListItem>();
-
-
             List<String> permissionList = new ArrayList();
+
+            String defaultLC = null ;
 
             for (Property property : lifecycleProps) {
                 String prefix = "registry.custom_lifecycle.checklist.";
@@ -350,13 +409,17 @@
                 String propName = property.getKey();
                 String[] propValues = property.getValues();
 
-                if(propName.startsWith(prefix) && propName.endsWith(permissionSuffix)){
+                if(propName.equals("registry.LC.name")) {
+                    defaultLC = propValues[0];
+                }
+
+                if(propName.startsWith(prefix) && propName.endsWith(permissionSuffix) && propName.contains(lcName)){
                     for (String role : roleNames) {
                         for (String propValue : propValues) {
                             String key = propName.replace(prefix,"").replace(permissionSuffix,"");
                             if(propValue.equals(role)){
                                 permissionList.add(key);
-                            }else if(propValue.startsWith(prefix) && propValue.endsWith(permissionSuffix)){
+                            } else if(propValue.startsWith(prefix) && propValue.endsWith(permissionSuffix)){
                                 permissionList.add(key);
                             }
                         }
@@ -374,7 +437,7 @@
 
                 checkListItem.setVisible("false");
 
-                if ((propName.startsWith(prefix) && propName.endsWith(suffix))) {
+                if ((propName.startsWith(prefix) && propName.endsWith(suffix) && propName.contains(lcName))) {
                     if (propValues != null && propValues.length > 2) {
                         for (String param : propValues) {
                             if ((param.startsWith("status:"))) {
@@ -391,16 +454,19 @@
                             }
                         }
                     }
+
                     String key = propName.replace(prefix,"").replace(suffix,"");
                     if(permissionList.contains(key)){
                         checkListItem.setVisible("true");
                     }
                 }
+
                 if (checkListItem.matchLifeCycleStatus(lifeCycleState)) {
                     checkListItems.add(checkListItem);
                 }
             }
             Collections.sort(checkListItems);
+
             if (!bean.getVersionView()) {
         %>
 
@@ -428,6 +494,16 @@
                     <td style="border:0"><%=lifeCycleState%>
                     </td>
                 </tr>
+                <tr>
+                    <th>Make this default:</th>
+                    <td style="border:0">
+                        <% if(lcName.equals(defaultLC)) {%>
+                        <input type="checkbox" onclick="onChangeDefaultLifeCycle(this, '<%=path%>', '<%=lcName%>')" id="defaultLcCheckBox" checked/>
+                        <%} else {%>
+                        <input type="checkbox" onclick="onChangeDefaultLifeCycle(this, '<%=path%>', '<%=lcName%>')" id="defaultLcCheckBox"/>
+                        <%}%>
+                    </td>
+                </tr>
                 <%
                     if (checkListItems.size() > 0) {
                 %>
@@ -443,7 +519,6 @@
         <div>
             <table style="margin-bottom: 15px;" class="styledLeft" id="myTable">
                 <tbody>
-
                 <%
 
                     int index = 0;
@@ -491,18 +566,17 @@
         <% 
         	ArrayList<ApproveItem> approveListItems = new ArrayList<ApproveItem>();
         	if (lifecycleVotes != null && lifecycleVotes.length > 0) { %>
-
 		<%
 		
-		List<String> approvePermissionList = new ArrayList();
+		ArrayList approvePermissionList = new ArrayList();
 		
 		for (Property property : lifecycleVotes) {
 		    String prefix = "registry.custom_lifecycle.votes.";
 		    String permissionSuffix = ".vote.permission";
 		    String propName = property.getKey();
 		    String[] propValues = property.getValues();
-		
-		    if(propName.startsWith(prefix) && propName.endsWith(permissionSuffix)){
+
+		    if(propName.startsWith(prefix) && propName.endsWith(permissionSuffix) && propName.contains(lcName)){
 		        for (String role : roleNames) {
 		            for (String propValue : propValues) {
 		                String key = propName.replace(prefix,"").replace(permissionSuffix,"");
@@ -526,7 +600,7 @@
 		
 		    approveItem.setVisible("false");
 		
-		    if ((propName.startsWith(prefix) && propName.endsWith(suffix))) {
+		    if ((propName.startsWith(prefix) && propName.endsWith(suffix) && propName.contains(lcName))) {
 		        if (propValues != null && propValues.length > 2) {
 		            for (String param : propValues) {
 		                if ((param.startsWith("status:"))) {
@@ -549,11 +623,14 @@
                         }
 		            }
 		        }
+
 		        String key = propName.replace(prefix,"").replace(suffix,"");
+
 		        if(approvePermissionList.contains(key)){
 		        	approveItem.setVisible("true");
 		        }
 		    }
+
 		    if (approveItem.matchLifeCycleStatus(lifeCycleState)) {
 		    	approveListItems.add(approveItem);
 		    }
@@ -624,11 +701,12 @@
     <td class="buttonRow">
         <div id="lifeCycleButtons">
             <%
-                LifecycleActions lifecycleActions = availableActions[0];
+                LifecycleActions lifecycleActions = availableActions[lifeCycleIndex];
                 if (lifecycleActions != null) {
                     String lifecycle = lifecycleActions.getLifecycle();
                     String[] actions = lifecycleActions.getActions();
                     if (actions == null) actions = new String[0];
+
                     for (String action : actions) {
                         if (bean.getLoggedIn() && !bean.getVersionView() && bean.getPutAllowed()) {
                             String lifecycleScript = "";
@@ -637,7 +715,7 @@
 
                             for (Property property : lifecycleProps) {
                                 String propName = property.getKey();
-                                if(propName.equals("registry.custom_lifecycle.checklist.transition.ui."+action)){
+                                if(propName.equals("registry.custom_lifecycle.checklist.transition.ui." + lcName + "." + action)){
                                     String[] propertyValues = property.getValues();
 
                                     if(propertyValues.length==1) {
@@ -650,12 +728,11 @@
 
                             for (Property property : lifecycleProps) {
                                 String propName = property.getKey();
-                                String prefix = "registry.custom_lifecycle.";
-                                String suffix = "js.script.console." + lifeCycleState + "." + action;
-                                if (propName.startsWith(prefix) && propName.endsWith(suffix)) {
+                                String prefix = "registry.custom_lifecycle.checklist.js.script.console";
+                                String suffix = lifeCycleState + "." + action;
+                                if (propName.startsWith(prefix) && propName.endsWith(suffix) && propName.contains(lcName) ) {
                                     String propValues[] = property.getValues();
-                                    for (String propValue : propValues) {
-                                    }
+
                                     if (propValues != null && propValues.length == 2) {
                                         if (propValues[0].contains("function()")||propValues[0].contains("function "+propValues[1]+"()")) {
                                             lifecycleScript = propValues[0];
@@ -678,8 +755,6 @@
                                     }
                                 }
                             }
-
-
             %>
             <%=StringEscapeUtils.unescapeXml(lifecycleScript)%>
             <%
