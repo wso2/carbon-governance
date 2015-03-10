@@ -21,4 +21,19 @@
         <mediaType>application/vnd.wso2-mex+xml</mediaType>
         <uiPath>../governance/service/import/mex_add_ajaxprocessor.jsp</uiPath>
     </customUI>
+    <menus>
+        <menu>
+            <id>governance_wsdltool_menu</id>
+            <i18n-key>governance.wsdltool.menu</i18n-key>
+            <i18n-bundle>org.wso2.carbon.governance.wsdltool.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>tools_menu</parent-menu>
+            <link>../resourcecompare/regResourceCompare.jsp</link>
+            <url-params>path=/</url-params>
+            <region>region5</region>
+            <order>31</order>
+            <style-class>tools</style-class>
+            <icon>../resourcecompare/images/wsdl.png</icon>
+            <require-permission>/permission/protected/manage</require-permission>
+        </menu>
+    </menus>
 </component>
