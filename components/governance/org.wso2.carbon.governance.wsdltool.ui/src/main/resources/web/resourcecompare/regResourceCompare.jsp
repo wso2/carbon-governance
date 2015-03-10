@@ -240,6 +240,7 @@
                 </tr>
                 </tbody>
             </table>
+    <% if (membraneDiffsKeys != null) {%>
     <!--Start WSDL compare result div -->
             <div id="resourceContent" align="center">
                 <br><br>
@@ -284,6 +285,12 @@
                 </table>
             </div>
     <!--End WSDL compare result div -->
-        </form>
+    <% } else { %>
+    <div id="resourceContent" align="center">
+        <br><br>
+        <div align="left"><h2><fmt:message key="resource.compare.diffview.nochanges"/></h2></div>
+    </div>
+    <% } %>
+    </form>
 </div>
 </fmt:bundle>
