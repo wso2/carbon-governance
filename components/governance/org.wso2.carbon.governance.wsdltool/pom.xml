@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance</artifactId>
-        <version>4.3.1-SNAPSHOT</version>
+        <version>4.3.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -50,6 +50,7 @@
                         <Import-Package>
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             !javax.xml.namespace,
+                            com.predic8.*;version="1.5.0",
                             javax.xml.namespace; version=0.0.0,
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
@@ -104,6 +105,11 @@
             <groupId>org.eclipse.equinox</groupId>
             <artifactId>javax.servlet</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.predic8.wso2</groupId>
+            <artifactId>soa.model.core</artifactId>
+            <version>1.5.0.wso2v1</version>
         </dependency>
     </dependencies>
 

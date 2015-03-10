@@ -1,5 +1,5 @@
 /*
-*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*  Copyright (c) 2005-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 *  WSO2 Inc. licenses this file to you under the Apache License,
 *  Version 2.0 (the "License"); you may not use this file except
@@ -20,14 +20,48 @@ package org.wso2.carbon.governance.wsdltool.services;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
-import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.governance.wsdltool.beans.ServiceInfoBean;
+import org.wso2.carbon.governance.wsdltool.util.CommonUtil;
+import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 
-public class WSDLToolService extends AbstractAdmin {
+/**
+ * This class act as the service class for wsdltool server component
+ */
+public class WSDLToolService extends RegistryAbstractAdmin {
+
+    /**
+     * Method for get membrane diff
+     * @param resource1RegPath registry path of the resource 1
+     * @param resource2RegPath registry path of the resource 2
+     * @param type result type
+     * @return resources diff array
+     * @throws Exception
+     */
+    public String[] getMembraneDiffArrayResult(String resource1RegPath, String resource2RegPath, String type) throws Exception {
+        // Get the root registry.
+        Registry registry = (UserRegistry) getRootRegistry();
+        return CommonUtil.getMembraneDiffArrayResult(registry, resource1RegPath, resource2RegPath, type);
+    }
+
+    /**
+     * method for validating resources to compare
+     *
+     * @param resourcePath1 path of resource 1
+     * @param resourcePath2 path of resource 2
+     * @return String of diff view type is membrane or codemirror
+     * @throws RegistryException
+     */
+    public String getDiffViewType(String resourcePath1, String resourcePath2)  throws RegistryException {
+        // Get the root registry.
+        Registry registry = (UserRegistry) getRootRegistry();
+        return CommonUtil.getDiffViewType(registry, resourcePath1, resourcePath2);
+    }
 
     public void addMEXService(String path, ServiceInfoBean serviceInfo) throws Exception {
  
