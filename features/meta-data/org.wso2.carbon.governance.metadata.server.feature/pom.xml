@@ -80,6 +80,7 @@
                                 <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.api</bundleDef>
                                 <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.generic</bundleDef>
                                 <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.client</bundleDef>
+                                <bundleDef>org.wso2.orbit.com.predic8:soa.model.core</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>
