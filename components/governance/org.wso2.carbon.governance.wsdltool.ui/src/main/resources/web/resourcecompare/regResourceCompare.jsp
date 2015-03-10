@@ -106,12 +106,21 @@
 
             // Get registry full path for resources
             String resource1FullPath = "/_system/governance/trunk" + resource1Path;
-            String resource2FullPath = "/_system/governance/trunk" + resource2Path;
+            String resource2FullPath = "/_system/governance/trunk" + resource2Path; %>
+            <script type="text/javascript">
+            var resourcePath1 = '/_system/governance/trunk<%=resource1Path%>';
+            var resourcePath2 = '/_system/governance/trunk<%=resource2Path%>';
+            var resourceType = '<%=type%>';
+            // Get code-mirror diff view
+            visualizeResourceDiff(resourcePath1, resourcePath2, resourceType);
+            </script>
+    <%
             // Get membrane diff keys
         try {
-            membraneDiffsKeys = client.getMembraneDiffArrayResult(resource1FullPath, resource2FullPath, "key");
+            // un-comment these when enabling membrane
+            //membraneDiffsKeys = client.getMembraneDiffArrayResult(resource1FullPath, resource2FullPath, "key");
             // Get membrane diff values
-            membraneDiffsVals = client.getMembraneDiffArrayResult(resource1FullPath, resource2FullPath, "value");
+            //membraneDiffsVals = client.getMembraneDiffArrayResult(resource1FullPath, resource2FullPath, "value");
         } catch (Exception e) {
                 String cause;
                 if (e.getCause() != null) {
@@ -244,7 +253,7 @@
     <!--Start WSDL compare result div -->
             <div id="resourceContent" align="center">
                 <br><br>
-                <div align="left"><h2><%=lblDiffHeading%></h2></div>
+                <!--<div align="left"><h2><%=lblDiffHeading%></h2></div>-->
                 <br>
                 <table id="resourceOptionsTable" class="styledInner" cellspacing="0" width="80%">
                     <% for (int i = 0; i < membraneDiffsKeys.length; i++) { %>
