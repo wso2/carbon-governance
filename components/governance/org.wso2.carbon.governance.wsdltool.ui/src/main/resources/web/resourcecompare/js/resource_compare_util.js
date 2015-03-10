@@ -29,7 +29,7 @@ function navigateToResourceDiffVisualizer(resourcePath1, resourcePath2, type) {
     sessionAwareFunction(function () {
         window.onload = function () {
             var dialog = $('dialog');
-            dialog.innerHTML = "<iframe frameborder='0' scrolling='no' width='1025px' height='650px' " +
+            dialog.innerHTML = "<iframe frameborder='0' scrolling='no' width='1025px' height='610px' " +
                 "src='resource_diff_visualizer_ajaxprocessor.jsp?resourcePath1=" + resourcePath1 +
                 "&resourcePath2=" + resourcePath2 + "&type=" + type + "'></iframe>";
         }
