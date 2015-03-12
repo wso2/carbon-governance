@@ -51,9 +51,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.*;
 
-@SuppressWarnings("unused") public class RestServiceExecutor implements Execution {
+@SuppressWarnings("unused") public class APIPublishExecutor implements Execution {
 
-	private static final Log log = LogFactory.getLog(RestServiceExecutor.class);
+	private static final Log log = LogFactory.getLog(APIPublishExecutor.class);
 	private static final String URI_TEMPLATE = "URITemplate";
 	private static final String URL_PATTERN = "urlPattern";
 	private static final String OPERATION = "operation";

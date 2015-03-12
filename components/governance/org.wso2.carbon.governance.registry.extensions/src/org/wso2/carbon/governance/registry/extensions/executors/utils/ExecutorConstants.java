@@ -1,7 +1,6 @@
 package org.wso2.carbon.governance.registry.extensions.executors.utils;
 
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
-import org.wso2.carbon.registry.core.RegistryConstants;
 
 public class ExecutorConstants {
 
@@ -194,6 +193,7 @@ public class ExecutorConstants {
     public static final String API_ACTION = "action";
     public static final String API_VISIBLITY ="visibility";
     public static final String API_ADD_ACTION = "addAPI";
+	public static final String API_REMOVE_ACTION = "removeAPI";
     public static final String API_LOGIN_ACTION = "login";
     public static final String API_UPDATESTATUS_ACTION = "updateStatus";
     public static final String API_PUBLISH_GATEWAY_ACTION = "publishToGateway";
