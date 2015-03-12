@@ -35,7 +35,6 @@ import org.apache.http.protocol.HttpContext;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
-import org.wso2.carbon.governance.api.services.dataobjects.Service;
 import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
@@ -52,9 +51,16 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.*;
 
-public class RestServiceExecutor implements Execution{
+@SuppressWarnings("unused") public class RestServiceExecutor implements Execution {
 
 	private static final Log log = LogFactory.getLog(RestServiceExecutor.class);
+	private static final String URI_TEMPLATE = "URITemplate";
+	private static final String URL_PATTERN = "urlPattern";
+	private static final String OPERATION = "operation";
+	private static final String PATH = "path";
+	private static final String HTTP_VERB = "httpVerb";
+	private static final String API_PROVIDER = "API_PROVIDER";
+	private static final String PUBLISH_URL = "publisher/site/blocks/item-add/ajax/add.jag";
 
 	private String apimEndpoint = null;
 	private String apimUsername = null;
@@ -71,7 +77,7 @@ public class RestServiceExecutor implements Execution{
 	 *                     lifecycle configuration as the parameters of the executor.
 	 */
 	@Override public void init(Map parameterMap) {
-		SecretResolver secretResolver = SecretResolverFactory.create((OMElement) null, false) ;
+		SecretResolver secretResolver = SecretResolverFactory.create((OMElement) null, false);
 		// Retrieves the secured password as follows
 		secretResolver.init(GovernanceRegistryExtensionsComponent.getSecretCallbackHandlerService()
 		                                                         .getSecretCallbackHandler());
@@ -114,7 +120,7 @@ public class RestServiceExecutor implements Execution{
 			String user = CarbonContext.getThreadLocalCarbonContext().getUsername();
 			OMElement xmlContent = AXIOMUtil.stringToOM(artifactString);
 			Map<String, List<String>> urlPatterns =
-					getUrlPatterns(xmlContent.getFirstChildWithName(new QName("URITemplate")));
+					getUrlPatterns(xmlContent.getFirstChildWithName(new QName(URI_TEMPLATE)));
 			String serviceName = CommonUtil.getServiceName(xmlContent);
 			GenericArtifactManager manager = new GenericArtifactManager(
 					RegistryCoreServiceComponent.getRegistryService()
@@ -135,71 +141,68 @@ public class RestServiceExecutor implements Execution{
 		return true;
 	}
 
+	/**
+	 * Get URL patterns from URITemplate element.
+	 *
+	 * @param uriTemplate URI Template element.
+	 * @return URL pattern map.
+	 */
 	private Map<String, List<String>> getUrlPatterns(OMElement uriTemplate) {
 		Map<String, List<String>> urlPatterns = new HashMap<String, List<String>>();
-		Iterator resources = uriTemplate.getChildrenWithLocalName("resource");
 
-		while(resources.hasNext()) {
-			OMElement resource = (OMElement)resources.next();
+		Iterator patterns = uriTemplate.getChildrenWithLocalName(URL_PATTERN);
 
-			Iterator patterns = resource.getChildrenWithLocalName("urlPattern");
+		while (patterns.hasNext()) {
+			List<String> httpVerbs = new ArrayList<String>();
+			OMElement pattern = (OMElement) patterns.next();
+			String urlPattern = pattern.getAttributeValue(new QName(PATH));
 
-			while(patterns.hasNext()) {
-				List<String> httpVerbs = new ArrayList<String>();
-				OMElement pattern = (OMElement)patterns.next();
-				OMElement operationsElement = pattern.getFirstChildWithName(new QName("operations"));
-				String urlPattern = pattern.getAttributeValue(new QName("path"));
+			Iterator operations = pattern.getChildrenWithLocalName(OPERATION);
 
-				Iterator operations = operationsElement.getChildElements();
-
-				while(operations.hasNext()) {
-					OMElement operation = (OMElement)operations.next();
-					String httpVerb = operation.getFirstChildWithName(new QName("httpVerb")).getText();
-					httpVerbs.add(httpVerb);
-				}
-				urlPatterns.put(urlPattern, httpVerbs);
+			while (operations.hasNext()) {
+				OMElement operation = (OMElement) operations.next();
+				String httpVerb = operation.getFirstChildWithName(new QName(HTTP_VERB)).getText();
+				httpVerbs.add(httpVerb);
 			}
+			urlPatterns.put(urlPattern, httpVerbs);
 		}
 		return urlPatterns;
 	}
 
 	/**
-	 * Update the APIM DB for the published API.
+	 * Publish the data to API Manager
 	 *
-	 * @param api
-	 * @param serviceName
+	 * @param api         API registry artifact
+	 * @param serviceName Name of the REST service
 	 */
 	private void publishData(GenericArtifact api, String serviceName,
 	                         Map<String, List<String>> urlPatterns) throws RegistryException {
 
 		if (apimEndpoint == null || apimUsername == null || apimPassword == null) {
-			String msg = "APIManager endpoint URL or credentials are not defined";
-			log.error(msg);
-			throw new RuntimeException(msg + "API Publish might fail");
+			throw new RuntimeException("APIManager login credentials are not defined");
 		}
 
 		CookieStore cookieStore = new BasicCookieStore();
 		HttpContext httpContext = new BasicHttpContext();
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 
-		authenticateAPIM(httpContext);
-		String addAPIendpoint = apimEndpoint + "publisher/site/blocks/item-add/ajax/add.jag";
+		authenticate(httpContext);
+		String publishEndpoint = apimEndpoint + PUBLISH_URL;
 
 		try {
 			// create a post request to addAPI.
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(addAPIendpoint);
+			HttpPost httppost = new HttpPost(publishEndpoint);
 
 			// Request parameters and other properties.
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 
 			if (api.getAttribute("overview_endpointURL") != null &&
 			    api.getAttribute("overview_endpointURL").isEmpty()) {
-				String msg =
-						"Service Endpoint is a must attribute to create an API definition at the APIStore.Publishing at gateway might fail";
-				log.warn(msg);
+				log.warn("Service Endpoint is empty");
 			}
 
+			//Adding request parameters
 			params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT,
 			                                  api.getAttribute("overview_endpointURL")));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION,
@@ -208,22 +211,27 @@ public class RestServiceExecutor implements Execution{
 			params.add(new BasicNameValuePair(ExecutorConstants.API_CONTEXT, serviceName));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION,
 			                                  api.getAttribute(ExecutorConstants.SERVICE_VERSION)));
-			params.add(new BasicNameValuePair("API_PROVIDER",
+			params.add(new BasicNameValuePair(API_PROVIDER,
 			                                  CarbonContext.getThreadLocalCarbonContext()
 			                                               .getUsername()));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_TIER, defaultTier));
 
+			//Adding resources
 			int resourceCount = 0;
 			for (Object o : urlPatterns.entrySet()) {
 				Map.Entry pattern = (Map.Entry) o;
-				String urlPattern = (String)pattern.getKey();
-				List<String> httpVerbs = (List<String>)pattern.getValue();
+				String urlPattern = (String) pattern.getKey();
+				List<String> httpVerbs = (List<String>) pattern.getValue();
 
-				for(String httpVerb : httpVerbs) {
-					params.add(new BasicNameValuePair("uriTemplate-"+resourceCount, urlPattern));
-					params.add(new BasicNameValuePair("resourceMethod-"+resourceCount, httpVerb));
-					params.add(new BasicNameValuePair("resourceMethodAuthType-"+resourceCount, ExecutorConstants.DEFAULT_AUTH_TYPE));
-					params.add(new BasicNameValuePair("resourceMethodThrottlingTier-"+resourceCount, apiThrottlingTier));
+				for (String httpVerb : httpVerbs) {
+					params.add(new BasicNameValuePair("uriTemplate-" + resourceCount, urlPattern));
+					params.add(new BasicNameValuePair("resourceMethod-" + resourceCount,
+					                                  httpVerb.toUpperCase()));
+					params.add(new BasicNameValuePair("resourceMethodAuthType-" + resourceCount,
+					                                  ExecutorConstants.DEFAULT_AUTH_TYPE));
+					params.add(
+							new BasicNameValuePair("resourceMethodThrottlingTier-" + resourceCount,
+							                       apiThrottlingTier));
 					++resourceCount;
 				}
 			}
@@ -246,18 +254,16 @@ public class RestServiceExecutor implements Execution{
 			}
 
 		} catch (Exception e) {
-			log.error("Error in updating APIM DB", e);
+			log.error("Error in publishing the data to API Manager", e);
 		}
-		// after publishing update the lifecycle status
-		//updateStatus(service, serviceName, httpContext);
 	}
 
 	/**
-	 * Authenticate to APIM
+	 * Authenticate to API Manager
 	 *
-	 * @param httpContext
+	 * @param httpContext HTTP context.
 	 */
-	private void authenticateAPIM(HttpContext httpContext) {
+	private void authenticate(HttpContext httpContext) {
 		String loginEP = apimEndpoint + "publisher/site/blocks/user/login/ajax/login.jag";
 		try {
 			// create a post request to addAPI.
@@ -266,7 +272,8 @@ public class RestServiceExecutor implements Execution{
 			// Request parameters and other properties.
 			List<NameValuePair> params = new ArrayList<NameValuePair>(3);
 
-			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION, ExecutorConstants.API_LOGIN_ACTION));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION,
+			                                  ExecutorConstants.API_LOGIN_ACTION));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_USERNAME, apimUsername));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_PASSWORD, apimPassword));
 			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
@@ -278,45 +285,7 @@ public class RestServiceExecutor implements Execution{
 			}
 
 		} catch (Exception e) {
-			log.error("Authentication with APIM fails", e);
-		}
-	}
-
-	/**
-	 * Update the lifecycle status of the published API
-	 *
-	 * @param service
-	 * @param serviceName
-	 * @param httpContext
-	 */
-	private void updateStatus(Service service, String serviceName, HttpContext httpContext) {
-		String lifeCycleEP =
-				apimEndpoint +
-				"publisher/site/blocks/life-cycles/ajax/life-cycles.jag";
-		try {
-			// create a post request to addAPI.
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(lifeCycleEP);
-			// Request parameters and other properties.
-			List<NameValuePair> params = new ArrayList<NameValuePair>(6);
-			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION, ExecutorConstants.API_UPDATESTATUS_ACTION));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_NAME, serviceName));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION, service.getAttribute(ExecutorConstants.SERVICE_VERSION)));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_PROVIDER, CarbonContext.getThreadLocalCarbonContext()
-			                                                             .getUsername()));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_STATUS, ExecutorConstants.API_PUBLISHED_STATUS));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_PUBLISH_GATEWAY_ACTION, "false"));
-
-			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-
-			HttpResponse response = httpclient.execute(httppost, httpContext);
-			if (response.getStatusLine().getStatusCode() != 200) {
-				throw new RuntimeException("PublishedAPI status update failed: HTTP error code : " +
-				                           response.getStatusLine().getStatusCode());
-			}
-
-		} catch (Exception e) {
-			log.error("PublishedAPI status update failed", e);
+			log.error("Authentication failed", e);
 		}
 	}
 }
