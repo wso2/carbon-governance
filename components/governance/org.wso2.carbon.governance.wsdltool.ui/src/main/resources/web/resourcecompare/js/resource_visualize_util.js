@@ -28,7 +28,7 @@ function visualizeResource(path, type) {
 function navigateToResourceVisualizer(rootPath, path, type) {
     sessionAwareFunction(function () {
         var dialog = $('dialog');
-        dialog.innerHTML = "<input type='button' value='" + org_wso2_carbon_governance_wsdltool_ui_jsi18n["back.to.parent"] +
+        dialog.innerHTML = "<input type='button' value='" + org_wso2_carbon_governance_wsdltool_ui_jsi18n["scroll.to.top"] +
             "' onclick='navigateToResourceVisualizer(\"" + rootPath + "\", \"" + rootPath + "\", \"" + type + "\")' " +
             "style='margin-right: 5px; margin-top: 5px;' /></div>" +
             "<iframe frameborder='0' scrolling='auto' width='750px' height='440px' " +
