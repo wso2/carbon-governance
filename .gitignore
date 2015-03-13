@@ -5,7 +5,4 @@ target
 .project
 *.i??
 .idea
-.DS_Store
-.DS_Store?
-.Trashes
 atlassian-ide-plugin.xml
