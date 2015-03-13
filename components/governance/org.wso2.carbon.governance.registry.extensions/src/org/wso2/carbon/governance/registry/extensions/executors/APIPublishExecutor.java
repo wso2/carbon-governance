@@ -203,8 +203,8 @@ import java.util.*;
 			}
 
 			//Adding request parameters
-			params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT,
-			                                  api.getAttribute("overview_endpointURL")));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT, api.getAttribute(
+					ExecutorConstants.API_ENDPOINT_URL)));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION,
 			                                  ExecutorConstants.API_ADD_ACTION));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_NAME, serviceName));
@@ -221,7 +221,8 @@ import java.util.*;
 			for (Object o : urlPatterns.entrySet()) {
 				Map.Entry pattern = (Map.Entry) o;
 				String urlPattern = (String) pattern.getKey();
-				List<String> httpVerbs = (List<String>) pattern.getValue();
+				@SuppressWarnings("unchecked") List<String> httpVerbs =
+						(List<String>) pattern.getValue();
 
 				for (String httpVerb : httpVerbs) {
 					params.add(new BasicNameValuePair("uriTemplate-" + resourceCount, urlPattern));
@@ -280,7 +281,7 @@ import java.util.*;
 
 			HttpResponse response = httpclient.execute(httppost, httpContext);
 			if (response.getStatusLine().getStatusCode() != 200) {
-				throw new RuntimeException(" Authentication with APIM failed: HTTP error code : " +
+				throw new RuntimeException(" Authentication with API Manager failed: HTTP error code : " +
 				                           response.getStatusLine().getStatusCode());
 			}
 

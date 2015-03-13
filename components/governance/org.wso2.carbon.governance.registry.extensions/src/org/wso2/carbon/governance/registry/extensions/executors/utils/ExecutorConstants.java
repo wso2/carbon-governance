@@ -202,6 +202,7 @@ public class ExecutorConstants {
     public static final String API_PASSWORD = "password";
 
     public static final String SERVICE_VERSION = "overview_version";
+	public static final String API_ENDPOINT_URL = "overview_endpointURL";
     public static final String THROTTLING_TIER= "throttlingTier";
     
 }
