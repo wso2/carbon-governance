@@ -192,10 +192,10 @@ public class CommonUtil {
                 }
             } else {
                 //TODO return i18n resource keys
-                return "Incompatible resource types";
+                return "incompatible.media.types";
             }
         } else {
-            return "No resource information available";
+            return "no.resource.information.available";
         }
     }
 
