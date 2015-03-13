@@ -66,8 +66,7 @@ public class Utils {
 
         Execution customExecutors;
         try {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            Class<?> customCodeClass = Class.forName(className, true, loader);
+            Class<?> customCodeClass = Utils.class.getClassLoader().loadClass(className);
             customExecutors = (Execution) customCodeClass.newInstance();
             customExecutors.init(parameterMap);
 
