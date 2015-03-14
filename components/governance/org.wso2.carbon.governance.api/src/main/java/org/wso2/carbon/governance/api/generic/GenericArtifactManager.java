@@ -20,8 +20,6 @@ package org.wso2.carbon.governance.api.generic;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.GovernanceArtifactManager;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
@@ -53,8 +51,6 @@ public class GenericArtifactManager {
     private String artifactElementNamespace;
     private GovernanceArtifactManager manager;
     private String mediaType;
-
-    private static final Log log = LogFactory.getLog(GenericArtifactManager.class);
 
     /**
      * Constructor accepting an instance of the registry, and also details on the type of manager.
@@ -107,15 +103,11 @@ public class GenericArtifactManager {
                         configuration.getValidationAttributes(), configuration.getRelationshipDefinitions());
                 mediaType = configuration.getMediaType();
             } else {
-                String message = "Artifact type '" + key
-                        + "' is not in registry or unable to find relevant configuration.";
-                log.error(message);
-                throw new GovernanceException(message);
+                throw new GovernanceException("Artifact type '" + key
+                        + "' is not in registry or unable to find relevant configuration.");
             }
         } catch (RegistryException e) {
-            String message = "Unable to obtain governance artifact configuration for rxt: " + key;
-            log.error(message, e);
-            throw new GovernanceException(message, e);
+            throw new GovernanceException("Unable to obtain governance artifact configuration for rxt: " + key, e);
         }
     }
 
@@ -195,9 +187,7 @@ public class GenericArtifactManager {
 
             return artifact;
         } catch (XMLStreamException e) {
-            String message = "Error in creating the content from the parameters.";
-            log.error(message, e);
-            throw new GovernanceException(message, e);
+            throw new GovernanceException("Error in creating generic artifact form content: " + omContent, e);
         }
     }
 
