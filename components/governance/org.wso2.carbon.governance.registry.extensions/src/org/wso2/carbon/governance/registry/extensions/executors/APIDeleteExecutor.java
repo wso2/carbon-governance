@@ -35,6 +35,7 @@ import org.apache.http.protocol.HttpContext;
 import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
+import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
@@ -46,8 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused")
-public class APIDeleteExecutor implements Execution{
+@SuppressWarnings("unused") public class APIDeleteExecutor implements Execution {
 	private static final Log log = LogFactory.getLog(APIDeleteExecutor.class);
 	public static final String REMOVE_URL = "publisher/site/blocks/item-add/ajax/remove.jag";
 
@@ -140,8 +140,8 @@ public class APIDeleteExecutor implements Execution{
 			                                  ExecutorConstants.API_REMOVE_ACTION));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_NAME, serviceName));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_PROVIDER, apimUsername));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION,
-			                                  resource.getProperty("version")));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION, resource.getProperty(
+					RegistryConstants.VERSION_PARAMETER_NAME)));
 
 			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
@@ -153,7 +153,7 @@ public class APIDeleteExecutor implements Execution{
 			}
 
 		} catch (Exception e) {
-			log.error("Error in publishing the data to API Manager", e);
+			log.error("Error in removing the API from API Manager", e);
 			return false;
 		}
 
