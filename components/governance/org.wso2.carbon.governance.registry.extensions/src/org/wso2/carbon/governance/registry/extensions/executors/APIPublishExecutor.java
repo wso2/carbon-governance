@@ -39,6 +39,7 @@ import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
+import org.wso2.carbon.registry.common.CommonConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
@@ -48,6 +49,7 @@ import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -179,7 +181,7 @@ import java.util.Map;
 
 			if (api.getAttribute("overview_endpointURL") != null &&
 			    api.getAttribute("overview_endpointURL").isEmpty()) {
-				log.warn("Service Endpoint is empty");
+				log.warn("Service Endpoint is empty.");
 			}
 
 			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
@@ -211,16 +213,24 @@ import java.util.Map;
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 
 		//Adding request parameters
+
+		//API endpoint URL.
 		params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT,
 		                                  api.getAttribute(ExecutorConstants.API_ENDPOINT_URL)));
+		//API add action
 		params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION,
 		                                  ExecutorConstants.API_ADD_ACTION));
+		//API Name
 		params.add(new BasicNameValuePair(ExecutorConstants.API_NAME, serviceName));
+		//API Context
 		params.add(new BasicNameValuePair(ExecutorConstants.API_CONTEXT, serviceName));
+		//API version
 		params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION,
 		                                  api.getAttribute(ExecutorConstants.SERVICE_VERSION)));
+		//API Provider
 		params.add(new BasicNameValuePair(API_PROVIDER, CarbonContext.getThreadLocalCarbonContext()
 		                                                             .getUsername()));
+		//API Tier availability
 		params.add(new BasicNameValuePair(ExecutorConstants.API_TIER, defaultTier));
 
 		Iterator resources = xmlContent.getChildrenWithLocalName(URI_TEMPLATE);
@@ -233,49 +243,46 @@ import java.util.Map;
 		while (resources.hasNext()) {
 			OMElement resource = (OMElement) resources.next();
 
-			Iterator iterator = resource.getChildren();
-			String urlPatternText = null;
-			String httpVerbText = null;
-			String authTypeText = null;
+			OMElement urlPattern = resource.getFirstChildWithName(
+					new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, URL_PATTERN));
+			OMElement httpVerb = resource.getFirstChildWithName(
+					new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, HTTP_VERB));
+			OMElement authType = resource.getFirstChildWithName(
+					new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, AUTH_TYPE));
 
-			while (iterator.hasNext()) {
-				OMElement element = (OMElement) iterator.next();
-				String elementName = element.getLocalName();
-				if (elementName.equals(URL_PATTERN)) {
-					urlPatternText = element.getText();
-				} else if (elementName.equals(HTTP_VERB)) {
-					httpVerbText = element.getText();
-				} else if (elementName.equals(AUTH_TYPE)) {
-					authTypeText = element.getText();
-				}
+			String urlPatternText = urlPattern.getText();
+			String httpVerbText = httpVerb.getText();
+			String authTypeText = authType.getText();
+
+			if (urlPatternText == null || httpVerbText == null) {
+				continue;
 			}
 
 			authTypeText =
-					(authTypeText != null) ? authTypeText : ExecutorConstants.DEFAULT_AUTH_TYPE;
+					authTypeText.isEmpty() ? ExecutorConstants.DEFAULT_AUTH_TYPE : authTypeText;
 
-			if (urlPatternText != null && httpVerbText != null) {
-				params.add(new BasicNameValuePair("uriTemplate-" + resourceCount, urlPatternText));
-				params.add(new BasicNameValuePair("resourceMethod-" + resourceCount,
-				                                  httpVerbText.toUpperCase()));
-				params.add(new BasicNameValuePair("resourceMethodAuthType-" + resourceCount,
-				                                  authTypeText));
-				params.add(new BasicNameValuePair("resourceMethodThrottlingTier-" + resourceCount,
-				                                  apiThrottlingTier));
-				++resourceCount;
-			}
+			params.add(new BasicNameValuePair("uriTemplate-" + resourceCount, urlPatternText));
+			params.add(new BasicNameValuePair("resourceMethod-" + resourceCount,
+			                                  httpVerbText.toUpperCase()));
+			params.add(new BasicNameValuePair("resourceMethodAuthType-" + resourceCount,
+			                                  authTypeText));
+			params.add(new BasicNameValuePair("resourceMethodThrottlingTier-" + resourceCount,
+			                                  apiThrottlingTier));
+			++resourceCount;
 
 		}
 
 		if (resourceCount > 0) {
 			params.add(new BasicNameValuePair("resourceCount", Integer.toString(resourceCount)));
 		}
+		//API Visibility
 		params.add(new BasicNameValuePair(ExecutorConstants.API_VISIBLITY,
 		                                  ExecutorConstants.DEFAULT_VISIBILITY));
 
 		String endpointConfigJson = "{\"production_endpoints\":{\"url\":\"" +
 		                            api.getAttribute("overview_endpointURL") +
 		                            "\",\"config\":null},\"endpoint_type\":\"http\"}";
-
+		//End point configuration
 		params.add(new BasicNameValuePair("endpoint_config", endpointConfigJson));
 
 		return params;
