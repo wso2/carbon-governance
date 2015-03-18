@@ -167,13 +167,27 @@ public class ExecutorConstants {
      */
     public static final String DEFAULT_TIER = "default.tier";
 
-    //URI Template default settings
+	/**
+	 * Defines the API Manager login url to send login request.
+	 */
+	public static final String APIM_LOGIN_URL = "publisher/site/blocks/user/login/ajax/login.jag";
+	/**
+	 * Defines the API Manager remove API to send remove API request.
+	 */
+	public static final String APIM_REMOVE_URL = "publisher/site/blocks/item-add/ajax/remove.jag";
+	/**
+	 * Defines the API Manager publish API to send publish API request.
+	 */
+	public static final String APIM_PUBLISH_URL = "publisher/site/blocks/item-add/ajax/add.jag";
+
+
+	//URI Template default settings
     public static final String DEFAULT_URI_PATTERN = "/*";
     public static final String DEFAULT_HTTP_VERB = "POST";
     public static final String DEFAULT_AUTH_TYPE = "Any";
 
     //default visibility setting
-   public static final String DEFAULT_VISIBILITY = "public";
+    public static final String DEFAULT_VISIBILITY = "public";
 
     // Those constance are used in API artifact.
     public static final String API_NAME = "name";
@@ -201,8 +215,9 @@ public class ExecutorConstants {
     public static final String API_USERNAME = "username";
     public static final String API_PASSWORD = "password";
 
-    public static final String SERVICE_VERSION = "overview_version";
-	public static final String API_ENDPOINT_URL = "overview_endpointURL";
+	public static final String SERVICE_NAME = "overview_name";
+	public static final String SERVICE_VERSION = "overview_version";
+	public static final String SERVICE_ENDPOINT_URL = "overview_endpointURL";
     public static final String THROTTLING_TIER= "throttlingTier";
-    
+
 }

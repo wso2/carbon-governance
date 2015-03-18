@@ -17,7 +17,6 @@
 package org.wso2.carbon.governance.registry.extensions.executors;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -32,14 +31,18 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
+import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants;
+import org.wso2.carbon.governance.registry.extensions.executors.utils.Utils;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
-import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
-import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
 
@@ -47,9 +50,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused") public class APIDeleteExecutor implements Execution {
+/**
+ * This class is an implementation of the interface {@link org.wso2.carbon.governance.registry.extensions.interfaces.Execution}
+ * This class consists methods that will delete an API from API Manager.
+ *
+ * This class gets initiated when a REST Service lifecycle is added to a REST Service. In initialization following
+ * static configuration parameters should be defined in the lifecycle.
+ *  Eg:- <execution forEvent="Publish" class="org.wso2.carbon.governance.registry.extensions.executors.APIPublishExecutor">
+ *           <parameter name="apim.endpoint" value="http://localhost:9763/"/>
+ *           <parameter name="apim.username" value="admin"/>
+ *           <parameter name="apim.password" value="admin"/>
+ *       </execution>
+ *
+ * If there are no subscriptions for the API in API Manager, execute method will remove the API from the API Manager and
+ * move the governance artifact to the production state.
+ *
+ * @see org.wso2.carbon.governance.registry.extensions.interfaces.Execution
+ */
+public class APIDeleteExecutor implements Execution {
 	private static final Log log = LogFactory.getLog(APIDeleteExecutor.class);
-	public static final String REMOVE_URL = "publisher/site/blocks/item-add/ajax/remove.jag";
+	private static final String REST_SERVICE_KEY = "restservice";
 
 	private String apimEndpoint = null;
 	private String apimUsername = null;
@@ -60,11 +80,11 @@ import java.util.Map;
 	 * This method is called when the execution class is initialized.
 	 * All the execution classes are initialized only once.
 	 *
-	 * @param parameterMap Static parameter map given by the user.
-	 *                     These are the parameters that have been given in the
+	 * @param parameterMap the parameters that have been given in the
 	 *                     lifecycle configuration as the parameters of the executor.
 	 */
-	@Override public void init(Map parameterMap) {
+	@Override
+	public void init(Map parameterMap) {
 		SecretResolver secretResolver = SecretResolverFactory.create((OMElement) null, false);
 		// Retrieves the secured password as follows
 		secretResolver.init(GovernanceRegistryExtensionsComponent.getSecretCallbackHandlerService()
@@ -85,27 +105,32 @@ import java.util.Map;
 	}
 
 	/**
-	 * @param context      The request context that was generated from the registry core.
-	 *                     The request context contains the resource, resource PATH and other
-	 *                     variables generated during the initial call.
-	 * @param currentState The current lifecycle state.
-	 * @param targetState  The target lifecycle state.
-	 * @return Returns whether the execution was successful or not.
+	 * @param context      the request context that was generated from the registry core.
+	 * @param currentState the current lifecycle state.
+	 * @param targetState  the target lifecycle state.
+	 * @return             Returns whether the execution was successful or not.
 	 */
-	@Override public boolean execute(RequestContext context, String currentState,
+	@Override
+	public boolean execute(RequestContext context, String currentState,
 	                                 String targetState) {
 		Resource resource = context.getResource();
-		boolean deleted;
+		boolean deleted = false;
+
+		String user = CarbonContext.getThreadLocalCarbonContext().getUsername();
 		try {
-			String artifactString = RegistryUtils.decodeBytes((byte[]) resource.getContent());
-			OMElement xmlContent = AXIOMUtil.stringToOM(artifactString);
-			String serviceName = CommonUtil.getServiceName(xmlContent);
+			GenericArtifactManager manager = new GenericArtifactManager(
+					RegistryCoreServiceComponent.getRegistryService()
+					                            .getGovernanceUserRegistry(user, CarbonContext
+							                            .getThreadLocalCarbonContext()
+							                            .getTenantId()), REST_SERVICE_KEY);
 
-			deleted = deleteFromAPIManager(resource, serviceName);
+			GenericArtifact api = manager.getGenericArtifact(context.getResource().getUUID());
+			deleted = deleteFromAPIManager(api);
 
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			deleted = false;
+		} catch (GovernanceException e) {
+			//log error
+		} catch (RegistryException e) {
+			//log error
 		}
 		return deleted;
 	}
@@ -113,11 +138,10 @@ import java.util.Map;
 	/**
 	 * Deletes API from the API Manager
 	 *
-	 * @param resource    API resource.
-	 * @param serviceName API Name.
-	 * @return True if successfully deleted.
+	 * @param api API Generic artifact.
+	 * @return    True if successfully deleted.
 	 */
-	private boolean deleteFromAPIManager(Resource resource, String serviceName) {
+	private boolean deleteFromAPIManager(GenericArtifact api) throws RegistryException {
 		if (apimEndpoint == null || apimUsername == null || apimPassword == null) {
 			throw new RuntimeException("APIManager login credentials are not defined");
 		}
@@ -126,8 +150,8 @@ import java.util.Map;
 		HttpContext httpContext = new BasicHttpContext();
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 
-		authenticate(httpContext);
-		String removeEndpoint = apimEndpoint + REMOVE_URL;
+		Utils.authenticateAPIM(httpContext, apimEndpoint, apimUsername, apimPassword);
+		String removeEndpoint = apimEndpoint + ExecutorConstants.APIM_REMOVE_URL;
 
 		try {
 			// create a post request to addAPI.
@@ -138,10 +162,11 @@ import java.util.Map;
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION,
 			                                  ExecutorConstants.API_REMOVE_ACTION));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_NAME, serviceName));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_NAME,
+			                                  api.getAttribute(ExecutorConstants.SERVICE_NAME)));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_PROVIDER, apimUsername));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION, resource.getProperty(
-					RegistryConstants.VERSION_PARAMETER_NAME)));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION,
+			                                  api.getAttribute(ExecutorConstants.SERVICE_VERSION)));
 
 			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
@@ -158,36 +183,5 @@ import java.util.Map;
 		}
 
 		return true;
-	}
-
-	/**
-	 * Authenticate to API Manager
-	 *
-	 * @param httpContext HTTP context.
-	 */
-	private void authenticate(HttpContext httpContext) {
-		String loginEP = apimEndpoint + "publisher/site/blocks/user/login/ajax/login.jag";
-		try {
-			// create a post request to addAPI.
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(loginEP);
-			// Request parameters and other properties.
-			List<NameValuePair> params = new ArrayList<NameValuePair>(3);
-
-			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION,
-			                                  ExecutorConstants.API_LOGIN_ACTION));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_USERNAME, apimUsername));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_PASSWORD, apimPassword));
-			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-
-			HttpResponse response = httpclient.execute(httppost, httpContext);
-			if (response.getStatusLine().getStatusCode() != 200) {
-				throw new RuntimeException(" Authentication with APIM failed: HTTP error code : " +
-				                           response.getStatusLine().getStatusCode());
-			}
-
-		} catch (Exception e) {
-			log.error("Authentication failed", e);
-		}
 	}
 }

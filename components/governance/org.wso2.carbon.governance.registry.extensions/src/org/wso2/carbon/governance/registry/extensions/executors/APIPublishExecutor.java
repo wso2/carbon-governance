@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -37,6 +38,7 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants;
+import org.wso2.carbon.governance.registry.extensions.executors.utils.Utils;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
 import org.wso2.carbon.registry.common.CommonConstants;
@@ -45,30 +47,48 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused") public class APIPublishExecutor implements Execution {
+/**
+ * This class is an implementation of the interface {@link org.wso2.carbon.governance.registry.extensions.interfaces.Execution}
+ * This class consists methods that will publish an API to API Manager.
+ *
+ * This class gets initiated when a REST Service lifecycle is added to a REST Service. In initialization following
+ * static configuration parameters should be defined in the lifecycle.
+ *  Eg:- <execution forEvent="Publish" class="org.wso2.carbon.governance.registry.extensions.executors.APIPublishExecutor">
+ *           <parameter name="apim.endpoint" value="http://localhost:9763/"/>
+ *           <parameter name="apim.username" value="admin"/>
+ *           <parameter name="apim.password" value="admin"/>
+ *           <parameter name="default.tier" value="Unlimited"/>
+ *           <parameter name="throttlingTier" value="Unlimited,Unlimited,Unlimited,Unlimited,Unlimited"/>
+ *       </execution>
+ *
+ * Once the REST Service is is set to publish to API Manager, the execute method will get called. The execute method
+ * contains the logic to publish an API to API Manager through a http POST request to API Publisher. The method will
+ * return true if the API published successfully and false if fails to publish the API.
+ *
+ * @see org.wso2.carbon.governance.registry.extensions.interfaces.Execution
+ */
+public class APIPublishExecutor implements Execution {
 
 	private static final Log log = LogFactory.getLog(APIPublishExecutor.class);
 
-	public static final String REST_SERVICE_KEY = "restservice";
+	private static final String REST_SERVICE_KEY = "restservice";
 	private static final String URI_TEMPLATE = "uritemplate";
 	private static final String URL_PATTERN = "urlPattern";
 	private static final String HTTP_VERB = "httpVerb";
 	private static final String AUTH_TYPE = "authType";
-	private static final String OPERATION = "operation";
-	private static final String PATH = "path";
 	private static final String API_PROVIDER = "API_PROVIDER";
-	private static final String PUBLISH_URL = "publisher/site/blocks/item-add/ajax/add.jag";
 
 	private String apimEndpoint = null;
 	private String apimUsername = null;
@@ -80,11 +100,11 @@ import java.util.Map;
 	 * This method is called when the execution class is initialized.
 	 * All the execution classes are initialized only once.
 	 *
-	 * @param parameterMap Static parameter map given by the user.
-	 *                     These are the parameters that have been given in the
+	 * @param parameterMap the parameters that have been given in the
 	 *                     lifecycle configuration as the parameters of the executor.
 	 */
-	@Override public void init(Map parameterMap) {
+	@Override
+	public void init(Map parameterMap) {
 		SecretResolver secretResolver = SecretResolverFactory.create((OMElement) null, false);
 		// Retrieves the secured password as follows
 		secretResolver.init(GovernanceRegistryExtensionsComponent.getSecretCallbackHandlerService()
@@ -117,9 +137,10 @@ import java.util.Map;
 	 *                     variables generated during the initial call.
 	 * @param currentState The current lifecycle state.
 	 * @param targetState  The target lifecycle state.
-	 * @return Returns whether the execution was successful or not.
+	 * @return             Returns whether the execution was successful or not.
 	 */
-	@Override public boolean execute(RequestContext context, String currentState,
+	@Override
+	public boolean execute(RequestContext context, String currentState,
 	                                 String targetState) {
 		Resource resource = context.getResource();
 
@@ -127,7 +148,6 @@ import java.util.Map;
 			String artifactString = RegistryUtils.decodeBytes((byte[]) resource.getContent());
 			String user = CarbonContext.getThreadLocalCarbonContext().getUsername();
 			OMElement xmlContent = AXIOMUtil.stringToOM(artifactString);
-			String serviceName = CommonUtil.getServiceName(xmlContent);
 			GenericArtifactManager manager = new GenericArtifactManager(
 					RegistryCoreServiceComponent.getRegistryService()
 					                            .getGovernanceUserRegistry(user, CarbonContext
@@ -135,16 +155,13 @@ import java.util.Map;
 							                            .getTenantId()), REST_SERVICE_KEY);
 
 			GenericArtifact api = manager.getGenericArtifact(context.getResource().getUUID());
-			publishData(api, serviceName, xmlContent);
+			publishData(api, xmlContent);
 
 		} catch (RegistryException e) {
 			log.error("Failed to publish service to API store ", e);
 			return false;
 		} catch (XMLStreamException e) {
-			log.error("Failed to convert service to xml content");
-			return false;
-		} catch (Exception e) {
-			log.error("Unexpected error occurred when publishing data to API Manager.");
+			log.error("Failed to convert service to xml content", e);
 			return false;
 		}
 		return true;
@@ -153,12 +170,10 @@ import java.util.Map;
 	/**
 	 * Publish the data to API Manager
 	 *
-	 * @param api         API registry artifact.
-	 * @param serviceName Name of the REST service.
-	 * @param xmlContent  Url Pattern value iterator.
+	 * @param api        API registry artifact.
+	 * @param xmlContent Url Pattern value iterator.
 	 */
-	private void publishData(GenericArtifact api, String serviceName, OMElement xmlContent)
-			throws RegistryException {
+	private void publishData(GenericArtifact api, OMElement xmlContent) throws RegistryException {
 
 		if (apimEndpoint == null || apimUsername == null || apimPassword == null) {
 			throw new RuntimeException("APIManager login credentials are not defined");
@@ -168,8 +183,8 @@ import java.util.Map;
 		HttpContext httpContext = new BasicHttpContext();
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 
-		authenticate(httpContext);
-		String publishEndpoint = apimEndpoint + PUBLISH_URL;
+		Utils.authenticateAPIM(httpContext, apimEndpoint, apimUsername, apimPassword);
+		String publishEndpoint = apimEndpoint + ExecutorConstants.APIM_PUBLISH_URL;
 
 		try {
 			// create a post request to addAPI.
@@ -177,10 +192,10 @@ import java.util.Map;
 			HttpPost httppost = new HttpPost(publishEndpoint);
 
 			// Request parameters and other properties.
-			List<NameValuePair> params = getRequestParameters(api, serviceName, xmlContent);
+			List<NameValuePair> params = getRequestParameters(api, xmlContent);
 
-			if (api.getAttribute("overview_endpointURL") != null &&
-			    api.getAttribute("overview_endpointURL").isEmpty()) {
+			if (api.getAttribute(ExecutorConstants.SERVICE_ENDPOINT_URL) != null &&
+			    api.getAttribute(ExecutorConstants.SERVICE_ENDPOINT_URL).isEmpty()) {
 				log.warn("Service Endpoint is empty.");
 			}
 
@@ -193,30 +208,33 @@ import java.util.Map;
 						"Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
 			}
 
-		} catch (Exception e) {
-			log.error("Error in publishing the data to API Manager", e);
+		} catch (ClientProtocolException e) {
+			throw new RegistryException("Failed to send the http POST request to API Manager. ", e);
+		} catch (UnsupportedEncodingException e) {
+			throw new RegistryException("Failed when encoding the parameter list. ", e);
+		} catch (IOException e) {
+			throw new RegistryException("Failed to send the http POST request to API Manager. ", e);
 		}
 	}
 
 	/**
 	 * Creates request parameter list to publish.
 	 *
-	 * @param api         API artifact.
-	 * @param serviceName Service name.
-	 * @param xmlContent  API artifact content.
-	 * @return Request parameter list.
-	 * @throws GovernanceException
+	 * @param api                   API artifact.
+	 * @param xmlContent            API artifact content.
+	 * @return                      request parameter list.
+	 * @throws GovernanceException  If fails to get required attributes from the API artifact.
 	 */
-	private List<NameValuePair> getRequestParameters(GenericArtifact api, String serviceName,
-	                                                 OMElement xmlContent)
+	private List<NameValuePair> getRequestParameters(GenericArtifact api, OMElement xmlContent)
 			throws GovernanceException {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 
+		String serviceName = api.getAttribute(ExecutorConstants.SERVICE_NAME);
+		String serviceVersion = api.getAttribute(ExecutorConstants.SERVICE_VERSION);
 		//Adding request parameters
-
 		//API endpoint URL.
-		params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT,
-		                                  api.getAttribute(ExecutorConstants.API_ENDPOINT_URL)));
+		params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT, api.getAttribute(
+				ExecutorConstants.SERVICE_ENDPOINT_URL)));
 		//API add action
 		params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION,
 		                                  ExecutorConstants.API_ADD_ACTION));
@@ -225,8 +243,7 @@ import java.util.Map;
 		//API Context
 		params.add(new BasicNameValuePair(ExecutorConstants.API_CONTEXT, serviceName));
 		//API version
-		params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION,
-		                                  api.getAttribute(ExecutorConstants.SERVICE_VERSION)));
+		params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION, serviceVersion));
 		//API Provider
 		params.add(new BasicNameValuePair(API_PROVIDER, CarbonContext.getThreadLocalCarbonContext()
 		                                                             .getUsername()));
@@ -236,7 +253,7 @@ import java.util.Map;
 		Iterator resources = xmlContent.getChildrenWithLocalName(URI_TEMPLATE);
 
 		if (!resources.hasNext()) {
-			log.warn("Resources list is empty.");
+			log.warn("Resources list is empty. Publishing to API Manager might fail.");
 		}
 		//Adding resources
 		int resourceCount = 0;
@@ -286,37 +303,5 @@ import java.util.Map;
 		params.add(new BasicNameValuePair("endpoint_config", endpointConfigJson));
 
 		return params;
-	}
-
-	/**
-	 * Authenticate to API Manager
-	 *
-	 * @param httpContext HTTP context.
-	 */
-	private void authenticate(HttpContext httpContext) {
-		String loginEP = apimEndpoint + "publisher/site/blocks/user/login/ajax/login.jag";
-		try {
-			// create a post request to addAPI.
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(loginEP);
-			// Request parameters and other properties.
-			List<NameValuePair> params = new ArrayList<NameValuePair>(3);
-
-			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION,
-			                                  ExecutorConstants.API_LOGIN_ACTION));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_USERNAME, apimUsername));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_PASSWORD, apimPassword));
-			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-
-			HttpResponse response = httpclient.execute(httppost, httpContext);
-			if (response.getStatusLine().getStatusCode() != 200) {
-				throw new RuntimeException(
-						" Authentication with API Manager failed: HTTP error code : " +
-						response.getStatusLine().getStatusCode());
-			}
-
-		} catch (Exception e) {
-			log.error("Authentication failed", e);
-		}
 	}
 }
