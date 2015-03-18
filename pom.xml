@@ -77,8 +77,8 @@
                 <version>2.3.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -1166,7 +1166,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>solr.wso2</groupId>
+                <groupId>org.wso2.apache.solr</groupId>
                 <artifactId>solr</artifactId>
                 <version>${version.solr}</version>
             </dependency>
@@ -1223,6 +1223,16 @@
                 <artifactId>org.eclipse.equinox.registry</artifactId>
                 <version>3.5.100.v20110502</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.com.predic8</groupId>
+                <artifactId>soa.model.core</artifactId>
+                <version>${orbit.version.predic8}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.asm4</groupId>
+                <artifactId>asm4-all</artifactId>
+                <version>${orbit.version.asm}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1234,7 +1244,7 @@
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.3.0</carbon.commons.version>
+        <carbon.commons.version>4.3.5</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Business Process -->
@@ -1242,7 +1252,7 @@
         <carbon.business.process.imp.pkg.version>[4.3.0, 4.4.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.3.0</carbon.registry.version>
+        <carbon.registry.version>4.3.2-SNAPSHOT</carbon.registry.version>
         <carbon.registry.imp.pkg.version>[4.3.0, 4.4.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon platform version comes here-->
@@ -1311,7 +1321,7 @@
         <mashup.version>4.2.0</mashup.version>
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>1.4.1.wso2v1</version.solr>
+        <version.solr>5.0.0.wso2v1</version.solr>
         <derby.version>10.4.2.0</derby.version>
         <activation.version>1.1</activation.version>
         <javamail.version>1.4</javamail.version>
@@ -1333,7 +1343,8 @@
         <version.javax.servlet>3.0.0.v201112011016</version.javax.servlet>
         <rhino.wso2.version>1.7.0.R4.wso2v1</rhino.wso2.version>
         <orbit.version.json>2.0.0.wso2v1</orbit.version.json>
-
+        <orbit.version.predic8>1.5.0.wso2v1</orbit.version.predic8>
+        <orbit.version.asm>4.0.0.wso2v1</orbit.version.asm>
         <project.scm.id>my-scm-server</project.scm.id>
 
     </properties>
