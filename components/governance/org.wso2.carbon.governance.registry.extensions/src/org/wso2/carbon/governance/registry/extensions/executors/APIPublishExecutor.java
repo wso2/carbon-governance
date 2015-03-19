@@ -83,7 +83,6 @@ public class APIPublishExecutor implements Execution {
 
 	private static final Log log = LogFactory.getLog(APIPublishExecutor.class);
 
-	private static final String REST_SERVICE_KEY = "restservice";
 	private static final String URI_TEMPLATE = "uritemplate";
 	private static final String URL_PATTERN = "urlPattern";
 	private static final String HTTP_VERB = "httpVerb";
@@ -110,8 +109,8 @@ public class APIPublishExecutor implements Execution {
 		secretResolver.init(GovernanceRegistryExtensionsComponent.getSecretCallbackHandlerService()
 		                                                         .getSecretCallbackHandler());
 		if (secretResolver.isInitialized()) {
-			apimUsername = secretResolver.resolve("apim.username");
-			apimPassword = secretResolver.resolve("apim.password");
+			apimUsername = secretResolver.resolve(ExecutorConstants.APIM_USERNAME);
+			apimPassword = secretResolver.resolve(ExecutorConstants.APIM_PASSWORD);
 		}
 
 		if (parameterMap.get(ExecutorConstants.APIM_ENDPOINT) != null) {
@@ -138,8 +137,7 @@ public class APIPublishExecutor implements Execution {
 	 * @return             Returns whether the execution was successful or not.
 	 */
 	@Override
-	public boolean execute(RequestContext context, String currentState,
-	                                 String targetState) {
+	public boolean execute(RequestContext context, String currentState, String targetState) {
 		Resource resource = context.getResource();
 
 		try {
@@ -147,10 +145,8 @@ public class APIPublishExecutor implements Execution {
 			String user = CarbonContext.getThreadLocalCarbonContext().getUsername();
 			OMElement xmlContent = AXIOMUtil.stringToOM(artifactString);
 			GenericArtifactManager manager = new GenericArtifactManager(
-					RegistryCoreServiceComponent.getRegistryService()
-					                            .getGovernanceUserRegistry(user, CarbonContext
-							                            .getThreadLocalCarbonContext()
-							                            .getTenantId()), REST_SERVICE_KEY);
+					RegistryCoreServiceComponent.getRegistryService().getGovernanceUserRegistry(user, CarbonContext
+							.getThreadLocalCarbonContext().getTenantId()), ExecutorConstants.REST_SERVICE_KEY);
 
 			GenericArtifact api = manager.getGenericArtifact(context.getResource().getUUID());
 			publishData(api, xmlContent);
@@ -174,7 +170,7 @@ public class APIPublishExecutor implements Execution {
 	private void publishData(GenericArtifact api, OMElement xmlContent) throws RegistryException {
 
 		if (apimEndpoint == null || apimUsername == null || apimPassword == null) {
-			throw new RuntimeException("APIManager login credentials are not defined");
+			throw new RuntimeException(ExecutorConstants.APIM_LOGIN_UNDEFINED);
 		}
 
 		CookieStore cookieStore = new BasicCookieStore();
@@ -184,20 +180,20 @@ public class APIPublishExecutor implements Execution {
 		Utils.authenticateAPIM(httpContext, apimEndpoint, apimUsername, apimPassword);
 		String publishEndpoint = apimEndpoint + ExecutorConstants.APIM_PUBLISH_URL;
 
+		// create a post request to addAPI.
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpPost httppost = new HttpPost(publishEndpoint);
+
+		// Request parameters and other properties.
+		List<NameValuePair> params = getRequestParameters(api, xmlContent);
+
+		if (api.getAttribute(ExecutorConstants.SERVICE_ENDPOINT_URL) != null &&
+		    api.getAttribute(ExecutorConstants.SERVICE_ENDPOINT_URL).isEmpty()) {
+			log.warn(ExecutorConstants.EMPTY_ENDPOINT);
+		}
+
 		try {
-			// create a post request to addAPI.
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(publishEndpoint);
-
-			// Request parameters and other properties.
-			List<NameValuePair> params = getRequestParameters(api, xmlContent);
-
-			if (api.getAttribute(ExecutorConstants.SERVICE_ENDPOINT_URL) != null &&
-			    api.getAttribute(ExecutorConstants.SERVICE_ENDPOINT_URL).isEmpty()) {
-				log.warn("Service Endpoint is empty.");
-			}
-
-			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+			httppost.setEntity(new UrlEncodedFormEntity(params, ExecutorConstants.DEFAULT_CHAR_ENCODING));
 
 			HttpResponse response = httpclient.execute(httppost, httpContext);
 
@@ -207,11 +203,11 @@ public class APIPublishExecutor implements Execution {
 			}
 
 		} catch (ClientProtocolException e) {
-			throw new RegistryException("Failed to send the http POST request to API Manager. ", e);
+			throw new RegistryException(ExecutorConstants.APIM_POST_REQ_FAIL, e);
 		} catch (UnsupportedEncodingException e) {
-			throw new RegistryException("Failed when encoding the parameter list. ", e);
+			throw new RegistryException(ExecutorConstants.ENCODING_FAIL, e);
 		} catch (IOException e) {
-			throw new RegistryException("Failed to send the http POST request to API Manager. ", e);
+			throw new RegistryException(ExecutorConstants.APIM_POST_REQ_FAIL, e);
 		}
 	}
 
@@ -225,7 +221,7 @@ public class APIPublishExecutor implements Execution {
 	 */
 	private List<NameValuePair> getRequestParameters(GenericArtifact api, OMElement xmlContent)
 			throws GovernanceException {
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 
 		String serviceName = api.getAttribute(ExecutorConstants.SERVICE_NAME);
 		String serviceVersion = api.getAttribute(ExecutorConstants.SERVICE_VERSION);

@@ -217,9 +217,20 @@ public class ExecutorConstants {
     public static final String API_USERNAME = "username";
     public static final String API_PASSWORD = "password";
 
+	public static final String REST_SERVICE_KEY = "restservice";
 	public static final String SERVICE_NAME = "overview_name";
 	public static final String SERVICE_VERSION = "overview_version";
 	public static final String SERVICE_ENDPOINT_URL = "overview_endpointURL";
     public static final String THROTTLING_TIER= "throttlingTier";
+	public static final String DEFAULT_CHAR_ENCODING = "UTF-8";
+
+
+	//common messages
+	public static final String APIM_POST_REQ_FAIL = "Failed to send the http POST request to API Manager. ";
+	public static final String API_DEMOTE_FAIL = "Failed to delete API from the API manager. ";
+	public static final String EMPTY_ENDPOINT = "Service Endpoint is empty.";
+	public static final String APIM_LOGIN_UNDEFINED = "APIManager login credentials are not defined";
+	public static final String ENCODING_FAIL = "Failed when encoding the parameter list. ";
+
 
 }

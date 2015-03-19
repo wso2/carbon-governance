@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -39,13 +40,14 @@ import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorCo
 import org.wso2.carbon.governance.registry.extensions.executors.utils.Utils;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
-import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,12 +71,10 @@ import java.util.Map;
  */
 public class APIDeleteExecutor implements Execution {
 	private static final Log log = LogFactory.getLog(APIDeleteExecutor.class);
-	private static final String REST_SERVICE_KEY = "restservice";
 
 	private String apimEndpoint = null;
 	private String apimUsername = null;
 	private String apimPassword = null;
-	private String apimEnv = null;
 
 	/**
 	 * This method is called when the execution class is initialized.
@@ -111,26 +111,22 @@ public class APIDeleteExecutor implements Execution {
 	 * @return             Returns whether the execution was successful or not.
 	 */
 	@Override
-	public boolean execute(RequestContext context, String currentState,
-	                                 String targetState) {
-		Resource resource = context.getResource();
+	public boolean execute(RequestContext context, String currentState, String targetState) {
 		boolean deleted = false;
 
 		String user = CarbonContext.getThreadLocalCarbonContext().getUsername();
 		try {
 			GenericArtifactManager manager = new GenericArtifactManager(
-					RegistryCoreServiceComponent.getRegistryService()
-					                            .getGovernanceUserRegistry(user, CarbonContext
-							                            .getThreadLocalCarbonContext()
-							                            .getTenantId()), REST_SERVICE_KEY);
+					RegistryCoreServiceComponent.getRegistryService().getGovernanceUserRegistry(user, CarbonContext
+							.getThreadLocalCarbonContext().getTenantId()), ExecutorConstants.REST_SERVICE_KEY);
 
 			GenericArtifact api = manager.getGenericArtifact(context.getResource().getUUID());
 			deleted = deleteFromAPIManager(api);
 
 		} catch (GovernanceException e) {
-			//log error
+			log.error("Failed to read the REST API artifact from the registry. ", e);
 		} catch (RegistryException e) {
-			//log error
+			log.error(ExecutorConstants.API_DEMOTE_FAIL, e);
 		}
 		return deleted;
 	}
@@ -143,7 +139,7 @@ public class APIDeleteExecutor implements Execution {
 	 */
 	private boolean deleteFromAPIManager(GenericArtifact api) throws RegistryException {
 		if (apimEndpoint == null || apimUsername == null || apimPassword == null) {
-			throw new RuntimeException("APIManager login credentials are not defined");
+			throw new RuntimeException(ExecutorConstants.APIM_LOGIN_UNDEFINED);
 		}
 
 		CookieStore cookieStore = new BasicCookieStore();
@@ -159,7 +155,7 @@ public class APIDeleteExecutor implements Execution {
 			HttpPost httppost = new HttpPost(removeEndpoint);
 
 			// Request parameters and other properties.
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			List<NameValuePair> params = new ArrayList<>();
 			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION,
 			                                  ExecutorConstants.API_REMOVE_ACTION));
 			params.add(new BasicNameValuePair(ExecutorConstants.API_NAME,
@@ -168,7 +164,7 @@ public class APIDeleteExecutor implements Execution {
 			params.add(new BasicNameValuePair(ExecutorConstants.API_VERSION,
 			                                  api.getAttribute(ExecutorConstants.SERVICE_VERSION)));
 
-			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+			httppost.setEntity(new UrlEncodedFormEntity(params, ExecutorConstants.DEFAULT_CHAR_ENCODING));
 
 			HttpResponse response = httpclient.execute(httppost, httpContext);
 
@@ -177,9 +173,12 @@ public class APIDeleteExecutor implements Execution {
 						"Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
 			}
 
-		} catch (Exception e) {
-			log.error("Error in removing the API from API Manager", e);
-			return false;
+		} catch (ClientProtocolException e) {
+			throw new RegistryException(ExecutorConstants.APIM_POST_REQ_FAIL, e);
+		} catch (UnsupportedEncodingException e) {
+			throw new RegistryException(ExecutorConstants.ENCODING_FAIL, e);
+		} catch (IOException e) {
+			throw new RegistryException(ExecutorConstants.APIM_POST_REQ_FAIL, e);
 		}
 
 		return true;
