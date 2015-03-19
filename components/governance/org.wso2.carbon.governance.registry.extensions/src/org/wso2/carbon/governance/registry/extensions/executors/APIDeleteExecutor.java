@@ -56,7 +56,7 @@ import java.util.Map;
  *
  * This class gets initiated when a REST Service lifecycle is added to a REST Service. In initialization following
  * static configuration parameters should be defined in the lifecycle.
- *  Eg:- <execution forEvent="Publish" class="org.wso2.carbon.governance.registry.extensions.executors.APIPublishExecutor">
+ *  Eg:- <execution forEvent="Publish" class="org.wso2.carbon.governance.registry.extensions.executors.APIDeleteExecutor">
  *           <parameter name="apim.endpoint" value="http://localhost:9763/"/>
  *           <parameter name="apim.username" value="admin"/>
  *           <parameter name="apim.password" value="admin"/>

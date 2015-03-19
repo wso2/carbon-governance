@@ -132,11 +132,9 @@ public class APIPublishExecutor implements Execution {
 	}
 
 	/**
-	 * @param context      The request context that was generated from the registry core.
-	 *                     The request context contains the resource, resource path and other
-	 *                     variables generated during the initial call.
-	 * @param currentState The current lifecycle state.
-	 * @param targetState  The target lifecycle state.
+	 * @param context      the request context that was generated from the registry core.
+	 * @param currentState the current lifecycle state.
+	 * @param targetState  the target lifecycle state.
 	 * @return             Returns whether the execution was successful or not.
 	 */
 	@Override
@@ -171,7 +169,7 @@ public class APIPublishExecutor implements Execution {
 	 * Publish the data to API Manager
 	 *
 	 * @param api        API registry artifact.
-	 * @param xmlContent Url Pattern value iterator.
+	 * @param xmlContent url Pattern value iterator.
 	 */
 	private void publishData(GenericArtifact api, OMElement xmlContent) throws RegistryException {
 
@@ -278,29 +276,29 @@ public class APIPublishExecutor implements Execution {
 			authTypeText =
 					authTypeText.isEmpty() ? ExecutorConstants.DEFAULT_AUTH_TYPE : authTypeText;
 
-			params.add(new BasicNameValuePair("uriTemplate-" + resourceCount, urlPatternText));
-			params.add(new BasicNameValuePair("resourceMethod-" + resourceCount,
+			params.add(new BasicNameValuePair(ExecutorConstants.API_URI_PATTERN + resourceCount, urlPatternText));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_URI_HTTP_METHOD + resourceCount,
 			                                  httpVerbText.toUpperCase()));
-			params.add(new BasicNameValuePair("resourceMethodAuthType-" + resourceCount,
+			params.add(new BasicNameValuePair(ExecutorConstants.API_URI_AUTH_TYPE + resourceCount,
 			                                  authTypeText));
-			params.add(new BasicNameValuePair("resourceMethodThrottlingTier-" + resourceCount,
+			params.add(new BasicNameValuePair(ExecutorConstants.API_THROTTLING_TIER + resourceCount,
 			                                  apiThrottlingTier));
 			++resourceCount;
 
 		}
 
 		if (resourceCount > 0) {
-			params.add(new BasicNameValuePair("resourceCount", Integer.toString(resourceCount)));
+			params.add(new BasicNameValuePair(ExecutorConstants.API_RESOURCE_COUNT, Integer.toString(resourceCount)));
 		}
 		//API Visibility
 		params.add(new BasicNameValuePair(ExecutorConstants.API_VISIBLITY,
 		                                  ExecutorConstants.DEFAULT_VISIBILITY));
 
 		String endpointConfigJson = "{\"production_endpoints\":{\"url\":\"" +
-		                            api.getAttribute("overview_endpointURL") +
+		                            api.getAttribute(ExecutorConstants.SERVICE_ENDPOINT_URL) +
 		                            "\",\"config\":null},\"endpoint_type\":\"http\"}";
 		//End point configuration
-		params.add(new BasicNameValuePair("endpoint_config", endpointConfigJson));
+		params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT_CONFIG, endpointConfigJson));
 
 		return params;
 	}
