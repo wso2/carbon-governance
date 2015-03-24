@@ -42,6 +42,8 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
+import org.wso2.carbon.registry.extensions.services.RXTStoragePathServiceImpl;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
@@ -69,6 +71,7 @@ public class CommonUtil {
 
     private static RegistryService registryService;
     private static ConfigurationContext configurationContext;
+    private static RXTStoragePathService rxtStoragePathService;
 
     public static void setRegistryService(RegistryService service) {
         registryService = service;
@@ -86,7 +89,15 @@ public class CommonUtil {
         CommonUtil.configurationContext = configurationContext;
     }
 
-    public static String getServiceName(Resource resource) throws RegistryException {
+    public static RXTStoragePathService getRxtStoragePathService() {
+        return rxtStoragePathService;
+    }
+
+    public static void setRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
+        CommonUtil.rxtStoragePathService = rxtStoragePathService;
+    }
+
+	public static String getServiceName(Resource resource) throws RegistryException {
         String serviceInfo = convertContentToString(resource);
         try {
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(serviceInfo));
@@ -447,5 +458,15 @@ public class CommonUtil {
                 }
             }
         }
+    }
+
+    public static void addStoragePath(String mediaType, String storagePath) {
+        RXTStoragePathServiceImpl service = (RXTStoragePathServiceImpl) getRxtStoragePathService();
+        service.addStoragePath(mediaType, storagePath);
+    }
+
+    public static void removeStoragePath(String mediaType) {
+        RXTStoragePathServiceImpl service = (RXTStoragePathServiceImpl) getRxtStoragePathService();
+        service.removeStoragePath(mediaType);
     }
 }
