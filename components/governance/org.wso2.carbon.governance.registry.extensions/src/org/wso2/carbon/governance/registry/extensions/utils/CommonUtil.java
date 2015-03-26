@@ -20,8 +20,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
-import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -30,9 +30,9 @@ import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
+import org.wso2.carbon.registry.extensions.services.RXTStoragePathServiceImpl;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
-import org.wso2.carbon.registry.uddi.utils.GovernanceUtil;
-import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.FileUtil;
 
@@ -47,8 +47,21 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.wso2.carbon.governance.api.util.GovernanceUtils.getGovernanceArtifactConfiguration;
+import static org.wso2.carbon.governance.api.util.GovernanceUtils.getRXTConfigCache;
+
 public class CommonUtil {
     private static final Log log = LogFactory.getLog(CommonUtil.class);
+
+	private static RXTStoragePathService rxtSPService;
+
+	public static RXTStoragePathService getRxtStoragePathService() {
+		return rxtSPService;
+	}
+
+	public static void setRxtStoragePathService(RXTStoragePathService rxtSPService) {
+		CommonUtil.rxtSPService = rxtSPService;
+	}
 
     public static String[] getAllLifeCycleStates(Registry registry, String lifeCycleName) throws RegistryException {
         boolean isLiteral = true;
@@ -154,7 +167,7 @@ public class CommonUtil {
     }
 
     public static void addRxtConfigs(Registry systemRegistry, int tenantId) throws RegistryException {
-        Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
+        Cache<String,Boolean> rxtConfigCache = getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
         String rxtDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
                 "resources" + File.separator + "rxts";
         File file = new File(rxtDir);
@@ -207,11 +220,28 @@ public class CommonUtil {
                         resource.setMediaType(CommonConstants.RXT_MEDIA_TYPE);
                         systemRegistry.put(resourcePath, resource);
                         rxtConfigCache.put(resourcePath,true);
+	                    GovernanceArtifactConfiguration configuration = getGovernanceArtifactConfiguration(rxt);
+	                    String mediaType = configuration.getMediaType();
+	                    String storagePath = configuration.getPathExpression();
+	                    addStoragePath(mediaType, storagePath);
                     }
                 } else {
+	                Resource resource = systemRegistry.get(resourcePath);
+	                Object content = resource.getContent();
+	                String elementString;
+	                if (content instanceof String) {
+		                elementString = (String) content;
+	                } else {
+		                elementString = RegistryUtils.decodeBytes((byte[]) content);
+	                }
+	                GovernanceArtifactConfiguration configuration = getGovernanceArtifactConfiguration(elementString);
+	                String mediaType = configuration.getMediaType();
+	                String storagePath = configuration.getPathExpression();
+	                addStoragePath(mediaType, storagePath);
                     if (log.isDebugEnabled()) {
                         log.debug("RXT " + rxtName + " already exists.");
                     }
+
                 }
 
             } catch (IOException e) {
@@ -222,6 +252,16 @@ public class CommonUtil {
                 throw new RegistryException(msg, e);
             }
         }
+    }
+
+    public static void addStoragePath(String mediaType, String storagePath) {
+        RXTStoragePathServiceImpl service = (RXTStoragePathServiceImpl) getRxtStoragePathService();
+        service.addStoragePath(mediaType, storagePath);
+    }
+
+    public static void removeStoragePath(String mediaType) {
+        RXTStoragePathServiceImpl service = (RXTStoragePathServiceImpl) getRxtStoragePathService();
+        service.removeStoragePath(mediaType);
     }
 
     // handling the possibility that handlers are not called within each other.

@@ -18,16 +18,16 @@
 
 package org.wso2.carbon.governance.registry.extensions.internal;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.governance.registry.extensions.listeners.RxtLoader;
+import org.wso2.carbon.governance.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
+import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.securevault.SecretCallbackHandlerService;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 
@@ -36,12 +36,12 @@ import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1" policy="dynamic"  bind="setRegistryService" unbind="unsetRegistryService"
- *  @scr.reference name="secret.callback.handler.service"
- * interface="org.wso2.carbon.securevault.SecretCallbackHandlerService"
- * cardinality="1..1"  policy="dynamic"
- * bind="setSecretCallbackHandlerService"
- * unbind="unsetSecretCallbackHandlerService"
- *
+ * @scr.reference name="secret.callback.handler.service"
+ * interface="org.wso2.carbon.securevault.SecretCallbackHandlerService" cardinality="1..1"  policy="dynamic"
+ * bind="setSecretCallbackHandlerService" unbind="unsetSecretCallbackHandlerService"
+ * @scr.reference name="extensions.service"
+ * interface="org.wso2.carbon.registry.extensions.services.RXTStoragePathService" cardinality="1..1"
+ * policy="dynamic" bind="setRxtStoragePathService" unbind="unsetRxtStoragePathService"
  */
 
 public class GovernanceRegistryExtensionsComponent {
@@ -94,5 +94,13 @@ public class GovernanceRegistryExtensionsComponent {
 
     public static SecretCallbackHandlerService getSecretCallbackHandlerService(){
         return secretCallbackHandlerService;
+    }
+
+    protected void setRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
+        CommonUtil.setRxtStoragePathService(rxtStoragePathService);
+    }
+
+    protected void unsetRxtStoragePathService(RXTStoragePathService rxtSPService) {
+        CommonUtil.setRxtStoragePathService(null);
     }
 }
