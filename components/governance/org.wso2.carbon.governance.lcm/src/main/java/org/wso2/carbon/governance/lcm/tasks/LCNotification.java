@@ -39,16 +39,6 @@ public class LCNotification {
     private String lcCheckpointId;
 
     /**
-     * UUID in resource.
-     */
-    private String UUID;
-
-    /**
-     * Tenant Id.
-     */
-    private int tenantId;
-
-    /**
      * Notification date.
      */
     private String notificationDate;
@@ -87,42 +77,6 @@ public class LCNotification {
      */
     public void setLcCheckpointId(String lcCheckpointId) {
         this.lcCheckpointId = lcCheckpointId;
-    }
-
-    /**
-     * This method is used to get UUID.
-     *
-     * @return          UUID.
-     */
-    public String getUUID() {
-        return UUID;
-    }
-
-    /**
-     * This method is used to set UUID.
-     *
-     * @param UUID      UUID.
-     */
-    public void setUUID(String UUID) {
-        this.UUID = UUID;
-    }
-
-    /**
-     * This method is used to get tenant id.
-     *
-     * @return          tenant id.
-     */
-    public int getTenantId() {
-        return tenantId;
-    }
-
-    /**
-     * This method is used to get tenant id.
-     *
-     * @param tenantId  tenant id.
-     */
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
     }
 
     /**

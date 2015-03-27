@@ -22,22 +22,30 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
-import org.wso2.carbon.governance.lcm.tasks.dao.LifecycleNotificationDAO;
-import org.wso2.carbon.governance.lcm.tasks.data.JDBCLifecycleNotificationDAOImpl;
 import org.wso2.carbon.governance.lcm.tasks.events.LifecycleNotificationEvent;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.governance.lcm.util.LifecycleStateDurationUtils;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
+import org.wso2.carbon.registry.common.AttributeSearchService;
+import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.common.eventing.NotificationService;
 import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.eventing.services.EventingServiceImpl;
+import org.wso2.carbon.registry.indexing.IndexingConstants;
 
 import javax.xml.namespace.QName;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * This Util class holds methods to send checkpoint notifications and add schedulers.
@@ -52,57 +60,67 @@ public class LCNotificationScheduler {
     // Used to as Qname for checkpoint id.
     private final String checkpointId = "id";
 
-    // Date separator
+    // Date separator.
     private final String dateSeparator = "-";
 
-    // Date length
+    // Date length.
     private final int dateLength = 10;
+
+    // Date format used in MySQL queries.
+    private final String dateFormat = "yyyy-M-d";
+
+    // Lifecycle property name to which is used to store.
+    private final String lcCheckPointPropertyName = "registry.LCCheckpoints";
+
+    // Super admin username.
+    private final String superAdminUsername = "admin";
+
+    // Super tenant domain.
+    private final String superTenantDomain = "carbon.super";
+
+    // Super tenant tenant Id.
+    private final int superTenantId = -1234;
+
+    // Equals constant used for solar advance search.
+    private final String equals = "eq";
+
+    // Not applicable constant used for solar advance search.
+    private final String notApplicable = "na";
 
     /**
      * This method is used to send notifications for checkpoints in lifecycle. This method is called using the
      * scheduler task CheckpointNotificationSchedulerTask.
      */
     public void run() {
-        LifecycleNotificationDAO lifecycleNotificationDAO = new JDBCLifecycleNotificationDAOImpl();
-        ArrayList<LCNotification> notifications = new ArrayList<LCNotification>();
-
         try {
-            notifications = lifecycleNotificationDAO
-                    .getValidNotifications(CommonUtil.getRegistryService().getRegistry());
-        } catch (GovernanceException e) {
-            log.error("Error while getting notifications. Hold notification sending job.", e);
-            /*
-             Throwing the exception is no need since this is a scheduler task and scheduler tasks uses
-             org.wso2carbon.ntask.core.Task interface which doesn't throw exceptions from execute() method signature.
-             */
-            return;
-        } catch (RegistryException e) {
-            log.error("Error while getting notifications to send Lifecycle checkpoint notifications.", e);
-        }
+            ArrayList<LCNotification> notifications = getValidNotifications();
 
-        // Send notifications if exists.
-        if (notifications != null && notifications.size() > 0) {
-            // Parse this for a another method.
-            for (LCNotification schedulerBean : notifications) {
-                // Creating a Checkpoint notification event.
-                String notificationMessage = getNotificationMessage(schedulerBean);
-                LifecycleNotificationEvent<String> notificationEvent = new LifecycleNotificationEvent<String>
-                        (notificationMessage);
-                notificationEvent.setTenantId(schedulerBean.getTenantId());
-                notificationEvent.setResourcePath(schedulerBean.getRegPath());
-                // Sending notification using notification service.
-                NotificationService notificationService = new EventingServiceImpl();
-                try {
-                    notificationService.notify(notificationEvent);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Notification '" + notificationMessage + "' sent to notification service.");
+            // Send notifications if exists.
+            if (notifications.size() > 0) {
+                // Parse this for a another method.
+                for (LCNotification schedulerBean : notifications) {
+                    // Creating a Checkpoint notification event.
+                    String notificationMessage = getNotificationMessage(schedulerBean);
+                    LifecycleNotificationEvent<String> notificationEvent
+                            = new LifecycleNotificationEvent<>(notificationMessage);
+                    notificationEvent.setTenantId(superTenantId);
+                    notificationEvent.setResourcePath(schedulerBean.getRegPath());
+                    // Sending notification using notification service.
+                    NotificationService notificationService = new EventingServiceImpl();
+                    try {
+                        notificationService.notify(notificationEvent);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Notification '" + notificationMessage + "' sent to notification service.");
+                        }
+                        // Exception is caught because notificationService.notify method throws the exception from Exception
+                        // class. This will be refactored after fixing this JIRA: https://wso2.org/jira/browse/REGISTRY-2433
+                    } catch (Exception e) {
+                        log.error("Error getting registry while getting scheduler objects to send notifications", e);
                     }
-                    // Exception is caught because notificationService.notify method throws the exception from Exception
-                    // class. This will be refactored after fixing this JIRA: https://wso2.org/jira/browse/REGISTRY-2433
-                } catch (Exception e) {
-                    log.error("Error getting registry while getting scheduler objects to send notifications", e);
                 }
             }
+        } catch (RegistryException e) {
+            log.error("Error while getting valid notifications on " + getCurrentDate(), e);
         }
     }
 
@@ -112,24 +130,23 @@ public class LCNotificationScheduler {
      *
      * @param resource              resource which the lifecycle is attached.
      * @param lifecycleName         lifecycle name.
-     * @param tenantId              tenant Id.
      * @param lifecycleState        new lifecycle state after the state changed.
+     * @param isInvokeAspect        is this add scheduler method is called when invoking a lifecycle.
      * @throws GovernanceException  Throws when an error occurred while adding a lifecycle notification scheduler to
      *                              the database.
      */
-    public void addScheduler(ResourceImpl resource, String lifecycleName, int tenantId, String lifecycleState)
+    public void addScheduler(ResourceImpl resource, String lifecycleName, String lifecycleState, boolean isInvokeAspect)
             throws GovernanceException {
         if (resource != null && StringUtils.isNotEmpty(lifecycleName) && StringUtils.isNotEmpty(lifecycleState)) {
 
-            List checkpointsList = LifecycleStateDurationUtils
-                    .getDurationBeans(lifecycleName, lifecycleState);
+            List checkpointsList = LifecycleStateDurationUtils.getDurationBeans(lifecycleName, lifecycleState);
             if (checkpointsList != null) {
                 // Iterate through the checkpoint objects.
                 for (Object checkpoint : checkpointsList) {
                     OMElement checkpointElement = (OMElement) checkpoint;
-                    OMElement boundary = checkpointElement.getFirstChildWithName(new QName
-                            (LifecycleConstants.LIFECYCLE_CONFIGURATION_NAMESPACE_URI, LifecycleConstants
-                                    .LIFECYCLE_CHECKPOINT_BOUNDARY));
+                    OMElement boundary = checkpointElement.getFirstChildWithName(
+                            new QName(LifecycleConstants.LIFECYCLE_CONFIGURATION_NAMESPACE_URI,
+                                    LifecycleConstants.LIFECYCLE_CHECKPOINT_BOUNDARY));
                     String minTimestamp = boundary
                             .getAttribute(new QName(LifecycleConstants.LIFECYCLE_LOWER_BOUNDARY)).getAttributeValue();
                     String maxTimestamp = boundary
@@ -137,32 +154,20 @@ public class LCNotificationScheduler {
 
                     long durationDifference = getDurationDifference(minTimestamp, maxTimestamp);
 
-                    // Set scheduler properties.
-                    LCNotification schedulerBean = new LCNotification();
-                    schedulerBean.setRegPath(resource.getPath());
-                    schedulerBean.setLcName(lifecycleName);
-                    schedulerBean.setUUID(resource.getUUID());
-                    schedulerBean.setTenantId(tenantId);
-                    schedulerBean.setLcCheckpointId(checkpointElement.getAttribute(new QName(checkpointId))
-                            .getAttributeValue());
-                    schedulerBean.setNotificationDate(getNotificationDate(durationDifference));
-
-                    LifecycleNotificationDAO scheduler = new JDBCLifecycleNotificationDAOImpl();
-                    try {
-                        boolean result = scheduler.addScheduler(CommonUtil.getRegistryService().getRegistry(),
-                                schedulerBean);
-                        if (result) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("scheduler belongs to " + lifecycleName + "'s state '" + lifecycleState
-                                        + "'to database");
-                            }
+                    // Set scheduler property.
+                    String propertyValue = lifecycleName + "." + checkpointElement.getAttribute(new QName(checkpointId))
+                            .getAttributeValue() + "." + getNotificationDate(durationDifference);
+                    resource.addProperty(lcCheckPointPropertyName, propertyValue);
+                    // If the lifecycle is invoke registry.put is need to add the property because when invoke is
+                    // triggered registry put method is not called.
+                    if (isInvokeAspect) {
+                        try {
+                            CommonUtil.getRootSystemRegistry().put(resource.getPath(), resource);
+                        } catch (RegistryException e) {
+                            throw new GovernanceException(
+                                    "Error while saving resource when lifecycle is invoked after adding property '"
+                                            + propertyValue + "' to " + resource.getPath(), e);
                         }
-                    } catch (GovernanceException e) {
-                        log.error("Error while adding scheduler belongs to " + lifecycleName + "'s state '"
-                                + lifecycleState + "'to database", e);
-                    } catch (RegistryException e) {
-                        log.error("Error getting registry while adding notification schedulers belongs to "
-                                + lifecycleName + "'s state '" + lifecycleState + "' to database", e);
                     }
                 }
             } else {
@@ -230,5 +235,89 @@ public class LCNotificationScheduler {
                 .append(schedulerBean.getLcCheckpointId()).append("' on ").append(schedulerBean.getNotificationDate())
                 .append(".");
         return stringBuilder.toString();
+    }
+
+    /**
+     * This method used to get current date in yyyy-M-d format.
+     *
+     * @return current date in yyyy-M-d format.
+     */
+    private String getCurrentDate() {
+        DateFormat dateFormat = new SimpleDateFormat(this.dateFormat);
+        //get current date time with Calendar()
+        Calendar cal = Calendar.getInstance();
+        return dateFormat.format(cal.getTime());
+    }
+
+    /**
+     * This method is used to get valid lifecycle checkpoints to be send.
+     *
+     * @return                      valid lifecycle checkpoint notifications.
+     * @throws RegistryException    Throws if an error occurred while getting registry or when getting lifecycle
+     *                              checkpoint notification properties.
+     */
+    private ArrayList<LCNotification> getValidNotifications() throws RegistryException {
+
+        ArrayList<LCNotification> notifications = new ArrayList<>();
+        AttributeSearchService attributeSearchService = CommonUtil.getAttributeSearchService();
+        Map<String, String> searchAttributes = new HashMap<>();
+        searchAttributes.put(IndexingConstants.FIELD_PROPERTY_NAME, lcCheckPointPropertyName);
+        searchAttributes.put(IndexingConstants.FIELD_RIGHT_PROPERTY_VAL, "%" + getCurrentDate()
+                .replaceAll("-", "\\\\-"));
+        searchAttributes.put(IndexingConstants.FIELD_RIGHT_OP, equals);
+        searchAttributes.put(IndexingConstants.FIELD_LEFT_OP, notApplicable);
+
+        ResourceData[] resourceDataList = null;
+        try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(superTenantDomain);
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(superAdminUsername);
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(superTenantId);
+
+            resourceDataList = attributeSearchService.search(CommonUtil.getRootSystemRegistry(), searchAttributes);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+
+        if (resourceDataList != null) {
+            for (ResourceData resourceData : resourceDataList) {
+                LCNotification lcNotification = new LCNotification();
+                ArrayList propValues = getLcNotificationProperties(resourceData);
+                if (propValues.size() > 0) {
+                    for (Object propValueObject : propValues) {
+                        String propValue = (String) propValueObject;
+                        String[] lcCheckpointValues = propValue.split("\\.");
+                        lcNotification.setLcName(lcCheckpointValues[0]);
+                        lcNotification.setLcCheckpointId(lcCheckpointValues[1]);
+                        lcNotification.setNotificationDate(lcCheckpointValues[2]);
+                        lcNotification.setRegPath(resourceData.getResourcePath());
+                    }
+                }
+                notifications.add(lcNotification);
+            }
+        }
+        return notifications;
+    }
+
+    /**
+     * This method is used to get lifecycle notification properties.
+     *
+     * @param resourceData          search resource data.
+     * @return                      lifecycle notification properties.
+     * @throws RegistryException    Throws if an error occurred when getting the resource from registry.
+     */
+    private ArrayList getLcNotificationProperties(ResourceData resourceData) throws RegistryException {
+        Properties propertyNameValues = CommonUtil.getRootSystemRegistry().get(resourceData.getResourcePath())
+                .getProperties();
+        Iterator propIterator = propertyNameValues.entrySet().iterator();
+        ArrayList propValues = new ArrayList();
+        while (propIterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) propIterator.next();
+            String propertyName = (String) entry.getKey();
+            if (lcCheckPointPropertyName.equals(propertyName)) {
+                propValues = (ArrayList) entry.getValue();
+            }
+        }
+        return propValues;
     }
 }

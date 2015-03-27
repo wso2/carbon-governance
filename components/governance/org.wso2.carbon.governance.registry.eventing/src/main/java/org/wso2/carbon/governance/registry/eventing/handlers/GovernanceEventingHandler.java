@@ -132,7 +132,7 @@ public class GovernanceEventingHandler extends Handler {
             List stateList = (List) newProps.get("registry.lifecycle." + lcName + ".state");
             if (stateList != null) {
                 String lifecycleState = (String) stateList.get(0);
-                addLCNotificationScheduler(newResource, lcName, lifecycleState);
+                addLCNotificationScheduler(newResource, lcName, lifecycleState, false);
             }
         } else if (lcName != null && oldLcName == null) {
             // Adding scheduler entry when a service is created. This handles the scheduler entries for attaching
@@ -141,7 +141,7 @@ public class GovernanceEventingHandler extends Handler {
             if (statesList != null) {
                 // Getting 0 index because its the initial state of a lifecycle
                 String lifecycleState = (String) statesList.get(0);
-                addLCNotificationScheduler(newResource, lcName, lifecycleState);
+                addLCNotificationScheduler(newResource, lcName, lifecycleState, false);
             }
             StringBuilder messageBuilder = new StringBuilder("[").append(lcName)
                     .append("] The LifeCycle was created for resource at ").append(relativePath).append(".");
@@ -308,7 +308,7 @@ public class GovernanceEventingHandler extends Handler {
        String action = requestContext.getAction();
        // Filtering lifecycle actions.
        if ((!vote_click.equals(action) && !item_click.equals(action))) {
-           addLCNotificationScheduler(resource, lcName, newState);
+           addLCNotificationScheduler(resource, lcName, newState, true);
        }
         if (oldState != null && oldState.equalsIgnoreCase(newState)) {
             return;
@@ -360,7 +360,7 @@ public class GovernanceEventingHandler extends Handler {
             } catch (Exception e) {
             	handleException("Unable to send notification for Put Operation", e);
             }
-        }                  
+        }
     }
 
     protected void notify(RegistryEvent event, Registry registry, String path) throws Exception {
@@ -514,13 +514,15 @@ public class GovernanceEventingHandler extends Handler {
      * @param resource          resource which the scheduler needs to be added.
      * @param lifecycleName     lifecycle name of the scheduler
      * @param lifecycleState    lifecycle state of the scheduler.
+     * @param isInvokeAspect    does this add scheduler method is called when invoking a lifecycle.
      */
-    private void addLCNotificationScheduler(Resource resource, String lifecycleName, String lifecycleState) {
+    private void addLCNotificationScheduler(Resource resource, String lifecycleName, String lifecycleState, boolean
+            isInvokeAspect) {
         LCNotificationScheduler lifecycleNotificationScheduler =
                 new LCNotificationScheduler();
         try {
-            lifecycleNotificationScheduler.addScheduler((ResourceImpl) resource, lifecycleName, CurrentSession
-                    .getCallerTenantId(), lifecycleState);
+            lifecycleNotificationScheduler
+                    .addScheduler((ResourceImpl) resource, lifecycleName, lifecycleState, isInvokeAspect);
         } catch (GovernanceException e) {
             log.error("Lifecycle '" + lifecycleName + "'checkpoint addition failed for state " + lifecycleState, e);
         }
