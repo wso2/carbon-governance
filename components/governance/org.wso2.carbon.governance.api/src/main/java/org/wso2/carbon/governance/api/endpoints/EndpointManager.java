@@ -28,6 +28,7 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
 import java.util.*;
@@ -227,7 +228,8 @@ public class EndpointManager {
         // set the endpoint url
         String url = ((EndpointImpl)endpoint).getUrl();
         try {
-            String content = EndpointUtils.getEndpointContent(url, EndpointUtils.deriveEndpointFromUrl(url));
+            String content = EndpointUtils.getEndpointContentWithOverview(url, EndpointUtils.deriveEndpointFromUrl(url),
+                    EndpointUtils.deriveEndpointNameFromUrl(url), CommonConstants.ENDPOINT_VERSION_DEFAULT_VALUE);
             endpointResource.setContent(content);
         } catch (RegistryException e) {
             String msg =
