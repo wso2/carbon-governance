@@ -33,6 +33,14 @@
 <%@ page import="java.util.Collections" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="org.wso2.carbon.governance.custom.lifecycles.checklist.ui.clients.LifecycleManagementServiceClient" %>
+<%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
+<%@ page import="org.wso2.carbon.CarbonConstants" %>
+<%@ page import="org.apache.axis2.context.ConfigurationContext" %>
+<%@ page import="org.wso2.carbon.utils.ServerConstants" %>
+<%@ page import="org.wso2.carbon.governance.custom.lifecycles.checklist.ui.Beans.CurrentStateDurationBean" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.wso2.carbon.governance.lcm.stub.beans.xsd.CheckpointBean" %>
 
 <%
     class CheckListItem implements Comparable {
@@ -465,6 +473,33 @@
                     checkListItems.add(checkListItem);
                 }
             }
+
+            String serverURL = CarbonUIUtil.getServerURL(config.getServletContext(), session);
+            ConfigurationContext configContext = (ConfigurationContext) config.getServletContext()
+                    .getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
+            String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
+            LifecycleManagementServiceClient lifecycleManagementServiceClient;
+
+            String currentLifecycleStateDuration;
+            String currentLifecycleStateDurationColour = null;
+            lifecycleManagementServiceClient = new LifecycleManagementServiceClient(cookie, serverURL,
+                    configContext);
+            CurrentStateDurationBean currentStateDurationBean = lifecycleManagementServiceClient
+                    .getLifecycleCurrentStateDuration(path, lifecycleName);
+
+            if (currentStateDurationBean != null) {
+                currentLifecycleStateDuration = currentStateDurationBean.getDuration();
+                CheckpointBean checkpointBean = currentStateDurationBean.getCheckpointBean();
+                if (checkpointBean != null) {
+                    currentLifecycleStateDurationColour = checkpointBean.getDurationColour();
+                } else {
+                    currentLifecycleStateDurationColour = lifecycleManagementServiceClient
+                            .currentStateDurationDefaultColour;
+                }
+            } else {
+                currentLifecycleStateDuration = lifecycleManagementServiceClient.timeNotAvailableMessage;
+            }
+
             Collections.sort(checkListItems);
 
             if (!bean.getVersionView()) {
@@ -493,6 +528,15 @@
                     <th><fmt:message key="lifecycle.state"/>:</th>
                     <td style="border:0"><%=lifeCycleState%>
                     </td>
+                </tr>
+                <tr>
+                    <th><fmt:message key="lifecycle.currentLifecycleStateDuration"/>:</th>
+                    <% if(StringUtils.isNotEmpty(currentLifecycleStateDurationColour)) {%>
+                    <td style="border:0; color: <%=currentLifecycleStateDurationColour%>">
+                        <%=currentLifecycleStateDuration%></td>
+                    <%} else {%>
+                    <td style="border:0;"><%=currentLifecycleStateDuration%></td>
+                    <%}%>
                 </tr>
                 <tr>
                     <th>Make this default:</th>

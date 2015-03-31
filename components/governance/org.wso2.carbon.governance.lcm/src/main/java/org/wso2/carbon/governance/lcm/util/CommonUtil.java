@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.governance.lcm.beans.LifecycleBean;
+import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.Aspect;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.CollectionImpl;
@@ -43,6 +44,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ServerConstants;
 import org.xml.sax.SAXException;
@@ -72,10 +74,19 @@ public class CommonUtil {
 
     private static final Log log = LogFactory.getLog(CommonUtil.class);
     private static String contextRoot = null;
+
+    // Registry service used to do registry operations.
     private static RegistryService registryService;
-    public static final String searchLCMPropertiesQuery =
-                    RegistryConstants.QUERIES_COLLECTION_PATH +
-                    "/governance/searchLCMProperties";
+
+    // Content search service used in content search operations.
+    private static ContentSearchService contentSearchService;
+
+    // Attribute search service used in attribute search operations.
+    private static AttributeSearchService attributeSearchService;
+
+    // Lifecycle property search query.
+    public static final String searchLCMPropertiesQuery = RegistryConstants.QUERIES_COLLECTION_PATH +
+            "/governance/searchLCMProperties";
 
     private static Validator lifecycleSchemaValidator = null;
 
@@ -802,5 +813,23 @@ public class CommonUtil {
 				}
 			}
 		}    	
-    }    
+    }
+
+    /**
+     * This method is used to set attribute indexing service.
+     *
+     * @param service   Attribute indexing service.
+     */
+    public static void setAttributeSearchService(AttributeSearchService service) {
+        attributeSearchService = service;
+    }
+
+    /**
+     * This method is used to get Attribute search service.
+     *
+     * @return  attribute search service.
+     */
+    public static AttributeSearchService getAttributeSearchService() {
+        return attributeSearchService;
+    }
 }

@@ -19,7 +19,10 @@ package org.wso2.carbon.governance.registry.eventing.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
+import org.wso2.carbon.governance.lcm.tasks.events.LifecycleNotificationEvent;
+import org.wso2.carbon.governance.lcm.tasks.LCNotificationScheduler;
 import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.CheckListItemCheckedEvent;
 import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.CheckListItemUncheckedEvent;
 import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleApprovalNeededEvent;
@@ -33,6 +36,7 @@ import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
@@ -47,6 +51,16 @@ import java.util.Set;
 
 public class GovernanceEventingHandler extends Handler {
     private static final Log log = LogFactory.getLog(GovernanceEventingHandler.class);
+
+    /**
+     * Constant used to validate vote click.
+     */
+    private final String vote_click = "voteClick";
+
+    /**
+     * Constant used to validate item click.
+     */
+    private final String item_click = "itemClick";
 
     public void init(String defaultNotificationEndpoint) {
         Utils.setDefaultNotificationServiceURL(defaultNotificationEndpoint);
@@ -77,6 +91,7 @@ public class GovernanceEventingHandler extends Handler {
             Utils.getRegistryNotificationService().registerEventType("lifecycle.approved", LifeCycleApprovedEvent.EVENT_NAME, LifeCycleApprovedEvent.EVENT_NAME);
             Utils.getRegistryNotificationService().registerEventType("lifecycle.approval.need", LifeCycleApprovalNeededEvent.EVENT_NAME, LifeCycleApprovalNeededEvent.EVENT_NAME);
             Utils.getRegistryNotificationService().registerEventType("lifecycle.approval.withdrawn", LifeCycleApprovalWithdrawnEvent.EVENT_NAME, LifeCycleApprovalWithdrawnEvent.EVENT_NAME);
+            Utils.getRegistryNotificationService().registerEventType("lifecycle.checkpoint.notification", LifecycleNotificationEvent.EVENT_NAME, LifecycleNotificationEvent.EVENT_NAME);
         } catch (Exception e) {
             handleException("Unable to register Event Types", e);
         }
@@ -96,9 +111,12 @@ public class GovernanceEventingHandler extends Handler {
         Properties newProps = newResource.getProperties();
         String lcName = newResource.getProperty("registry.LC.name");
         String oldLcName = oldResource.getProperty("registry.LC.name");
+        List oldLifecycleList = (List) props.get("registry.Aspects");
+        List newLifecycleList = (List) newProps.get("registry.Aspects");
         if (lcName == null && oldLcName != null) {
-            RegistryEvent<String> event = new LifeCycleDeletedEvent<String>(
-                    "[" + oldLcName + "] The LifeCycle was deleted for resource at "+relativePath+".");
+            StringBuilder messageBuilder = new StringBuilder("[").append(oldLcName)
+                    .append("] The LifeCycle was deleted for resource at ").append(relativePath).append(".");
+            RegistryEvent<String> event = new LifeCycleDeletedEvent<String>(messageBuilder.toString());
             ((LifeCycleDeletedEvent)event).setResourcePath(relativePath);
             event.setParameter("LifecycleName", oldLcName);
             event.setTenantId(CurrentSession.getCallerTenantId());
@@ -108,9 +126,26 @@ public class GovernanceEventingHandler extends Handler {
                 handleException("Unable to send notification for Put Operation", e);
             }
             return;
+        } else if (lcName != null && oldLcName != null && !lcName.equals(oldLcName)
+                && oldLifecycleList.size() < newLifecycleList.size()) {
+            // Add lifecycle checkpoint notification scheduler data when lifecycle state is attached.
+            List stateList = (List) newProps.get("registry.lifecycle." + lcName + ".state");
+            if (stateList != null) {
+                String lifecycleState = (String) stateList.get(0);
+                addLCNotificationScheduler(newResource, lcName, lifecycleState, false);
+            }
         } else if (lcName != null && oldLcName == null) {
-            RegistryEvent<String> event = new LifeCycleCreatedEvent<String>(
-                    "[" + lcName + "] The LifeCycle was created for resource at "+relativePath+".");
+            // Adding scheduler entry when a service is created. This handles the scheduler entries for attaching
+            // default lifecycle schedulers at the service creation time.
+            List statesList = (List) newProps.get("registry.lifecycle." + lcName + ".state");
+            if (statesList != null) {
+                // Getting 0 index because its the initial state of a lifecycle
+                String lifecycleState = (String) statesList.get(0);
+                addLCNotificationScheduler(newResource, lcName, lifecycleState, false);
+            }
+            StringBuilder messageBuilder = new StringBuilder("[").append(lcName)
+                    .append("] The LifeCycle was created for resource at ").append(relativePath).append(".");
+            RegistryEvent<String> event = new LifeCycleCreatedEvent<String>(messageBuilder.toString());
             ((LifeCycleCreatedEvent)event).setResourcePath(relativePath);
             event.setParameter("LifecycleName", lcName);
             event.setTenantId(CurrentSession.getCallerTenantId());
@@ -269,6 +304,12 @@ public class GovernanceEventingHandler extends Handler {
             requestContext.getRegistry().put(path,resource);
         }
         String newState = resource.getProperty(stateKey);
+       // Add lifecycle checkpoint notification scheduler data when lifecycle state changes.
+       String action = requestContext.getAction();
+       // Filtering lifecycle actions.
+       if ((!vote_click.equals(action) && !item_click.equals(action))) {
+           addLCNotificationScheduler(resource, lcName, newState, true);
+       }
         if (oldState != null && oldState.equalsIgnoreCase(newState)) {
             return;
         }
@@ -319,7 +360,7 @@ public class GovernanceEventingHandler extends Handler {
             } catch (Exception e) {
             	handleException("Unable to send notification for Put Operation", e);
             }
-        }                  
+        }
     }
 
     protected void notify(RegistryEvent event, Registry registry, String path) throws Exception {
@@ -465,5 +506,26 @@ public class GovernanceEventingHandler extends Handler {
     	}
     	return sendNotification;
 	}
+
+    /**
+     * This method is used to add schedulers to lifecycle checkpoints. These schedulers will be triggered by a
+     * schedule task. Checkpoints are added with to the lifecycle state and lifecycle name.
+     *
+     * @param resource          resource which the scheduler needs to be added.
+     * @param lifecycleName     lifecycle name of the scheduler
+     * @param lifecycleState    lifecycle state of the scheduler.
+     * @param isInvokeAspect    does this add scheduler method is called when invoking a lifecycle.
+     */
+    private void addLCNotificationScheduler(Resource resource, String lifecycleName, String lifecycleState, boolean
+            isInvokeAspect) {
+        LCNotificationScheduler lifecycleNotificationScheduler =
+                new LCNotificationScheduler();
+        try {
+            lifecycleNotificationScheduler
+                    .addScheduler((ResourceImpl) resource, lifecycleName, lifecycleState, isInvokeAspect);
+        } catch (GovernanceException e) {
+            log.error("Lifecycle '" + lifecycleName + "'checkpoint addition failed for state " + lifecycleState, e);
+        }
+    }
 }
 
