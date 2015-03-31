@@ -143,6 +143,7 @@
 </script>
 <%} else {%>
 <script type="text/javascript">
+    // returned string(governance.wsdltool/CommonUtil.java) will be used as the key.
     CARBON.showWarningDialog("<fmt:message key="<%=result%>"/>");
 </script>
 <% } // end of else
