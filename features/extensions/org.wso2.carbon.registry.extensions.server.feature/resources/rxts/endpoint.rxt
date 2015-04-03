@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <artifactType type="application/vnd.wso2-endpoint+xml" shortName="endpoint" singularLabel="Endpoint"
               pluralLabel="Endpoints" hasNamespace="false" iconSet="2">
-    <storagePath>/mediation/mediationdata/endpoint/@{overview_name}/@{overview_version}/endpoint</storagePath>
+    <storagePath>/trunk/endpoints/@{namespace}/@{overview_name}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
     <ui>
         <list>
