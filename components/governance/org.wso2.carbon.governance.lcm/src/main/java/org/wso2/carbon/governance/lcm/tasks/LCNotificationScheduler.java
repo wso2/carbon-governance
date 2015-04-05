@@ -91,7 +91,7 @@ public class LCNotificationScheduler {
      * This method is used to send notifications for checkpoints in lifecycle. This method is called using the
      * scheduler task CheckpointNotificationSchedulerTask.
      */
-    public void run() {
+    protected void run() {
         try {
             ArrayList<LCNotification> notifications = getValidNotifications();
 
@@ -137,8 +137,11 @@ public class LCNotificationScheduler {
      */
     public void addScheduler(ResourceImpl resource, String lifecycleName, String lifecycleState, boolean isInvokeAspect)
             throws GovernanceException {
-        if (resource != null && StringUtils.isNotEmpty(lifecycleName) && StringUtils.isNotEmpty(lifecycleState)) {
-
+        if (resource == null || StringUtils.isEmpty(lifecycleName) || StringUtils.isEmpty(lifecycleState)) {
+            throw new IllegalArgumentException(
+                    "Invalid arguments supplied as lifecycle name: " + lifecycleName + ", lifecycle state: "
+                            + lifecycleState);
+        } else {
             List checkpointsList = LifecycleStateDurationUtils.getDurationBeans(lifecycleName, lifecycleState);
             if (checkpointsList != null) {
                 // Iterate through the checkpoint objects.
@@ -169,11 +172,6 @@ public class LCNotificationScheduler {
                                             + propertyValue + "' to " + resource.getPath(), e);
                         }
                     }
-                }
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Invalid arguments supplied as lifecycle name: " + lifecycleName + ", lifecycle state: "
-                            + lifecycleState);
                 }
             }
         }
