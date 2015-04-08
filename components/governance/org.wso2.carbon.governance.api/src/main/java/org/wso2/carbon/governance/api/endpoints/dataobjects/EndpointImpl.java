@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -111,7 +112,7 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
 
         // and then iterate all the properties and add.
         Properties properties = resource.getProperties();
-        if (properties != null) {
+        if (properties != null && properties.size() > 0) {
             Set keySet = properties.keySet();
             if (keySet != null) {
                 for (Object keyObj : keySet) {
@@ -127,7 +128,44 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
                             addAttribute(key, value);
                         }
                     }
+                    // Workaround for endpoint resource properties are not capturing.
+                    if (!keySet.contains(GovernanceConstants.NAME_ATTRIBUTE)) {
+                        try {
+                            addAttribute(GovernanceConstants.NAME_ATTRIBUTE,
+                                    EndpointUtils.deriveNameFromContent(endpointContent));
+                        } catch (RegistryException e) {
+                            String msg =
+                                    "Error while deriving the attributes for the artifact. artifact id: " + id + ", " +
+                                            "path: " + path + ".";
+                            log.error(msg, e);
+                            throw new GovernanceException(msg, e);
+                        }
+                    }
+                    if (!keySet.contains(GovernanceConstants.VERSION_ATTRIBUTE)) {
+                        try {
+                            addAttribute(GovernanceConstants.VERSION_ATTRIBUTE,
+                                    EndpointUtils.deriveVersionFromContent(endpointContent));
+                        } catch (RegistryException e) {
+                            String msg =
+                                    "Error while deriving the attributes for the artifact. artifact id: " + id + ", " +
+                                            "path: " + path + ".";
+                            log.error(msg, e);
+                            throw new GovernanceException(msg, e);
+                        }
+                    }
                 }
+            }
+        } else {
+            try {
+                // Workaround for endpoint resource properties are not capturing.
+                addAttribute(GovernanceConstants.NAME_ATTRIBUTE, EndpointUtils.deriveNameFromContent(endpointContent));
+                addAttribute(GovernanceConstants.VERSION_ATTRIBUTE,
+                        EndpointUtils.deriveVersionFromContent(endpointContent));
+            } catch (RegistryException e) {
+                String msg = "Error while deriving the attributes for the artifact. artifact id: " + id + ", " +
+                        "path: " + path + ".";
+                log.error(msg, e);
+                throw new GovernanceException(msg, e);
             }
         }
     }
