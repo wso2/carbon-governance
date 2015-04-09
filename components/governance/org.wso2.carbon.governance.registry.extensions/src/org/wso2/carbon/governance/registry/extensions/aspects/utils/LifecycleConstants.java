@@ -138,7 +138,7 @@ public class LifecycleConstants {
     /**
      * Lifecycle history items timestamp.
      */
-    public static final String STATE = "state.";
+    public static final String STATE = ".state";
 
     /**
      * Registry path for lifecycle history stored location.
