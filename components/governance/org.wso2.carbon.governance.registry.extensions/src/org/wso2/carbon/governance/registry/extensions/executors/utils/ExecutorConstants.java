@@ -1,7 +1,6 @@
 package org.wso2.carbon.governance.registry.extensions.executors.utils;
 
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
-import org.wso2.carbon.registry.core.RegistryConstants;
 
 public class ExecutorConstants {
 
@@ -168,13 +167,27 @@ public class ExecutorConstants {
      */
     public static final String DEFAULT_TIER = "default.tier";
 
-    //URI Template default settings
+	/**
+	 * Defines the API Manager login url to send login request.
+	 */
+	public static final String APIM_LOGIN_URL = "publisher/site/blocks/user/login/ajax/login.jag";
+	/**
+	 * Defines the API Manager remove API to send remove API request.
+	 */
+	public static final String APIM_REMOVE_URL = "publisher/site/blocks/item-add/ajax/remove.jag";
+	/**
+	 * Defines the API Manager publish API to send publish API request.
+	 */
+	public static final String APIM_PUBLISH_URL = "publisher/site/blocks/item-add/ajax/add.jag";
+
+
+	//URI Template default settings
     public static final String DEFAULT_URI_PATTERN = "/*";
     public static final String DEFAULT_HTTP_VERB = "POST";
     public static final String DEFAULT_AUTH_TYPE = "Any";
 
     //default visibility setting
-   public static final String DEFAULT_VISIBILITY = "public";
+    public static final String DEFAULT_VISIBILITY = "public";
 
     // Those constance are used in API artifact.
     public static final String API_NAME = "name";
@@ -186,14 +199,17 @@ public class ExecutorConstants {
     public static final String API_TIER = "tiersCollection";
     public static final String API_STATUS = "status";
     public static final String API_PUBLISHED_STATUS = "CREATED";
-    public static final String API_THROTTLING_TIER="resourceMethodThrottlingTier-0";
+    public static final String API_THROTTLING_TIER="resourceMethodThrottlingTier-";
 
-    public static final String API_URI_PATTERN ="uriTemplate-0";
-    public static final String API_URI_HTTP_METHOD ="resourceMethod-0";
-    public static final String API_URI_AUTH_TYPE ="resourceMethodAuthType-0";
+    public static final String API_URI_PATTERN ="uriTemplate-";
+    public static final String API_URI_HTTP_METHOD ="resourceMethod-";
+    public static final String API_URI_AUTH_TYPE ="resourceMethodAuthType-";
+	public static final String API_RESOURCE_COUNT = "resourceCount";
+	public static final String API_ENDPOINT_CONFIG = "endpoint_config";
     public static final String API_ACTION = "action";
     public static final String API_VISIBLITY ="visibility";
     public static final String API_ADD_ACTION = "addAPI";
+	public static final String API_REMOVE_ACTION = "removeAPI";
     public static final String API_LOGIN_ACTION = "login";
     public static final String API_UPDATESTATUS_ACTION = "updateStatus";
     public static final String API_PUBLISH_GATEWAY_ACTION = "publishToGateway";
@@ -201,7 +217,20 @@ public class ExecutorConstants {
     public static final String API_USERNAME = "username";
     public static final String API_PASSWORD = "password";
 
-    public static final String SERVICE_VERSION = "overview_version";
+	public static final String REST_SERVICE_KEY = "restservice";
+	public static final String SERVICE_NAME = "overview_name";
+	public static final String SERVICE_VERSION = "overview_version";
+	public static final String SERVICE_ENDPOINT_URL = "overview_endpointURL";
     public static final String THROTTLING_TIER= "throttlingTier";
-    
+	public static final String DEFAULT_CHAR_ENCODING = "UTF-8";
+
+
+	//common messages
+	public static final String APIM_POST_REQ_FAIL = "Failed to send the http POST request to API Manager. ";
+	public static final String API_DEMOTE_FAIL = "Failed to delete API from the API manager. ";
+	public static final String EMPTY_ENDPOINT = "Service Endpoint is empty.";
+	public static final String APIM_LOGIN_UNDEFINED = "APIManager login credentials are not defined";
+	public static final String ENCODING_FAIL = "Failed when encoding the parameter list. ";
+
+
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<artifactType type="application/swagger+json" fileExtension="json" shortName="swagger" singularLabel="Swagger" pluralLabel="Swaggers" hasNamespace="false" iconSet="30">
+    <storagePath>/apimgt/applicationdata/api-docs/@{version}/@{name}</storagePath>
+    <content href="default">
+        <field type="text">
+            <name label="Version">Version</name>
+        </field>
+    </content>
+</artifactType>
