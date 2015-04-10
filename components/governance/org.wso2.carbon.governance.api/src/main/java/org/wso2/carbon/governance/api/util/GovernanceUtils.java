@@ -950,7 +950,10 @@ public class GovernanceUtils {
                     artifactCache.addArtifact(artifactPath, policy);
                 }
                 return policy;
-            } else if (GovernanceConstants.ENDPOINT_MEDIA_TYPE
+            }
+            // Workaround for endpoints not displaying issue.
+            // This will be uncommented after the permanent fix
+            /*else if (GovernanceConstants.ENDPOINT_MEDIA_TYPE
                     .equals(mediaType)) {
                 Endpoint endpoint = new EndpointImpl(artifactId, registry);
                 ((EndpointImpl) endpoint).setLcName(artifactLC);
@@ -960,7 +963,7 @@ public class GovernanceUtils {
                     artifactCache.addArtifact(artifactPath, endpoint);
                 }
                 return endpoint;
-            } else if (mediaType != null && mediaType.matches("application/[a-zA-Z0-9.+-]+")) {
+            }*/ else if (mediaType != null && mediaType.matches("application/[a-zA-Z0-9.+-]+")) {
                 if (registry instanceof UserRegistry) {
                     List<GovernanceArtifactConfiguration> configurations =
                             artifactConfigurations.get(((UserRegistry) registry).getTenantId());
