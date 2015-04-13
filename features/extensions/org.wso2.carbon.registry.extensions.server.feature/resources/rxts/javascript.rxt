@@ -1,0 +1,8 @@
+<artifactType type="application/javascript" fileExtension="js" shortName="javascript" singularLabel="JavaScript" pluralLabel="JavaScripts" hasNamespace="false" iconSet="1">
+    <storagePath>/trunk/javascripts/@{version}/@{name}</storagePath>
+    <content href="default">
+	    <field type="text">
+            <name label="Version">Version</name>
+        </field>
+    </content>
+</artifactType>
