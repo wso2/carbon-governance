@@ -971,11 +971,11 @@ public class GenericUIGenerator {
 	                        String input = request.getParameter(widgetName.replaceAll(" ", "") + "_" +
 	                                name.replaceAll(" ", ""));
 	                        OMElement text = null;
-	
-	                        if (input != null && !("".equals(input))) {
-	                            text = fac.createOMElement(GenericUtil.getDataElementName(name), namespace);
-                                if (GenericUtil.getDataElementName(name).toLowerCase().contains("password")
-                                        || GenericUtil.getDataElementName(name).toLowerCase().contains("secret")) {
+
+                            if (input != null && !("".equals(input))) {
+                                text = fac.createOMElement(GenericUtil.getDataElementName(name), namespace);
+                                if (GenericUtil.getDataElementName(name).toLowerCase().contains("password") ||
+                                    GenericUtil.getDataElementName(name).toLowerCase().contains("secret")) {
                                     CryptoUtil cryptoUtil = CryptoUtil.getDefaultCryptoUtil();
                                     try {
                                         text.setText(cryptoUtil.encryptAndBase64Encode(input.getBytes()));
