@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.governance.registry.extensions.listeners.AssociationConfigLoader;
 import org.wso2.carbon.governance.registry.extensions.listeners.RxtLoader;
 import org.wso2.carbon.governance.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -59,6 +60,15 @@ public class GovernanceRegistryExtensionsComponent {
             log.debug("Identity Provider Management - RXTLoader registered");
         } else {
             log.error("Identity Provider Management - RXTLoader could not be registered");
+        }
+
+        AssociationConfigLoader associationConfigLoader = new AssociationConfigLoader();
+        ServiceRegistration AssociationConfigSR = bundleCtx.registerService(
+                Axis2ConfigurationContextObserver.class.getName(), associationConfigLoader, null);
+        if (AssociationConfigSR != null) {
+            log.debug("Identity Provider Management - AssociationConfigLoader registered");
+        } else {
+            log.error("Identity Provider Management - AssociationConfigLoader could not be registered");
         }
 
         if(log.isDebugEnabled()){

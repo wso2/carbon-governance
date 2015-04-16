@@ -17,6 +17,7 @@
 package org.wso2.carbon.governance.registry.extensions.utils;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,9 +40,7 @@ import org.wso2.carbon.utils.FileUtil;
 import javax.cache.Cache;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -252,6 +251,29 @@ public class CommonUtil {
                 throw new RegistryException(msg, e);
             }
         }
+    }
+
+    /**
+     * This method reads the Association Config xml and populates the association map
+     * @param systemRegistry the registry object
+     * @param tenantId the tenant id of the current tenant
+     */
+    public static void addAssociationConfig(Registry systemRegistry, int tenantId){
+        String associationConfigFile = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
+                "conf" + File.separator + "etc" + File.separator + "association-config.xml";
+        File associationConfig = new File(associationConfigFile);
+        try {
+            InputStream configInputStream = new FileInputStream(associationConfig);
+            StAXOMBuilder builder = new StAXOMBuilder(configInputStream);
+
+            OMElement configElement = builder.getDocumentElement();
+        } catch (FileNotFoundException e) {
+            log.error("Failed to find the Association Config xml",e);
+        } catch (XMLStreamException e) {
+            log.error("Failed to parse the association-config.xml", e);
+        }
+
+
     }
 
     public static void addStoragePath(String mediaType, String storagePath) {
