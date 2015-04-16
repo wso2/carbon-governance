@@ -291,4 +291,14 @@ public class GovernanceConstants {
         public static String GENERIC = "GENERIC";
     }
 
+    /**
+     * The name attribute.
+     */
+    public static final String NAME_ATTRIBUTE = "overview_name";
+
+    /**
+     * The version attribute.
+     */
+    public static final String VERSION_ATTRIBUTE = "overview_version";
+
 }

@@ -265,7 +265,7 @@ public class LifecycleStateDurationUtils {
             if (registry.resourceExists(registryPathToResource)) {
                 currentLifecycleState = registry.get(registryPathToResource).getProperty(LifecycleConstants
                         .REGISTRY_LIFECYCLE + lifecycleName + LifecycleConstants.STATE);
-                if (currentLifecycleState != null && StringUtils.isEmpty(currentLifecycleState)) {
+                if (currentLifecycleState != null) {
                     return currentLifecycleState;
                 } else {
                     // Set lifecycle state for default lifecycle
