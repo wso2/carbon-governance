@@ -170,16 +170,19 @@ public class GenericUIGenerator {
                             return ""; //TODO: throw an exception
                         }
                         if (!UIGeneratorConstants.MAXOCCUR_UNBOUNDED.equals(maxOccurs)) {
-                            //if maxOccurs is not unbounded then print the sub header otherwise we will show the adding link
+                            //if maxOccurs is not unbounded, then print the sub header
+                            // otherwise we will show the adding link
                             if (rowCount == 1) {
-                                // We print the sub header only when we parse the first element otherwise we'll print sub header for each field element
+                                // We print the sub header only when we parse the first element
+                                // otherwise we'll print sub header for each field element
                                 table.append(printSubHeaders(subList.toArray(new String[subList.size()])));
                             }
                         }
                     } else {
                         if (subList.size() == 2 && rowCount == 1) {
-                            // We print the sub header only when we parse the first element otherwise we'll print sub header for each field element
-                            // sub headers are printed in this position only if column number is exactly 2//
+                            // We print the sub header only when we parse the first element
+                            // otherwise we'll print sub header for each field element
+                            // Sub headers are printed in this position only if column number is exactly 2
                             table.append(printSubHeaders(subList.toArray(new String[subList.size()])));
                         }
                     }
@@ -209,7 +212,7 @@ public class GenericUIGenerator {
                         inner = handleOptionTextField(request, config, widgetName, dataHead, table, subList, inner, arg,
                                 maxOccurs, tooltip);
                     } else if (UIGeneratorConstants.PASSWORD_FIELD.equals(elementType)) {
-                        columnCount = handlePasswordField(isFilterOperation, markReadonly, hasValue, columns,
+                        columnCount = handlePasswordField(isFilterOperation, hasValue, columns,
                                 widgetName, table, columnCount, inner, arg, tooltip);
                     }
                 }
@@ -219,15 +222,11 @@ public class GenericUIGenerator {
         return table.toString();
     }
 
-    private int handlePasswordField(boolean isFilterOperation, boolean markReadonly, boolean hasValue, int columns,
+    private int handlePasswordField(boolean isFilterOperation, boolean hasValue, int columns,
             String widgetName, StringBuilder table, int columnCount, OMElement inner, OMElement arg, String tooltip) {
         String value;
         String mandatoryAttribute = arg.getAttributeValue(new QName(null, UIGeneratorConstants.MANDETORY_ATTRIBUTE));
-        boolean isReadOnly = false;
-        if (markReadonly && "true"
-                .equals(arg.getAttributeValue(new QName(null, UIGeneratorConstants.READONLY_ATTRIBUTE)))) {
-            isReadOnly = true;
-        }
+
         if (isFilterOperation) {
             mandatoryAttribute = "false";
         }
