@@ -23,6 +23,7 @@ public class RxtLoader extends AbstractAxis2ConfigurationContextObserver {
         }
         try {
             CommonUtil.addRxtConfigs(service.getGovernanceSystemRegistry(tenantId), tenantId);
+           // CommonUtil.addAssociationConfig(service.getGovernanceSystemRegistry(tenantId), tenantId);
             if (log.isDebugEnabled()) {
                 log.debug("Successfully loaded RXTs to the registry for tenant " + tenantId);
             }

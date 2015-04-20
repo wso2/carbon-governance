@@ -62,15 +62,15 @@ public class GovernanceRegistryExtensionsComponent {
             log.error("Identity Provider Management - RXTLoader could not be registered");
         }
 
-        AssociationConfigLoader associationConfigLoader = new AssociationConfigLoader();
-        ServiceRegistration AssociationConfigSR = bundleCtx.registerService(
-                Axis2ConfigurationContextObserver.class.getName(), associationConfigLoader, null);
-        if (AssociationConfigSR != null) {
-            log.debug("Identity Provider Management - AssociationConfigLoader registered");
-        } else {
-            log.error("Identity Provider Management - AssociationConfigLoader could not be registered");
-        }
-
+//        AssociationConfigLoader associationConfigLoader = new AssociationConfigLoader();
+//        ServiceRegistration AssociationConfigSR = bundleCtx.registerService(
+//                Axis2ConfigurationContextObserver.class.getName(), associationConfigLoader, null);
+//        if (AssociationConfigSR != null) {
+//            log.debug("Identity Provider Management - AssociationConfigLoader registered");
+//        } else {
+//            log.error("Identity Provider Management - AssociationConfigLoader could not be registered");
+//        }
+//
         if(log.isDebugEnabled()){
             log.debug("GovernanceRegistryExtensionsComponent activated");
         }
