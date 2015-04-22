@@ -30,115 +30,115 @@
     <description>WSO2 Carbon - Governance - Metadata</description>
 
     <dependencies>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.registry.core</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon.registry</groupId>
-        <artifactId>org.wso2.carbon.registry.common</artifactId>
-        <version>${carbon.registry.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon.registry</groupId>
-        <artifactId>org.wso2.carbon.registry.indexing</artifactId>
-    </dependency>
-    <dependency>
-                <groupId>org.wso2.apache.solr</groupId>
-                <artifactId>solr</artifactId>
-                <version>${version.solr}</version>
-            </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon.registry</groupId>
-        <artifactId>org.wso2.carbon.registry.extensions</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.common</artifactId>
+            <version>${carbon.registry.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.apache.solr</groupId>
+            <artifactId>solr</artifactId>
+            <version>${version.solr}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.extensions</artifactId>
+        </dependency>
 
-    <dependency>
-       <groupId>org.wso2.carbon.commons</groupId>
-       <artifactId>org.wso2.carbon.user.mgt.stub</artifactId>
-       <version>${carbon.commons.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.user.mgt.stub</artifactId>
+            <version>${carbon.commons.version}</version>
+        </dependency>
 
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.logging</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.logging</artifactId>
+        </dependency>
 
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.utils</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.core</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.user.core</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon.registry</groupId>
-        <artifactId>org.wso2.carbon.registry.admin.api</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.feature.mgt.services</artifactId>
-        <version>${carbon.kernel.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.user.api</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.base</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon.commons</groupId>
-        <artifactId>org.wso2.carbon.ntask.core</artifactId>
-        <version>${carbon.commons.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.user.api</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.admin.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.feature.mgt.services</artifactId>
+            <version>${carbon.kernel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.ntask.core</artifactId>
+            <version>${carbon.commons.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.api</artifactId>
+        </dependency>
 
-    <dependency>
-        <groupId>org.wso2.carbon.registry</groupId>
-        <artifactId>org.wso2.carbon.registry.servlet</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon.registry</groupId>
-        <artifactId>org.wso2.carbon.registry.uddi</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.registry.server</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon.registry</groupId>
-        <artifactId>org.wso2.carbon.registry.servlet</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.ui</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.authenticator.proxy</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.core.common</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.wso2.carbon</groupId>
-        <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
-        <version>${carbon.kernel.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.uddi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.authenticator.proxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
+            <version>${carbon.kernel.version}</version>
+        </dependency>
 
 
-</dependencies>
+    </dependencies>
 
     <build>
         <plugins>
@@ -179,6 +179,7 @@
             </plugin>
         </plugins>
     </build>
+
 
     <reporting>
         <plugins>
