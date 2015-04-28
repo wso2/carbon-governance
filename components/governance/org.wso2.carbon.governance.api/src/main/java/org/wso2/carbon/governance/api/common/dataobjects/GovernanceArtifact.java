@@ -316,4 +316,13 @@ public interface GovernanceArtifact {
     @SuppressWarnings("unused")
     public void unvote(int order) throws GovernanceException;
 
+    /**
+     * Returns the available attribute keys
+     *
+     * @return an array of attribute keys.
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException
+     *          throws if the operation failed.
+     */
+    String[] getPropertyKeys() throws GovernanceException;
+
 }
