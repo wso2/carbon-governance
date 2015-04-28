@@ -379,6 +379,12 @@ public class GovernanceUtils {
                     configuration.setLifecycle(lifecycleElement.getText());
                 }
 
+                OMElement groupingAttributeElement = configElement.getFirstChildWithName(
+                        new QName("groupingAttribute"));
+                if (groupingAttributeElement != null) {
+                    configuration.setGroupingAttribute(groupingAttributeElement.getText());
+                }
+
                 OMElement lifecycleContextsElement = configElement.getFirstChildWithName(new QName("lifecycleContexts"));
                 if(lifecycleContextsElement != null) {
                     Iterator lifecycleContextsIterator = lifecycleContextsElement.getChildrenWithName(new QName("lifecycleContext"));
@@ -523,6 +529,26 @@ public class GovernanceUtils {
             configurations.add(getGovernanceArtifactConfiguration(elementString));
         }
         return configurations;
+    }
+
+    /**
+     * Method to return the GovernanceArtifactConfiguration for a given media type
+     *
+     * @param registry the registry instance to run query on.
+     * @param mediaType mediatype of the needed artifact configuration
+     * @return GovernanceArtifactConfiguration
+     * @throws RegistryException exception thorown if something goes wrong
+     */
+    public static GovernanceArtifactConfiguration getArtifactConfigurationByMediaType(Registry registry, String mediaType) throws RegistryException {
+        List<GovernanceArtifactConfiguration> configurations = findGovernanceArtifactConfigurations(registry);
+
+        for(GovernanceArtifactConfiguration configuration : configurations) {
+            if(configuration.getMediaType().equals(mediaType)) {
+                return configuration;
+            }
+        }
+
+        return null;
     }
 
     @SuppressWarnings("unused")

@@ -28,6 +28,7 @@ import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
+import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
@@ -192,6 +193,8 @@ public class GovernanceArtifactManager {
 
             String artifactId = artifact.getId();
             resource.setUUID(artifactId);
+
+            addDefaultAttributeIfNotExists(resource, artifactName);
             registry.put(path, resource);
 
             if (lifecycle != null){
@@ -895,5 +898,41 @@ public class GovernanceArtifactManager {
             throw new GovernanceException("Error occurred while retrieving all the governance artifacts");
         }
         return artifactList.toArray(new GovernanceArtifact[artifactList.size()]);
+    }
+
+    public void addDefaultAttributeIfNotExists(Resource resource, final String artifactName) throws GovernanceException {
+        Map<String, List<String>> listMap = new HashMap<String, List<String>>();
+
+        GovernanceArtifactConfiguration artifactConfiguration ;
+        String groupingAttribute = null ;
+
+        try {
+            artifactConfiguration = GovernanceUtils.getArtifactConfigurationByMediaType(registry, mediaType);
+
+            if(artifactConfiguration != null) {
+                groupingAttribute = artifactConfiguration.getGroupingAttribute();
+            } else {
+                log.debug("Artifact type with media type " + mediaType + " doesn't exist");
+            }
+        } catch(RegistryException ex) {
+            log.error("An error occurred while retrieving the artifact configuration ", ex);
+            return;
+        }
+
+        if(groupingAttribute != null) {
+            listMap.put(groupingAttribute, new ArrayList<String>() {{
+                add(artifactName);
+            }});
+        } else {
+            listMap.put("overview_name", new ArrayList<String>() {{
+                add(artifactName);
+            }});
+        }
+
+        GovernanceArtifact[] governanceArtifacts = findGovernanceArtifacts(listMap);
+
+        if(governanceArtifacts.length == 0) {
+            resource.addProperty("default", "true");
+        }
     }
 }
