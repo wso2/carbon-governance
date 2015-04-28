@@ -1239,21 +1239,21 @@
 
     <properties>
         <!-- Carbon kernel version -->
-        <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <carbon.kernel.imp.pkg.version>[4.3.0, 4.4.0)</carbon.kernel.imp.pkg.version>
+        <carbon.kernel.version>4.4.0</carbon.kernel.version>
+        <carbon.kernel.imp.pkg.version>[4.4.0, 4.5.0)</carbon.kernel.imp.pkg.version>
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.3.5</carbon.commons.version>
-        <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
+        <carbon.commons.version>4.4.0</carbon.commons.version>
+        <carbon.commons.imp.pkg.version>[4.4.0, 4.5.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Business Process -->
-        <carbon.business.process.version>4.3.0</carbon.business.process.version>
-        <carbon.business.process.imp.pkg.version>[4.3.0, 4.4.0)</carbon.business.process.imp.pkg.version>
+        <carbon.business.process.version>4.4.0</carbon.business.process.version>
+        <carbon.business.process.imp.pkg.version>[4.4.0, 4.5.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.3.2</carbon.registry.version>
-        <carbon.registry.imp.pkg.version>[4.3.0, 4.4.0)</carbon.registry.imp.pkg.version>
+        <carbon.registry.version>4.4.1</carbon.registry.version>
+        <carbon.registry.imp.pkg.version>[4.4.0, 4.5.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon platform version comes here-->
         <carbon.governance.version>4.3.1-SNAPSHOT</carbon.governance.version>
