@@ -35,34 +35,6 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
  */
 public class WSDLToolService extends RegistryAbstractAdmin {
 
-    /**
-     * Method for get membrane diff
-     * @param resource1RegPath registry path of the resource 1
-     * @param resource2RegPath registry path of the resource 2
-     * @param type result type
-     * @return resources diff array
-     * @throws Exception
-     */
-    public String[] getMembraneDiffArrayResult(String resource1RegPath, String resource2RegPath, String type) throws Exception {
-        // Get the root registry.
-        Registry registry = (UserRegistry) getRootRegistry();
-        return CommonUtil.getMembraneDiffArrayResult(registry, resource1RegPath, resource2RegPath, type);
-    }
-
-    /**
-     * method for validating resources to compare
-     *
-     * @param resourcePath1 path of resource 1
-     * @param resourcePath2 path of resource 2
-     * @return String of diff view type is membrane or codemirror
-     * @throws RegistryException
-     */
-    public String getDiffViewType(String resourcePath1, String resourcePath2)  throws RegistryException {
-        // Get the root registry.
-        Registry registry = (UserRegistry) getRootRegistry();
-        return CommonUtil.getDiffViewType(registry, resourcePath1, resourcePath2);
-    }
-
     public void addMEXService(String path, ServiceInfoBean serviceInfo) throws Exception {
  
         Registry registry = getGovernanceRegistry();
