@@ -108,24 +108,22 @@ public class ManageGenericArtifactUtil {
         searchQuery.setParameterValues(paramList);
         AdvancedSearchResultsBean result = stub.getAdvancedSearchResults(searchQuery);
         ResourceData [] results = result.getResourceDataList();
-        List<String> rxts = new ArrayList<String>();
         List<InstalledRxt> listInstalledRxts = new ArrayList<InstalledRxt>();
 
-        for(ResourceData data:results) {
-            String path = data.getResourcePath();
-            if(path != null && path.contains("/")) {
-              String rxt =  path.substring(path.lastIndexOf("/") + 1).split("\\.")[0];
-              rxts.add(rxt);
-              InstalledRxt rxtObj = new InstalledRxt();
-              rxtObj.setRxt(rxt);
-              if(data.getDeleteAllowed()) {
-                  rxtObj.setDeleteAllowed();
-              }
-              listInstalledRxts.add(rxtObj);
+        if (results != null && results.length > 0) {
+            for(ResourceData data:results) {
+                String path = data.getResourcePath();
+                if(path != null && path.contains("/")) {
+                  String rxt =  path.substring(path.lastIndexOf("/") + 1).split("\\.")[0];
+                  InstalledRxt rxtObj = new InstalledRxt();
+                  rxtObj.setRxt(rxt);
+                  if(data.getDeleteAllowed()) {
+                      rxtObj.setDeleteAllowed();
+                  }
+                  listInstalledRxts.add(rxtObj);
+                }
             }
         }
-        String [] values = rxts.toArray(new String[0]);
-        Arrays.sort(values);
 
         return listInstalledRxts;
     }
