@@ -194,7 +194,7 @@ public class GovernanceUtils {
             String mediaType, Registry registry)
             throws RegistryException {
 
-        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(((UserRegistry) registry).getTenantId());
+        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
 
         if (governanceArtifactConfigurations == null) {
             governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
@@ -219,7 +219,7 @@ public class GovernanceUtils {
             String key, Registry registry)
             throws RegistryException {
 
-        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(((UserRegistry) registry).getTenantId());
+        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
 
         if (governanceArtifactConfigurations == null) {
             governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
@@ -702,15 +702,9 @@ public class GovernanceUtils {
     public static String getArtifactPath(Registry registry, String artifactId)
             throws GovernanceException {
     	Cache<String, String> cache;
-        UserRegistry userRegistry = (UserRegistry) registry;
-        //This is temp fix to identify remote calls. Will move cache initialization logic into registry core
-        // with next major carbon(ex:4.5.0) release.
-        if (userRegistry.getUserRealm() == null) {
-            return getDirectArtifactPath(registry, artifactId);
-        }
-        try{
+    	try{
     		PrivilegedCarbonContext.startTenantFlow();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(userRegistry.getTenantId());
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(((UserRegistry) registry).getTenantId());
             String tenantDomain  = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
             if (tenantDomain == null) {            	
             	tenantDomain = MultitenantUtils.getTenantDomain(((UserRegistry) registry).getUserName());

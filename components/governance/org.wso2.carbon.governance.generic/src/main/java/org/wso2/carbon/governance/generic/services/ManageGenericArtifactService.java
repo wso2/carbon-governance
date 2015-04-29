@@ -71,11 +71,12 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
             XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(info));
 
             GenericArtifactManager manager = new GenericArtifactManager(registry, key);
-            GenericArtifact artifact = manager.newGovernanceArtifact(new StAXOMBuilder(reader).getDocumentElement());
+            GenericArtifact artifact = manager.newGovernanceArtifact(
+                    new StAXOMBuilder(reader).getDocumentElement());
             
             // want to save original content, so set content here
             artifact.setContent(info.getBytes());
-            artifact.setAttribute(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_ADMIN_CONSOLE);
+
             manager.addGenericArtifact(artifact);
             if (lifecycleAttribute != null) {
                 String lifecycle = artifact.getAttribute(lifecycleAttribute);
