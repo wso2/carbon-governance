@@ -85,46 +85,4 @@ public class WSDLToolServiceClient {
         stub.addMEXService(path, serviceInfo);
     }
 
-    /**
-     * Method for get membrane diff
-     * @param resource1Path registry path of resource1
-     * @param resource2Path registry path of resource2
-     * @param type result type
-     * @return String[] membrane result diff array
-     * @throws RegistryException
-     */
-    public String[] getMembraneDiffArrayResult(String resource1Path, String resource2Path, String type)
-            throws RegistryException {
-        try {
-            // Get membrane diff array
-            return stub.getMembraneDiffArrayResult(resource1Path, resource2Path, type);
-        } catch (RemoteException e) {
-            String msg = "Backend Service is unavailable";
-            throw new RegistryException(msg, e);
-        } catch (WSDLToolServiceExceptionException e) {
-            String msg = "Cannot get the Membrane descriptive diff";
-            throw new RegistryException(msg, e);
-        }
-    }
-
-    /**
-     * Method to get diff view type
-     * @param resourcePath1 registry path of resource1
-     * @param resourcePath2 registry path of resource2
-     * @return String diff type string
-     * @throws RegistryException
-     */
-    public String getDiffViewType(String resourcePath1, String resourcePath2)
-            throws RegistryException {
-        try {
-            // Get type of the diff view
-            return stub.getDiffViewType(resourcePath1, resourcePath2);
-        } catch (RemoteException e) {
-            String msg = "Backend Service is unavailable";
-            throw new RegistryException(msg, e);
-        } catch (Exception e) {
-            String msg = "Backend Service is unavailable";
-            throw new RegistryException(msg, e);
-        }
-    }
 }

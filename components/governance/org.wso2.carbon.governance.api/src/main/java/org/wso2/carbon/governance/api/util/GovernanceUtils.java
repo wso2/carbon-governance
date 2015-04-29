@@ -194,7 +194,7 @@ public class GovernanceUtils {
             String mediaType, Registry registry)
             throws RegistryException {
 
-        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(((UserRegistry) registry).getTenantId());
 
         if (governanceArtifactConfigurations == null) {
             governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
@@ -219,7 +219,7 @@ public class GovernanceUtils {
             String key, Registry registry)
             throws RegistryException {
 
-        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(((UserRegistry) registry).getTenantId());
 
         if (governanceArtifactConfigurations == null) {
             governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
@@ -379,6 +379,12 @@ public class GovernanceUtils {
                     configuration.setLifecycle(lifecycleElement.getText());
                 }
 
+                OMElement groupingAttributeElement = configElement.getFirstChildWithName(
+                        new QName("groupingAttribute"));
+                if (groupingAttributeElement != null) {
+                    configuration.setGroupingAttribute(groupingAttributeElement.getText());
+                }
+
                 OMElement lifecycleContextsElement = configElement.getFirstChildWithName(new QName("lifecycleContexts"));
                 if(lifecycleContextsElement != null) {
                     Iterator lifecycleContextsIterator = lifecycleContextsElement.getChildrenWithName(new QName("lifecycleContext"));
@@ -523,6 +529,26 @@ public class GovernanceUtils {
             configurations.add(getGovernanceArtifactConfiguration(elementString));
         }
         return configurations;
+    }
+
+    /**
+     * Method to return the GovernanceArtifactConfiguration for a given media type
+     *
+     * @param registry the registry instance to run query on.
+     * @param mediaType mediatype of the needed artifact configuration
+     * @return GovernanceArtifactConfiguration
+     * @throws RegistryException exception thorown if something goes wrong
+     */
+    public static GovernanceArtifactConfiguration getArtifactConfigurationByMediaType(Registry registry, String mediaType) throws RegistryException {
+        List<GovernanceArtifactConfiguration> configurations = findGovernanceArtifactConfigurations(registry);
+
+        for(GovernanceArtifactConfiguration configuration : configurations) {
+            if(configuration.getMediaType().equals(mediaType)) {
+                return configuration;
+            }
+        }
+
+        return null;
     }
 
     @SuppressWarnings("unused")
@@ -676,9 +702,15 @@ public class GovernanceUtils {
     public static String getArtifactPath(Registry registry, String artifactId)
             throws GovernanceException {
     	Cache<String, String> cache;
-    	try{
+        UserRegistry userRegistry = (UserRegistry) registry;
+        //This is temp fix to identify remote calls. Will move cache initialization logic into registry core
+        // with next major carbon(ex:4.5.0) release.
+        if (userRegistry.getUserRealm() == null) {
+            return getDirectArtifactPath(registry, artifactId);
+        }
+        try{
     		PrivilegedCarbonContext.startTenantFlow();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(((UserRegistry) registry).getTenantId());
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(userRegistry.getTenantId());
             String tenantDomain  = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
             if (tenantDomain == null) {            	
             	tenantDomain = MultitenantUtils.getTenantDomain(((UserRegistry) registry).getUserName());

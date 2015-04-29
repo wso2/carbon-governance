@@ -39,6 +39,7 @@ public class GovernanceArtifactConfiguration {
     private String pluralLabel;
     private String pathExpression;
     private String lifecycle;
+    private String groupingAttribute;
     private OMElement uiConfigurations;
     private List<Association> relationships = new LinkedList<Association>();
     private OMElement contentDefinition;
@@ -149,6 +150,23 @@ public class GovernanceArtifactConfiguration {
      */
     public void setIconSet(int iconSet) {
         this.iconSet = iconSet;
+    }
+
+    /**
+     * Returns the grouping attribute
+     *
+     * @return Grouping attribute name
+     */
+    public String getGroupingAttribute() {
+        return groupingAttribute;
+    }
+
+    /**
+     *
+     * @param groupingAttribute attribute to be grouped from
+     */
+    public void setGroupingAttribute(String groupingAttribute) {
+        this.groupingAttribute = groupingAttribute;
     }
 
     /**
