@@ -80,11 +80,6 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     protected Map<String, List<String>> attributes = new HashMap<String, List<String>>();
 
     /**
-     * Map of properties associated with this governance artifact.
-     */
-    protected Map<String, List<String>> properties = new HashMap<String, List<String>>();
-
-    /**
      * Construct a governance artifact object from the path and the id.
      *
      * @param id the id
@@ -108,7 +103,6 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     protected GovernanceArtifactImpl(GovernanceArtifactImpl artifact) {
         if (artifact != null) {
             this.attributes = artifact.attributes;
-            this.properties = artifact.properties;
             this.lcName = artifact.lcName;
             this.lcState = artifact.lcState;
 //            if (artifact.checkListItemBeans != null) {
@@ -482,22 +476,12 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      */
     @Override
     public void addAttribute(String key, String value) throws GovernanceException {
-        boolean isAttribute = key.contains(".");
-        if (!isAttribute) {
-            List<String> values = attributes.get(key);
-            if (values == null) {
-                values = new ArrayList<String>();
-                attributes.put(key, values);
-            }
-            values.add(value);
-        } else {
-            List<String> values = properties.get(key);
-            if (values == null) {
-                values = new ArrayList<String>();
-                properties.put(key, values);
-            }
-            values.add(value);
+        List<String> values = attributes.get(key);
+        if (values == null) {
+            values = new ArrayList<String>();
+            attributes.put(key, values);
         }
+        values.add(value);
     }
 
     /**
@@ -510,20 +494,9 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      */
     @Override
     public void setAttributes(String key, String[] newValues) throws GovernanceException {
-        boolean isAttribute = key.contains(".");
-        if (!isAttribute) {
-            List<String> values = new ArrayList<String>();
-            values.addAll(Arrays.asList(newValues));
-            attributes.put(key, values);
-        } else {
-            List<String> values = properties.get(key);
-            if (values == null) {
-                values = new ArrayList<String>();
-                properties.put(key, values);
-            }
-            values.addAll(Arrays.asList(newValues));
-        }
-
+        List<String> values = new ArrayList<String>();
+        values.addAll(Arrays.asList(newValues));
+        attributes.put(key, values);
     }
 
     /**
@@ -539,20 +512,9 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      */
     @Override
     public void setAttribute(String key, String newValue) throws GovernanceException {
-        boolean isAttribute = key.contains(".");
-        if (!isAttribute) {
-            List<String> values = new ArrayList<String>();
-            values.add(newValue);
-            attributes.put(key, values);
-        } else {
-            List<String> values = properties.get(key);
-            if (values == null) {
-                values = new ArrayList<String>();
-                properties.put(key, values);
-            }
-            values.add(newValue);
-        }
-
+        List<String> values = new ArrayList<String>();
+        values.add(newValue);
+        attributes.put(key, values);
     }
 
     /**
@@ -565,21 +527,11 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      */
     @Override
     public String getAttribute(String key) throws GovernanceException {
-        boolean isAttribute = key.contains(".");
-        if (!isAttribute) {
-            List<String> values = attributes.get(key);
-            if (values == null || values.size() == 0) {
-                return null;
-            }
-            return values.get(0);
-        } else {
-            List<String> values = properties.get(key);
-            if (values == null || values.size() == 0) {
-                return null;
-            }
-            return values.get(0);
+        List<String> values = attributes.get(key);
+        if (values == null || values.size() == 0) {
+            return null;
         }
-
+        return values.get(0);
     }
 
     /**
@@ -603,20 +555,11 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      */
     @Override
     public String[] getAttributes(String key) throws GovernanceException {
-        boolean isAttribute = key.contains(".");
-        if (!isAttribute) {
-            List<String> values = attributes.get(key);
-            if (values == null) {
-                return null; //TODO: This should return String[0]
-            }
-            return values.toArray(new String[values.size()]);
-        } else {
-            List<String> values = properties.get(key);
-            if (values == null) {
-                return null; //TODO: This should return String[0]
-            }
-            return values.toArray(new String[values.size()]);
+        List<String> values = attributes.get(key);
+        if (values == null) {
+            return null; //TODO: This should return String[0]
         }
+        return values.toArray(new String[values.size()]);
     }
 
     /**
@@ -627,13 +570,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      */
     @Override
     public void removeAttribute(String key) throws GovernanceException {
-        boolean isAttribute = key.contains(".");
-        if (!isAttribute) {
-            attributes.remove(key);
-        } else {
-            properties.remove(key);
-        }
-
+        attributes.remove(key);
     }
 
     /**
@@ -1085,18 +1022,6 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             String msg = "Artifact resource \"" + getQName().getLocalPart() + "\" not found in the registry";
             throw new GovernanceException();
         }
-    }
-
-    /**
-     * Returns the available attribute keys
-     *
-     * @return an array of attribute keys.
-     * @throws GovernanceException throws if the operation failed.
-     */
-    @Override
-    public String[] getPropertyKeys() throws GovernanceException {
-        Set<String> attributeKeys = properties.keySet();
-        return attributeKeys.toArray(new String[attributeKeys.size()]);
     }
 
 }
