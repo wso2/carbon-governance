@@ -1,24 +1,29 @@
 <AssociationConfig>
 
     <Association type="default">
+        <security>policy</security>
         <ownedBy>service,api,wsdl</ownedBy>
         <usedBy>service,api,wsdl</usedBy>
         <dependancies>service,api,wsdl</dependancies>
     </Association>
 
+
     <Association type="service">
+        <security>policy</security>
         <ownedBy>service,api,wsdl</ownedBy>
         <usedBy>service,api,wsdl</usedBy>
         <dependancies>service,api,wsdl</dependancies>
     </Association>
 
     <Association type="api">
+        <security>policy</security>
         <ownedBy>service,api,wsdl</ownedBy>
         <usedBy>service,api,wsdl</usedBy>
         <dependancies>service,api,wsdl</dependancies>
     </Association>
 
     <Association type="soapservice">
+        <security>policy</security>
         <ownedBy>service,api,wsdl</ownedBy>
         <usedBy>service,api,wsdl</usedBy>
         <dependancies>service,api,wsdl</dependancies>
