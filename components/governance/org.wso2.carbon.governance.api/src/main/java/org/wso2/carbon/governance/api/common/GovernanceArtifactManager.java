@@ -36,6 +36,7 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.Paginate;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
 import javax.xml.namespace.QName;
 import java.util.*;
@@ -616,6 +617,21 @@ public class GovernanceArtifactManager {
     private void setContentAndProperties(GovernanceArtifact artifact, Resource resource, Object content)
             throws RegistryException {
         resource.setContent(content);
+        String[] propertyKeys = artifact.getPropertyKeys();
+        boolean hasSourceProperty = false;
+        if (propertyKeys != null) {
+            for (String propertyKey : propertyKeys) {
+                if (CommonConstants.SOURCE_PROPERTY.equals(propertyKey)) {
+                    hasSourceProperty = true;
+                }
+                String[] propertyValues = artifact.getAttributes(propertyKey);
+                resource.setProperty(propertyKey, Arrays.asList(propertyValues));
+            }
+        }
+        if (!hasSourceProperty) {
+            //TODO ERROR
+            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_REMOTE);
+        }
 
         // Stop the attributes been added as properties
       /*  String[] attributeKeys = artifact.getAttributeKeys();
@@ -809,7 +825,7 @@ public class GovernanceArtifactManager {
                         if (!values[j].matches((String)map.get("regexp"))) {
                             //return an exception to stop adding artifact
                             throw new GovernanceException((String)map.get("name") + " doesn't match regex: " +
-                                    (String)map.get("Regexp"));
+                                    (String)map.get("regexp"));
                         }
                     }
                 }
@@ -822,7 +838,7 @@ public class GovernanceArtifactManager {
                 if (!value.matches((String)map.get("regexp"))) {
                     //return an exception to stop adding artifact
                     throw new GovernanceException((String)map.get("name") + " doesn't match regex: " +
-                            (String)map.get("Regexp"));
+                            (String)map.get("regexp"));
                 }
             }
         }
