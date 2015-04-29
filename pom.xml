@@ -1224,11 +1224,6 @@
                 <version>3.5.100.v20110502</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.orbit.com.predic8</groupId>
-                <artifactId>soa.model.core</artifactId>
-                <version>${orbit.version.predic8}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.orbit.asm4</groupId>
                 <artifactId>asm4-all</artifactId>
                 <version>${orbit.version.asm}</version>
