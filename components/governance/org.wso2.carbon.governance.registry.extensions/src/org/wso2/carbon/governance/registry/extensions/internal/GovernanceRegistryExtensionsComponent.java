@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.governance.registry.extensions.listeners.AssociationConfigLoader;
 import org.wso2.carbon.governance.registry.extensions.listeners.RxtLoader;
 import org.wso2.carbon.governance.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
