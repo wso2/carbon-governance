@@ -17,7 +17,6 @@
 package org.wso2.carbon.governance.registry.extensions.utils;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +48,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.wso2.carbon.governance.api.util.GovernanceUtils.getGovernanceArtifactConfiguration;
@@ -58,7 +56,7 @@ import static org.wso2.carbon.governance.api.util.GovernanceUtils.getRXTConfigCa
 public class CommonUtil {
     private static final Log log = LogFactory.getLog(CommonUtil.class);
 
-    public final static HashMap<String, HashMap<String, String>>
+    private final static Map<String, HashMap<String, String>>
             associationConfigMap = new HashMap<String, HashMap<String, String>>();
 
 	private static RXTStoragePathService rxtSPService;
@@ -175,7 +173,7 @@ public class CommonUtil {
     }
 
     public static void addRxtConfigs(Registry systemRegistry, int tenantId) throws RegistryException {
-        addAssociationConfig(systemRegistry,tenantId);
+        loadAssociationConfig(systemRegistry, tenantId);
         Cache<String,Boolean> rxtConfigCache = getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
         String rxtDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
                 "resources" + File.separator + "rxts";
@@ -268,7 +266,7 @@ public class CommonUtil {
      * @param systemRegistry the registry object
      * @param tenantId the tenant id of the current tenant
      */
-    public static void addAssociationConfig(Registry systemRegistry, int tenantId) {
+    public static void loadAssociationConfig(Registry systemRegistry, int tenantId) {
         String associationConfigFile = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
                 "conf" + File.separator + "etc" + File.separator + "association-config.xml";
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -294,7 +292,6 @@ public class CommonUtil {
                 }
                 associationConfigMap.put(((Element) association).getAttribute("type"), associationMap);
             }
-
         } catch (FileNotFoundException e) {
             log.error("Failed to find the Association Config xml", e);
         } catch (ParserConfigurationException e) {
@@ -303,6 +300,18 @@ public class CommonUtil {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static HashMap<String, String> getAssociationConfig(String mediaType){
+        if(associationConfigMap.size() == 0){
+            log.warn("Failed to find association mappings");
+            return null;
+        }
+        if(associationConfigMap.containsKey(mediaType)){
+            return associationConfigMap.get(mediaType);
+        }else{
+            return null;
         }
     }
 
