@@ -901,6 +901,10 @@ public class GovernanceArtifactManager {
     }
 
     public void addDefaultAttributeIfNotExists(Resource resource, final String artifactName) throws GovernanceException {
+        if(GovernanceUtils.getAttributeSearchService() == null) {
+            return;
+        }
+        
         Map<String, List<String>> listMap = new HashMap<String, List<String>>();
 
         GovernanceArtifactConfiguration artifactConfiguration ;
