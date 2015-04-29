@@ -60,6 +60,7 @@ public class GovernanceRegistryExtensionsComponent {
         } else {
             log.error("Identity Provider Management - RXTLoader could not be registered");
         }
+
         if(log.isDebugEnabled()){
             log.debug("GovernanceRegistryExtensionsComponent activated");
         }
