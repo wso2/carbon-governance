@@ -194,7 +194,7 @@ public class GovernanceArtifactManager {
             String artifactId = artifact.getId();
             resource.setUUID(artifactId);
 
-            addDefaultAttributeIfNotExists(resource, artifactName);
+            boolean defaultAttributeAdded = addDefaultAttributeIfNotExists(artifact, resource, artifactName);
             registry.put(path, resource);
 
             if (lifecycle != null){
@@ -233,6 +233,8 @@ public class GovernanceArtifactManager {
                     }
                     log.error(msg, e);
                 }
+
+                addDefaultAttributeToAssociations(artifact);
             } else {
                 try {
                     registry.rollbackTransaction();
@@ -900,11 +902,48 @@ public class GovernanceArtifactManager {
         return artifactList.toArray(new GovernanceArtifact[artifactList.size()]);
     }
 
-    public void addDefaultAttributeIfNotExists(Resource resource, final String artifactName) throws GovernanceException {
-        if(GovernanceUtils.getAttributeSearchService() == null) {
-            return;
+    public boolean addDefaultAttributeIfNotExists(final GovernanceArtifact artifact, Resource resource, final String artifactName) throws GovernanceException {
+        GovernanceArtifact[] governanceArtifacts = searchArtifactsByGroupingAttribute(artifact, mediaType, artifactName);
+
+        if(governanceArtifacts != null && governanceArtifacts.length == 0) {
+            resource.addProperty("default", "true");
+            return true;
         }
-        
+
+        return false;
+    }
+
+    private void addDefaultAttributeToAssociations(final GovernanceArtifact artifact) throws GovernanceException {
+        try {
+            if(mediaType.equals("application/vnd.wso2-soap-service+xml")) {
+
+                Association[] associations = registry.getAllAssociations(artifact.getPath());
+
+                for(Association association : associations) {
+                    String destinationPath = association.getDestinationPath();
+                    if(destinationPath.contains("wsdl")) {
+                        String[] subPaths = destinationPath.split("/");
+                        final String artifactName = subPaths[subPaths.length - 1];
+                        GovernanceArtifact[] governanceArtifacts = searchArtifactsByGroupingAttribute(artifact, CommonConstants.WSDL_MEDIA_TYPE, artifactName);
+
+                        if(governanceArtifacts != null && governanceArtifacts.length == 0) {
+                            Resource wsdlResource = registry.get(destinationPath);
+                            wsdlResource.addProperty("default", "true");
+                            registry.put(destinationPath, wsdlResource);
+                        }
+                    }
+                }
+            }
+        } catch(RegistryException ex) {
+            log.error("An error occurred while retrieving association of the resource " + artifact.getPath(), ex);
+        }
+    }
+
+    private GovernanceArtifact[] searchArtifactsByGroupingAttribute(final GovernanceArtifact artifact, String mediaType, final String artifactName) throws GovernanceException {
+        if(GovernanceUtils.getAttributeSearchService() == null) {
+            return null;
+        }
+
         Map<String, List<String>> listMap = new HashMap<String, List<String>>();
 
         GovernanceArtifactConfiguration artifactConfiguration ;
@@ -920,23 +959,25 @@ public class GovernanceArtifactManager {
             }
         } catch(RegistryException ex) {
             log.error("An error occurred while retrieving the artifact configuration ", ex);
-            return;
+            return null;
         }
 
         if(groupingAttribute != null) {
-            listMap.put(groupingAttribute, new ArrayList<String>() {{
-                add(artifactName);
-            }});
+            if(groupingAttribute.equals(CommonConstants.SERVICE_NAME_ATTRIBUTE)) {
+                listMap.put(groupingAttribute, new ArrayList<String>() {{
+                    add(artifactName);
+                }});
+            } else if(groupingAttribute.equals("overview_version")) {
+                listMap.put(groupingAttribute, new ArrayList<String>() {{
+                    add(artifact.getAttribute("overview_version"));
+                }});
+            }
         } else {
-            listMap.put("overview_name", new ArrayList<String>() {{
+            listMap.put(CommonConstants.SERVICE_NAME_ATTRIBUTE, new ArrayList<String>() {{
                 add(artifactName);
             }});
         }
 
-        GovernanceArtifact[] governanceArtifacts = findGovernanceArtifacts(listMap);
-
-        if(governanceArtifacts.length == 0) {
-            resource.addProperty("default", "true");
-        }
+        return findGovernanceArtifacts(listMap);
     }
 }
