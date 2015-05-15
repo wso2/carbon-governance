@@ -1191,6 +1191,37 @@ public class GenericUIGenerator {
         return id.toArray(new String[id.size()]);
     }
 
+    public String getLabelValue(OMElement head, String feild) {
+        Iterator it = head.getChildrenWithName(new QName(UIGeneratorConstants.WIDGET_ELEMENT));
+
+        while (it.hasNext()) {
+            OMElement widget = (OMElement) it.next();
+            String widgetName = widget.getAttributeValue(new QName(null, UIGeneratorConstants.ARGUMENT_NAME));
+            Iterator arguments = widget.getChildrenWithLocalName(UIGeneratorConstants.ARGUMENT_ELMENT);
+            OMElement arg = null;
+
+            while (arguments.hasNext()) {
+                arg = (OMElement) arguments.next();
+                if (UIGeneratorConstants.ARGUMENT_ELMENT.equals(arg.getLocalName())) {
+                    String name =
+                            arg.getFirstChildWithName(new QName(null, UIGeneratorConstants.ARGUMENT_NAME)).getText();
+                    String key = widgetName.replaceAll(" ", "") + "_" + name.replaceAll(" ", "");
+                    if (feild.toLowerCase().equals(key.toLowerCase())) {
+                        String label = null;
+                        label = arg.getFirstChildWithName(new QName(null, UIGeneratorConstants.ARGUMENT_NAME))
+                                   .getAttributeValue(
+                                           new QName(UIGeneratorConstants.ARGUMENT_LABEL));
+                        if (label == null) {
+                            label = name;
+                        }
+                        return label;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public String[] getMandatoryNameList(OMElement head) {
         List<String> name = new ArrayList<String>();
         Iterator it = head.getChildrenWithName(new QName(UIGeneratorConstants.WIDGET_ELEMENT));

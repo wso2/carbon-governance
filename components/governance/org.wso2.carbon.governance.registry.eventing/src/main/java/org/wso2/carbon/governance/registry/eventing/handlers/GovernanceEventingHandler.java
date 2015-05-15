@@ -43,11 +43,7 @@ import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public class GovernanceEventingHandler extends Handler {
     private static final Log log = LogFactory.getLog(GovernanceEventingHandler.class);
@@ -251,23 +247,30 @@ public class GovernanceEventingHandler extends Handler {
         Map<String, String> parameters = new HashMap<String, String>();
         Resource resource = requestContext.getOldResource();
         String oldPath = resource.getPath();
-        String stateKey = null;
+
         Properties props = resource.getProperties();
-        String lcName = resource.getProperty("registry.LC.name");
+        //String lcName = resource.getProperty("registry.LC.name");
         boolean isEnvironmentChange=false;
+        List<String> properties = new ArrayList<String>();
+        Map<String, String> changeStates = new HashMap<String, String>();
+        Map<String, String> oldStates = new HashMap<String, String>();
+
+
         for (Object key : props.keySet()) {
             String propKey = (String)key;
             if (propKey.matches("registry\\p{Punct}lifecycle\\p{Punct}.*\\p{Punct}state")) {
-                stateKey = propKey;
-                break;
+                properties.add(propKey);
             }
         }
-        if (stateKey == null) {
+        if (properties.size() == 0) {
             return;
         }
-        String relativeOldPath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                oldPath);
-        String oldState = resource.getProperty(stateKey);
+        String relativeOldPath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),oldPath);
+        for (String  property :  properties){
+            String oldState = resource.getProperty(property);
+            oldStates.put(property,oldState);
+        }
+        //String oldState = resource.getProperty(stateKey);
         if ((requestContext.getAspect() == null) || (requestContext.getAction() == null)) {
             return;
         }
@@ -303,64 +306,81 @@ public class GovernanceEventingHandler extends Handler {
             requestContext.setResource(resource);
             requestContext.getRegistry().put(path,resource);
         }
-        String newState = resource.getProperty(stateKey);
+
+       for (String  property :  properties){
+           String newState = resource.getProperty(property);
+           changeStates.put(property,newState);
+       }
+        //String newState = resource.getProperty(stateKey);
        // Add lifecycle checkpoint notification scheduler data when lifecycle state changes.
        String action = requestContext.getAction();
        // Filtering lifecycle actions.
        if ((!vote_click.equals(action) && !item_click.equals(action))) {
-           addLCNotificationScheduler(resource, lcName, newState, true);
+           for (String  property :  properties){
+               String lcName = getLCName(property);
+               addLCNotificationScheduler(resource, lcName, changeStates.get(property), true);
+           }
        }
-        if (oldState != null && oldState.equalsIgnoreCase(newState)) {
-            return;
-        }
-        String extendedMessage = "";
-        if (!oldPath.equals(path)) {
-            if (resource instanceof Collection) {
-                extendedMessage = ". The collection has moved from: '" + relativeOldPath + "' to: '" +
-                                  relativePath + "'.";
-            } else {
-                extendedMessage = ". The resource has moved from: '" + relativeOldPath + "' to: '" +
-                                  relativePath + "'.";
-            }
-        } else {
-            extendedMessage = " for resource at " + path + ".";
-        }
-        RegistryEvent<String> event = new LifeCycleStateChangedEvent<String>("[" + lcName + "] The LifeCycle State Changed from '" +
-                oldState + "' to '" + newState+"'" + extendedMessage);
-        event.setParameter("LifecycleName", lcName);
-        event.setParameter("OldLifecycleState", oldState);
-        event.setParameter("NewLifecycleState", newState);
-        if(isEnvironmentChange){
-            ((LifeCycleStateChangedEvent)event).setResourcePath(relativeOldPath);
-        }else{
-            ((LifeCycleStateChangedEvent)event).setResourcePath(relativePath);
-        }
-        event.setTenantId(CurrentSession.getCallerTenantId());
-        try {
-            notify(event, requestContext.getRegistry(), relativePath);
-        } catch (Exception e) {
-            handleException("Unable to send notification for Aspect Invoke Operation", e);
-        }
-        // When LC move one stage to another, Approval notification may send to user
-        if(sendInitialNotification(requestContext, relativePath)){        	
-        	RegistryEvent<String> approveEvent = new LifeCycleApprovalNeededEvent<String>(
-        			"[" + lcName + "] The LifeCycle State '" + newState +
-                    "' required approval for state transitions, for resource locate at "+relativePath +".");
-        	approveEvent.setParameter("LifecycleName", lcName);
-        	approveEvent.setParameter("OldLifecycleState", oldState);
-        	approveEvent.setParameter("NewLifecycleState", newState);
-            if(isEnvironmentChange){
-                ((LifeCycleApprovalNeededEvent)approveEvent).setResourcePath(relativeOldPath);
-            }else{
-                ((LifeCycleApprovalNeededEvent)approveEvent).setResourcePath(relativePath);
-            }
-            approveEvent.setTenantId(CurrentSession.getCallerTenantId());
-       		try {
-                notify(approveEvent, requestContext.getRegistry(), relativePath);
-            } catch (Exception e) {
-            	handleException("Unable to send notification for Put Operation", e);
-            }
-        }
+       String oldState = null;
+       String newState = null;
+       for (String  property :  properties){
+           if(changeStates.get(property) != null && oldStates.get(property) != null && !changeStates.get(property).equals(oldStates.get(property))){
+               String lcName = getLCName(property);
+               oldState = oldStates.get(property);
+               newState = changeStates.get(property);
+               String extendedMessage = "";
+               if (!oldPath.equals(path)) {
+                   if (resource instanceof Collection) {
+                       extendedMessage = ". The collection has moved from: '" + relativeOldPath + "' to: '" +
+                                         relativePath + "'.";
+                   } else {
+                       extendedMessage = ". The resource has moved from: '" + relativeOldPath + "' to: '" +
+                                         relativePath + "'.";
+                   }
+               } else {
+                   extendedMessage = " for resource at " + path + ".";
+               }
+               RegistryEvent<String> event = new LifeCycleStateChangedEvent<String>("[" + lcName + "] The LifeCycle State Changed from '" +
+                                                                                    oldState + "' to '" + newState+"'" + extendedMessage);
+               event.setParameter("LifecycleName", lcName);
+               event.setParameter("OldLifecycleState", oldState);
+               event.setParameter("NewLifecycleState", newState);
+               if(isEnvironmentChange){
+                   ((LifeCycleStateChangedEvent)event).setResourcePath(relativeOldPath);
+               }else{
+                   ((LifeCycleStateChangedEvent)event).setResourcePath(relativePath);
+               }
+               event.setTenantId(CurrentSession.getCallerTenantId());
+               try {
+                   notify(event, requestContext.getRegistry(), relativePath);
+               } catch (Exception e) {
+                   handleException("Unable to send notification for Aspect Invoke Operation", e);
+               }
+               // When LC move one stage to another, Approval notification may send to user
+               if(sendInitialNotification(requestContext, relativePath)){
+                   RegistryEvent<String> approveEvent = new LifeCycleApprovalNeededEvent<String>(
+                           "[" + lcName + "] The LifeCycle State '" + newState +
+                           "' required approval for state transitions, for resource locate at "+relativePath +".");
+                   approveEvent.setParameter("LifecycleName", lcName);
+                   approveEvent.setParameter("OldLifecycleState", oldState);
+                   approveEvent.setParameter("NewLifecycleState", newState);
+                   if(isEnvironmentChange){
+                       ((LifeCycleApprovalNeededEvent)approveEvent).setResourcePath(relativeOldPath);
+                   }else{
+                       ((LifeCycleApprovalNeededEvent)approveEvent).setResourcePath(relativePath);
+                   }
+                   approveEvent.setTenantId(CurrentSession.getCallerTenantId());
+                   try {
+                       notify(approveEvent, requestContext.getRegistry(), relativePath);
+                   } catch (Exception e) {
+                       handleException("Unable to send notification for Put Operation", e);
+                   }
+               }
+           } else {
+               continue;
+           }
+       }
+
     }
 
     protected void notify(RegistryEvent event, Registry registry, String path) throws Exception {
@@ -526,6 +546,14 @@ public class GovernanceEventingHandler extends Handler {
         } catch (GovernanceException e) {
             log.error("Lifecycle '" + lifecycleName + "'checkpoint addition failed for state " + lifecycleState, e);
         }
+    }
+
+    private String getLCName(String property){
+        String[] peps = property.split("\\p{Punct}");
+        if (peps != null && peps.length == 4){
+              return peps[2];
+        }
+        return null;
     }
 }
 

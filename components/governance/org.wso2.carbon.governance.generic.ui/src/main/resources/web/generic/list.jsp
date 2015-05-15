@@ -316,7 +316,10 @@
 
                                     for (String field : keyList) {
                                         int lastIndex = field.lastIndexOf("_");
-                                        String name = field.substring(lastIndex+1);
+                                        String name = gen.getLabelValue(uiconfig,field);
+                                        if (name == null) {
+                                            name = field.substring(lastIndex+1);
+                                        }
                                 %>
 
                                 <option <%= ((request.getParameter("filterBy")!=null&&(request.getParameter("filterBy").equals(field)))?" selected ":"") %> value="<%=field%>"><%=name%></option>
