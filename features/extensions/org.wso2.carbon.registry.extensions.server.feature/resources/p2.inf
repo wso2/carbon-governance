@@ -1,6 +1,5 @@
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../resources/rxts);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.registry.extensions.server_${feature.version}/rxts/api.rxt,target:${installFolder}/../../resources/rxts/api.rxt,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.registry.extensions.server_${feature.version}/rxts/restservice.rxt,target:${installFolder}/../../resources/rxts/restservice.rxt,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.registry.extensions.server_${feature.version}/rxts/endpoint.rxt,target:${installFolder}/../../resources/rxts/endpoint.rxt,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.registry.extensions.server_${feature.version}/rxts/policy.rxt,target:${installFolder}/../../resources/rxts/policy.rxt,overwrite:true);\
