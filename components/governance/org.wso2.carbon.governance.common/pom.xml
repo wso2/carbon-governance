@@ -66,29 +66,29 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>1.4.0</version>
                 <extensions>true</extensions>
-                <!--<configuration>-->
-                    <!--<instructions>-->
-                        <!--<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>-->
-                        <!--<Bundle-Name>${project.artifactId}</Bundle-Name>-->
-                        <!--<Bundle-Activator>org.wso2.carbon.governance.common.internal.GovernanceConfigurationServiceActivator</Bundle-Activator>-->
-                        <!--<Private-Package>-->
-                            <!--org.wso2.carbon.governance.common.internal.*,-->
-                            <!--org.wso2.carbon.governance.common.utils.*-->
-                        <!--</Private-Package>-->
-                        <!--<Export-Package>-->
-                            <!--org.wso2.carbon.governance.common.*,-->
-                        <!--</Export-Package>-->
-                        <!--<Import-Package>-->
-                            <!--org.wso2.carbon.base.*,-->
-                            <!--org.wso2.carbon.utils.*,-->
-                            <!--javax.xml.parsers.*,-->
-                            <!--org.w3c.dom.*,-->
-                            <!--org.xml.sax.*,-->
-                            <!--org.apache.commons.logging.*,-->
-                            <!--org.osgi.framework.*-->
-                        <!--</Import-Package>-->
-                    <!--</instructions>-->
-                <!--</configuration>-->
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-Activator>org.wso2.carbon.governance.common.internal.GovernanceConfigurationServiceActivator</Bundle-Activator>
+                        <Private-Package>
+                            org.wso2.carbon.governance.common.internal.*,
+                            org.wso2.carbon.governance.common.utils.*
+                        </Private-Package>
+                        <Export-Package>
+                            org.wso2.carbon.governance.common.*,
+                        </Export-Package>
+                        <Import-Package>
+                            org.wso2.carbon.base.*,
+                            org.wso2.carbon.utils.*,
+                            javax.xml.parsers.*,
+                            org.w3c.dom.*,
+                            org.xml.sax.*,
+                            org.apache.commons.logging.*,
+                            org.osgi.framework.*
+                        </Import-Package>
+                    </instructions>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
