@@ -32,6 +32,7 @@
 
     <modules>
         <module>org.wso2.carbon.governance.api</module>
+        <module>org.wso2.carbon.governance.common</module>
         <module>org.wso2.carbon.governance.sramp</module>
         <module>org.wso2.carbon.governance.registry.extensions</module>
         <module>org.wso2.carbon.governance.registry.eventing</module>
