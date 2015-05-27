@@ -696,6 +696,11 @@
             <!-- Governance dependencies -->
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
+                <artifactId>org.wso2.carbon.governance.common</artifactId>
+                <version>${carbon.governance.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.api</artifactId>
                 <version>${carbon.governance.version}</version>
             </dependency>
