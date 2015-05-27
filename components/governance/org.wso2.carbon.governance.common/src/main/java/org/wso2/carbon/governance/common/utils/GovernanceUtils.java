@@ -99,17 +99,23 @@ public class GovernanceUtils {
     private static void readDiscoveryAgents(Element config,
                                             GovernanceConfiguration govConfig) {
         Element agentsElement = getFirstElement(config, "DiscoveryAgents");
-        NodeList agents = agentsElement.getElementsByTagName("DiscoveryAgent");
-        for (int i = 0; i < agents.getLength(); i++) {
-            Element agent = (Element) agents.item(i);
-            String serverType = getFirstElementContent(agent, "ServerTypeId");
-            String agentClass = getFirstElementContent(agent, "AgentClass");
-            govConfig.addDiscoveryAgentConfig(serverType, agentClass);
+        if (agentsElement != null) {
+            NodeList agents = agentsElement.getElementsByTagName("DiscoveryAgent");
+            for (int i = 0; i < agents.getLength(); i++) {
+                Element agent = (Element) agents.item(i);
+                String serverType = getFirstElementContent(agent, "ServerTypeId");
+                String agentClass = getFirstElementContent(agent, "AgentClass");
+                govConfig.addDiscoveryAgentConfig(serverType, agentClass);
+            }
         }
+
     }
 
     private static Element getFirstElement(Element element, String childName) {
-        return (Element) element.getElementsByTagName(childName).item(0);
+        if (element.getElementsByTagName(childName) != null) {
+            return (Element) element.getElementsByTagName(childName).item(0);
+        }
+        return null;
     }
 
     private static String getFirstElementContent(Element element, String childName) {
