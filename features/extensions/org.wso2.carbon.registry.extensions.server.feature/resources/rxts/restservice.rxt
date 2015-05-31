@@ -18,9 +18,6 @@
     <content>
         <table name="Overview">
             <field type="text" required="true">
-                <name>Provider</name>
-            </field>
-            <field type="text" required="true">
                 <name>Name</name>
             </field>
             <field type="text" required="true">
@@ -35,74 +32,14 @@
             <field type="text-area">
                 <name>Description</name>
             </field>
-            <field type="options">
-                <name label="Endpoint Type">Endpoint Type</name>
-                <values>
-                    <value>Secured</value>
-                    <value>Non Secured</value>
-                </values>
-            </field>
-            <field type="text" url="true">
-                <name>Endpoint URL</name>
-            </field>
-            <field type="text" url="true">
-                <name>Endpoint Username</name>
-            </field>
-            <field type="text" url="true">
-                <name>Endpoint Password</name>
-            </field>
-            <field type="text" url="true">
-                <name>Sandbox URL</name>
-            </field>
-            <field type="text">
-                <name>InSequence</name>
-            </field>
-            <field type="text">
-                <name>OutSequence</name>
-            </field>
             <field type="text">
                 <name>WSDL</name>
             </field>
             <field type="text">
                 <name>WADL</name>
             </field>
-            <field type="text">
-                <name>Thumbnail</name>
-            </field>
-            <field type="text">
-                <name>Visibility</name>
-            </field>
-            <field type="text">
-                <name>Visible Roles</name>
-            </field>
-            <field type="text">
-                <name>Visible Tenants</name>
-            </field>
-            <field type="options">
-                <name label="IsLatest">Is Latest</name>
-                <values>
-                    <value>false</value>
-                    <value>true</value>
-                </values>
-            </field>
-            <field type="options">
-                <name label="Tier Availability">Tier</name>
-                <values>
-                    <value>Gold</value>
-                    <value>Silver</value>
-                    <value>Other</value>
-                </values>
-            </field>
-            <field type="options">
-                <name label="Status">Status</name>
-                <values>
-                    <value>CREATED</value>
-                    <value>PUBLISHED</value>
-                    <value>RETIRED</value>
-                    <value>DEPRECATED</value>
-                    <value>BLOCKED</value>
-                </values>
-            </field>
+        </table>
+        <table name="Contacts">
             <field type="text">
                 <name>Technical Owner</name>
             </field>
