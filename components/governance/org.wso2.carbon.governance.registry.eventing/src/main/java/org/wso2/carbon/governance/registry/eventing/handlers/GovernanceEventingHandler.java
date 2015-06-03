@@ -1,5 +1,5 @@
 /*
-*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*  Copyright (c) 2005-2010,2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 *  WSO2 Inc. licenses this file to you under the Apache License,
 *  Version 2.0 (the "License"); you may not use this file except
@@ -23,20 +23,14 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.lcm.tasks.events.LifecycleNotificationEvent;
 import org.wso2.carbon.governance.lcm.tasks.LCNotificationScheduler;
-import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.CheckListItemCheckedEvent;
-import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.CheckListItemUncheckedEvent;
-import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleApprovalNeededEvent;
-import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleApprovalWithdrawnEvent;
-import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleApprovedEvent;
-import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleCreatedEvent;
-import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleDeletedEvent;
-import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleStateChangedEvent;
-import org.wso2.carbon.governance.registry.eventing.internal.Utils;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.*;
+import org.wso2.carbon.governance.registry.eventing.internal.EventDataHolder;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
@@ -59,46 +53,58 @@ public class GovernanceEventingHandler extends Handler {
     private final String item_click = "itemClick";
 
     public void init(String defaultNotificationEndpoint) {
-        Utils.setDefaultNotificationServiceURL(defaultNotificationEndpoint);
+        EventDataHolder.getInstance().setDefaultNotificationServiceURL(defaultNotificationEndpoint);
     }
 
     public GovernanceEventingHandler() {
         try {
-            Utils.getRegistryNotificationService().registerEventType("checklist.item.checked", CheckListItemCheckedEvent.EVENT_NAME, CheckListItemCheckedEvent.EVENT_NAME);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("checklist.item.checked", CheckListItemCheckedEvent.EVENT_NAME, CheckListItemCheckedEvent.EVENT_NAME);
             /*Utils.getRegistryNotificationService().registerEventTypeExclusion("checklist.item.checked", "/");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("checklist.item.checked", "/system");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("checklist.item.checked", "/system/.*");*/
-            Utils.getRegistryNotificationService().registerEventType("checklist.item.unchecked", CheckListItemUncheckedEvent.EVENT_NAME, CheckListItemUncheckedEvent.EVENT_NAME);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("checklist.item.unchecked", CheckListItemUncheckedEvent.EVENT_NAME, CheckListItemUncheckedEvent.EVENT_NAME);
             /*Utils.getRegistryNotificationService().registerEventTypeExclusion("checklist.item.unchecked", "/");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("checklist.item.unchecked", "/system");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("checklist.item.unchecked", "/system/.*");*/
-            Utils.getRegistryNotificationService().registerEventType("lifecycle.state.changed", LifeCycleStateChangedEvent.EVENT_NAME, LifeCycleStateChangedEvent.EVENT_NAME);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("lifecycle.state.changed", LifeCycleStateChangedEvent.EVENT_NAME, LifeCycleStateChangedEvent.EVENT_NAME);
             /*Utils.getRegistryNotificationService().registerEventTypeExclusion("lifecycle.state.changed", "/");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("lifecycle.state.changed", "/system");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("lifecycle.state.changed", "/system/.*");*/
-            Utils.getRegistryNotificationService().registerEventType("lifecycle.deleted", LifeCycleDeletedEvent.EVENT_NAME, LifeCycleDeletedEvent.EVENT_NAME);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("lifecycle.deleted", LifeCycleDeletedEvent.EVENT_NAME, LifeCycleDeletedEvent.EVENT_NAME);
             /*Utils.getRegistryNotificationService().registerEventTypeExclusion("lifecycle.deleted", "/");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("lifecycle.deleted", "/system");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("lifecycle.deleted", "/system/.*");*/
-            Utils.getRegistryNotificationService().registerEventType("lifecycle.created", LifeCycleCreatedEvent.EVENT_NAME, LifeCycleCreatedEvent.EVENT_NAME);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("lifecycle.created", LifeCycleCreatedEvent.EVENT_NAME, LifeCycleCreatedEvent.EVENT_NAME);
             /*Utils.getRegistryNotificationService().registerEventTypeExclusion("lifecycle.created", "/");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("lifecycle.created", "/system");
             Utils.getRegistryNotificationService().registerEventTypeExclusion("lifecycle.created", "/system/.*");*/
-            Utils.getRegistryNotificationService().registerEventType("lifecycle.approved", LifeCycleApprovedEvent.EVENT_NAME, LifeCycleApprovedEvent.EVENT_NAME);
-            Utils.getRegistryNotificationService().registerEventType("lifecycle.approval.need", LifeCycleApprovalNeededEvent.EVENT_NAME, LifeCycleApprovalNeededEvent.EVENT_NAME);
-            Utils.getRegistryNotificationService().registerEventType("lifecycle.approval.withdrawn", LifeCycleApprovalWithdrawnEvent.EVENT_NAME, LifeCycleApprovalWithdrawnEvent.EVENT_NAME);
-            Utils.getRegistryNotificationService().registerEventType("lifecycle.checkpoint.notification", LifecycleNotificationEvent.EVENT_NAME, LifecycleNotificationEvent.EVENT_NAME);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("lifecycle.approved", LifeCycleApprovedEvent.EVENT_NAME, LifeCycleApprovedEvent.EVENT_NAME);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("lifecycle.approval.need", LifeCycleApprovalNeededEvent.EVENT_NAME, LifeCycleApprovalNeededEvent.EVENT_NAME);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("lifecycle.approval.withdrawn", LifeCycleApprovalWithdrawnEvent.EVENT_NAME, LifeCycleApprovalWithdrawnEvent.EVENT_NAME);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("lifecycle.checkpoint.notification", LifecycleNotificationEvent.EVENT_NAME, LifecycleNotificationEvent.EVENT_NAME);
+
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("publisher.checklist.checked", PublisherCheckListItemCheckedEvent.EVENT_NAME, null);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("publisher.checklist.item.unchecked", PublisherCheckListItemUncheckedEvent.EVENT_NAME, null);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("publisher.lifecycle.state.changed", PublisherLifeCycleStateChangedEvent.EVENT_NAME, null);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("publisher.update", PublisherResourceUpdatedEvent.EVENT_NAME,null);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("store.lifecycle.state.changed", StoreLifeCycleStateChangedEvent.EVENT_NAME, null);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("store.update", StoreResourceUpdatedEvent.EVENT_NAME, null);
+
         } catch (Exception e) {
             handleException("Unable to register Event Types", e);
         }
     }
 
     public void put(RequestContext requestContext) throws RegistryException {
+
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
         Resource oldResource = requestContext.getOldResource();
         Resource newResource = requestContext.getResource();
+
+        boolean isNotCollection = !(requestContext.getResource() instanceof Collection);
+
         if (oldResource == null || newResource == null ||
             oldResource.getProperties() == null || newResource.getProperties() == null) {
             return;
@@ -109,6 +115,7 @@ public class GovernanceEventingHandler extends Handler {
         String oldLcName = oldResource.getProperty("registry.LC.name");
         List oldLifecycleList = (List) props.get("registry.Aspects");
         List newLifecycleList = (List) newProps.get("registry.Aspects");
+        boolean isNotificationSent = false;
         if (lcName == null && oldLcName != null) {
             StringBuilder messageBuilder = new StringBuilder("[").append(oldLcName)
                     .append("] The LifeCycle was deleted for resource at ").append(relativePath).append(".");
@@ -118,6 +125,7 @@ public class GovernanceEventingHandler extends Handler {
             event.setTenantId(CurrentSession.getCallerTenantId());
             try {
                 notify(event, requestContext.getRegistry(), relativePath);
+                isNotificationSent = true;
             } catch (Exception e) {
                 handleException("Unable to send notification for Put Operation", e);
             }
@@ -147,6 +155,7 @@ public class GovernanceEventingHandler extends Handler {
             event.setTenantId(CurrentSession.getCallerTenantId());
             try {
                 notify(event, requestContext.getRegistry(), relativePath);
+                isNotificationSent = true;
             } catch (Exception e) {
                 handleException("Unable to send notification for Put Operation", e);
             }
@@ -160,6 +169,7 @@ public class GovernanceEventingHandler extends Handler {
            		approvalEvent.setTenantId(CurrentSession.getCallerTenantId());
            		try {
            			notify(approvalEvent, requestContext.getRegistry(), relativePath);
+                    isNotificationSent = true;
                 } catch (Exception e) {
                 	handleException("Unable to send notification for Put Operation", e);
                 }
@@ -167,7 +177,8 @@ public class GovernanceEventingHandler extends Handler {
             }                  
             return;
         }
-        
+
+
         for (Map.Entry<Object, Object> e : props.entrySet()) {
             String propKey = (String) e.getKey();
             if (propKey.matches("registry\\p{Punct}.*\\p{Punct}checklist\\p{Punct}.*")) {
@@ -234,10 +245,35 @@ public class GovernanceEventingHandler extends Handler {
                             } catch (Exception ex) {
                                 handleException("Unable to send notification for Put Operation", ex);
                             }
+                            createPublisherLCNotification(event, requestContext, relativePath);
+                            isNotificationSent = true;
                         }
                     }
                 }
             }
+        }
+        if (oldResource != null && sendNotifications(requestContext,relativePath) && isNotCollection && !isNotificationSent) {
+            RegistryEvent<String> pubEvent = new PublisherResourceUpdatedEvent<String>("The resource at path " + relativePath + " was updated.");
+            ((PublisherResourceUpdatedEvent)pubEvent).setResourcePath(relativePath);
+            pubEvent.setParameter("RegistryOperation", "put");
+            pubEvent.setTenantId(CurrentSession.getCallerTenantId());
+            try {
+                notify(pubEvent, requestContext.getRegistry(), relativePath);
+            } catch (Exception e) {
+                handleException("Unable to send notification for Update Operation", e);
+            }
+
+            RegistryEvent<String> storeEvent = new StoreResourceUpdatedEvent<String>("The resource at path " + relativePath + " was updated.");
+            ((StoreResourceUpdatedEvent)storeEvent).setResourcePath(relativePath);
+            storeEvent.setParameter("RegistryOperation", "put");
+            storeEvent.setTenantId(CurrentSession.getCallerTenantId());
+
+            try {
+                notify(storeEvent, requestContext.getRegistry(), relativePath);
+            } catch (Exception e) {
+                handleException("Unable to send notification for Update Operation", e);
+            }
+
         }
         invokeApprovalNotification(requestContext, relativePath);
     }
@@ -329,6 +365,7 @@ public class GovernanceEventingHandler extends Handler {
                oldState = oldStates.get(property);
                newState = changeStates.get(property);
                String extendedMessage = "";
+               boolean isUpdateOnly = false;
                if (!oldPath.equals(path)) {
                    if (resource instanceof Collection) {
                        extendedMessage = ". The collection has moved from: '" + relativeOldPath + "' to: '" +
@@ -339,6 +376,7 @@ public class GovernanceEventingHandler extends Handler {
                    }
                } else {
                    extendedMessage = " for resource at " + path + ".";
+                   isUpdateOnly = true;
                }
                RegistryEvent<String> event = new LifeCycleStateChangedEvent<String>("[" + lcName + "] The LifeCycle State Changed from '" +
                                                                                     oldState + "' to '" + newState+"'" + extendedMessage);
@@ -356,6 +394,17 @@ public class GovernanceEventingHandler extends Handler {
                } catch (Exception e) {
                    handleException("Unable to send notification for Aspect Invoke Operation", e);
                }
+               if (isUpdateOnly) {
+                   //Send Store Notification
+                   sendPublisherLCNotification(lcName,oldState,newState,isEnvironmentChange,relativeOldPath,relativePath,requestContext, extendedMessage);
+                   //end of the store notification
+
+                   //Send publisher Notification
+                   sendStoreLCNotification(lcName,oldState,newState,isEnvironmentChange,relativeOldPath,relativePath,requestContext, extendedMessage);
+                   //end of the publisher notification
+               }
+
+
                // When LC move one stage to another, Approval notification may send to user
                if(sendInitialNotification(requestContext, relativePath)){
                    RegistryEvent<String> approveEvent = new LifeCycleApprovalNeededEvent<String>(
@@ -385,20 +434,22 @@ public class GovernanceEventingHandler extends Handler {
 
     protected void notify(RegistryEvent event, Registry registry, String path) throws Exception {
         try {
-            if (Utils.getRegistryNotificationService() == null) {
+            if (EventDataHolder.getInstance().getRegistryNotificationService() == null) {
                 log.debug("Eventing service is unavailable.");
                 return;
             }
             if (registry == null || registry.getEventingServiceURL(path) == null) {
-                Utils.getRegistryNotificationService().notify(event);
+                EventDataHolder.getInstance().getRegistryNotificationService().notify(event);
                 return;
-            } else if (Utils.getDefaultNotificationServiceURL() == null) {
+            } else if (EventDataHolder.getInstance().getDefaultNotificationServiceURL() == null) {
                 log.error("Governance Eventing Handler is not properly initialized");
-            } else if (registry.getEventingServiceURL(path).equals(Utils.getDefaultNotificationServiceURL())) {
-                Utils.getRegistryNotificationService().notify(event);
+            } else if (registry.getEventingServiceURL(path).equals(
+                    EventDataHolder.getInstance().getDefaultNotificationServiceURL())) {
+                EventDataHolder.getInstance().getRegistryNotificationService().notify(event);
                 return;
             } else {
-                Utils.getRegistryNotificationService().notify(event, registry.getEventingServiceURL(path));
+                EventDataHolder.getInstance().getRegistryNotificationService()
+                               .notify(event, registry.getEventingServiceURL(path));
                 return;
             }
         } catch (RegistryException e) {
@@ -554,6 +605,122 @@ public class GovernanceEventingHandler extends Handler {
               return peps[2];
         }
         return null;
+    }
+
+    private void sendStoreLCNotification(String lcName, String oldState, String newState,boolean isEnvironmentChange, String relativeOldPath, String relativePath,RequestContext requestContext, String extendedMessage){
+        //Send Store Notification
+
+        RegistryEvent<String> storeLCChanges = new StoreLifeCycleStateChangedEvent<String>("[" + lcName + "] The LifeCycle State Changed from '" +
+                                                                                           oldState + "' to '" + newState+"'"+ extendedMessage);
+        storeLCChanges.setParameter("LifecycleName", lcName);
+        storeLCChanges.setParameter("OldLifecycleState", oldState);
+        storeLCChanges.setParameter("NewLifecycleState", newState);
+        if(isEnvironmentChange){
+            ((StoreLifeCycleStateChangedEvent)storeLCChanges).setResourcePath(relativeOldPath);
+        }else{
+            ((StoreLifeCycleStateChangedEvent)storeLCChanges).setResourcePath(relativePath);
+        }
+        storeLCChanges.setTenantId(CurrentSession.getCallerTenantId());
+        try {
+            notify(storeLCChanges, requestContext.getRegistry(), relativePath);
+        } catch (Exception e) {
+            handleException("Unable to send notification for Aspect Invoke Operation", e);
+        }
+        //end of the store notification
+    }
+
+    private void sendPublisherLCNotification(String lcName, String oldState, String newState,boolean isEnvironmentChange, String relativeOldPath, String relativePath,RequestContext requestContext, String extendedMessage){
+        //Send Store Notification
+        RegistryEvent<String> publisherLCChanges = new PublisherLifeCycleStateChangedEvent<String>("[" + lcName + "] The LifeCycle State Changed from '" +
+                                                                                                   oldState + "' to '" + newState+"'"+ extendedMessage);
+        publisherLCChanges.setParameter("LifecycleName", lcName);
+        publisherLCChanges.setParameter("OldLifecycleState", oldState);
+        publisherLCChanges.setParameter("NewLifecycleState", newState);
+        if(isEnvironmentChange){
+            ((PublisherLifeCycleStateChangedEvent)publisherLCChanges).setResourcePath(relativeOldPath);
+        }else{
+            ((PublisherLifeCycleStateChangedEvent)publisherLCChanges).setResourcePath(relativePath);
+        }
+        publisherLCChanges.setTenantId(CurrentSession.getCallerTenantId());
+        try {
+            notify(publisherLCChanges, requestContext.getRegistry(), relativePath);
+        } catch (Exception e) {
+            handleException("Unable to send notification for Aspect Invoke Operation", e);
+        }
+        //end of the store notification
+    }
+
+
+    private void createPublisherLCNotification(RegistryEvent event, RequestContext requestContext, String relativePath) {
+        if (event instanceof CheckListItemUncheckedEvent) {
+            RegistryEvent checkListEvent = new PublisherCheckListItemUncheckedEvent<String>(event.getMessage().toString());
+            ((PublisherCheckListItemUncheckedEvent)checkListEvent).setResourcePath(relativePath);
+            checkListEvent.setParameter("LifecycleState", ((Map<String, String>)event.getParameters()).get("LifecycleState"));
+            checkListEvent.setParameter("CheckItem", ((Map<String, String>)event.getParameters()).get("CheckItem"));
+            checkListEvent.setParameter("LifecycleName", ((Map<String, String>)event.getParameters()).get("LifecycleName"));
+            checkListEvent.setTenantId(CurrentSession.getCallerTenantId());
+            try {
+                notify(checkListEvent, requestContext.getRegistry(), relativePath);
+            } catch (Exception e) {
+                handleException("Unable to send notification for Aspect Invoke Operation", e);
+            }
+
+        } else if (event instanceof CheckListItemCheckedEvent) {
+            RegistryEvent checkListEvent = new PublisherCheckListItemCheckedEvent<String>(event.getMessage().toString());
+            ((PublisherCheckListItemCheckedEvent)checkListEvent).setResourcePath(relativePath);
+            checkListEvent.setParameter("LifecycleState", ((Map<String, String>)event.getParameters()).get("LifecycleState"));
+            checkListEvent.setParameter("CheckItem", ((Map<String, String>)event.getParameters()).get("CheckItem"));
+            checkListEvent.setTenantId(CurrentSession.getCallerTenantId());
+            checkListEvent.setParameter("LifecycleName", ((Map<String, String>)event.getParameters()).get("LifecycleName"));
+            try {
+                notify(checkListEvent, requestContext.getRegistry(), relativePath);
+            } catch (Exception e) {
+                handleException("Unable to send notification for Aspect Invoke Operation", e);
+            }
+        }
+
+    }
+
+    /**
+     * Method to get the actual depth of the request
+     */
+    private int getRequestDepth(RequestContext requestContext){
+        int requestDepth = -1;
+        if (requestContext.getRegistry().getRegistryContext() != null &&
+            requestContext.getRegistry().getRegistryContext().getDataAccessManager() != null &&
+            requestContext.getRegistry().getRegistryContext().getDataAccessManager().getDatabaseTransaction() != null) {
+            requestDepth =
+                    requestContext.getRegistry().getRegistryContext().getDataAccessManager().getDatabaseTransaction()
+                                  .getNestedDepth();
+        }
+        return requestDepth;
+    }
+
+    private boolean sendNotifications(RequestContext requestContext, String relativePath) {
+
+        boolean isMountPath = false;
+        List<Mount> mounts = requestContext.getRegistry().getRegistryContext().getMounts();
+        for (Mount mount : mounts) {
+            String mountPath = mount.getPath();
+            if (relativePath.startsWith(mountPath)) {
+                isMountPath = true;
+            }
+        }
+        if (isMountPath) {
+            if (getRequestDepth(requestContext) != 1) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            int requestDepth = getRequestDepth(requestContext);
+            if (!(requestDepth == 1 || requestDepth == 3)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
     }
 }
 

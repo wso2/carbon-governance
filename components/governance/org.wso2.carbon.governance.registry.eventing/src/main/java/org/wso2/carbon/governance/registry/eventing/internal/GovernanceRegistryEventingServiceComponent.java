@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2005-2008,2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -62,21 +62,21 @@ public class GovernanceRegistryEventingServiceComponent {
     }
 
     protected void setRegistryService(RegistryService registryService) {
-        Utils.setRegistryService(registryService);
+        EventDataHolder.getInstance().setRegistryService(registryService);
         initailize();
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
-        Utils.setRegistryService(null);
+        EventDataHolder.getInstance().setRegistryService(null);
     }
 
     protected void setRegistryNotificationService(NotificationService notificationService) {
-        Utils.setRegistryNotificationService(notificationService);
+        EventDataHolder.getInstance().setRegistryNotificationService(notificationService);
         initailize();
     }
 
     protected void unsetRegistryNotificationService(NotificationService notificationService) {
-        Utils.setRegistryNotificationService(null);
+        EventDataHolder.getInstance().setRegistryNotificationService(null);
     }
 
     protected void setListenerManager(ListenerManager listenerManager) {
@@ -95,10 +95,10 @@ public class GovernanceRegistryEventingServiceComponent {
                     "generated unless a custom handler has been configured.");
             return;
         }
-        RegistryService registryService = Utils.getRegistryService();
+        RegistryService registryService = EventDataHolder.getInstance().getRegistryService();
         if (!initialized &&
                 listenerManager != null && registryService != null &&
-                Utils.getRegistryNotificationService() != null) {
+                EventDataHolder.getInstance().getRegistryNotificationService() != null) {
             if (registryService instanceof RemoteRegistryService) {
                 initialized = true;
                 log.warn("Eventing is not available on Remote Registry");
