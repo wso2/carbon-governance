@@ -18,6 +18,9 @@
     <content>
         <table name="Overview">
             <field type="text" required="true">
+                <name>Provider</name>
+            </field>
+            <field type="text" required="true">
                 <name>Name</name>
             </field>
             <field type="text" required="true">
