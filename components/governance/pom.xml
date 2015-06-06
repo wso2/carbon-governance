@@ -53,5 +53,6 @@
         <module>org.wso2.carbon.governance.list.ui</module>
         <module>org.wso2.carbon.governance.gadgets</module>
         <module>org.wso2.carbon.governance.client</module>
+        <module>org.wso2.carbon.governance.comparator</module>
     </modules>
 </project>
