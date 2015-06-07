@@ -22,6 +22,7 @@ import org.wso2.carbon.governance.comparator.Comparator;
 import org.wso2.carbon.governance.comparator.Comparison;
 import org.wso2.carbon.governance.comparator.ComparisonException;
 import org.wso2.carbon.governance.comparator.DiffGenerator;
+import org.wso2.carbon.governance.comparator.common.DefaultComparison;
 import org.wso2.carbon.governance.comparator.utils.ComparatorConstants;
 
 
@@ -31,20 +32,19 @@ import java.util.List;
 
 //TODO Do we need to consider wsdl:documantation as valid change
 
-public class WSDLComparator extends DiffGenerator implements Comparator<Definition> {
+public class WSDLComparator implements Comparator<Definition> {
+
+    List<AbstractWSDLComparator> comparators = new ArrayList<>();
 
     public WSDLComparator() {
-        addComparator(new WSDLDeclarationComparator());
-        addComparator(new WSDLImportsComparator());
-        addComparator(new WSDLBindingsComparator());
-        addComparator(new WSDLMessagesComparator());
-        addComparator(new WSDLPortTypeComparator());
-        addComparator(new WSDLOperationComparator());
+        comparators.add(new WSDLDeclarationComparator());
+        comparators.add(new WSDLImportsComparator());
+        comparators.add(new WSDLBindingsComparator());
+        comparators.add(new WSDLMessagesComparator());
+        comparators.add(new WSDLPortTypeComparator());
+        comparators.add(new WSDLOperationComparator());
     }
 
-    public WSDLComparator(List<Comparator<?>> comparators) {
-        super(comparators);
-    }
 
     @Override
     public void init() {
@@ -52,7 +52,9 @@ public class WSDLComparator extends DiffGenerator implements Comparator<Definiti
 
     @Override
     public void compare(Definition base, Definition changed, Comparison comparison) throws ComparisonException {
-        compare(base, changed, ComparatorConstants.WSDL_MEDIA_TYPE, comparison);
+        for (AbstractWSDLComparator comparator : comparators) {
+            comparator.compareInternal(base, changed, (DefaultComparison) comparison);
+        }
     }
 
     @Override
