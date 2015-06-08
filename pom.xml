@@ -692,6 +692,11 @@
                 <artifactId>org.wso2.carbon.registry.ws.stub</artifactId>
                 <version>${carbon.registry.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.task</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
 
             <!-- Governance dependencies -->
             <dependency>
@@ -799,6 +804,7 @@
                 <artifactId>org.wso2.carbon.governance.gadgets.ui</artifactId>
                 <version>${carbon.governance.version}</version>
             </dependency>
+
 
             <!-- Governance stubs -->
             <dependency>
