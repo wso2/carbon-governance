@@ -1099,4 +1099,15 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
         return attributeKeys.toArray(new String[attributeKeys.size()]);
     }
 
+    @Override
+    public boolean equals(Object artifact) {
+        GovernanceArtifact governanceArtifact ;
+        if(!(artifact instanceof GovernanceArtifact)) {
+            return false;
+        } else {
+            governanceArtifact = (GovernanceArtifact) artifact;
+        }
+
+        return governanceArtifact.getId().equals(this.getId());
+    }
 }

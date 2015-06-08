@@ -670,6 +670,23 @@ public class GovernanceArtifactManager {
     }
 
     /**
+     * Finds and returns all GovernanceArtifacts that match the search query.
+     *
+     * @param query The query to search artifacts
+     * @return Array of artifacts that match the query string
+     * @throws GovernanceException if the operation failed
+     */
+    public GovernanceArtifact[] findGovernanceArtifacts(String query) throws GovernanceException {
+        List<GovernanceArtifact> artifacts;
+        artifacts = GovernanceUtils.findGovernanceArtifacts(query, registry, mediaType);
+        if (artifacts != null) {
+            return artifacts.toArray(new GovernanceArtifact[artifacts.size()]);
+        } else {
+            return new GovernanceArtifact[0];
+        }
+    }
+
+    /**
      * Finds all artifacts matching the given filter criteria.
      *
      * @param criteria the filter criteria to be matched.

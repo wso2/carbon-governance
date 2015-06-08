@@ -273,6 +273,17 @@ public class GenericArtifactManager {
     }
 
     /**
+     * Finds and returns GenericArtifact instances matching the search query
+     *
+     * @param query The query string that needs to be searched for
+     * @return The GenericArtifact list that matching the query
+     * @throws GovernanceException if the operation failed
+     */
+    public GenericArtifact[] findGovernanceArtifacts(String query) throws GovernanceException {
+        return getGenericArtifacts(manager.findGovernanceArtifacts(query));
+    }
+
+    /**
      * Finds all artifacts matching the given filter criteria.
      *
      * @param criteria the filter criteria to be matched.
