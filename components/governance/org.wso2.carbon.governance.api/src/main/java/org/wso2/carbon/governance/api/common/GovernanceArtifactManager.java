@@ -623,7 +623,7 @@ public class GovernanceArtifactManager {
         boolean hasSourceProperty = false;
         if (propertyKeys != null) {
             for (String propertyKey : propertyKeys) {
-                if (CommonConstants.SOURCE_PROPERTY.equals(propertyKey)) {
+                if ("resource.source".equals(propertyKey)) {
                     hasSourceProperty = true;
                 }
                 String[] propertyValues = artifact.getAttributes(propertyKey);
@@ -632,7 +632,7 @@ public class GovernanceArtifactManager {
         }
         if (!hasSourceProperty) {
             //TODO ERROR
-            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_REMOTE);
+            resource.setProperty("resource.source", "remote");
         }
 
         // Stop the attributes been added as properties
