@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.GovernanceArtifactManager;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.api.generic.dataobjects.DetachedGenericArtifactImpl;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifactImpl;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
@@ -359,6 +360,10 @@ public class GenericArtifactManager {
      */
     public String[] getAllGenericArtifactIds() throws GovernanceException {
         return manager.getAllGovernanceArtifactIds();
+    }
+
+    public static GenericArtifact newDetachedGovernanceArtifact(QName artifactName,String mediaType ){
+        return new DetachedGenericArtifactImpl(artifactName ,mediaType);
     }
 
 }

@@ -984,7 +984,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * @param attachedToArtifact the artifact the current artifact is attached to
      * @throws GovernanceException throws if the operation failed.
      */
-    protected void attach(GovernanceArtifact attachedToArtifact) throws GovernanceException {
+    public void attach(GovernanceArtifact attachedToArtifact) throws GovernanceException {
         checkRegistryResourceAssociation();
         // uses the path from the getter to make sure the used overloaded method
         String path = getPath();
@@ -1015,7 +1015,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * @param artifactId the artifact id of the attached artifact
      * @throws GovernanceException throws if the operation failed.
      */
-    protected void detach(String artifactId) throws GovernanceException {
+    public void detach(String artifactId) throws GovernanceException {
         checkRegistryResourceAssociation();
         // uses the path from the getter to make sure the used overloaded method
         String path = getPath();
@@ -1109,5 +1109,71 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
         }
 
         return governanceArtifact.getId().equals(this.getId());
+    }
+
+    @Override
+    public void attach(String artifactId) throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public void addAssociation(String associationType, GovernanceArtifact attachedToArtifact)
+            throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public void addAssociation(String associationType, String artifactId) throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public void removeAssociation(String associationType, String artifactId) throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public void removeAssociation(String artifactId) throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public Map<String, List<GovernanceArtifact>> getAssociations() throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public Map<String, List<String>> getAssociatedArtifactIds() throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public boolean isRegistryAwareArtifact() {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public void addTag(String tag) throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public void addTags(List<String> tags) throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public List<String> listTags() throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public void removeTag(String tag) throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public void removeTags(List<String> tags) throws GovernanceException {
+        throw new UnsupportedOperationException("Not yet Implemented");
     }
 }
