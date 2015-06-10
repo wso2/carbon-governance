@@ -1738,6 +1738,137 @@ public class GovernanceUtils {
         return artifacts;
     }
 
+    /**
+     * @param criteria query string that should be searched for
+     * @param registry the governance registry instance
+     * @param mediaType media type to be matched for search. Media type can be specified in the query string too
+     * @return The list of artifacts. null if the media type and string is empty.
+     * @throws GovernanceException thrown when an error occurs
+     */
+    public static List<GovernanceArtifact> findGovernanceArtifacts(String criteria,
+                                                                   Registry registry, String mediaType)
+            throws GovernanceException {
+        Map<String, String> fields = new HashMap<String, String>();
+        Map<String, String> possibleProperties = new HashMap<String, String>();
+
+        if (mediaType != null && !"".equals(mediaType)) {
+            fields.put("mediaType", mediaType);
+        } else if("".equals(criteria)) {
+            return null;
+        }
+
+        List<String> possibleKeys = Arrays.asList("createdAfter", "createdBefore", "updatedAfter", "updatedBefore", "author", "author!", "associationType", "associationDest",
+                "updater", "updater!", "tags", "content", "mediaType", "mediaType!", "lcName", "lcState");
+
+        String[] tempList = criteria.split("&");
+        for(String temp : tempList) {
+            String[] subParts = temp.split("=");
+            if(subParts.length != 2) {
+                fields.put("overview_name", subParts[0].toLowerCase());
+            } else {
+                if(possibleKeys.contains(subParts[0])) {
+                    switch(subParts[0]) {
+                        case "author!":
+                            fields.put(subParts[0].substring(0, subParts[0].length() - 1), subParts[1].toLowerCase());
+                            fields.put("authorNameNegate", "on");
+                            break;
+                        case "updater!":
+                            fields.put(subParts[0].substring(0, subParts[0].length() - 1), subParts[1].toLowerCase());
+                            fields.put("updaterNameNegate", "on");
+                            break;
+                        case "mediaType!":
+                            fields.put(subParts[0].substring(0, subParts[0].length() - 1), subParts[1].toLowerCase());
+                            fields.put("mediaTypeNegate", "on");
+                            break;
+                        case "tags":
+                        case "associationDest":
+                            fields.put(subParts[0], subParts[1]);
+                            break;
+                        default:
+                            fields.put(subParts[0], subParts[1].toLowerCase());
+                            break;
+                    }
+                } else if(subParts[0].equals("comments")){
+                    fields.put("commentWords", subParts[1].toLowerCase());
+                } else {
+                    if(subParts[0].contains(":")) {
+                        fields.put(subParts[0].replace(":", "_"), subParts[1].toLowerCase());
+                    } else {
+                        possibleProperties.put(subParts[0], subParts[1].toLowerCase());
+                        fields.put("overview_" + subParts[0], subParts[1].toLowerCase());
+                    }
+                }
+            }
+        }
+
+        List<GovernanceArtifact> attributeSearchResults = performAttributeSearch(fields, registry);
+
+        if(possibleProperties.size() > 0) {
+            for(Map.Entry<String, String> entry : possibleProperties.entrySet()) {
+                String propertyName = entry.getKey();
+                fields.remove("overview_" + propertyName);
+                fields.put("propertyName", propertyName);
+                fields.put("rightPropertyValue", entry.getValue());
+                fields.put("rightOp", "eq");
+            }
+
+            List<GovernanceArtifact> propertySearchResults = performAttributeSearch(fields, registry);
+
+            Set<GovernanceArtifact> set  = new TreeSet<>(new Comparator<GovernanceArtifact>() {
+                public int compare(GovernanceArtifact artifact1, GovernanceArtifact artifact2)
+                {
+                    return artifact1.getId().compareTo(artifact2.getId()) ;
+                }
+            });
+
+            set.addAll(attributeSearchResults);
+            set.addAll(propertySearchResults);
+
+            List<GovernanceArtifact> mergeListWithoutDuplicates = new ArrayList<>();
+            mergeListWithoutDuplicates.addAll(set);
+
+            return mergeListWithoutDuplicates;
+        }
+
+        return attributeSearchResults;
+    }
+
+    private static List<GovernanceArtifact> performAttributeSearch(Map<String, String> fields, Registry registry) throws GovernanceException {
+        if (getAttributeSearchService() == null) {
+            throw new GovernanceException("Attribute Search Service not Found");
+        }
+
+        List<GovernanceArtifact> artifacts = new ArrayList<GovernanceArtifact>();
+
+        try {
+            ResourceData[] results = getAttributeSearchService().search(fields);
+
+            int errorCount = 0; // We use this to check how many errors occurred.
+
+            for (ResourceData result : results) {
+                GovernanceArtifact governanceArtifact = null;
+                String path = result.getResourcePath().substring(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH.length());
+                try {
+                    governanceArtifact = retrieveGovernanceArtifactByPath(registry, path);
+                } catch (GovernanceException e) {
+                    // We do not through any exception here. Only logging is done.
+                    // We increase the error count for each error. If all the paths failed, then we throw an error
+                    errorCount++;
+                    log.error("Error occurred while retrieving governance artifact by path : " + path, e);
+                }
+                if (governanceArtifact != null) {
+                    artifacts.add(governanceArtifact);
+                }
+            } if (errorCount != 0 && errorCount == results.length) {
+                // This means that all the paths have failed. So we throw an error.
+                throw new GovernanceException("Error occurred while retrieving all the governance artifacts");
+            }
+        } catch (RegistryException e) {
+            throw new GovernanceException("Unable to search by attribute", e);
+        }
+        return artifacts;
+    }
+
      /**
      * Method used to retrieve cache object for RXT Configs.
      *

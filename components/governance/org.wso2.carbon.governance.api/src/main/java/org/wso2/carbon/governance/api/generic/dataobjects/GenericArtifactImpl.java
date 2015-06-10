@@ -33,6 +33,7 @@ import java.lang.String;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Represents a generic governance artifact.
@@ -65,6 +66,12 @@ public class GenericArtifactImpl extends GovernanceArtifactImpl implements Gener
      */
     public GenericArtifactImpl(String id, QName qName, String mediaType) {
         super(id);
+        this.qName = qName;
+        this.mediaType = mediaType;
+    }
+
+    public GenericArtifactImpl(QName qName, String mediaType) {
+        super(UUID.randomUUID().toString());
         this.qName = qName;
         this.mediaType = mediaType;
     }

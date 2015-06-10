@@ -75,7 +75,7 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
             
             // want to save original content, so set content here
             artifact.setContent(info.getBytes());
-            artifact.setAttribute(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_ADMIN_CONSOLE);
+            artifact.setAttribute("resource.source", "AdminConsole");
             manager.addGenericArtifact(artifact);
             if (lifecycleAttribute != null) {
                 String lifecycle = artifact.getAttribute(lifecycleAttribute);

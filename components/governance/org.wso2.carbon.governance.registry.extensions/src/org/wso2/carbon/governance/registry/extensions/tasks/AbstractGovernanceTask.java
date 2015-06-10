@@ -22,7 +22,7 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.task.AbstractRegistryTask;
+import org.wso2.carbon.ntask.core.Task;
 
 /**
  * AbstractGovernanceTask is a convenient abstract class for RegistryTask implementers who wish to access
@@ -32,20 +32,15 @@ import org.wso2.carbon.registry.task.AbstractRegistryTask;
  *
  * @since 5.0.0
  */
-public abstract class AbstractGovernanceTask extends AbstractRegistryTask {
+public abstract class AbstractGovernanceTask implements Task {
 
-    @Override
+    
     protected Registry getConfigSystemRegistry() throws RegistryException {
         throw new UnsupportedOperationException("Not allow to access ConfigurationRegistry here");
     }
 
     protected GenericArtifactManager getGenericArtifactManager(String artifactShortName) throws GovernanceException {
-        try {
-            Registry registry = getGovernanceSystemRegistry();
-            return new GenericArtifactManager(registry, artifactShortName);
-        } catch (RegistryException e) {
-            throw new GovernanceException(e);
-        }
+        throw new UnsupportedOperationException("Not allow to access ConfigurationRegistry here");
     }
 
 }

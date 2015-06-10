@@ -623,7 +623,7 @@ public class GovernanceArtifactManager {
         boolean hasSourceProperty = false;
         if (propertyKeys != null) {
             for (String propertyKey : propertyKeys) {
-                if (CommonConstants.SOURCE_PROPERTY.equals(propertyKey)) {
+                if ("resource.source".equals(propertyKey)) {
                     hasSourceProperty = true;
                 }
                 String[] propertyValues = artifact.getAttributes(propertyKey);
@@ -632,7 +632,7 @@ public class GovernanceArtifactManager {
         }
         if (!hasSourceProperty) {
             //TODO ERROR
-            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_REMOTE);
+            resource.setProperty("resource.source", "remote");
         }
 
         // Stop the attributes been added as properties
@@ -662,6 +662,23 @@ public class GovernanceArtifactManager {
         List<GovernanceArtifact> artifacts;
         artifacts = GovernanceUtils.findGovernanceArtifacts(criteria != null ? criteria :
                 Collections.<String, List<String>>emptyMap(), registry, mediaType);
+        if (artifacts != null) {
+            return artifacts.toArray(new GovernanceArtifact[artifacts.size()]);
+        } else {
+            return new GovernanceArtifact[0];
+        }
+    }
+
+    /**
+     * Finds and returns all GovernanceArtifacts that match the search query.
+     *
+     * @param query The query to search artifacts
+     * @return Array of artifacts that match the query string
+     * @throws GovernanceException if the operation failed
+     */
+    public GovernanceArtifact[] findGovernanceArtifacts(String query) throws GovernanceException {
+        List<GovernanceArtifact> artifacts;
+        artifacts = GovernanceUtils.findGovernanceArtifacts(query, registry, mediaType);
         if (artifacts != null) {
             return artifacts.toArray(new GovernanceArtifact[artifacts.size()]);
         } else {
@@ -980,4 +997,27 @@ public class GovernanceArtifactManager {
 
         return findGovernanceArtifacts(listMap);
     }
+
+
+    /**
+     * Check whether GovernanceArtifact is exists in the Registry without loading whole artifact into memory.
+     * This method only work for Configurable Governance Artifacts and doe not work for Content Artifacts such
+     * as WSDL, WADL, Swagger, XMLSchema etc.
+     *
+     * @param artifact GovernanceArtifact to check it's existence.
+     * @return true or false
+     * @throws GovernanceException if the operation failed.
+     */
+    public boolean isExists(GovernanceArtifact artifact) throws GovernanceException {
+        String path = GovernanceUtils.getPathFromPathExpression(
+                pathExpression, artifact);
+        try {
+            return registry.resourceExists(path);
+        } catch (RegistryException e) {
+            throw new GovernanceException(e);
+        }
+    }
+
+
+
 }
