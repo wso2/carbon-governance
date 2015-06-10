@@ -31,7 +31,13 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import javax.xml.namespace.QName;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Governance Artifact abstract class, This is overwritten by Endpoint, Policy, Schema, Service,
@@ -1149,7 +1155,12 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
 
     @Override
     public boolean isRegistryAwareArtifact() {
-        throw new UnsupportedOperationException("Not yet Implemented");
+        try {
+            checkRegistryResourceAssociation();
+            return true;
+        } catch (GovernanceException e) {
+            return false;
+        }
     }
 
     @Override
