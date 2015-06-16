@@ -627,7 +627,7 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
             if (registry.resourceExists(currentPath)) {
                 GovernanceArtifact oldArtifact = GovernanceUtils
                         .retrieveGovernanceArtifactByPath(registry, currentPath);
-                if (!(oldArtifact instanceof GenericArtifact)) {
+                if (!(oldArtifact instanceof GovernanceArtifact)) {
                     String msg = "The updated path is occupied by a non-generic artifact. path: " +
                             currentPath + ".";
                     log.error(msg);
