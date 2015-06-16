@@ -248,7 +248,7 @@ public class WsdlUriProcessor {
             schemaUriProcessor.saveSchemasToRegistry(currentSchemaLocation,
                     null,masterVersion,dependeinciesList);
             updateWSDLSchemaLocations();
-            masterWSDLPath = saveWSDLsToRepositoryNew(metadata,currentEndpointLocation
+            masterWSDLPath = saveWSDLsToRepositoryNew(context,metadata,currentEndpointLocation
                     ,dependeinciesList,masterVersion);// 3rd parameter is false, for importing WSDLs.
 
             addPolicyImports(context);
@@ -259,7 +259,7 @@ public class WsdlUriProcessor {
                     null);
             updateWSDLSchemaLocations();
 
-            masterWSDLPath = saveWSDLsToRepositoryNew(metadata);
+            masterWSDLPath = saveWSDLsToRepositoryNew(context,metadata);
 
             addPolicyImports(context);
 
@@ -624,7 +624,7 @@ public class WsdlUriProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private String saveWSDLsToRepositoryNew(Resource metaDataResource)
+    private String saveWSDLsToRepositoryNew(RequestContext context,Resource metaDataResource)
             throws RegistryException {
         String masterWSDLPath = null;
         try {
@@ -673,7 +673,7 @@ public class WsdlUriProcessor {
                 }
                 saveResource(wsdlInfo.getOriginalURL(), wsdlPath, wsdlResource, wsdlInfo.isMasterWSDL());
                 if (systemRegistry != null) {
-                    org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils.saveEndpointsFromWSDL(wsdlPath, wsdlResource, registry,
+                    org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils.saveEndpointsFromWSDL(context,wsdlPath, wsdlResource, registry,
                             systemRegistry);
                 }
 
@@ -764,7 +764,7 @@ public class WsdlUriProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private String saveWSDLsToRepositoryNew(Resource metaDataResource
+    private String saveWSDLsToRepositoryNew(RequestContext context,Resource metaDataResource
             ,String endpointEnvironment,List<String> dependenciesList,String version)
             throws RegistryException {
         String masterWSDLPath = null;
@@ -826,7 +826,7 @@ public class WsdlUriProcessor {
                 }
                 saveResource(wsdlInfo.getOriginalURL(), wsdlPath, wsdlResource, wsdlInfo.isMasterWSDL());
                 if (systemRegistry != null) {
-                    EndpointUtils.saveEndpointsFromWSDL(wsdlPath, wsdlResource, registry,
+                    EndpointUtils.saveEndpointsFromWSDL(context,wsdlPath, wsdlResource, registry,
                             systemRegistry, endpointEnvironment, dependenciesList, version);
                 }
 
