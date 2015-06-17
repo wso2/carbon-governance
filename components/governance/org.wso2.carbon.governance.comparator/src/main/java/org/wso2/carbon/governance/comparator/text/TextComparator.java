@@ -46,7 +46,9 @@ public class TextComparator implements Comparator<String> {
 
     @Override
     public boolean isSupportedMediaType(String mediaType) {
-        //TODO
-        return true;
+        if (ComparatorConstants.TEXT_PLAIN_MEDIA_TYPE.equals(mediaType)) {
+            return true;
+        }
+        return false;
     }
 }

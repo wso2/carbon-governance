@@ -63,14 +63,11 @@
                 <version>1.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                   <!--  <instructions>
+                   <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Private-Package>
-                            org.wso2.carbon.governance.api.common.*,
-                        </Private-Package>
                         <Export-Package>
-                            org.wso2.carbon.governance.api.*,
+                            org.wso2.carbon.governance.comparator.*,
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.extensions.handlers.*,
@@ -82,12 +79,9 @@
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
-                    </instructions> -->
+                    </instructions>
                 </configuration>
             </plugin>
-
-
-
         </plugins>
     </build>
 
