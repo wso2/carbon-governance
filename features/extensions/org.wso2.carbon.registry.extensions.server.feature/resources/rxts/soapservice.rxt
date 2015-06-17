@@ -19,7 +19,7 @@
     </ui>
     <content>
         <table name="Overview">
-            <field type="text" required="true">
+            <field type="text" required="true" readonly="true">
                 <name label="Name">Name</name>
             </field>
             <field type="text" required="true">

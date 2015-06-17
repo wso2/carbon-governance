@@ -1703,7 +1703,11 @@ public class GovernanceUtils {
             StringBuilder builder = new StringBuilder();
             for (String referenceValue : e.getValue()) {
                 if (referenceValue != null && !"".equals(referenceValue)) {
-                    builder.append(referenceValue.toLowerCase()).append(",");
+                    String referenceValueModified = referenceValue;
+                    if(referenceValueModified.contains(" ")) {
+                        referenceValueModified = "\"" + referenceValueModified + "\"";
+                    }
+                    builder.append(referenceValueModified.toLowerCase()).append(",");
                 }
             }
             if (builder.length() > 0) {
@@ -1764,7 +1768,11 @@ public class GovernanceUtils {
         for(String temp : tempList) {
             String[] subParts = temp.split("=");
             if(subParts.length != 2) {
-                fields.put("overview_name", subParts[0].toLowerCase());
+                String value = subParts[0].toLowerCase();
+                if(value.contains(" ")) {
+                    value = "\"" + value + "\"";
+                }
+                fields.put("overview_name", value);
             } else {
                 if(possibleKeys.contains(subParts[0])) {
                     switch(subParts[0]) {
@@ -1792,10 +1800,18 @@ public class GovernanceUtils {
                     fields.put("commentWords", subParts[1].toLowerCase());
                 } else {
                     if(subParts[0].contains(":")) {
-                        fields.put(subParts[0].replace(":", "_"), subParts[1].toLowerCase());
+                        String value = subParts[1].toLowerCase();
+                        if(value.contains(" ")) {
+                            value = "\"" + value + "\"";
+                        }
+                        fields.put(subParts[0].replace(":", "_"), value);
                     } else {
-                        possibleProperties.put(subParts[0], subParts[1].toLowerCase());
-                        fields.put("overview_" + subParts[0], subParts[1].toLowerCase());
+                        String value = subParts[1].toLowerCase();
+                        if(value.contains(" ")) {
+                            value = "\"" + value + "\"";
+                        }
+                        possibleProperties.put(subParts[0], value);
+                        fields.put("overview_" + subParts[0], value);
                     }
                 }
             }

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <artifactType type="application/vnd.wso2-endpoint+xml" shortName="endpoint" singularLabel="Endpoint"
               pluralLabel="Endpoints" hasNamespace="false" iconSet="2">
-    <storagePath>/trunk/endpoints/@{namespace}/@{overview_name}</storagePath>
+    <storagePath>/trunk/endpoints/@{overview_name}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
     <ui>
         <list>
@@ -15,7 +15,7 @@
     </ui>
     <content>
         <table name="Overview">
-            <field type="text" required="true">
+            <field type="text" required="true" readonly="true">
                 <name>Name</name>
             </field>
             <field type="text" required="true">

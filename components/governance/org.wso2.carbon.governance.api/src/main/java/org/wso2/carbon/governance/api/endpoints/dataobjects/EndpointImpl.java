@@ -39,6 +39,7 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
 
     private static final Log log = LogFactory.getLog(EndpointImpl.class);
     private String url;
+    private String name;
 
     /**
      * Constructor accepting resource path, identifier and a registry instance.
@@ -77,7 +78,7 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
     }
 
     public QName getQName() {
-        return new QName(url);
+        return new QName(name);
     }
 
     /**
@@ -102,6 +103,7 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
             }
 
             url = EndpointUtils.deriveEndpointFromContent(endpointContent);
+            name = EndpointUtils.deriveNameFromContent(endpointContent);
         } catch (RegistryException e) {
             String msg =
                     "Error in getting the content for the artifact. artifact id: " + id + ", " +
