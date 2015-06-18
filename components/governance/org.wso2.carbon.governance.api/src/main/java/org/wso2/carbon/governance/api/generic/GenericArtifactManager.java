@@ -380,4 +380,8 @@ public class GenericArtifactManager {
         return manager.isExists(artifact);
     }
 
+    public void removeGenericArtifact(GenericArtifact artifact) throws GovernanceException {
+        manager.removeGenericArtifact(artifact);
+    }
+
 }

@@ -2259,4 +2259,21 @@ public class GovernanceUtils {
         }
     }
 */
+
+    public static void removeArtifactFromPath(Registry registry, String path)
+            throws GovernanceException {
+        try {
+            if (registry.resourceExists(path)) {
+                registry.delete(path);
+            }
+            ArtifactCache artifactCache =
+                    ArtifactCacheManager.getCacheManager().getTenantArtifactCache(((UserRegistry) registry).getTenantId());
+            if (artifactCache != null && path != null && artifactCache.getArtifact(path) != null) {
+                artifactCache.invalidateArtifact(path);
+            }
+        } catch (RegistryException e) {
+            String msg = "Error in deleting the the artifact path:" + path + ".";
+            throw new GovernanceException(msg, e);
+        }
+    }
 }

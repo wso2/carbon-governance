@@ -19,10 +19,13 @@
 package org.wso2.carbon.governance.api.generic.dataobjects;
 
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 
 import javax.xml.namespace.QName;
 
 public class DetachedGenericArtifactImpl extends GenericArtifactImpl implements DetachedGenericArtifact {
+
     protected DetachedGenericArtifactImpl(GovernanceArtifact artifact,
                                           String mediaType) {
         super(artifact, mediaType);
@@ -30,5 +33,15 @@ public class DetachedGenericArtifactImpl extends GenericArtifactImpl implements 
 
     public DetachedGenericArtifactImpl(QName artifactName, String mediaType) {
         super(artifactName, mediaType);
+    }
+
+    @Override
+    public GenericArtifact makeRegistryAware(GenericArtifactManager artifactManager)
+            throws GovernanceException {
+        GenericArtifact newArtifact = artifactManager.newGovernanceArtifact(getQName());
+        for (String key : getAttributeKeys()) {
+            newArtifact.addAttribute(key, getAttribute(key));
+        }
+        return newArtifact;
     }
 }

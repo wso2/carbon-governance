@@ -32,6 +32,7 @@ import org.w3c.dom.NodeList;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
+import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsDataHolder;
 import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -103,7 +104,8 @@ public class WsdlUriProcessor {
             }
             int tenantId = CurrentSession.getTenantId();
             String userName = CurrentSession.getUser();
-            this.governanceUserRegistry = GovernanceRegistryExtensionsComponent.getRegistryService().getGovernanceUserRegistry(userName, tenantId);
+            this.governanceUserRegistry = GovernanceRegistryExtensionsDataHolder.getInstance().getRegistryService()
+                    .getGovernanceUserRegistry(userName, tenantId);
 
         } catch (RegistryException ignore) {
             this.systemRegistry = null;

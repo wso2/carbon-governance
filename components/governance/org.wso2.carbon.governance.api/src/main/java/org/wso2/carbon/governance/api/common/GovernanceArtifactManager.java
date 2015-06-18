@@ -1018,6 +1018,18 @@ public class GovernanceArtifactManager {
         }
     }
 
+    public void removeGenericArtifact(GenericArtifact artifact) throws GovernanceException {
+        String path = GovernanceUtils.getPathFromPathExpression(
+                pathExpression, artifact);
+        if (path != null) {
+            try {
+                GovernanceUtils.removeArtifactFromPath(registry, path);
+            } catch (RegistryException e) {
+                throw new GovernanceException(e);
+            }
+        }
+    }
+
 
 
 }

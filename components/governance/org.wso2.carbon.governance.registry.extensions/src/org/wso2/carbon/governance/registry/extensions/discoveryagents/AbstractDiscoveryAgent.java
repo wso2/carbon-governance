@@ -16,18 +16,25 @@
  *  under the License.
  */
 
-package org.wso2.carbon.governance.api.generic.dataobjects;
+package org.wso2.carbon.governance.registry.extensions.discoveryagents;
 
-import org.wso2.carbon.governance.api.exception.GovernanceException;
-import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
+import java.util.Properties;
 
 /**
- * TODO
- *
- * @since 4.5.0
- *
+ * Instead of implementing DiscoveryAgent it's obvious to extend AbstractDiscoveryAgent class as it provide number of
+ * helper methods.
  */
-public interface DetachedGenericArtifact extends GenericArtifact {
-    public GenericArtifact makeRegistryAware(GenericArtifactManager artifactManager)
-            throws GovernanceException;
+public abstract class AbstractDiscoveryAgent implements DiscoveryAgent {
+
+    @Override
+    public void init(Properties properties) {
+
+    }
+
+    @Override
+    public void close(Properties properties) {
+
+    }
+
+
 }

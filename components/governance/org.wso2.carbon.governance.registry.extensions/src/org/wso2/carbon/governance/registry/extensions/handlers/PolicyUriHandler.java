@@ -23,6 +23,7 @@ import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.registry.extensions.handlers.utils.HandlerConstants;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
+import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsDataHolder;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
@@ -56,7 +57,8 @@ public class PolicyUriHandler{
         registry = requestContext.getRegistry();
         int tenantId = CurrentSession.getTenantId();
         String userName = CurrentSession.getUser();
-        this.governanceUserRegistry = GovernanceRegistryExtensionsComponent.getRegistryService().getGovernanceUserRegistry(userName, tenantId);
+        this.governanceUserRegistry = GovernanceRegistryExtensionsDataHolder.getInstance().getRegistryService()
+                .getGovernanceUserRegistry(userName, tenantId);
 
         try {
 

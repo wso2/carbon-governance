@@ -16,18 +16,8 @@
  *  under the License.
  */
 
-package org.wso2.carbon.governance.api.generic.dataobjects;
+package org.wso2.carbon.governance.registry.extensions.discoveryagents;
 
-import org.wso2.carbon.governance.api.exception.GovernanceException;
-import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
-
-/**
- * TODO
- *
- * @since 4.5.0
- *
- */
-public interface DetachedGenericArtifact extends GenericArtifact {
-    public GenericArtifact makeRegistryAware(GenericArtifactManager artifactManager)
-            throws GovernanceException;
+public enum OrphanArtifactStrategy {
+    IGNORE, REMOVE, CUSTOM;
 }
