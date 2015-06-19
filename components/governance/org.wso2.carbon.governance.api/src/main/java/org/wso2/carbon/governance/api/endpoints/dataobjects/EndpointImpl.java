@@ -15,6 +15,9 @@
  */
 package org.wso2.carbon.governance.api.endpoints.dataobjects;
 
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMText;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
@@ -27,6 +30,11 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -47,7 +55,6 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
      *
      * @param id       the resource identifier.
      * @param registry the registry instance.
-     *
      * @throws GovernanceException if the construction fails.
      */
     public EndpointImpl(String id, Registry registry) throws GovernanceException {
@@ -107,22 +114,25 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
         } catch (RegistryException e) {
             String msg =
                     "Error in getting the content for the artifact. artifact id: " + id + ", " +
-                            "path: " + path + ".";
+                    "path: " + path + ".";
             log.error(msg, e);
             throw new GovernanceException(msg, e);
         }
+        OMElement contentElement = buildOMElement(endpointContent);
 
-        // and then iterate all the properties and add.
+        serializeToAttributes(contentElement, null);
+
+        /*// and then iterate all the properties and add.
         Properties properties = resource.getProperties();
         if (properties != null && properties.size() > 0) {
             Set keySet = properties.keySet();
             if (keySet != null) {
                 for (Object keyObj : keySet) {
                     String key = (String) keyObj;
-//                    if (key.equals(GovernanceConstants.ARTIFACT_ID_PROP_KEY)) {
-                        // it is not a property.
-//                        continue;
-//                    }
+                    //                    if (key.equals(GovernanceConstants.ARTIFACT_ID_PROP_KEY)) {
+                    // it is not a property.
+                    //                        continue;
+                    //                    }
                     List values = (List) properties.get(key);
                     if (values != null) {
                         for (Object valueObj : values) {
@@ -134,11 +144,11 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
                     if (!keySet.contains(GovernanceConstants.NAME_ATTRIBUTE)) {
                         try {
                             addAttribute(GovernanceConstants.NAME_ATTRIBUTE,
-                                    EndpointUtils.deriveNameFromContent(endpointContent));
+                                         EndpointUtils.deriveNameFromContent(endpointContent));
                         } catch (RegistryException e) {
                             String msg =
                                     "Error while deriving the attributes for the artifact. artifact id: " + id + ", " +
-                                            "path: " + path + ".";
+                                    "path: " + path + ".";
                             log.error(msg, e);
                             throw new GovernanceException(msg, e);
                         }
@@ -146,11 +156,11 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
                     if (!keySet.contains(GovernanceConstants.VERSION_ATTRIBUTE)) {
                         try {
                             addAttribute(GovernanceConstants.VERSION_ATTRIBUTE,
-                                    EndpointUtils.deriveVersionFromContent(endpointContent));
+                                         EndpointUtils.deriveVersionFromContent(endpointContent));
                         } catch (RegistryException e) {
                             String msg =
                                     "Error while deriving the attributes for the artifact. artifact id: " + id + ", " +
-                                            "path: " + path + ".";
+                                    "path: " + path + ".";
                             log.error(msg, e);
                             throw new GovernanceException(msg, e);
                         }
@@ -162,13 +172,64 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
                 // Workaround for endpoint resource properties are not capturing.
                 addAttribute(GovernanceConstants.NAME_ATTRIBUTE, EndpointUtils.deriveNameFromContent(endpointContent));
                 addAttribute(GovernanceConstants.VERSION_ATTRIBUTE,
-                        EndpointUtils.deriveVersionFromContent(endpointContent));
+                             EndpointUtils.deriveVersionFromContent(endpointContent));
             } catch (RegistryException e) {
                 String msg = "Error while deriving the attributes for the artifact. artifact id: " + id + ", " +
-                        "path: " + path + ".";
+                             "path: " + path + ".";
                 log.error(msg, e);
                 throw new GovernanceException(msg, e);
             }
+        }*/
+    }
+
+    public OMElement buildOMElement(String content) throws GovernanceException {
+        XMLStreamReader parser;
+        try {
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            factory.setProperty(XMLInputFactory.IS_COALESCING, new Boolean(true));
+            parser = factory.createXMLStreamReader(new StringReader(content));
+        } catch (XMLStreamException e) {
+            String msg = "Error in initializing the parser to build the OMElement.";
+            log.error(msg, e);
+            throw new GovernanceException(msg, e);
         }
+
+        //create the builder
+        StAXOMBuilder builder = new StAXOMBuilder(parser);
+        //get the root element (in this case the envelope)
+
+        return builder.getDocumentElement();
+    }
+
+    // Method to serialize attributes.
+    private void serializeToAttributes(OMElement contentElement, String parentAttributeName)
+            throws GovernanceException {
+        Iterator childIt = contentElement.getChildren();
+        if (childIt.hasNext()) {
+            while (childIt.hasNext()) {
+                Object childObj = childIt.next();
+                if (childObj instanceof OMElement) {
+                    OMElement childElement = (OMElement) childObj;
+                    String elementName = childElement.getLocalName();
+                    String attributeName =
+                            (parentAttributeName == null ? "" : parentAttributeName + "_") +
+                            elementName;
+                    serializeToAttributes(childElement, attributeName);
+                } else if (childObj instanceof OMText) {
+                    OMText childText = (OMText) childObj;
+                    if (childText.getNextOMSibling() == null &&
+                        childText.getPreviousOMSibling() == null) {
+                        // if it is only child, we consider it is a value.
+                        String textValue = childText.getText();
+                        addAttribute(parentAttributeName, textValue);
+                    }
+                }
+            }
+        } else {
+            if (!contentElement.getChildElements().hasNext()) {
+                addAttribute(parentAttributeName, null);
+            }
+        }
+
     }
 }
