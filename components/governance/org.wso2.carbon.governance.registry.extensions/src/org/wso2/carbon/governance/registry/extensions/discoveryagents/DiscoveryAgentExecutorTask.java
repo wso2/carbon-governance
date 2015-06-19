@@ -92,7 +92,8 @@ public class DiscoveryAgentExecutorTask implements Task {
                 String originProperty = getOriginProperty(serverArtifact);
                 String seqNo = getSequnceNo();
                 persistDiscoveredArtifacts(govRegistry, newArtifacts, serverArtifact, seqNo, originProperty);
-                handleOrphanArtifacts(govRegistry, newArtifacts.keySet(), seqNo, originProperty);
+                //TODO
+                //handleOrphanArtifacts(govRegistry, newArtifacts.keySet(), seqNo, originProperty);
             }
             log.info("DiscoveryAgentExecutorTask completed ....");
         } catch (DiscoveryAgentException | RegistryException | IOException e) {
@@ -146,9 +147,6 @@ public class DiscoveryAgentExecutorTask implements Task {
         artifact.addAttribute(RESOURCE_SOURCE_PROPERTY, SOURCE_GREG_DISCOVERY);
         artifact.addAttribute(RESOURCE_ORIGIN_PROPERTY, originProperty);
         artifact.addAttribute(RESOURCE_DISCOVERY_SEQNO_PROPERTY, seqNo);
-        //TODO - remove
-        artifact.addAttribute("resource.default", "true");
-
     }
 
     private void persistDiscoveredArtifacts(Registry registry, Map<String, List<DetachedGenericArtifact>> newArtifacts,
@@ -203,8 +201,7 @@ public class DiscoveryAgentExecutorTask implements Task {
 
     private void addServerToArtifactAssociation(GenericArtifact source,
                                                 GenericArtifact destination) throws GovernanceException {
-        //TODO - Add this to next carbon-registry version.
-        //source.addBidirectionalAssociation("avialbleOn", "contains", destination);
+        source.addBidirectionalAssociation("avialbleOn", "contains", destination);
     }
 
 

@@ -1125,12 +1125,66 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     @Override
     public void addAssociation(String associationType, GovernanceArtifact attachedToArtifact)
             throws GovernanceException {
-        throw new UnsupportedOperationException("Not yet Implemented");
-    }
+        checkRegistryResourceAssociation();
+        // uses the path from the getter to make sure the used overloaded method
+        String path = getPath();
+        String attachedToArtifactPath = attachedToArtifact.getPath();
+        if (attachedToArtifactPath == null) {
+            String msg = "'Attached to artifact' is not associated with a registry path.";
+            log.error(msg);
+            throw new GovernanceException(msg);
+        }
+        try {
+            registry.addAssociation(path, attachedToArtifactPath, associationType);
+        } catch (RegistryException e) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Error in attaching the artifact. source id: ")
+                    .append(id)
+                    .append(", path: ")
+                    .append(path)
+                    .append(", target id: ")
+                    .append(attachedToArtifact.getId())
+                    .append(", path:")
+                    .append(attachedToArtifactPath)
+                    .append(", attachment type: ")
+                    .append(attachedToArtifact.getClass().getName());
+            throw new GovernanceException(stringBuilder.toString(), e);
+        }    }
 
     @Override
     public void addAssociation(String associationType, String artifactId) throws GovernanceException {
         throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public void addBidirectionalAssociation(String forwardType, String backwardType,
+                                            GovernanceArtifact attachedToArtifact) throws GovernanceException {
+        checkRegistryResourceAssociation();
+        // uses the path from the getter to make sure the used overloaded method
+        String path = getPath();
+        String attachedToArtifactPath = attachedToArtifact.getPath();
+        if (attachedToArtifactPath == null) {
+            String msg = "'Attached to artifact' is not associated with a registry path.";
+            log.error(msg);
+            throw new GovernanceException(msg);
+        }
+        try {
+            registry.addAssociation(path, attachedToArtifactPath, forwardType);
+            registry.addAssociation(attachedToArtifactPath, path, backwardType);
+        } catch (RegistryException e) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Error in attaching the artifact. source id: ")
+                    .append(id)
+                    .append(", path: ")
+                    .append(path)
+                    .append(", target id: ")
+                    .append(attachedToArtifact.getId())
+                    .append(", path:")
+                    .append(attachedToArtifactPath)
+                    .append(", attachment type: ")
+                    .append(attachedToArtifact.getClass().getName());
+            throw new GovernanceException(stringBuilder.toString(), e);
+        }
     }
 
     @Override
@@ -1186,5 +1240,13 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     @Override
     public void removeTags(List<String> tags) throws GovernanceException {
         throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    @Override
+    public String toString() {
+        return "GovernanceArtifactImpl{" +
+               "attributes=" + attributes +
+               ", id='" + id + '\'' +
+               '}';
     }
 }

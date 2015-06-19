@@ -345,4 +345,7 @@ public interface GovernanceArtifact {
 
     public void removeTags(List<String> tags) throws GovernanceException;
 
+    public void addBidirectionalAssociation(String forwardType, String backwardType, GovernanceArtifact attachedToArtifact) throws GovernanceException;
+
+
 }
