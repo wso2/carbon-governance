@@ -1084,6 +1084,7 @@ public class GenericUIGenerator {
         while (it.hasNext()) {
             OMElement widget = (OMElement) it.next();
             String widgetName = widget.getAttributeValue(new QName(null, UIGeneratorConstants.ARGUMENT_NAME));
+            boolean isUnboundedTable = UIGeneratorConstants.MAXOCCUR_UNBOUNDED.equals(widget.getAttributeValue(new QName(null, UIGeneratorConstants.MAXOCCUR_ELEMENT)));
             Iterator arguments = widget.getChildrenWithLocalName(UIGeneratorConstants.ARGUMENT_ELMENT);
             OMElement arg = null;
             while (arguments.hasNext()) {
@@ -1102,7 +1103,7 @@ public class GenericUIGenerator {
                                 Map<String, Object> map = new HashMap<String, Object>();
                                 List ids = new ArrayList<String>();
                                 ids.add(widgetName.replaceAll(" ",
-                                        "_") + "_" + name.replaceAll("" + " ", "-"));
+                                        "") + "_" + name.replaceAll("" + " ", "-"));
                                 ids.add(widgetName.replaceAll(" ", "_") + UIGeneratorConstants
                                         .TEXT_FIELD + "_" + name.replaceAll("" + " ", "-"));
                                 map.put("ids", ids);
@@ -1125,11 +1126,12 @@ public class GenericUIGenerator {
                         } else {
                             Map<String, Object> map = new HashMap<String, Object>();
                             List ids = new ArrayList<String>();
-                                ids.add(widgetName.replaceAll(" ", "_") + "_" + name.replaceAll("" +
+                                ids.add(widgetName.replaceAll(" ", "") + "_" + name.replaceAll("" +
                                     " ", "-"));
                             map.put("ids", ids);
                             map.put("name", name);
                             map.put("regexp", value);
+                            map.put("unboundedTable", isUnboundedTable);
                             res.add(map);
                         }
                     }

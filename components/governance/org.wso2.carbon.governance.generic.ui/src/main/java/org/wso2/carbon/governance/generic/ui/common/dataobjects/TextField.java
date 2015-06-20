@@ -32,6 +32,7 @@ public class TextField extends UIComponent {
     private boolean hasValue;
     protected boolean isPath;
     private HttpServletRequest request;
+    private String customAtt;
 
     public TextField(String label, String name,String id, String mandatory, String widget,
                            String value, boolean isURL, String urlTemplate, boolean isPath,
@@ -58,6 +59,8 @@ public class TextField extends UIComponent {
         } else {
             id = this.id;
         }
+
+        customAtt = widget.replaceAll(" ", "").replace("_","") + "_" + name.replaceAll(" ", "");
 
         String selectResource = " <input id=\"" + id + "_button\" type=\"button\" class=\"button\" value=\"..\" title=\""
                 + CarbonUIUtil.geti18nString("select.path", "org.wso2.carbon.governance.generic.ui.i18n.Resources",
@@ -111,6 +114,7 @@ public class TextField extends UIComponent {
                         .append("<span class=\"required\">*</span></td>\n");
             }
             element.append(" <td>").append((isURL && div != null ? div : "")).append("<input")
+                    .append(" customatt=\"").append(customAtt.replaceAll(" ", "")).append("\"")
                     .append((isURL && hasValue && value != null ? " style=\"display:none\"" : ""))
                     .append(" type=\"text\" name=\"").append(widget.replaceAll(" ", "")).append("_")
                     .append(name.replaceAll(" ", "")).append("\" title=\"").append(tooltip).append("\" ")
@@ -125,6 +129,7 @@ public class TextField extends UIComponent {
                 element.append("<tr><td class=\"leftCol-big\">" + label + "</td>\n");
             }
             element.append(" <td>").append((isURL && div != null ? div : "")).append("<input")
+                    .append(" customatt=\"").append(customAtt.replaceAll(" ", "")).append("\"")
                     .append((isURL && hasValue && value != null ? " style=\"display:none\"" : ""))
                     .append(" type=\"text\" name=\"").append(widget.replaceAll(" ", ""))
                     .append("_" + name.replaceAll(" ", "")).append("\"  title=\"").append(tooltip).append("\" ")
