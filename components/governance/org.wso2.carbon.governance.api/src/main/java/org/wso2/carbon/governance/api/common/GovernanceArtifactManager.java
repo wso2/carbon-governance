@@ -177,14 +177,16 @@ public class GovernanceArtifactManager {
 
         ((GovernanceArtifactImpl)artifact).associateRegistry(registry);
         boolean succeeded = false;
+        Resource resource = null;
+        String path = null;
         try {
             registry.beginTransaction();
-            Resource resource = registry.newResource();
+            resource = registry.newResource();
 
             resource.setMediaType(mediaType);
             setContent(artifact, resource);
             // the artifact will not actually stored in the tmp path.
-            String path = GovernanceUtils.getPathFromPathExpression(
+            path = GovernanceUtils.getPathFromPathExpression(
                     pathExpression, artifact);
 
             if(registry.resourceExists(path)){
@@ -193,8 +195,6 @@ public class GovernanceArtifactManager {
 
             String artifactId = artifact.getId();
             resource.setUUID(artifactId);
-
-            boolean defaultAttributeAdded = addDefaultAttributeIfNotExists(artifact, resource, artifactName);
             registry.put(path, resource);
 
             if (lifecycle != null){
@@ -233,8 +233,30 @@ public class GovernanceArtifactManager {
                     }
                     log.error(msg, e);
                 }
-
-                addDefaultAttributeToAssociations(artifact);
+                boolean success = false;
+                try {
+                    registry.beginTransaction();
+                    boolean defaultAttributeAdded = addDefaultAttributeIfNotExists(artifact, resource, artifactName);
+                    registry.put(path, resource);
+                    addDefaultAttributeToAssociations(artifact);
+                    success = true;
+                } catch (RegistryException e) {
+                    log.error("An error occurred while trying to set default property to the resource or associations", e);
+                } finally {
+                    if(success){
+                        try {
+                            registry.commitTransaction();
+                        } catch (RegistryException e1) {
+                            log.error("Error while committing transaction", e1);
+                        }
+                    } else {
+                        try {
+                            registry.rollbackTransaction();
+                        } catch (RegistryException e1) {
+                            log.error("Error while rolling back the transaction", e1);
+                        }
+                    }
+                }
             } else {
                 try {
                     registry.rollbackTransaction();
