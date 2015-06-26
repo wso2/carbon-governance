@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 <artifactType type="application/vnd.wso2-restservice+xml" shortName="restservice" singularLabel="REST Service" pluralLabel="REST Services" hasNamespace="false" iconSet="7">
-    <storagePath>/apimgt/applicationdata/provider/@{overview_provider}/@{overview_name}/@{overview_version}/@{overview_name}-rest_service</storagePath>
+    <storagePath>/trunk/restservices/@{overview_version}/@{overview_name}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
+    <lifecycle>ServiceLifeCycle</lifecycle>
     <ui>
         <list>
-            <column name="Provider">
-                <data type="path" value="overview_provider" href="@{storagePath}"/>
-            </column>
             <column name="Name">
                 <data type="path" value="overview_name" href="@{storagePath}"/>
             </column>
@@ -18,9 +16,6 @@
     <content>
         <table name="Overview">
             <field type="text" required="true">
-                <name>Provider</name>
-            </field>
-            <field type="text" required="true">
                 <name>Name</name>
             </field>
             <field type="text" required="true">
@@ -29,11 +24,13 @@
             <field type="text" required="true">
                 <name>Version</name>
             </field>
-            <field type="text">
-                <name>Transports</name>
-            </field>
             <field type="text-area">
                 <name>Description</name>
+            </field>
+        </table>
+        <table name="Interface">
+            <field type="text">
+                <name>Transports</name>
             </field>
             <field type="text">
                 <name>WSDL</name>
@@ -41,19 +38,36 @@
             <field type="text">
                 <name>WADL</name>
             </field>
+            <field type="text">
+                <name>Swagger</name>
+            </field>
         </table>
         <table name="Contacts">
-            <field type="text">
-                <name>Technical Owner</name>
+            <subheading>
+                <heading>Contact Type</heading>
+                <heading>Contact Name/Organization Name/Email Address</heading>
+            </subheading>
+            <field type="option-text" maxoccurs="unbounded">
+                <name label="Contact">Contact</name>
+                <values>
+                    <value>None</value>
+                    <value>Technical Owner</value>
+                    <value>Technical Owner Email</value>
+                    <value>Business Owner</value>
+                    <value>Business Owner Email</value>
+                </values>
             </field>
-            <field type="text">
-                <name>Technical Owner Email</name>
-            </field>
-            <field type="text">
-                <name>Business Owner</name>
-            </field>
-            <field type="text">
-                <name>Business Owner Email</name>
+        </table>
+        <table name="Security">
+            <field type="options">
+                <name label="Authentication Type">Authentication Type</name>
+                <values>
+                    <value>None</value>
+                    <value>OAuth1</value>
+                    <value>OAuth2</value>
+                    <value>Basic Auth</value>
+                    <value>Custom</value>
+                </values>
             </field>
         </table>
         <table name="URITemplate" columns="3" maxoccurs="unbounded">
