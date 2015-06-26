@@ -233,30 +233,6 @@ public class GovernanceArtifactManager {
                     }
                     log.error(msg, e);
                 }
-                boolean success = false;
-                try {
-                    registry.beginTransaction();
-                    boolean defaultAttributeAdded = addDefaultAttributeIfNotExists(artifact, resource, artifactName);
-                    registry.put(path, resource);
-                    addDefaultAttributeToAssociations(artifact);
-                    success = true;
-                } catch (RegistryException e) {
-                    log.error("An error occurred while trying to set default property to the resource or associations", e);
-                } finally {
-                    if(success){
-                        try {
-                            registry.commitTransaction();
-                        } catch (RegistryException e1) {
-                            log.error("Error while committing transaction", e1);
-                        }
-                    } else {
-                        try {
-                            registry.rollbackTransaction();
-                        } catch (RegistryException e1) {
-                            log.error("Error while rolling back the transaction", e1);
-                        }
-                    }
-                }
             } else {
                 try {
                     registry.rollbackTransaction();
@@ -941,7 +917,7 @@ public class GovernanceArtifactManager {
         return artifactList.toArray(new GovernanceArtifact[artifactList.size()]);
     }
 
-    public boolean addDefaultAttributeIfNotExists(final GovernanceArtifact artifact, Resource resource, final String artifactName) throws GovernanceException {
+    private boolean addDefaultAttributeIfNotExists(final GovernanceArtifact artifact, Resource resource, final String artifactName) throws GovernanceException {
         GovernanceArtifact[] governanceArtifacts = searchArtifactsByGroupingAttribute(artifact, mediaType, artifactName);
 
         if(governanceArtifacts != null && governanceArtifacts.length == 0) {
