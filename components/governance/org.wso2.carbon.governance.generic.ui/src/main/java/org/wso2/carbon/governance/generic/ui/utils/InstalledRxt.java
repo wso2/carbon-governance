@@ -18,23 +18,32 @@
 
 package org.wso2.carbon.governance.generic.ui.utils;
 
+import java.util.Comparator;
+
 public class InstalledRxt {
-    private String rxt ;
-    private boolean isDeleteAllowed = false ;
+    private String rxt;
+    private boolean isDeleteAllowed = false;
 
     public void setRxt(String rxt) {
-        this.rxt = rxt ;
+        this.rxt = rxt;
     }
 
     public String getRxt() {
-        return rxt ;
+        return rxt;
     }
 
     public void setDeleteAllowed() {
-        isDeleteAllowed = true ;
+        isDeleteAllowed = true;
     }
 
     public boolean isDeleteAllowed() {
-        return isDeleteAllowed ;
+        return isDeleteAllowed;
     }
+
+    public static Comparator<InstalledRxt> installedRxtComparator = new Comparator<InstalledRxt>() {
+        public int compare(InstalledRxt s1, InstalledRxt s2) {
+            return s1.getRxt().compareTo(s2.getRxt());
+        }
+    };
+
 }
