@@ -5,7 +5,7 @@ function deleteArtifact(pathToDelete, parentPath,redirectpath) {
             function() {
 
             var addSuccess = true;
-            new Ajax.Request('../resources/delete_ajaxprocessor.jsp', {
+            new Ajax.Request('../generic/delete_ajaxprocessor.jsp', {
                 method:'post',
                 parameters: {pathToDelete: pathToDelete, parentPath: parentPath},
 
