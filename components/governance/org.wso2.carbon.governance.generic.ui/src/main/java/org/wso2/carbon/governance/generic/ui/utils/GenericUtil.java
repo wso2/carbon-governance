@@ -19,6 +19,7 @@ package org.wso2.carbon.governance.generic.ui.utils;
 
 import org.apache.axiom.om.*;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -761,5 +762,24 @@ public class GenericUtil {
         }
         return basicVersionElement.replaceAll(
                 "(<input[^>]*)type=\"text\"([^>]*id=\"id_Overview_Version\"[^>]*>)", sb.toString());
+    }
+
+    public static String getRXTKeyFromContent(String payload) throws RegistryException {
+        OMElement element = buildOMElement(payload);
+        return element.getAttributeValue(new QName("shortName"));
+
+    }
+
+    public static OMElement buildOMElement(String payload) throws RegistryException {
+        OMElement element;
+        try {
+            element = AXIOMUtil.stringToOM(payload);
+            element.build();
+        } catch (Exception e) {
+            String message = "Unable to parse the XML configuration. Please validate the XML configuration";
+            log.error(message, e);
+            throw new RegistryException(message, e);
+        }
+        return element;
     }
 }

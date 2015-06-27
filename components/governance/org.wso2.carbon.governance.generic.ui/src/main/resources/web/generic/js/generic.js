@@ -27,12 +27,12 @@ function deleteArtifact(pathToDelete, parentPath,redirectpath) {
 }
 
 
-function saveRXT(_path) {
+function saveRXT(_path,_rxtName) {
     sessionAwareFunction(function() {
         var _payload = editAreaLoader.getValue("payload");
         new Ajax.Request('../generic/save_artifact_ajaxprocessor.jsp', {
             method:'post',
-            parameters: {payload:_payload,path:_path},
+            parameters: {payload:_payload,path:_path, rxtName:_rxtName},
 
             onSuccess: function() {
                 var message = org_wso2_carbon_governance_generic_ui_jsi18n["configuration.saved"];
