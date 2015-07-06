@@ -28,7 +28,6 @@ public class SetDefaultAspectProcessor {
         String aspect = request.getParameter("aspect");
 
         LifecycleServiceClient lifecycleServiceClient = new LifecycleServiceClient(config, request.getSession());
-        System.out.println("Calling set default aspect on aspect " + aspect + " on path " + path);
         lifecycleServiceClient.setDefaultAspect(path, aspect);
     }
 }

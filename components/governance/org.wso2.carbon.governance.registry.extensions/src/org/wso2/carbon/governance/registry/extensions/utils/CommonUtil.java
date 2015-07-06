@@ -20,8 +20,12 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
-import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -30,25 +34,40 @@ import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
+import org.wso2.carbon.registry.extensions.services.RXTStoragePathServiceImpl;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
-import org.wso2.carbon.registry.uddi.utils.GovernanceUtil;
-import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.FileUtil;
+import org.xml.sax.SAXException;
 
 import javax.cache.Cache;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.io.*;
+import java.util.*;
+
+import static org.wso2.carbon.governance.api.util.GovernanceUtils.getGovernanceArtifactConfiguration;
+import static org.wso2.carbon.governance.api.util.GovernanceUtils.getRXTConfigCache;
 
 public class CommonUtil {
     private static final Log log = LogFactory.getLog(CommonUtil.class);
+
+    private final static Map<String, HashMap<String, String>>
+            associationConfigMap = new HashMap<String, HashMap<String, String>>();
+
+	private static RXTStoragePathService rxtSPService;
+
+	public static RXTStoragePathService getRxtStoragePathService() {
+		return rxtSPService;
+	}
+
+	public static void setRxtStoragePathService(RXTStoragePathService rxtSPService) {
+		CommonUtil.rxtSPService = rxtSPService;
+	}
 
     public static String[] getAllLifeCycleStates(Registry registry, String lifeCycleName) throws RegistryException {
         boolean isLiteral = true;
@@ -154,7 +173,8 @@ public class CommonUtil {
     }
 
     public static void addRxtConfigs(Registry systemRegistry, int tenantId) throws RegistryException {
-        Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
+        loadAssociationConfig(systemRegistry, tenantId);
+        Cache<String,Boolean> rxtConfigCache = getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
         String rxtDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
                 "resources" + File.separator + "rxts";
         File file = new File(rxtDir);
@@ -207,11 +227,28 @@ public class CommonUtil {
                         resource.setMediaType(CommonConstants.RXT_MEDIA_TYPE);
                         systemRegistry.put(resourcePath, resource);
                         rxtConfigCache.put(resourcePath,true);
+	                    GovernanceArtifactConfiguration configuration = getGovernanceArtifactConfiguration(rxt);
+	                    String mediaType = configuration.getMediaType();
+	                    String storagePath = configuration.getPathExpression();
+	                    addStoragePath(mediaType, storagePath);
                     }
                 } else {
+	                Resource resource = systemRegistry.get(resourcePath);
+	                Object content = resource.getContent();
+	                String elementString;
+	                if (content instanceof String) {
+		                elementString = (String) content;
+	                } else {
+		                elementString = RegistryUtils.decodeBytes((byte[]) content);
+	                }
+	                GovernanceArtifactConfiguration configuration = getGovernanceArtifactConfiguration(elementString);
+	                String mediaType = configuration.getMediaType();
+	                String storagePath = configuration.getPathExpression();
+	                addStoragePath(mediaType, storagePath);
                     if (log.isDebugEnabled()) {
                         log.debug("RXT " + rxtName + " already exists.");
                     }
+
                 }
 
             } catch (IOException e) {
@@ -222,6 +259,70 @@ public class CommonUtil {
                 throw new RegistryException(msg, e);
             }
         }
+    }
+
+    /**
+     * This method reads the Association Config xml and populates the association map
+     * @param systemRegistry the registry object
+     * @param tenantId the tenant id of the current tenant
+     */
+    public static void loadAssociationConfig(Registry systemRegistry, int tenantId) {
+        String associationConfigFile = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
+                "conf" + File.separator + "etc" + File.separator + "association-config.xml";
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+
+        try {
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new File(associationConfigFile));
+            doc.getDocumentElement().normalize();
+            NodeList nodeList = doc.getElementsByTagName("Association");
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node association = nodeList.item(i);
+                HashMap<String, String> associationMap = new HashMap<String, String>();
+                NodeList childNodeList = association.getChildNodes();
+
+                if (childNodeList != null) {
+                    for (int j = 0; j < childNodeList.getLength(); j++) {
+                        Node types = childNodeList.item(j);
+                        if (types.getNodeType() == Node.ELEMENT_NODE) {
+                            associationMap.put(types.getNodeName(), types.getFirstChild().getNodeValue());
+                        }
+                    }
+                }
+                associationConfigMap.put(((Element) association).getAttribute("type"), associationMap);
+            }
+        } catch (FileNotFoundException e) {
+            log.error("Failed to find the Association Config xml", e);
+        } catch (ParserConfigurationException e) {
+            log.error("Failed to parse the association-config.xml", e);
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static HashMap<String, String> getAssociationConfig(String mediaType){
+        if(associationConfigMap.size() == 0){
+            log.warn("Failed to find association mappings");
+            return null;
+        }
+        if(associationConfigMap.containsKey(mediaType)){
+            return associationConfigMap.get(mediaType);
+        }else{
+            return null;
+        }
+    }
+
+    public static void addStoragePath(String mediaType, String storagePath) {
+        RXTStoragePathServiceImpl service = (RXTStoragePathServiceImpl) getRxtStoragePathService();
+        service.addStoragePath(mediaType, storagePath);
+    }
+
+    public static void removeStoragePath(String mediaType) {
+        RXTStoragePathServiceImpl service = (RXTStoragePathServiceImpl) getRxtStoragePathService();
+        service.removeStoragePath(mediaType);
     }
 
     // handling the possibility that handlers are not called within each other.

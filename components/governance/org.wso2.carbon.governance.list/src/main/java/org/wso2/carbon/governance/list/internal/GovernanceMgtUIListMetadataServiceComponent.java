@@ -37,6 +37,7 @@ import org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 
@@ -51,6 +52,9 @@ import java.util.List;
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ * @scr.reference name="extensions.service"
+ * interface="org.wso2.carbon.registry.extensions.services.RXTStoragePathService" cardinality="1..1"
+ * policy="dynamic" bind="setRxtStoragePathService" unbind="unsetRxtStoragePathService"
  */
 public class GovernanceMgtUIListMetadataServiceComponent {
 
@@ -95,6 +99,9 @@ public class GovernanceMgtUIListMetadataServiceComponent {
                                         throw new RegistryException("Violation of RXT definition in" +
                                                 " configuration file, follow the schema correctly..!!");
                                     }
+	                                GovernanceArtifactConfiguration artifactConfiguration =
+			                                GovernanceUtils.getGovernanceArtifactConfiguration(rxtContent);
+	                                CommonUtil.addStoragePath(artifactConfiguration.getMediaType(),artifactConfiguration.getPathExpression());
 
                                     Registry userRegistry = requestContext.getRegistry();
                                     userRegistry.put(
@@ -121,6 +128,7 @@ public class GovernanceMgtUIListMetadataServiceComponent {
                                 }
                                 GovernanceArtifactConfiguration artifactConfiguration =
                                         GovernanceUtils.getGovernanceArtifactConfiguration(elementString);
+	                            CommonUtil.removeStoragePath(artifactConfiguration.getMediaType());
                                 String needToDelete = artifactConfiguration.getKey();
 
                                 UserRegistry systemRegistry =
@@ -221,4 +229,13 @@ public class GovernanceMgtUIListMetadataServiceComponent {
     protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
         CommonUtil.setConfigurationContext(null);
     }
+
+	protected void setRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
+		CommonUtil.setRxtStoragePathService(rxtStoragePathService);
+	}
+
+	protected void unsetRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
+		CommonUtil.setRxtStoragePathService(null);
+	}
+
 }

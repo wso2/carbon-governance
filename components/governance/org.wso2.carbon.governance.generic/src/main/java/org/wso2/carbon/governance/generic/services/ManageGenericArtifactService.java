@@ -71,12 +71,11 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
             XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(info));
 
             GenericArtifactManager manager = new GenericArtifactManager(registry, key);
-            GenericArtifact artifact = manager.newGovernanceArtifact(
-                    new StAXOMBuilder(reader).getDocumentElement());
+            GenericArtifact artifact = manager.newGovernanceArtifact(new StAXOMBuilder(reader).getDocumentElement());
             
             // want to save original content, so set content here
             artifact.setContent(info.getBytes());
-
+            artifact.setAttribute("resource.source", "AdminConsole");
             manager.addGenericArtifact(artifact);
             if (lifecycleAttribute != null) {
                 String lifecycle = artifact.getAttribute(lifecycleAttribute);
@@ -628,7 +627,7 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
             if (registry.resourceExists(currentPath)) {
                 GovernanceArtifact oldArtifact = GovernanceUtils
                         .retrieveGovernanceArtifactByPath(registry, currentPath);
-                if (!(oldArtifact instanceof GenericArtifact)) {
+                if (!(oldArtifact instanceof GovernanceArtifact)) {
                     String msg = "The updated path is occupied by a non-generic artifact. path: " +
                             currentPath + ".";
                     log.error(msg);

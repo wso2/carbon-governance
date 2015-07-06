@@ -32,6 +32,7 @@ import org.wso2.carbon.governance.generic.ui.utils.GenericUtil;
 import org.wso2.carbon.governance.generic.ui.utils.InstalledRxt;
 import org.wso2.carbon.governance.generic.ui.utils.ManageGenericArtifactUtil;
 import org.wso2.carbon.registry.core.ActionConstants;
+import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
@@ -46,6 +47,8 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ManageGenericArtifactServiceClient {
@@ -272,7 +275,42 @@ public class ManageGenericArtifactServiceClient {
     }
 
     public List<InstalledRxt> getInstalledRXTs(String cookie, ServletConfig config, HttpSession session) throws Exception {
-        return ManageGenericArtifactUtil.getInstalledRxts(cookie,config,session);
+        List<InstalledRxt> listInstalledRxts = new ArrayList<InstalledRxt>();
+        String user = (String) session.getAttribute("logged-user");
+        String tenantDomain = (String) session.getAttribute("tenantDomain");
+        String backendServerURL = CarbonUIUtil.getServerURL(config.getServletContext(), session);
+
+        String adminCookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
+        WSRegistryServiceClient registry = new WSRegistryServiceClient(backendServerURL, adminCookie);
+        RealmService realmService = registry.getRegistryContext().getRealmService();
+
+        String configurationPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+                                   RegistryConstants.GOVERNANCE_COMPONENT_PATH +
+                                   "/types/";
+        if (realmService.getTenantUserRealm(realmService.getTenantManager().getTenantId(tenantDomain))
+                        .getAuthorizationManager().isUserAuthorized(user, configurationPath, ActionConstants.GET)) {
+            Collection collection = (Collection) registry.get(configurationPath);
+            String[] resources = collection.getChildren();
+            for (int i = 0; i < resources.length; i++) {
+                if (resources[i] != null && resources[i].contains("/")) {
+                    String rxt = resources[i].substring(resources[i].lastIndexOf("/") + 1).split("\\.")[0];
+                    InstalledRxt rxtObj = new InstalledRxt();
+                    rxtObj.setRxt(rxt);
+                    if (realmService.getTenantUserRealm(realmService.getTenantManager().getTenantId(tenantDomain))
+                                    .getAuthorizationManager()
+                                    .isUserAuthorized(user, resources[i], ActionConstants.GET)) {
+                        rxtObj.setDeleteAllowed();
+                    }
+                    listInstalledRxts.add(rxtObj);
+                }
+            }
+
+        }
+        if (listInstalledRxts.size() > 1) {
+            Collections.sort(listInstalledRxts, InstalledRxt.installedRxtComparator);
+        }
+        return listInstalledRxts;
+
     }
 
     public String getRxtAbsPathFromRxtName(String name) throws Exception {

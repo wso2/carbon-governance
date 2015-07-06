@@ -15,14 +15,12 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance.metadata-feature</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>4.5.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -34,23 +32,23 @@
     <description>This feature contains the bundles required for Back-end Governance Metadata functionality</description>
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.list</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.generic</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.wsdltool</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.client</artifactId>
         </dependency>
     </dependencies>
@@ -69,7 +67,7 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.governance.metadata.server</id>
-                            <propertiesFile>../../../../etc/feature.properties</propertiesFile>
+                            <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
@@ -77,24 +75,24 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.list</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.wsdltool</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.api</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.generic</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.client</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.list</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.wsdltool</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.api</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.generic</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.client</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>
-                                    org.wso2.carbon.registry.core.server:${registry.core.feature.version}
+                                    org.wso2.carbon.registry.core.server:${carbon.registry.version}
                                 </importFeatureDef>
                                 <importFeatureDef>
-                                    org.wso2.carbon.registry.associations.dependencies.server:${registry.core.feature.version}
+                                    org.wso2.carbon.registry.associations.dependencies.server:${carbon.registry.version}
                                 </importFeatureDef>
                                 <importFeatureDef>
-                                    org.wso2.carbon.registry.community.features.server:${registry.core.feature.version}
+                                    org.wso2.carbon.registry.community.features.server:${carbon.registry.version}
                                 </importFeatureDef>
                                 <importFeatureDef>
-                                    org.wso2.carbon.registry.extensions.server:${registry.core.feature.version}
+                                    org.wso2.carbon.registry.extensions.server:${carbon.governance.version}
                                 </importFeatureDef>
                             </importFeatures>
                         </configuration>

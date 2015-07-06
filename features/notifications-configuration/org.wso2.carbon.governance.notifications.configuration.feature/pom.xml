@@ -15,14 +15,12 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance.notification.configurations-feature</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>4.5.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -36,19 +34,19 @@
     </description>
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.notifications.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.notifications.stub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.notifications.worklist.stub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.business-process</groupId>
             <artifactId>org.wso2.carbon.humantask.stub</artifactId>
         </dependency>
     </dependencies>
@@ -67,21 +65,21 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.governance.notifications.configuration</id>
-                            <propertiesFile>../../../../etc/feature.properties</propertiesFile>
+                            <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:console</propertyDef>
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.notifications.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.notifications.stub</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.governance.notifications.worklist.stub
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.notifications.ui</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.notifications.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.notifications.worklist.stub
                                 </bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.humantask.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon.business-process:org.wso2.carbon.humantask.stub</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${registry.core.feature.version}
+                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
                         </configuration>

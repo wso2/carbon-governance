@@ -115,7 +115,7 @@
                           <a class="icon-link" style="background-image: url(../admin/images/edit.gif);" href="source_artifact.jsp?view=true&path=<%=rxtPath%>"><fmt:message key="view"/></a>
                           <a class="icon-link" style="background-image:url(../generic/images/delete-desable.gif);color:#aaa !important;cursor:default;"><fmt:message key="delete"/></a>
                           <%}else { %>
-                          <a class="icon-link" style="background-image: url(../admin/images/edit.gif);" href="source_artifact.jsp?path=<%=rxtPath%>"><fmt:message key="view.edit"/></a>
+                          <a class="icon-link" style="background-image: url(../admin/images/edit.gif);" href="source_artifact.jsp?path=<%=rxtPath%>&rxtName=<%=rxt%>"><fmt:message key="view.edit"/></a>
                           <%if(installedRxt.isDeleteAllowed()) { %>
                             <a href="#" onclick="deleteArtifact('<%=rxtPath%>','/','../generic/generic_artifact.jsp?region=region3&item=governance_generic_menu')" class="icon-link registryWriteOperation" style="background-image:url(../admin/images/delete.gif);"><fmt:message key="delete"/></a>
                           <% } else { %>

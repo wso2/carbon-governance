@@ -1,5 +1,5 @@
 /*
-*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*  Copyright (c) 2005-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 *  WSO2 Inc. licenses this file to you under the Apache License,
 *  Version 2.0 (the "License"); you may not use this file except
@@ -20,14 +20,20 @@ package org.wso2.carbon.governance.wsdltool.services;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
-import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.governance.wsdltool.beans.ServiceInfoBean;
+import org.wso2.carbon.governance.wsdltool.util.CommonUtil;
+import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 
-public class WSDLToolService extends AbstractAdmin {
+/**
+ * This class act as the service class for wsdltool server component
+ */
+public class WSDLToolService extends RegistryAbstractAdmin {
 
     public void addMEXService(String path, ServiceInfoBean serviceInfo) throws Exception {
  

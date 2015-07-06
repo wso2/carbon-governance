@@ -5,3 +5,6 @@ target
 .project
 *.i??
 .idea
+atlassian-ide-plugin.xml
+pom.xml.versionsBackup
+*.versionsBackup

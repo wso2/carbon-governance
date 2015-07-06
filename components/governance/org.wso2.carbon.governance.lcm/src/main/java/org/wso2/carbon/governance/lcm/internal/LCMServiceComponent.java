@@ -20,13 +20,13 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.governance.lcm.listener.LifecycleLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.core.services.callback.LoginSubscriptionManagerService;
-import org.wso2.carbon.registry.core.utils.UUIDGenerator;
+import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
@@ -36,6 +36,9 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ * @scr.reference name="registry.attribute.indexing"
+ * interface="org.wso2.carbon.registry.common.AttributeSearchService" cardinality="1..1"
+ * policy="dynamic" bind="setAttributeSearchService" unbind="unsetAttributeSearchService"
  */
 public class LCMServiceComponent {
 
@@ -81,5 +84,23 @@ public class LCMServiceComponent {
 
     protected void unsetRegistryService(RegistryService registryService) {
         CommonUtil.setRegistryService(null);
+    }
+
+    /**
+     * Method used to set attribute search service.
+     *
+     * @param attributeSearchService    attribute search service.
+     */
+    protected void setAttributeSearchService(AttributeSearchService attributeSearchService) {
+        CommonUtil.setAttributeSearchService(attributeSearchService);
+    }
+
+    /**
+     * Method used to unset attribute search service.
+     *
+     * @param attributeSearchService    attribute search service.
+     */
+    protected void unsetAttributeSearchService(AttributeSearchService attributeSearchService) {
+        CommonUtil.setAttributeSearchService(null);
     }
 }

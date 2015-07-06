@@ -20,9 +20,12 @@ package org.wso2.carbon.governance.api.generic;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.GovernanceArtifactManager;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.api.generic.dataobjects.DetachedGenericArtifactImpl;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifactImpl;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
@@ -51,6 +54,8 @@ public class GenericArtifactManager {
     private String artifactElementNamespace;
     private GovernanceArtifactManager manager;
     private String mediaType;
+
+    private static final Log log = LogFactory.getLog(GenericArtifactManager.class);
 
     /**
      * Constructor accepting an instance of the registry, and also details on the type of manager.
@@ -83,25 +88,35 @@ public class GenericArtifactManager {
 
     /**
      * Constructor accepting an instance of the registry, and key identifying the type of manager.
-     * 
-     * @param registry the instance of the registry.
-     * @param key      the key short name of the artifact type.
+     *
+     * @param registry              the instance of the registry.
+     * @param key                   the key short name of the artifact type.
+     * @throws RegistryException    Thrown when rxt configuration is not in registry.
      */
     public GenericArtifactManager(Registry registry, String key) throws RegistryException {
         try {
             GovernanceArtifactConfiguration configuration =
                     GovernanceUtils.findGovernanceArtifactConfiguration(key, registry);
-            this.artifactNameAttribute = configuration.getArtifactNameAttribute();
-            this.artifactNamespaceAttribute = configuration.getArtifactNamespaceAttribute();
-            this.artifactElementNamespace = configuration.getArtifactElementNamespace();
-            manager = new GovernanceArtifactManager(registry, configuration.getMediaType(),
-                    this.artifactNameAttribute, this.artifactNamespaceAttribute,
-                    configuration.getArtifactElementRoot(), this.artifactElementNamespace,
-                    configuration.getPathExpression(), configuration.getLifecycle(),
-                    configuration.getValidationAttributes(), configuration.getRelationshipDefinitions());
-            this.mediaType = configuration.getMediaType();
+            if (configuration != null) {
+                artifactNameAttribute = configuration.getArtifactNameAttribute();
+                artifactNamespaceAttribute = configuration.getArtifactNamespaceAttribute();
+                artifactElementNamespace = configuration.getArtifactElementNamespace();
+                manager = new GovernanceArtifactManager(registry, configuration.getMediaType(),
+                        artifactNameAttribute, artifactNamespaceAttribute,
+                        configuration.getArtifactElementRoot(), artifactElementNamespace,
+                        configuration.getPathExpression(), configuration.getLifecycle(),
+                        configuration.getValidationAttributes(), configuration.getRelationshipDefinitions());
+                mediaType = configuration.getMediaType();
+            } else {
+                String message = "Artifact type '" + key
+                        + "' is not in registry or unable to find relevant configuration.";
+                log.error(message);
+                throw new GovernanceException(message);
+            }
         } catch (RegistryException e) {
-            throw new GovernanceException("Unable to obtain governance artifact configuration", e);
+            String message = "Unable to obtain governance artifact configuration for rxt: " + key;
+            log.error(message, e);
+            throw new GovernanceException(message, e);
         }
     }
 
@@ -181,7 +196,9 @@ public class GenericArtifactManager {
 
             return artifact;
         } catch (XMLStreamException e) {
-            throw new GovernanceException("Error in creating the content from the parameters", e);
+            String message = "Error in creating the content from the parameters.";
+            log.error(message, e);
+            throw new GovernanceException(message, e);
         }
     }
 
@@ -254,6 +271,17 @@ public class GenericArtifactManager {
     public GenericArtifact[] findGenericArtifacts(Map<String, List<String>> criteria)
             throws GovernanceException {
         return getGenericArtifacts(manager.findGovernanceArtifacts(criteria));
+    }
+
+    /**
+     * Finds and returns GenericArtifact instances matching the search query
+     *
+     * @param query The query string that needs to be searched for
+     * @return The GenericArtifact list that matching the query
+     * @throws GovernanceException if the operation failed
+     */
+    public GenericArtifact[] findGovernanceArtifacts(String query) throws GovernanceException {
+        return getGenericArtifacts(manager.findGovernanceArtifacts(query));
     }
 
     /**
@@ -332,6 +360,28 @@ public class GenericArtifactManager {
      */
     public String[] getAllGenericArtifactIds() throws GovernanceException {
         return manager.getAllGovernanceArtifactIds();
+    }
+
+
+    public static GenericArtifact newDetachedGovernanceArtifact(QName artifactName,String mediaType ){
+        return new DetachedGenericArtifactImpl(artifactName ,mediaType);
+    }
+
+    /**
+     * Check whether GovernanceArtifact is exists in the Registry without loading whole artifact into memory.
+     * This method only work for Configurable Governance Artifacts and doe not work for Content Artifacts such
+     * as WSDL, WADL, Swagger, XMLSchema etc.
+     *
+     * @param artifact GovernanceArtifact to check it's existence.
+     * @return true or false
+     * @throws GovernanceException if the operation failed.
+     */
+    public boolean isExists(GovernanceArtifact artifact) throws GovernanceException {
+        return manager.isExists(artifact);
+    }
+
+    public void removeGenericArtifact(GenericArtifact artifact) throws GovernanceException {
+        manager.removeGenericArtifact(artifact);
     }
 
 }

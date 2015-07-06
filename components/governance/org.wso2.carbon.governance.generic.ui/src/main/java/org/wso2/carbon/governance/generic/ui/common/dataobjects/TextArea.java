@@ -33,6 +33,7 @@ public class TextArea extends UIComponent {
         } else {
             id = this.id;
         }
+        String customAtt = widget.replaceAll(" ", "") + "_" + name.replaceAll(" ", "");
 
         StringBuilder size = new StringBuilder("style=\"");
         value = StringEscapeUtils.escapeHtml(value);

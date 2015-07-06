@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.governance.lcm.beans.LifecycleBean;
+import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.Aspect;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.CollectionImpl;
@@ -43,6 +44,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ServerConstants;
 import org.xml.sax.SAXException;
@@ -72,10 +74,19 @@ public class CommonUtil {
 
     private static final Log log = LogFactory.getLog(CommonUtil.class);
     private static String contextRoot = null;
+
+    // Registry service used to do registry operations.
     private static RegistryService registryService;
-    public static final String searchLCMPropertiesQuery =
-                    RegistryConstants.QUERIES_COLLECTION_PATH +
-                    "/governance/searchLCMProperties";
+
+    // Content search service used in content search operations.
+    private static ContentSearchService contentSearchService;
+
+    // Attribute search service used in attribute search operations.
+    private static AttributeSearchService attributeSearchService;
+
+    // Lifecycle property search query.
+    public static final String searchLCMPropertiesQuery = RegistryConstants.QUERIES_COLLECTION_PATH +
+            "/governance/searchLCMProperties";
 
     private static Validator lifecycleSchemaValidator = null;
 
@@ -477,71 +488,86 @@ public class CommonUtil {
         if (!registry.resourceExists(RegistryConstants.LIFECYCLE_CONFIGURATION_PATH)) {
             Collection lifeCycleConfigurationCollection = new CollectionImpl();
             registry.put(RegistryConstants.LIFECYCLE_CONFIGURATION_PATH, lifeCycleConfigurationCollection);
-        }
 
-        String defaultLifecycleConfigLocation = getDefaltLifecycleConfigLocation();
-        File defaultLifecycleConfigDirectory = new File(defaultLifecycleConfigLocation);
-        if (!defaultLifecycleConfigDirectory.exists()) {
-            return false;
-        }
-
-        FilenameFilter filenameFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String name) {
-                return name.endsWith(".xml");
+            String defaultLifecycleConfigLocation = getDefaltLifecycleConfigLocation();
+            File defaultLifecycleConfigDirectory = new File(defaultLifecycleConfigLocation);
+            if (!defaultLifecycleConfigDirectory.exists()) {
+                return false;
             }
-        };
-        File[] lifecycleConfigFiles = defaultLifecycleConfigDirectory.listFiles(filenameFilter);
-        if (lifecycleConfigFiles.length == 0) {
-            return false;
-        }
 
-        for (File lifecycleConfigFile : lifecycleConfigFiles) {
-            String fileName = FilenameUtils.removeExtension(lifecycleConfigFile.getName());
-            //here configuration file name should be same as aspect name
-            String resourcePath = RegistryConstants.LIFECYCLE_CONFIGURATION_PATH + fileName;
-            String fileContent = null;
+            FilenameFilter filenameFilter = new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String name) {
+                    return name.endsWith(".xml");
+                }
+            };
+            File[] lifecycleConfigFiles = defaultLifecycleConfigDirectory.listFiles(filenameFilter);
+            if (lifecycleConfigFiles.length == 0) {
+                return false;
+            }
 
-            //here we are checking whether the resource is already exists in registry. Otherwise we have to read all the
-            //files and check
-            if (!registry.resourceExists(resourcePath)) {
-                try {
-                    fileContent = FileUtils.readFileToString(lifecycleConfigFile);
-                } catch (IOException e) {
-                    String msg = String.format("Error while reading lifecycle config file %s ", fileName);
-                    log.error(msg, e);
+            for (File lifecycleConfigFile : lifecycleConfigFiles) {
+                String fileName = FilenameUtils.removeExtension(lifecycleConfigFile.getName());
+                //here configuration file name should be same as aspect name
+                String resourcePath = RegistryConstants.LIFECYCLE_CONFIGURATION_PATH + fileName;
+                String fileContent = null;
+
+                //here we are checking whether the resource is already exists in registry. Otherwise we have to read all the
+                //files and check
+                if (!registry.resourceExists(resourcePath)) {
+                    try {
+                        fileContent = FileUtils.readFileToString(lifecycleConfigFile);
+                    } catch (IOException e) {
+                        String msg = String.format("Error while reading lifecycle config file %s ", fileName);
+                        log.error(msg, e);
                     /* The exception is not thrown, because if we throw the error, the for loop will be broken and
                     other files won't be read */
-                }
-                if ((fileContent != null) && !fileContent.isEmpty()) {
-                    try {
-                        //here we are checking the file name and aspect name to enforce that, both are same
-                        OMElement omElement = buildOMElement(fileContent);
-                        String aspectName = omElement.getAttributeValue(new QName("name"));
-                        if (fileName.equalsIgnoreCase(aspectName)) {
-                            addLifecycle(fileContent, registry, rootRegistry);
-                        } else {
-                            String msg = String.format("Configuration file name %s not matched with aspect name %s ",
-                                                       fileName, aspectName);
-                            log.error(msg);
+                    }
+                    if ((fileContent != null) && !fileContent.isEmpty()) {
+                        try {
+                            //here we are checking the file name and aspect name to enforce that, both are same
+                            OMElement omElement = buildOMElement(fileContent);
+                            String aspectName = omElement.getAttributeValue(new QName("name"));
+                            if (fileName.equalsIgnoreCase(aspectName)) {
+                                addLifecycle(fileContent, registry, rootRegistry);
+                            } else {
+                                String msg = String.format("Configuration file name %s not matched with aspect name %s ",
+                                        fileName, aspectName);
+                                log.error(msg);
                             /* The error is not thrown, because if we throw the error, the for loop will be broken and
                             other files won't be read */
-                        }
-                    } catch (RegistryException e) {
-                        String msg = String.format("Error while adding aspect %s ", fileName);
-                        log.error(msg, e);
+                            }
+                        } catch (RegistryException e) {
+                            String msg = String.format("Error while adding aspect %s ", fileName);
+                            log.error(msg, e);
                         /* The exception is not thrown, because if we throw the error, the for loop will be broken and
                         other files won't be read */
+                        }
                     }
-                }
-            } else {
-                try {
-                    generateAspect(resourcePath, registry);
-                } catch (Exception e) {
-                    String msg = String.format("Error while generating aspect %s ", fileName);
-                    log.error(msg, e);
+                } else {
+                    try {
+                        generateAspect(resourcePath, registry);
+                    } catch (Exception e) {
+                        String msg = String.format("Error while generating aspect %s ", fileName);
+                        log.error(msg, e);
                     /* The exception is not thrown, because if we throw the error, the for loop will be broken and
                         other aspects won't be added */
+                    }
+                }
+            }
+        } else {
+            Resource lifecycleRoot = registry.get(getContextRoot());
+            if (!(lifecycleRoot instanceof Collection)) {
+                String msg = "Failed to continue as the lifecycle configuration root: " + getContextRoot() +
+                            " is not a collection.";
+                log.error(msg);
+                throw new RegistryException(msg);
+            }
+            Collection lifecycleRootCol = (Collection)lifecycleRoot;
+            String[] lifecycleConfigPaths = lifecycleRootCol.getChildren();
+            if (lifecycleConfigPaths != null) {
+                for (String lifecycleConfigPath: lifecycleConfigPaths) {
+                    generateAspect(lifecycleConfigPath, registry);
                 }
             }
         }
@@ -787,5 +813,23 @@ public class CommonUtil {
 				}
 			}
 		}    	
-    }    
+    }
+
+    /**
+     * This method is used to set attribute indexing service.
+     *
+     * @param service   Attribute indexing service.
+     */
+    public static void setAttributeSearchService(AttributeSearchService service) {
+        attributeSearchService = service;
+    }
+
+    /**
+     * This method is used to get Attribute search service.
+     *
+     * @return  attribute search service.
+     */
+    public static AttributeSearchService getAttributeSearchService() {
+        return attributeSearchService;
+    }
 }

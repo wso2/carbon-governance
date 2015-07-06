@@ -145,6 +145,7 @@
                 for (int i=0; i<validatationAttributes.size(); i++) {
                     Map<String, Object> map = validatationAttributes.get(i);
                     String prop = (String)map.get("properties");
+                    Boolean isUnboundedTable = (Boolean)map.get("unboundedTable");
                     String eleName = (String)map.get("name");
                     List<String> eleIds = (List<String>)map.get("ids");
                     String regexp = StringEscapeUtils.escapeJavaScript((String)map.get("regexp"));
@@ -164,12 +165,29 @@
                 reason += validateRegex("<%=regexp%>", eleArr, "<%=eleName%>" + (i+1));
             }
 
+            <%  } else if(isUnboundedTable) { %>
+            eleArr = new Array(); <%
+                for (int j=0; j<eleIds.size(); ++j) { %>
+            ele = document.getElementById('id_<%=eleIds.get(j).replaceAll("-","")%>');
+            if (ele == undefined || ele == null) {
+                var allElements = document.getElementsByTagName('input');
+                for (var i = 0, n = allElements.length; i < n; i++) {
+                    var  elementN= allElements[i].getAttribute('customatt');
+                    if (elementN !== null &&  elementN == '<%=eleIds.get(j).replaceAll("-","")%>')
+                    {
+                        eleArr.push(allElements[i]);
+                    }
+                }
+            }
+            <%} %>
+            reason += validateRegex("<%=regexp%>", eleArr, "<%=eleName%>");
+
             <%  } else { %>
             eleArr = new Array(); <%
                 for (int j=0; j<eleIds.size(); ++j) { %>
-            ele = document.getElementById('<%=eleIds.get(j)%>');
+            ele = document.getElementById('id_<%=eleIds.get(j).replaceAll("-","")%>');
             if (ele == undefined || ele == null) {
-                ele = document.getElementsByName('<%=eleIds.get(j)%>')[0];
+                ele = document.getElementsByName('<%=eleIds.get(j).replaceAll("-","")%>')[0];
             }
             eleArr.push(ele);
             <%} %>

@@ -32,6 +32,7 @@ import org.w3c.dom.NodeList;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
+import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsDataHolder;
 import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -103,7 +104,8 @@ public class WsdlUriProcessor {
             }
             int tenantId = CurrentSession.getTenantId();
             String userName = CurrentSession.getUser();
-            this.governanceUserRegistry = GovernanceRegistryExtensionsComponent.getRegistryService().getGovernanceUserRegistry(userName, tenantId);
+            this.governanceUserRegistry = GovernanceRegistryExtensionsDataHolder.getInstance().getRegistryService()
+                    .getGovernanceUserRegistry(userName, tenantId);
 
         } catch (RegistryException ignore) {
             this.systemRegistry = null;
@@ -248,7 +250,7 @@ public class WsdlUriProcessor {
             schemaUriProcessor.saveSchemasToRegistry(currentSchemaLocation,
                     null,masterVersion,dependeinciesList);
             updateWSDLSchemaLocations();
-            masterWSDLPath = saveWSDLsToRepositoryNew(metadata,currentEndpointLocation
+            masterWSDLPath = saveWSDLsToRepositoryNew(context,metadata,currentEndpointLocation
                     ,dependeinciesList,masterVersion);// 3rd parameter is false, for importing WSDLs.
 
             addPolicyImports(context);
@@ -259,7 +261,7 @@ public class WsdlUriProcessor {
                     null);
             updateWSDLSchemaLocations();
 
-            masterWSDLPath = saveWSDLsToRepositoryNew(metadata);
+            masterWSDLPath = saveWSDLsToRepositoryNew(context,metadata);
 
             addPolicyImports(context);
 
@@ -624,7 +626,7 @@ public class WsdlUriProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private String saveWSDLsToRepositoryNew(Resource metaDataResource)
+    private String saveWSDLsToRepositoryNew(RequestContext context,Resource metaDataResource)
             throws RegistryException {
         String masterWSDLPath = null;
         try {
@@ -673,7 +675,7 @@ public class WsdlUriProcessor {
                 }
                 saveResource(wsdlInfo.getOriginalURL(), wsdlPath, wsdlResource, wsdlInfo.isMasterWSDL());
                 if (systemRegistry != null) {
-                    org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils.saveEndpointsFromWSDL(wsdlPath, wsdlResource, registry,
+                    org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils.saveEndpointsFromWSDL(context,wsdlPath, wsdlResource, registry,
                             systemRegistry);
                 }
 
@@ -764,7 +766,7 @@ public class WsdlUriProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private String saveWSDLsToRepositoryNew(Resource metaDataResource
+    private String saveWSDLsToRepositoryNew(RequestContext context,Resource metaDataResource
             ,String endpointEnvironment,List<String> dependenciesList,String version)
             throws RegistryException {
         String masterWSDLPath = null;
@@ -826,7 +828,7 @@ public class WsdlUriProcessor {
                 }
                 saveResource(wsdlInfo.getOriginalURL(), wsdlPath, wsdlResource, wsdlInfo.isMasterWSDL());
                 if (systemRegistry != null) {
-                    EndpointUtils.saveEndpointsFromWSDL(wsdlPath, wsdlResource, registry,
+                    EndpointUtils.saveEndpointsFromWSDL(context,wsdlPath, wsdlResource, registry,
                             systemRegistry, endpointEnvironment, dependenciesList, version);
                 }
 

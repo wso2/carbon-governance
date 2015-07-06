@@ -28,6 +28,7 @@ import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
+import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
@@ -35,6 +36,7 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.Paginate;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
 import javax.xml.namespace.QName;
 import java.util.*;
@@ -175,14 +177,16 @@ public class GovernanceArtifactManager {
 
         ((GovernanceArtifactImpl)artifact).associateRegistry(registry);
         boolean succeeded = false;
+        Resource resource = null;
+        String path = null;
         try {
             registry.beginTransaction();
-            Resource resource = registry.newResource();
+            resource = registry.newResource();
 
             resource.setMediaType(mediaType);
             setContent(artifact, resource);
             // the artifact will not actually stored in the tmp path.
-            String path = GovernanceUtils.getPathFromPathExpression(
+            path = GovernanceUtils.getPathFromPathExpression(
                     pathExpression, artifact);
 
             if(registry.resourceExists(path)){
@@ -613,6 +617,21 @@ public class GovernanceArtifactManager {
     private void setContentAndProperties(GovernanceArtifact artifact, Resource resource, Object content)
             throws RegistryException {
         resource.setContent(content);
+        String[] propertyKeys = artifact.getPropertyKeys();
+        boolean hasSourceProperty = false;
+        if (propertyKeys != null) {
+            for (String propertyKey : propertyKeys) {
+                if ("resource.source".equals(propertyKey)) {
+                    hasSourceProperty = true;
+                }
+                String[] propertyValues = artifact.getAttributes(propertyKey);
+                resource.setProperty(propertyKey, Arrays.asList(propertyValues));
+            }
+        }
+        if (!hasSourceProperty) {
+            //TODO ERROR
+            resource.setProperty("resource.source", "remote");
+        }
 
         // Stop the attributes been added as properties
       /*  String[] attributeKeys = artifact.getAttributeKeys();
@@ -641,6 +660,23 @@ public class GovernanceArtifactManager {
         List<GovernanceArtifact> artifacts;
         artifacts = GovernanceUtils.findGovernanceArtifacts(criteria != null ? criteria :
                 Collections.<String, List<String>>emptyMap(), registry, mediaType);
+        if (artifacts != null) {
+            return artifacts.toArray(new GovernanceArtifact[artifacts.size()]);
+        } else {
+            return new GovernanceArtifact[0];
+        }
+    }
+
+    /**
+     * Finds and returns all GovernanceArtifacts that match the search query.
+     *
+     * @param query The query to search artifacts
+     * @return Array of artifacts that match the query string
+     * @throws GovernanceException if the operation failed
+     */
+    public GovernanceArtifact[] findGovernanceArtifacts(String query) throws GovernanceException {
+        List<GovernanceArtifact> artifacts;
+        artifacts = GovernanceUtils.findGovernanceArtifacts(query, registry, mediaType);
         if (artifacts != null) {
             return artifacts.toArray(new GovernanceArtifact[artifacts.size()]);
         } else {
@@ -806,7 +842,7 @@ public class GovernanceArtifactManager {
                         if (!values[j].matches((String)map.get("regexp"))) {
                             //return an exception to stop adding artifact
                             throw new GovernanceException((String)map.get("name") + " doesn't match regex: " +
-                                    (String)map.get("Regexp"));
+                                    (String)map.get("regexp"));
                         }
                     }
                 }
@@ -819,7 +855,7 @@ public class GovernanceArtifactManager {
                 if (!value.matches((String)map.get("regexp"))) {
                     //return an exception to stop adding artifact
                     throw new GovernanceException((String)map.get("name") + " doesn't match regex: " +
-                            (String)map.get("Regexp"));
+                            (String)map.get("regexp"));
                 }
             }
         }
@@ -880,4 +916,118 @@ public class GovernanceArtifactManager {
         }
         return artifactList.toArray(new GovernanceArtifact[artifactList.size()]);
     }
+
+    private boolean addDefaultAttributeIfNotExists(final GovernanceArtifact artifact, Resource resource, final String artifactName) throws GovernanceException {
+        GovernanceArtifact[] governanceArtifacts = searchArtifactsByGroupingAttribute(artifact, mediaType, artifactName);
+
+        if(governanceArtifacts != null && governanceArtifacts.length == 0) {
+            resource.addProperty("default", "true");
+            return true;
+        }
+
+        return false;
+    }
+
+    private void addDefaultAttributeToAssociations(final GovernanceArtifact artifact) throws GovernanceException {
+        try {
+            if(mediaType.equals("application/vnd.wso2-soap-service+xml")) {
+
+                Association[] associations = registry.getAllAssociations(artifact.getPath());
+
+                for(Association association : associations) {
+                    String destinationPath = association.getDestinationPath();
+                    if(destinationPath.contains("wsdl")) {
+                        String[] subPaths = destinationPath.split("/");
+                        final String artifactName = subPaths[subPaths.length - 1];
+                        GovernanceArtifact[] governanceArtifacts = searchArtifactsByGroupingAttribute(artifact, CommonConstants.WSDL_MEDIA_TYPE, artifactName);
+
+                        if(governanceArtifacts != null && governanceArtifacts.length == 0) {
+                            Resource wsdlResource = registry.get(destinationPath);
+                            wsdlResource.addProperty("default", "true");
+                            registry.put(destinationPath, wsdlResource);
+                        }
+                    }
+                }
+            }
+        } catch(RegistryException ex) {
+            log.error("An error occurred while retrieving association of the resource " + artifact.getPath(), ex);
+        }
+    }
+
+    private GovernanceArtifact[] searchArtifactsByGroupingAttribute(final GovernanceArtifact artifact, String mediaType, final String artifactName) throws GovernanceException {
+        if(GovernanceUtils.getAttributeSearchService() == null) {
+            return null;
+        }
+
+        Map<String, List<String>> listMap = new HashMap<String, List<String>>();
+
+        GovernanceArtifactConfiguration artifactConfiguration ;
+        String groupingAttribute = null ;
+
+        try {
+            artifactConfiguration = GovernanceUtils.getArtifactConfigurationByMediaType(registry, mediaType);
+
+            if(artifactConfiguration != null) {
+                groupingAttribute = artifactConfiguration.getGroupingAttribute();
+            } else {
+                log.debug("Artifact type with media type " + mediaType + " doesn't exist");
+            }
+        } catch(RegistryException ex) {
+            log.error("An error occurred while retrieving the artifact configuration ", ex);
+            return null;
+        }
+
+        if(groupingAttribute != null) {
+            if(groupingAttribute.equals(CommonConstants.SERVICE_NAME_ATTRIBUTE)) {
+                listMap.put(groupingAttribute, new ArrayList<String>() {{
+                    add(artifactName);
+                }});
+            } else if(groupingAttribute.equals("overview_version")) {
+                listMap.put(groupingAttribute, new ArrayList<String>() {{
+                    add(artifact.getAttribute("overview_version"));
+                }});
+            }
+        } else {
+            listMap.put(CommonConstants.SERVICE_NAME_ATTRIBUTE, new ArrayList<String>() {{
+                add(artifactName);
+            }});
+        }
+
+        return findGovernanceArtifacts(listMap);
+    }
+
+
+    /**
+     * Check whether GovernanceArtifact is exists in the Registry without loading whole artifact into memory.
+     * This method only work for Configurable Governance Artifacts and doe not work for Content Artifacts such
+     * as WSDL, WADL, Swagger, XMLSchema etc.
+     *
+     * @param artifact GovernanceArtifact to check it's existence.
+     * @return true or false
+     * @throws GovernanceException if the operation failed.
+     */
+    public boolean isExists(GovernanceArtifact artifact) throws GovernanceException {
+        String path = GovernanceUtils.getPathFromPathExpression(
+                pathExpression, artifact);
+        try {
+            return registry.resourceExists(path);
+        } catch (RegistryException e) {
+            throw new GovernanceException(e);
+        }
+    }
+
+    public void removeGenericArtifact(GenericArtifact artifact) throws GovernanceException {
+        String path = GovernanceUtils.getPathFromPathExpression(
+                pathExpression, artifact);
+        if (path != null) {
+            try {
+                GovernanceUtils.removeArtifactFromPath(registry, path);
+            } catch (RegistryException e) {
+                throw new GovernanceException(e);
+            }
+        }
+    }
+
+
+
 }

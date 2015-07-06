@@ -16,6 +16,8 @@
  ~ under the License.
  -->
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
+<%@ page import="org.wso2.carbon.registry.core.exceptions.RegistryException" %>
+<%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUtil" %>
 <%
     ManageGenericArtifactServiceClient client = null;
     String error = null;
@@ -24,10 +26,22 @@
         client = new ManageGenericArtifactServiceClient(config,session);
         String payload = request.getParameter("payload");
         String path = request.getParameter("path");
+        String rxtName = request.getParameter("rxtName");
+        String keyInPayload = null;
 
-        boolean isInstalled = client.addRXTResource(request, payload,path);
+        try {
+            keyInPayload = GenericUtil.getRXTKeyFromContent(payload);
+        } catch (RegistryException e){
+            //Skip XML payload parsing issue for backend validation
+        }
+        boolean isInstalled = false;
+        if (keyInPayload != null && rxtName != null && !keyInPayload.equals(rxtName)){
+            error = "RXT short name can't be modified.";
+        } else if (keyInPayload != null){
+            isInstalled = client.addRXTResource(request, payload,path);
+        }
 
-        if(!isInstalled) {
+        if(!isInstalled && error == null) {
          error = "Failed to install the generic artifact type.!";
         }
 

@@ -23,6 +23,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.governance.wsdltool.stub.WSDLToolServiceExceptionException;
 import org.wso2.carbon.governance.wsdltool.stub.WSDLToolServiceStub;
 import org.wso2.carbon.governance.wsdltool.stub.beans.xsd.ServiceInfoBean;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -31,6 +32,7 @@ import org.wso2.carbon.utils.ServerConstants;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpSession;
+import java.rmi.RemoteException;
 
 public class WSDLToolServiceClient {
 
@@ -39,20 +41,15 @@ public class WSDLToolServiceClient {
     private WSDLToolServiceStub stub;
     private String epr;
 
-    public WSDLToolServiceClient(
-            String cookie, String backendServerURL, ConfigurationContext configContext)
+    public WSDLToolServiceClient(ConfigurationContext configContext, String backendServerURL, String cookie)
             throws RegistryException {
-
         epr = backendServerURL + "WSDLToolService";
-
         try {
             stub = new WSDLToolServiceStub(configContext, epr);
-
             ServiceClient client = stub._getServiceClient();
             Options option = client.getOptions();
             option.setManageSession(true);
             option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
-
         } catch (AxisFault axisFault) {
             String msg = "Failed to initiate wsdltool service client. " + axisFault.getMessage();
             log.error(msg, axisFault);
@@ -87,4 +84,5 @@ public class WSDLToolServiceClient {
     public void addMEXService(String path, ServiceInfoBean serviceInfo) throws Exception {
         stub.addMEXService(path, serviceInfo);
     }
+
 }

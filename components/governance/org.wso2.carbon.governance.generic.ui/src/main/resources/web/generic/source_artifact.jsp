@@ -44,6 +44,7 @@
     ManageGenericArtifactServiceClient client;
     ResourceServiceClient resourceServiceClient;
     String rxtPath = request.getParameter("path");
+    String rxtName = request.getParameter("rxtName");
     try{
         client = new ManageGenericArtifactServiceClient(config,session);
         viewMode = request.getParameter("view") != null;
@@ -171,6 +172,7 @@
     <h2><fmt:message key="generic.artifact.source"/></h2>
     <div id="workArea">
         <form id="generic.artifact.source.form" method="post" action="save_artifact_ajaxprocessor.jsp">
+            <input type="hidden" name="rxtName" id="rxtName" value="<%=rxtName%>"/>
             <table class="styledLeft" cellspacing="0" cellpadding="0">
                 <thead>
                 <tr>
@@ -191,7 +193,7 @@
                         <%      if (rxtPath == null) { %>
                         <input class="button registryWriteOperation" type="button" onclick="addRXT()" value="<fmt:message key="save"/>"/>
                         <%      } else { %>
-                        <input class="button registryWriteOperation" type="button" onclick="saveRXT('<%=rxtPath%>')" value="<fmt:message key="save"/>"/>
+                        <input class="button registryWriteOperation" type="button" onclick="saveRXT('<%=rxtPath%>','<%=rxtName%>')" value="<fmt:message key="save"/>"/>
                         <%      } %>
                         <input class="button registryNonWriteOperation" type="button" disabled="disabled" value="<fmt:message key="save"/>"/>
                         <input class="button" type="button" value="<fmt:message key="cancel"/>" onclick="javascript: cancelSequence(); return false;"/>

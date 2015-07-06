@@ -1,0 +1,24 @@
+<AssociationConfig>
+
+    <Association type="default">
+        <security>policy</security>
+        <ownedBy>soapservice,restservice,wsdl</ownedBy>
+        <usedBy>soapservice,restservice,wsdl</usedBy>
+        <dependancies>soapservice,restservice,wsdl</dependancies>
+    </Association>
+
+    <Association type="restservice">
+        <security>policy</security>
+        <ownedBy>restservice,soapservice,wsdl</ownedBy>
+        <usedBy>restservice,soapservice,wsdl</usedBy>
+        <dependancies>restservice,soapservice,wsdl</dependancies>
+    </Association>
+
+    <Association type="soapservice">
+        <security>policy</security>
+        <ownedBy>soapservice,restservice,wsdl</ownedBy>
+        <usedBy>soapservice,restservice,wsdl</usedBy>
+        <dependancies>soapservice,restservice,wsdl</dependancies>
+    </Association>
+
+</AssociationConfig>

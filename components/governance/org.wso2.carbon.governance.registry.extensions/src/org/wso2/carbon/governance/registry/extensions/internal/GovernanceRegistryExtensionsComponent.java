@@ -18,16 +18,18 @@
 
 package org.wso2.carbon.governance.registry.extensions.internal;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.governance.common.GovernanceConfiguration;
+import org.wso2.carbon.governance.common.GovernanceConfigurationService;
 import org.wso2.carbon.governance.registry.extensions.listeners.RxtLoader;
+import org.wso2.carbon.governance.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
+import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.securevault.SecretCallbackHandlerService;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 
@@ -36,19 +38,22 @@ import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1" policy="dynamic"  bind="setRegistryService" unbind="unsetRegistryService"
- *  @scr.reference name="secret.callback.handler.service"
- * interface="org.wso2.carbon.securevault.SecretCallbackHandlerService"
- * cardinality="1..1"  policy="dynamic"
- * bind="setSecretCallbackHandlerService"
- * unbind="unsetSecretCallbackHandlerService"
- *
+ * @scr.reference name="secret.callback.handler.service"
+ * interface="org.wso2.carbon.securevault.SecretCallbackHandlerService" cardinality="1..1"  policy="dynamic"
+ * bind="setSecretCallbackHandlerService" unbind="unsetSecretCallbackHandlerService"
+ * @scr.reference name="extensions.service"
+ * interface="org.wso2.carbon.registry.extensions.services.RXTStoragePathService" cardinality="1..1"
+ * policy="dynamic" bind="setRxtStoragePathService" unbind="unsetRxtStoragePathService"
+ * @scr.reference name="governanceconfiguration.service"
+ * interface="org.wso2.carbon.governance.common.GovernanceConfigurationService" cardinality="1..1"
+ * policy="dynamic" bind="setGovernanceConfigurationService" unbind="unsetGovernanceConfiguration"
  */
 
 public class GovernanceRegistryExtensionsComponent {
 
     private static final Log log = LogFactory.getLog(GovernanceRegistryExtensionsComponent.class);
-    private static RegistryService registryService = null;
     private static SecretCallbackHandlerService secretCallbackHandlerService = null;
+    private GovernanceRegistryExtensionsDataHolder dataHolder = GovernanceRegistryExtensionsDataHolder.getInstance();
 
     protected void activate(ComponentContext componentContext) {
         BundleContext bundleCtx = componentContext.getBundleContext();
@@ -61,38 +66,51 @@ public class GovernanceRegistryExtensionsComponent {
             log.error("Identity Provider Management - RXTLoader could not be registered");
         }
 
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("GovernanceRegistryExtensionsComponent activated");
         }
     }
 
     protected void setRegistryService(RegistryService registryService) {
-        if(registryService!=null && log.isDebugEnabled()){
-          log.debug("Registry service initialized");
+        dataHolder.setRegistryService(registryService);
+        if (log.isDebugEnabled()) {
+            log.debug("Registry service initialized");
         }
-        this.registryService = registryService;
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
-        this.registryService = null;
+        dataHolder.setRegistryService(null);
     }
 
-    public static RegistryService getRegistryService() throws RegistryException {
-        return registryService;
-    }
 
-    protected void setSecretCallbackHandlerService(SecretCallbackHandlerService secretCallbackHandlerService){
-            if (log.isDebugEnabled()) {
-                log.debug("Setting SecretCallbackHandlerService");
-            }
-           this.secretCallbackHandlerService = secretCallbackHandlerService;
+    protected void setSecretCallbackHandlerService(SecretCallbackHandlerService secretCallbackHandlerService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting SecretCallbackHandlerService");
+        }
+        this.secretCallbackHandlerService = secretCallbackHandlerService;
     }
 
     protected void unsetSecretCallbackHandlerService(SecretCallbackHandlerService secretCallbackHandlerService) {
         this.secretCallbackHandlerService = null;
     }
 
-    public static SecretCallbackHandlerService getSecretCallbackHandlerService(){
+    public static SecretCallbackHandlerService getSecretCallbackHandlerService() {
         return secretCallbackHandlerService;
+    }
+
+    protected void setRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
+        CommonUtil.setRxtStoragePathService(rxtStoragePathService);
+    }
+
+    protected void unsetRxtStoragePathService(RXTStoragePathService rxtSPService) {
+        CommonUtil.setRxtStoragePathService(null);
+    }
+
+    protected void setGovernanceConfigurationService(GovernanceConfigurationService govConfigService) {
+        dataHolder.setGovernanceConfiguration(govConfigService.getGovernanceConfiguration());
+    }
+
+    protected void unsetGovernanceConfiguration(GovernanceConfigurationService govConfigService) {
+        dataHolder.setGovernanceConfiguration(null);
     }
 }
