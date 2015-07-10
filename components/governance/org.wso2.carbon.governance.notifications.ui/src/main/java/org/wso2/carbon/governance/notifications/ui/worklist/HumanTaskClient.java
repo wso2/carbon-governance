@@ -94,20 +94,39 @@ public class HumanTaskClient {
                 "/permission/admin/manage/resources/notifications")) {
             return new WorkItem[0];
         }
+        List<WorkItem> workItems = new LinkedList<WorkItem>();
+
+        //First check for the task ASSIGNED_TO_ME
         TSimpleQueryInput queryInput = new TSimpleQueryInput();
         queryInput.setPageNumber(0);
         queryInput.setSimpleQueryCategory(TSimpleQueryCategory.ASSIGNED_TO_ME);
 
         TTaskSimpleQueryResultSet resultSet = htStub.simpleQuery(queryInput);
-        if (resultSet == null || resultSet.getRow() == null || resultSet.getRow().length == 0) {
-            return new WorkItem[0];
+
+        if (resultSet != null && resultSet.getRow() != null && resultSet.getRow().length > 0) {
+            for (TTaskSimpleQueryResultRow row : resultSet.getRow()) {
+                URI id = row.getId();
+                workItems.add(new WorkItem(id, row.getPresentationSubject(),
+                        row.getPresentationName(), row.getPriority(), row.getStatus(),
+                        row.getCreatedTime(), htStub.loadTask(id).getActualOwner().getTUser()));
+            }
         }
-        List<WorkItem> workItems = new LinkedList<WorkItem>();
-        for (TTaskSimpleQueryResultRow row : resultSet.getRow()) {
-            URI id = row.getId();
-            workItems.add(new WorkItem(id, row.getPresentationSubject(),
-                    row.getPresentationName(), row.getPriority(), row.getStatus(),
-                    row.getCreatedTime(), htStub.loadTask(id).getActualOwner().getTUser()));
+        //Then check for the task CLAIMABLE
+        TSimpleQueryInput queryInputClaimable = new TSimpleQueryInput();
+        queryInputClaimable.setPageNumber(0);
+        queryInputClaimable.setSimpleQueryCategory(TSimpleQueryCategory.CLAIMABLE);
+
+        TTaskSimpleQueryResultSet resultSetClaimable = htStub.simpleQuery(queryInputClaimable);
+
+        // We can't get the role while creating new WorkItem() here, because CLAIMABLE task hasn't actual owners..
+        if (resultSetClaimable != null && resultSetClaimable.getRow() != null
+                && resultSetClaimable.getRow().length > 0) {
+            for (TTaskSimpleQueryResultRow row : resultSetClaimable.getRow()) {
+                URI id = row.getId();
+                workItems.add(new WorkItem(id, row.getPresentationSubject(),
+                        row.getPresentationName(), row.getPriority(), row.getStatus(),
+                        row.getCreatedTime(), ""));
+            }
         }
         return workItems.toArray(new WorkItem[workItems.size()]);
     }

@@ -43,9 +43,13 @@
                         //This fix was added to resolve the problem of false resource exists message when a different
                         //version of the  resource exists.
                         if(path.contains(version) && resource_Name.equals(resourceName)) {
-						%>----ResourceExists----<%
-                    }
-
+                            String[] splitedPath = path.split("/");
+                            for(int a = 0; a < splitedPath.length; a++){
+                                if (splitedPath[a] != null && splitedPath[a].equals(version)){
+                                    %>----ResourceExists----<%
+                                }
+                            }
+                        }
 					}else{
                         //Else is introduced to preserve original functionality
                            if(resource_Name.equals(resourceName)){
