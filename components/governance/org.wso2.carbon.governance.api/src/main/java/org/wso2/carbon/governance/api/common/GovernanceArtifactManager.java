@@ -386,12 +386,14 @@ public class GovernanceArtifactManager {
             Resource resource = registry.newResource();
             resource.setMediaType(mediaType);
             setContent(artifact, resource);
-            String path = GovernanceUtils.getPathFromPathExpression(
-                    pathExpression, artifact);
 
+            String path;
             if (oldPath != null) {
                 path = oldPath;
+            } else {
+                path = GovernanceUtils.getPathFromPathExpression(pathExpression, artifact);
             }
+
             if (registry.resourceExists(path)) {
                 Resource oldResource = registry.get(path);
                 Properties properties = (Properties) oldResource.getProperties().clone();
