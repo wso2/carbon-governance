@@ -38,6 +38,14 @@ public interface GovernanceArtifact {
     String getId();
 
     /**
+     * Returns the media type of the artifact.
+     *
+     * @return the media type of the artifact
+     */
+    @SuppressWarnings("unused")
+    String getMediaType();
+
+    /**
      * Set the id
      *
      * @param id the id

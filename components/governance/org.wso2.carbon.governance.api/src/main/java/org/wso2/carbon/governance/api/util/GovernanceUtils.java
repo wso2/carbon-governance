@@ -1705,7 +1705,7 @@ public class GovernanceUtils {
                 if (referenceValue != null && !"".equals(referenceValue)) {
                     String referenceValueModified = referenceValue;
                     if(referenceValueModified.contains(" ")) {
-                        referenceValueModified = "\"" + referenceValueModified + "\"";
+                        referenceValueModified = referenceValueModified.replace(" ", "\\ ");
                     }
                     builder.append(referenceValueModified.toLowerCase()).append(",");
                 }
@@ -1770,7 +1770,7 @@ public class GovernanceUtils {
             if(subParts.length != 2) {
                 String value = subParts[0].toLowerCase();
                 if(value.contains(" ")) {
-                    value = "\"" + value + "\"";
+                    value = value.replace(" ", "\\ ");
                 }
                 fields.put("overview_name", value);
             } else {
@@ -1802,16 +1802,16 @@ public class GovernanceUtils {
                     if(subParts[0].contains(":")) {
                         String value = subParts[1].toLowerCase();
                         if(value.contains(" ")) {
-                            value = "\"" + value + "\"";
+                            value = value.replace(" ", "\\ ");
                         }
                         fields.put(subParts[0].replace(":", "_"), value);
                     } else {
-                        String value = subParts[1].toLowerCase();
+                        String value = subParts[1];
                         if(value.contains(" ")) {
-                            value = "\"" + value + "\"";
+                            value = value.replace(" ", "\\ ");
                         }
                         possibleProperties.put(subParts[0], value);
-                        fields.put("overview_" + subParts[0], value);
+                        fields.put("overview_" + subParts[0], value.toLowerCase());
                     }
                 }
             }
