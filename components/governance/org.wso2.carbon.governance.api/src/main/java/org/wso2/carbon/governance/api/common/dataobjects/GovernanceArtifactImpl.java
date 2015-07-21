@@ -238,6 +238,25 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
         return path;
     }
 
+    public String getMediaType() {
+        try {
+            String path = getPath();
+        } catch(GovernanceException ex) {
+            log.error("An error occurred while obtaining the path of artifact " + ex);
+            return null;
+        }
+        if(path != null) {
+            try {
+                if (registry.resourceExists(path)) {
+                    return registry.get(path).getMediaType();
+                }
+            } catch(RegistryException ex) {
+                log.error("An error occurred obtaining the media type of the artifact " + ex);
+            }
+        }
+        return null;
+    }
+
     /**
      * Returns the name of the lifecycle associated with this artifact.
      *
