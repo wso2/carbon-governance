@@ -239,11 +239,13 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     }
 
     public String getMediaType() {
-        try {
-            String path = getPath();
-        } catch(GovernanceException ex) {
-            log.error("An error occurred while obtaining the path of artifact " + ex);
-            return null;
+        if(path == null) {
+            try {
+                path = getPath();
+            } catch (GovernanceException ex) {
+                log.error("An error occurred while obtaining the path of artifact " + ex);
+                return null;
+            }
         }
         if(path != null) {
             try {
