@@ -199,11 +199,11 @@ public class ExecutorConstants {
     public static final String API_TIER = "tiersCollection";
     public static final String API_STATUS = "status";
     public static final String API_PUBLISHED_STATUS = "CREATED";
-    public static final String API_THROTTLING_TIER="resourceMethodThrottlingTier-";
+    public static final String API_THROTTLING_TIER="resourceMethodThrottlingTier-0";
 
-    public static final String API_URI_PATTERN ="uriTemplate-";
-    public static final String API_URI_HTTP_METHOD ="resourceMethod-";
-    public static final String API_URI_AUTH_TYPE ="resourceMethodAuthType-";
+    public static final String API_URI_PATTERN ="uriTemplate-0";
+    public static final String API_URI_HTTP_METHOD ="resourceMethod-0";
+    public static final String API_URI_AUTH_TYPE ="resourceMethodAuthType-0";
 	public static final String API_RESOURCE_COUNT = "resourceCount";
 	public static final String API_ENDPOINT_CONFIG = "endpoint_config";
     public static final String API_ACTION = "action";
