@@ -30,6 +30,10 @@
         <operation name="isLifecycleNameInUse">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/login</parameter>
         </operation>
+        <operation name="getLifecycleCurrentStateDuration">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/resources/govern/lifecycles
+            </parameter>
+        </operation>
     </service>
 
     <parameter name="AuthorizationAction">/permission/admin/configure/governance/lifecycles</parameter>
