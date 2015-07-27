@@ -26,7 +26,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import java.util.List;
 import java.util.Map;
 
-public class ServiceDiscovery extends DiscoveryAgentExecutorSupport {
+public class ServerDiscoveryService extends DiscoveryAgentExecutorSupport {
 
 
     public Map<String, List<DetachedGenericArtifact>> discoverArtifacts(GenericArtifact server)
@@ -34,6 +34,22 @@ public class ServiceDiscovery extends DiscoveryAgentExecutorSupport {
         DiscoveryAgentExecutor discoveryAgentExecutor = DiscoveryAgentExecutor.getInstance();
         return discoveryAgentExecutor.executeDiscoveryAgent(server);
     }
+
+    public Map<String, List<String>> save(Map<String, List<DetachedGenericArtifact>> discovredArtifacts,
+            GenericArtifact server, ExistArtifactStrategy existArtifactStrategy,
+            OrphanArtifactStrategy orphanArtifactStrategy) throws DiscoveryAgentException {
+        //TODO: Implement using existArtifactStrategy and orphanArtifactStrategy variables.
+        try {
+            Registry govRegistry = getGovRegistry();
+            String originProperty = getOriginProperty(server);
+            String seqNo = getSequnceNo();
+            return persistDiscoveredArtifacts(govRegistry, discovredArtifacts, server, seqNo, originProperty);
+            // handleOrphanArtifacts(govRegistry, discovredArtifacts.keySet(), seqNo, originProperty);
+        } catch (RegistryException e) {
+            throw new DiscoveryAgentException("Exception occurred while accessing registry", e);
+        }
+    }
+
 
     public Map<String, List<String>> save(Map<String, List<DetachedGenericArtifact>> discovredArtifacts,
                                           GenericArtifact server) throws DiscoveryAgentException {
