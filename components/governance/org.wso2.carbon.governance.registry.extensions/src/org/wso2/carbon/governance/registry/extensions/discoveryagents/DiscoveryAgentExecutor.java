@@ -39,7 +39,7 @@ import java.util.Properties;
 public class DiscoveryAgentExecutor {
 
     public static final String SERVER_RXT_OVERVIEW_TYPE = "overview_type";
-    private final Log log = LogFactory.getLog(DiscoveryAgent.class);
+    private final Log log = LogFactory.getLog(DiscoveryAgentExecutor.class);
 
     private static DiscoveryAgentExecutor executor = new DiscoveryAgentExecutor();
 
