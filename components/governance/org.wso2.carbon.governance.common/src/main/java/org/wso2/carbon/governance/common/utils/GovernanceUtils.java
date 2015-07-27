@@ -36,15 +36,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GovernanceUtils {
 
+    public static final String DISCOVERY_AGENTS = "DiscoveryAgents";
+    public static final String DISCOVERY_AGENT = "DiscoveryAgent";
+    public static final String SERVER_TYPE_ID = "ServerTypeId";
+    public static final String AGENT_CLASS = "AgentClass";
+    public static final String PROPERTY = "property";
+    public static final String NAME = "name";
+    public static final String VALUE = "value";
+    public static final String GOVERNANCE_CONFIG_FILE = "governance.xml";
     private static Log log = LogFactory.getLog(GovernanceUtils.class);
 
 
     private static boolean isConfigInitialized = false;
 
-    public static GovernanceConfiguration getGovernanceConfiguration() throws GovernanceConfigurationException{
+    public static GovernanceConfiguration getGovernanceConfiguration() throws GovernanceConfigurationException {
         GovernanceConfiguration govConfig = GovernanceConfiguration.getInstance();
         if (!isConfigInitialized) {
             String governanceXML = getGovernanceXML();
@@ -54,7 +64,7 @@ public class GovernanceUtils {
                 in = new FileInputStream(governanceXMLFile);
                 initGovernanceConfiguration(in, govConfig);
                 isConfigInitialized = true;
-                if(log.isDebugEnabled()){
+                if (log.isDebugEnabled()) {
                     log.debug(govConfig);
                 }
             } catch (IOException e) {
@@ -87,8 +97,8 @@ public class GovernanceUtils {
     }
 
     private static String getGovernanceXML() {
-            return getCarbonConfigDirPath() + File.separator + "governance.xml";
-        }
+        return getCarbonConfigDirPath() + File.separator + GOVERNANCE_CONFIG_FILE;
+    }
 
 
     private static void readChildElements(Element config,
@@ -98,17 +108,35 @@ public class GovernanceUtils {
 
     private static void readDiscoveryAgents(Element config,
                                             GovernanceConfiguration govConfig) {
-        Element agentsElement = getFirstElement(config, "DiscoveryAgents");
+        Element agentsElement = getFirstElement(config, DISCOVERY_AGENTS);
         if (agentsElement != null) {
-            NodeList agents = agentsElement.getElementsByTagName("DiscoveryAgent");
+            NodeList agents = agentsElement.getElementsByTagName(DISCOVERY_AGENT);
             for (int i = 0; i < agents.getLength(); i++) {
                 Element agent = (Element) agents.item(i);
-                String serverType = getFirstElementContent(agent, "ServerTypeId");
-                String agentClass = getFirstElementContent(agent, "AgentClass");
-                govConfig.addDiscoveryAgentConfig(serverType, agentClass);
+                String serverType = getFirstElementContent(agent, SERVER_TYPE_ID);
+                String agentClass = getFirstElementContent(agent, AGENT_CLASS);
+                Map<String, String> properties = getProperties(agent);
+                properties.put(AGENT_CLASS, agentClass);
+                govConfig.addDiscoveryAgentConfig(serverType, properties);
             }
         }
 
+    }
+
+    private static Map<String, String> getProperties(Element agent) {
+        NodeList propertyNodes = agent.getElementsByTagName(PROPERTY);
+        Map<String, String> properties = new HashMap<>();
+        for (int i = 0; i < propertyNodes.getLength(); i++) {
+            Element propertyELe = (Element) propertyNodes.item(0);
+            String propertyKey = propertyELe.getAttribute(NAME);
+            String propertyValue = propertyELe.getAttribute(VALUE);
+            if (propertyKey != null && propertyValue != null && !propertyKey.isEmpty() && !propertyValue.isEmpty()) {
+                properties.put(propertyKey, propertyValue);
+            }
+
+
+        }
+        return properties;
     }
 
     private static Element getFirstElement(Element element, String childName) {
@@ -127,7 +155,7 @@ public class GovernanceUtils {
         String carbonConfigDir =
                 System.getProperty(ServerConstants.CARBON_CONFIG_DIR_PATH);
         if (carbonConfigDir == null) {
-            carbonConfigDir =  CarbonUtils.getCarbonConfigDirPath();
+            carbonConfigDir = CarbonUtils.getCarbonConfigDirPath();
         }
         return carbonConfigDir;
     }

@@ -10,19 +10,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-public class TestDiscoveryAgent implements DiscoveryAgent {
+public class TestDiscoveryAgent extends AbstractDiscoveryAgent {
 
-    @Override public void init(Properties properties) {
-        System.out.println("Discovery agent TestDiscoveryAgent class initialized");
-    }
-
-    @Override public void close(Properties properties) {
-
-    }
-
-    @Override public Map<String, List<DetachedGenericArtifact>> discoverArtifacts(GenericArtifact server)
+    @Override
+    public Map<String, List<DetachedGenericArtifact>> discoverArtifacts(GenericArtifact server)
             throws DiscoveryAgentException {
         return this.discoverArtifactsInternal(server);
     }

@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class DiscoveryAgentExecutorSupport  {
+public abstract class DiscoveryAgentExecutorSupport {
 
     public static final String RESOURCE_SOURCE_PROPERTY = "resource.source";
     public static final String SOURCE_GREG_DISCOVERY = "greg-discovery";
@@ -52,7 +52,6 @@ public abstract class DiscoveryAgentExecutorSupport  {
     private ExistArtifactStrategy onExistArtifactStrategy;
 
 
-
     protected void updateMaintenanceInfo(GenericArtifact artifact, String seqNo, String originProperty)
             throws GovernanceException {
         artifact.addAttribute(RESOURCE_SOURCE_PROPERTY, SOURCE_GREG_DISCOVERY);
@@ -60,9 +59,10 @@ public abstract class DiscoveryAgentExecutorSupport  {
         artifact.addAttribute(RESOURCE_DISCOVERY_SEQNO_PROPERTY, seqNo);
     }
 
-    protected Map<String, List<String>> persistDiscoveredArtifacts(Registry registry, Map<String, List<DetachedGenericArtifact>> newArtifacts,
-                                            GenericArtifact serverArtifact, String seqNo,
-                                            String originProperty)
+    protected Map<String, List<String>> persistDiscoveredArtifacts(Registry registry,
+                                                                   Map<String, List<DetachedGenericArtifact>> newArtifacts,
+                                                                   GenericArtifact serverArtifact, String seqNo,
+                                                                   String originProperty)
             throws RegistryException {
         Map<String, List<String>> feedback = initFeedbackMap();
         for (Map.Entry<String, List<DetachedGenericArtifact>> artifactEntry : newArtifacts.entrySet()) {
@@ -77,8 +77,8 @@ public abstract class DiscoveryAgentExecutorSupport  {
     }
 
     protected void persistNewArtifact(GenericArtifactManager artifactManager, DetachedGenericArtifact artifact,
-                                    String shortName, GenericArtifact server, String seqNo,
-                                    String originProperty, Map<String, List<String>> feedback)
+                                      String shortName, GenericArtifact server, String seqNo,
+                                      String originProperty, Map<String, List<String>> feedback)
             throws GovernanceException {
         if (artifactManager.isExists(artifact)) {
             switch (onExistArtifactStrategy) {
@@ -113,8 +113,8 @@ public abstract class DiscoveryAgentExecutorSupport  {
     }
 
     protected GenericArtifact addNewGenericArtifact(GenericArtifactManager artifactManager,
-                                                  DetachedGenericArtifact artifact, GenericArtifact server,
-                                                  String seqNo, String originProperty)
+                                                    DetachedGenericArtifact artifact, GenericArtifact server,
+                                                    String seqNo, String originProperty)
             throws GovernanceException {
         GenericArtifact newArtifact = artifact.makeRegistryAware(artifactManager);
         updateMaintenanceInfo(newArtifact, seqNo, originProperty);
@@ -124,7 +124,8 @@ public abstract class DiscoveryAgentExecutorSupport  {
     }
 
     protected void addServerToArtifactAssociation(GenericArtifact source,
-                                                GenericArtifact destination) throws GovernanceException {
+                                                  GenericArtifact destination) throws GovernanceException {
+        //TODO
         source.addBidirectionalAssociation("avialbleOn", "contains", destination);
     }
 
@@ -162,7 +163,7 @@ public abstract class DiscoveryAgentExecutorSupport  {
     }
 
     protected List<GenericArtifact> findOrphanArtifacts(GenericArtifactManager genericArtifactManager, String seqNo,
-                                                      String originProperty) throws GovernanceException {
+                                                        String originProperty) throws GovernanceException {
         List<GenericArtifact> orphanArtifacts = new ArrayList<>();
         Map<String, List<String>> options = new HashMap<>();
         options.put("propertyName", Arrays.asList(RESOURCE_ORIGIN_PROPERTY));
@@ -194,7 +195,7 @@ public abstract class DiscoveryAgentExecutorSupport  {
     }
 
     protected void customizeOrphanArtifactStrategy(GenericArtifactManager genericArtifactManager, String seqNo,
-                                                 String originProperty) {
+                                                   String originProperty) {
         throw new UnsupportedOperationException("Override customizeOrphanArtifactStrategy method in a subclass of" +
                                                 " DiscoveryAgentExecutorTask  ");
     }
@@ -215,7 +216,6 @@ public abstract class DiscoveryAgentExecutorSupport  {
         String orphanProperty = properties.get(ON_ORPHAN_ARTIFACT_PROPERTY);
         onOrphanArtifactStrategy = OrphanArtifactStrategy.valueOf(orphanProperty.toUpperCase());
     }
-
 
 
     protected String getOriginProperty(GenericArtifact serverArtifact) throws GovernanceException {

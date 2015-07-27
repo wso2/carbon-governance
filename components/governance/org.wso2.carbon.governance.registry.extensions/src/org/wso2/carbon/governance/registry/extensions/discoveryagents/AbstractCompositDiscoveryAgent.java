@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 public abstract class AbstractCompositDiscoveryAgent extends AbstractDiscoveryAgent {
 
@@ -38,7 +37,7 @@ public abstract class AbstractCompositDiscoveryAgent extends AbstractDiscoveryAg
 
 
     @Override
-    public void init(Properties properties) {
+    public void init(Map properties) {
         super.init(properties);
         if (discoveryAgents == null) {
             initializeDiscoveryAgents();
@@ -54,7 +53,7 @@ public abstract class AbstractCompositDiscoveryAgent extends AbstractDiscoveryAg
     }
 
     @Override
-    public void close(Properties properties) {
+    public void close(Map properties) {
         super.close(properties);
     }
 

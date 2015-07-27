@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.governance.registry.extensions.discoveryagents;
 
-import java.util.Properties;
+import java.util.Map;
 
 /**
  * Instead of implementing DiscoveryAgent it's obvious to extend AbstractDiscoveryAgent class as it provide number of
@@ -27,12 +27,12 @@ import java.util.Properties;
 public abstract class AbstractDiscoveryAgent implements DiscoveryAgent {
 
     @Override
-    public void init(Properties properties) {
+    public void init(Map properties) {
 
     }
 
     @Override
-    public void close(Properties properties) {
+    public void close(Map properties) {
 
     }
 

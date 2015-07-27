@@ -24,16 +24,11 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.dataobjects.DetachedGenericArtifact;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.common.GovernanceConfiguration;
-import org.wso2.carbon.governance.common.utils.GovernanceUtils;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsDataHolder;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 
 public class DiscoveryAgentExecutor {
@@ -60,47 +55,23 @@ public class DiscoveryAgentExecutor {
     }
 
     private boolean isAgentMapInitialized() {
-        if (agentMap != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return agentMap != null;
     }
 
     protected void initializeAgentMap() {
         agentMap = new HashMap<>();
         GovernanceConfiguration configuration = GovernanceRegistryExtensionsDataHolder.getInstance().getGovernanceConfiguration();
-        for (Map.Entry<String, String> configEntry : configuration.getDiscoveryAgentConfigs().entrySet()) {
+        for (Map.Entry<String, Map<String, String>> configEntry : configuration.getDiscoveryAgentConfigs().entrySet()) {
             String serverType = configEntry.getKey();
-            String agentClass = configEntry.getValue();
+            Map<String, String> properties = configEntry.getValue();
+            String agentClass = properties.get("AgentClass");
             DiscoveryAgent thisAgent = loadDiscoveryAgent(agentClass);
             if (thisAgent != null) {
-                thisAgent.init(getAgentProperties(serverType));
+                thisAgent.init(properties);
                 agentMap.put(serverType, thisAgent);
             }
 
         }
-    }
-
-    private Properties getAgentProperties(String serverTypeId) {
-        String file = getAgentPropertyFile(serverTypeId);
-        Properties properties = new Properties();
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            properties.load(inputStream);
-        } catch (IOException e) {
-            log.warn("Can't find property file for agent " + serverTypeId, e);
-        }
-        return properties;
-    }
-
-
-    private String getAgentPropertyFile(String serverTypeId) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(GovernanceUtils.getCarbonConfigDirPath());
-        builder.append(File.separator);
-        builder.append(serverTypeId);
-        builder.append(".properties");
-        return builder.toString();
     }
 
     private DiscoveryAgent loadDiscoveryAgent(String agentClass) {

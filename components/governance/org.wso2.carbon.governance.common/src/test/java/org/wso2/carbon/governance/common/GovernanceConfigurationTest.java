@@ -34,14 +34,14 @@ public class GovernanceConfigurationTest extends TestCase {
         GovernanceConfiguration configuration = GovernanceUtils.getGovernanceConfiguration();
         log.info("====== configuration === "+ configuration);
         assertNotNull(configuration);
-        Map<String, String> map =  configuration.getDiscoveryAgentConfigs();
+        Map<String, Map<String, String>> map =  configuration.getDiscoveryAgentConfigs();
         assertNotNull(map);
         assertTrue(map.containsKey("ESB"));
         assertTrue(map.containsKey("BPS"));
         assertNotNull(map.get("ESB"));
         assertNotNull(map.get("BPS"));
-        assertEquals("ESBClass", map.get("ESB"));
-        assertEquals("BPSClass", map.get("BPS"));
+        assertEquals("ESBClass", map.get("ESB").get(GovernanceUtils.AGENT_CLASS));
+        assertEquals("BPSClass", map.get("BPS").get(GovernanceUtils.AGENT_CLASS));
 
     }
 }

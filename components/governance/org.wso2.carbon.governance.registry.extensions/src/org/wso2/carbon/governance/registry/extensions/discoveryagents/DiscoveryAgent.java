@@ -23,7 +23,6 @@ import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * DiscoveryAgent is a callback interface, each server (instance of Server RXT) can define any number of implementations
@@ -41,14 +40,14 @@ public interface DiscoveryAgent {
      *
      * @param properties Set of initialization properties defined in governance.xml file for this DiscoveryAgent
      */
-    public void init(Properties properties);
+    public void init(Map properties);
 
     /**
      * Finalizer method of DiscoveryAgent, this method executed only one time during the DiscoveryAgent lifetime.
      *
      * @param properties Set of properties defined in governance.xml file for this DiscoveryAgent
      */
-    public void close(Properties properties);
+    public void close(Map properties);
 
     /**
      * This callback method get executed whenever someone trigger "Discover" option from UI or trigger through a

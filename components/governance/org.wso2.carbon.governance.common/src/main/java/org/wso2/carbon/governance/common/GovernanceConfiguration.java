@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class GovernanceConfiguration {
 
-    private Map<String, String> discoveryAgentConfigs = new HashMap<String, String>();
+    private Map<String, Map<String, String>> discoveryAgentConfigs = new HashMap();
 
     private static GovernanceConfiguration instance = new GovernanceConfiguration();
 
@@ -35,11 +35,11 @@ public class GovernanceConfiguration {
         return instance;
     }
 
-    public void addDiscoveryAgentConfig(String serverTypeId, String agentCalssName) {
-        discoveryAgentConfigs.put(serverTypeId, agentCalssName);
+    public void addDiscoveryAgentConfig(String serverTypeId, Map<String, String> properties) {
+        discoveryAgentConfigs.put(serverTypeId, properties);
     }
 
-    public Map<String, String> getDiscoveryAgentConfigs() {
+    public Map<String, Map<String, String>> getDiscoveryAgentConfigs() {
         return discoveryAgentConfigs;
     }
 
