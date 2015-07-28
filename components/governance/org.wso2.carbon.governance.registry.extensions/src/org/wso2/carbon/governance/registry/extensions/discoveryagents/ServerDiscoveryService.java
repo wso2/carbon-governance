@@ -36,8 +36,8 @@ public class ServerDiscoveryService extends DiscoveryAgentExecutorSupport {
     }
 
     public Map<String, List<String>> save(Map<String, List<DetachedGenericArtifact>> discovredArtifacts,
-            GenericArtifact server, ExistArtifactStrategy existArtifactStrategy,
-            OrphanArtifactStrategy orphanArtifactStrategy) throws DiscoveryAgentException {
+            GenericArtifact server, String existArtifactStrategy,
+            String orphanArtifactStrategy) throws DiscoveryAgentException {
         //TODO: Implement using existArtifactStrategy and orphanArtifactStrategy variables.
         try {
             Registry govRegistry = getGovRegistry();
