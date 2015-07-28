@@ -17,14 +17,15 @@
   -->
 <GovernanceConfiguration xmlns="http://wso2.org/projects/carbon/governance.xml">
     <DiscoveryAgents>
-        <DiscoveryAgent>
-            <ServerTypeId>ESB</ServerTypeId>
-            <AgentClass>ESBClass</AgentClass>
-        </DiscoveryAgent>
-        <DiscoveryAgent>
-            <ServerTypeId>BPS</ServerTypeId>
-            <AgentClass>BPSClass</AgentClass>
-        </DiscoveryAgent>
+        <!--  Example Configuration -->
+        <!--<DiscoveryAgent>-->
+        <!--<ServerTypeId>WSO2ESB</ServerTypeId>-->
+        <!--<AgentClass>org.wso2.carbon.examples.esb.DiscoveryAgents</AgentClass>-->
+        <!--</DiscoveryAgent>-->
     </DiscoveryAgents>
+    <Comparators>
+        <Comparator class="org.wso2.carbon.governance.comparator.text.TextComparator"/>
+        <Comparator class="org.wso2.carbon.governance.comparator.wsdl.WSDLComparator"/>
+    </Comparators>
 </GovernanceConfiguration>
 
