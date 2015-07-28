@@ -35,6 +35,10 @@
             <artifactId>org.wso2.carbon.governance.api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.governance</groupId>
+            <artifactId>org.wso2.carbon.governance.common</artifactId>
+        </dependency>
+        <dependency>
             <groupId>wsdl4j.wso2</groupId>
             <artifactId>wsdl4j</artifactId>
         </dependency>
@@ -78,9 +82,16 @@
                             org.eclipse.equinox.http.helper,
                             *;resolution:=optional
                         </Import-Package>
+                       <Private-Package>
+                           org.wso2.carbon.governance.comparator.internal,
+                       </Private-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

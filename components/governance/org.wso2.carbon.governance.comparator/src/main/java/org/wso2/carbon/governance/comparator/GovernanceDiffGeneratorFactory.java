@@ -18,22 +18,40 @@
 
 package org.wso2.carbon.governance.comparator;
 
-import org.wso2.carbon.governance.comparator.text.TextComparator;
-import org.wso2.carbon.governance.comparator.wsdl.WSDLComparator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.governance.comparator.internal.GovernanceComparatorDataHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GovernanceDiffGeneratorFactory implements DiffGeneratorFactory {
 
-    /*
-    This will load DiffGenerator configuration from governance.xml file.
-     */
+    private final static Log log = LogFactory.getLog(GovernanceDiffGeneratorFactory.class);
+
+    private DiffGenerator diffGenerator;
+
     @Override
     public DiffGenerator getDiffGenerator() {
+        if (diffGenerator == null) {
+            List<String> comparatorClasses = GovernanceComparatorDataHolder.getInstance().getGovernanceConfiguration()
+                    .getComparators();
+            List<Comparator<?>> comparators = getcomparators(comparatorClasses);
+
+        }
+        return diffGenerator;
+    }
+
+    private List<Comparator<?>> getcomparators(List<String> comparatorClasses) {
         List<Comparator<?>> comparators = new ArrayList<>();
-        comparators.add(new TextComparator());
-        comparators.add(new WSDLComparator());
-        return new DiffGenerator(comparators);
+        for (String comparatorClass : comparatorClasses) {
+            try {
+                Comparator<?> comparator = (Comparator<?>) getClass().getClassLoader().loadClass(comparatorClass).newInstance();
+                comparators.add(comparator);
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                log.error("Error instantiating  Comparator class " + comparatorClass);
+            }
+        }
+        return comparators;
     }
 }

@@ -49,6 +49,9 @@ public class GovernanceUtils {
     public static final String NAME = "name";
     public static final String VALUE = "value";
     public static final String GOVERNANCE_CONFIG_FILE = "governance.xml";
+    public static final String COMPARATORS = "Comparators";
+    public static final String COMPARATOR = "Comparator";
+    public static final String CLASS_ATTR = "class";
     private static Log log = LogFactory.getLog(GovernanceUtils.class);
 
 
@@ -104,6 +107,7 @@ public class GovernanceUtils {
     private static void readChildElements(Element config,
                                           GovernanceConfiguration govConfig) {
         readDiscoveryAgents(config, govConfig);
+        readComparators(config, govConfig);
     }
 
     private static void readDiscoveryAgents(Element config,
@@ -123,18 +127,32 @@ public class GovernanceUtils {
 
     }
 
-    private static Map<String, String> getProperties(Element agent) {
-        NodeList propertyNodes = agent.getElementsByTagName(PROPERTY);
+    private static void readComparators(Element config,
+                                        GovernanceConfiguration govConfig) {
+        Element comparatorsEle = getFirstElement(config, COMPARATORS);
+        if (comparatorsEle != null) {
+            NodeList comparatorsElements = comparatorsEle.getElementsByTagName(COMPARATOR);
+            for (int i = 0; i < comparatorsElements.getLength(); i++) {
+                Element comparatorEle = (Element) comparatorsElements.item(i);
+                String comparatorClass = comparatorEle.getAttribute(CLASS_ATTR);
+                if (comparatorClass != null && !comparatorClass.isEmpty()) {
+                    govConfig.addComparator(comparatorClass);
+                }
+            }
+        }
+
+    }
+
+    private static Map<String, String> getProperties(Element agentEle) {
+        NodeList propertyNodes = agentEle.getElementsByTagName(PROPERTY);
         Map<String, String> properties = new HashMap<>();
         for (int i = 0; i < propertyNodes.getLength(); i++) {
-            Element propertyELe = (Element) propertyNodes.item(0);
+            Element propertyELe = (Element) propertyNodes.item(i);
             String propertyKey = propertyELe.getAttribute(NAME);
             String propertyValue = propertyELe.getAttribute(VALUE);
             if (propertyKey != null && propertyValue != null && !propertyKey.isEmpty() && !propertyValue.isEmpty()) {
                 properties.put(propertyKey, propertyValue);
             }
-
-
         }
         return properties;
     }

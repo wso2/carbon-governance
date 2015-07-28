@@ -20,11 +20,17 @@
         <DiscoveryAgent>
             <ServerTypeId>ESB</ServerTypeId>
             <AgentClass>ESBClass</AgentClass>
+            <property name="p1" value="p1-value"/>
+            <property name="p2" value="p2-value"/>
         </DiscoveryAgent>
         <DiscoveryAgent>
             <ServerTypeId>BPS</ServerTypeId>
             <AgentClass>BPSClass</AgentClass>
         </DiscoveryAgent>
     </DiscoveryAgents>
+    <Comparators>
+        <Comparator class="TestComparator1"/>
+        <Comparator class="TestComparator2"/>
+    </Comparators>
 </GovernanceConfiguration>
 

@@ -17,12 +17,15 @@ package org.wso2.carbon.governance.common;
 
 import org.wso2.carbon.base.CarbonBaseUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GovernanceConfiguration {
 
     private Map<String, Map<String, String>> discoveryAgentConfigs = new HashMap();
+    private List<String> comparators = new ArrayList<>();
 
     private static GovernanceConfiguration instance = new GovernanceConfiguration();
 
@@ -43,10 +46,23 @@ public class GovernanceConfiguration {
         return discoveryAgentConfigs;
     }
 
+    public void addComparator(String comparatorClass) {
+        comparators.add(comparatorClass);
+    }
+
+    public List<String> getComparators() {
+        return comparators;
+    }
+
+    public void setComparators(List<String> comparators) {
+        this.comparators = comparators;
+    }
+
     @Override
     public String toString() {
         return "GovernanceConfiguration{" +
                "discoveryAgentConfigs=" + discoveryAgentConfigs +
+               ", comparators=" + comparators +
                '}';
     }
 }
