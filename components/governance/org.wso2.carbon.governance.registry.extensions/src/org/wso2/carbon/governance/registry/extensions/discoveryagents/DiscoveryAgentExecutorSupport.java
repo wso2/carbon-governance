@@ -217,6 +217,14 @@ public abstract class DiscoveryAgentExecutorSupport {
         onOrphanArtifactStrategy = OrphanArtifactStrategy.valueOf(orphanProperty.toUpperCase());
     }
 
+    protected void setExistArtifactStrategy(ExistArtifactStrategy existArtifactStrategy) {
+        this.onExistArtifactStrategy = existArtifactStrategy;
+    }
+
+    protected void setOrphanArtifactStrategy(OrphanArtifactStrategy orphanArtifactStrategy) {
+        this.onOrphanArtifactStrategy = orphanArtifactStrategy;
+    }
+
 
     protected String getOriginProperty(GenericArtifact serverArtifact) throws GovernanceException {
         String serverName = serverArtifact.getAttribute(SERVER_RXT_OVERVIEW_NAME);
