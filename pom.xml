@@ -1177,7 +1177,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wso2.apache.solr</groupId>
+                <groupId>org.wso2.orbit.org.apache.solr</groupId>
                 <artifactId>solr</artifactId>
                 <version>${version.solr}</version>
             </dependency>
@@ -1327,7 +1327,7 @@
         <mashup.version>4.2.0</mashup.version>
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>5.0.0.wso2v1</version.solr>
+        <version.solr>5.2.1.wso2v1</version.solr>
         <derby.version>10.4.2.0</derby.version>
         <activation.version>1.1</activation.version>
         <javamail.version>1.4</javamail.version>
