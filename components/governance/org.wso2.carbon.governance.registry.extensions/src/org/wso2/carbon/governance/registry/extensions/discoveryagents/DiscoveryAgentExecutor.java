@@ -20,11 +20,16 @@ package org.wso2.carbon.governance.registry.extensions.discoveryagents;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.DetachedGenericArtifact;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.common.GovernanceConfiguration;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsDataHolder;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +39,10 @@ import java.util.Map;
 public class DiscoveryAgentExecutor {
 
     public static final String SERVER_RXT_OVERVIEW_TYPE = "overview_type";
+    public static final String DISCOVERY_STATUS = "discovery_status";
+    public static final String DISCOVERY_STATUS_EXISTING = "existing";
+    public static final String DISCOVERY_STATUS_NEW = "new";
+    public static final String AGENT_CLASS = "AgentClass";
     private final Log log = LogFactory.getLog(DiscoveryAgentExecutor.class);
 
     private static DiscoveryAgentExecutor executor = new DiscoveryAgentExecutor();
@@ -51,7 +60,28 @@ public class DiscoveryAgentExecutor {
         }
         String serverTypeId = getServerTypeId(serverArtifact);
         DiscoveryAgent agent = findDiscoveryAgent(serverTypeId);
-        return agent.discoverArtifacts(serverArtifact);
+        Map<String, List<DetachedGenericArtifact>> discoveredArtifacts = agent.discoverArtifacts(serverArtifact);
+        try {
+            markExistingArtifacts(discoveredArtifacts, getGovRegistry());
+        } catch (RegistryException e) {
+            throw new DiscoveryAgentException("Exception occurred accessing Registry", e);
+        }
+        return discoveredArtifacts;
+    }
+
+    private void markExistingArtifacts(Map<String, List<DetachedGenericArtifact>> artifacts, Registry registry)
+            throws RegistryException {
+        for(Map.Entry<String,  List<DetachedGenericArtifact>> entry : artifacts.entrySet()){
+            String shortName = entry.getKey();
+            GenericArtifactManager manager  = new GenericArtifactManager(registry, shortName);
+            for(GenericArtifact artifact : entry.getValue()){
+               if(manager.isExists(artifact)){
+                   artifact.addAttribute(DISCOVERY_STATUS, DISCOVERY_STATUS_EXISTING);
+               } else {
+                   artifact.addAttribute(DISCOVERY_STATUS, DISCOVERY_STATUS_NEW);
+               }
+            }
+        }
     }
 
     private boolean isAgentMapInitialized() {
@@ -64,7 +94,7 @@ public class DiscoveryAgentExecutor {
         for (Map.Entry<String, Map<String, String>> configEntry : configuration.getDiscoveryAgentConfigs().entrySet()) {
             String serverType = configEntry.getKey();
             Map<String, String> properties = configEntry.getValue();
-            String agentClass = properties.get("AgentClass");
+            String agentClass = properties.get(AGENT_CLASS);
             DiscoveryAgent thisAgent = loadDiscoveryAgent(agentClass);
             if (thisAgent != null) {
                 thisAgent.init(properties);
@@ -106,5 +136,10 @@ public class DiscoveryAgentExecutor {
             throw new DiscoveryAgentException("ServerTypeId issue", e);
         }
 
+    }
+
+    private Registry getGovRegistry() throws RegistryException {
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+        return GovernanceRegistryExtensionsDataHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();
     }
 }

@@ -2279,7 +2279,8 @@ public class GovernanceUtils {
         }
     }
 
-    public static List<String> getUniqueAttributesNames(Registry registry, String mediaType) throws GovernanceException {
+    public static List<String> getUniqueAttributesNames(Registry registry,
+                                                        String mediaType) throws GovernanceException {
         GovernanceArtifactConfiguration configuration = null;
         try {
             configuration = getArtifactConfigurationByMediaType(registry, mediaType);
