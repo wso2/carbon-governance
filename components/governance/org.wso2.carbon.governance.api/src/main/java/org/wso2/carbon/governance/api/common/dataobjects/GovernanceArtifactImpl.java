@@ -55,6 +55,16 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     private String lcName;
     private String lcState;
     private String artifactPath;
+    private List<String> uniqueAttributes;
+
+
+    public List<String> getUniqueAttributes() {
+        return uniqueAttributes;
+    }
+
+    public void setUniqueAttributes(List<String> uniqueAttributes) {
+        this.uniqueAttributes = uniqueAttributes;
+    }
 
     public String getLcName() {
         return lcName;
@@ -132,6 +142,11 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
         }
     }
 
+    protected GovernanceArtifactImpl(GovernanceArtifactImpl artifact,  List<String> uniqueAttributes) {
+       this(artifact);
+       setUniqueAttributes(uniqueAttributes);
+    }
+
     /**
      * Constructor accepting resource identifier and the XML content.
      *
@@ -142,6 +157,11 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     public GovernanceArtifactImpl(String id, OMElement contentElement) throws GovernanceException {
         this(id);
         serializeToAttributes(contentElement, null);
+    }
+
+    public GovernanceArtifactImpl(String id, OMElement contentElement, List<String> uniqueAttributes) throws GovernanceException {
+        this(id, contentElement);
+        setUniqueAttributes(uniqueAttributes);
     }
 
     // Method to serialize attributes.
@@ -200,6 +220,22 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 return null;
             }
         };
+    }
+
+    public static GovernanceArtifactImpl create(final Registry registry, final String artifactId,
+                                                final List<String> uniqueAttributes)
+                                                throws GovernanceException {
+        GovernanceArtifactImpl artifact = create(registry, artifactId);
+        artifact.setUniqueAttributes(uniqueAttributes);
+        return artifact;
+    }
+
+    public static GovernanceArtifactImpl create(final Registry registry, final String artifactId,
+                                                final OMElement content, List<String> uniqueAttributes)
+                                                throws GovernanceException {
+        GovernanceArtifactImpl artifact = create(registry, artifactId, content);
+        artifact.setUniqueAttributes(uniqueAttributes);
+        return artifact;
     }
 
     /**
@@ -1269,5 +1305,47 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                "attributes=" + attributes +
                ", id='" + id + '\'' +
                '}';
+    }
+
+    public boolean uniqueTo(GovernanceArtifact artifact) {
+        if (artifact != null) {
+            if (this == artifact || this.equals(artifact)) {
+                return true;
+            } else if (uniqueAttributes != null && uniqueAttributes.size() > 0) {
+                try {
+                    for (String attributeName : uniqueAttributes) {
+                        if (!this.getAttribute(attributeName).equals(artifact.getAttribute(attributeName))) {
+                            return false;
+                        }
+                    }
+                    //all unique attributes are same
+                    return true;
+                } catch (GovernanceException e) {
+                    log.error(e);
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean compareTo(GovernanceArtifact artifact) {
+        if (artifact != null) {
+            if (this == artifact || this.equals(artifact)) {
+                return true;
+            } else {
+                try {
+                    for (String key : this.getAttributeKeys()) {
+                        if (!this.getAttribute(key).equals(artifact.getAttribute(key))) {
+                            return false;
+                        }
+                    }
+                    //all unique attributes are same
+                    return true;
+                } catch (GovernanceException e) {
+                    log.error(e);
+                }
+            }
+        }
+        return false;
     }
 }

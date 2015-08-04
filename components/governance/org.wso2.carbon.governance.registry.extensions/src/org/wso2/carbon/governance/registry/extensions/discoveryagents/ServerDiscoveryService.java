@@ -46,8 +46,10 @@ public class ServerDiscoveryService extends DiscoveryAgentExecutorSupport {
             Registry govRegistry = getGovRegistry();
             String originProperty = getOriginProperty(server);
             String seqNo = getSequnceNo();
-            return persistDiscoveredArtifacts(govRegistry, discovredArtifacts, server, seqNo, originProperty);
-            // handleOrphanArtifacts(govRegistry, discovredArtifacts.keySet(), seqNo, originProperty);
+            Map<String, List<String>> feedback = persistDiscoveredArtifacts(govRegistry, discovredArtifacts, server,
+                                                                         seqNo, originProperty);
+            //handleOrphanArtifacts(govRegistry, discovredArtifacts, seqNo, originProperty);
+            return feedback;
         } catch (RegistryException e) {
             throw new DiscoveryAgentException("Exception occurred while accessing registry", e);
         }

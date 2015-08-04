@@ -1023,6 +1023,8 @@ public class GovernanceUtils {
                                 }
                                 artifact.setLcState(artifactLCState);
                                 artifact.setLcName(artifactLC);
+                                List<String> uniqueAttributes = getUniqueAttributesNames(registry, mediaType);
+                                artifact.setUniqueAttributes(uniqueAttributes);
                                 if (artifactCache != null) {
                                     artifactCache.addArtifact(artifactPath, artifact);
                                 }
@@ -2274,6 +2276,16 @@ public class GovernanceUtils {
         } catch (RegistryException e) {
             String msg = "Error in deleting the the artifact path:" + path + ".";
             throw new GovernanceException(msg, e);
+        }
+    }
+
+    public static List<String> getUniqueAttributesNames(Registry registry, String mediaType) throws GovernanceException {
+        GovernanceArtifactConfiguration configuration = null;
+        try {
+            configuration = getArtifactConfigurationByMediaType(registry, mediaType);
+            return configuration.getUniqueAttributes();
+        } catch (RegistryException e) {
+            throw new GovernanceException(e);
         }
     }
 }

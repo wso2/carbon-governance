@@ -355,5 +355,7 @@ public interface GovernanceArtifact {
 
     public void addBidirectionalAssociation(String forwardType, String backwardType, GovernanceArtifact attachedToArtifact) throws GovernanceException;
 
+    public boolean uniqueTo(GovernanceArtifact artifact);
 
+    public boolean compareTo(GovernanceArtifact artifact);
 }

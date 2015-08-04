@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 public abstract class DiscoveryAgentExecutorSupport {
@@ -130,32 +129,51 @@ public abstract class DiscoveryAgentExecutorSupport {
     }
 
 
-    protected void handleOrphanArtifacts(Registry registry, Set<String> shortNames, String seqNo, String originProperty)
+    protected void handleOrphanArtifacts(Registry registry, Map<String, List<DetachedGenericArtifact>> discovredArtifacts, String seqNo, String originProperty)
             throws RegistryException {
         switch (onOrphanArtifactStrategy) {
             case IGNORE:
                 log.info("Ignored handling orphan artifact");
                 break;
             case REMOVE:
-                for (String shortName : shortNames) {
-                    removeOrphanArtifacts(getGenericArtifactManager(registry, shortName), seqNo, originProperty);
+                for (Map.Entry<String, List<DetachedGenericArtifact>> entry : discovredArtifacts.entrySet()) {
+                    removeOrphanArtifacts(registry, entry.getKey(), entry.getValue(), seqNo, originProperty);
                 }
                 break;
             case CUSTOM:
-                for (String shortName : shortNames) {
-                    customizeOrphanArtifactStrategy(getGenericArtifactManager(registry, shortName), seqNo, originProperty);
+                for (Map.Entry<String, List<DetachedGenericArtifact>> entry : discovredArtifacts.entrySet()) {
+                    customizeOrphanArtifactStrategy(registry, entry.getKey(), entry.getValue(), seqNo, originProperty);
                 }
                 break;
         }
     }
 
-    protected void removeOrphanArtifacts(GenericArtifactManager genericArtifactManager, String seqNo,
-                                         String originProperty) throws RegistryException {
+    protected void removeOrphanArtifacts(Registry registry, String shortName,
+                                         List<DetachedGenericArtifact> artifacts, String
+            seqNo, String originProperty) throws RegistryException {
+        GenericArtifactManager genericArtifactManager = getGenericArtifactManager(registry, shortName);
         for (GenericArtifact artifact : findOrphanArtifacts(genericArtifactManager, seqNo, originProperty)) {
-            removeDerivedAssociations(artifact);
-            genericArtifactManager.removeGenericArtifact(artifact.getId());
-            log.info("Removed orphan artifact belong to " + originProperty + " server : " + artifact);
+            /*
+            NOTE - Though we updated 'seqNo" property in just discovered artifacts immediate Registry search may give
+            incorrect results due to the fact that indexer run as an asynchronous job and not yet run. To skip artifacts which
+            are already updated but yet to be updated in indexer, it's required to perform  isDiscoveredArtifact()
+            check.
+             */
+            if (!isDiscoveredArtifact(artifact, artifacts)) {
+                removeDerivedAssociations(artifact);
+                genericArtifactManager.removeGenericArtifact(artifact.getId());
+                log.info("Removed orphan artifact belong to " + originProperty + " server : " + artifact);
+            }
         }
+    }
+
+    private boolean isDiscoveredArtifact(GenericArtifact artifact, List<DetachedGenericArtifact> artifacts) {
+        for(DetachedGenericArtifact detachedGenericArtifact : artifacts){
+            if(artifact.equals(detachedGenericArtifact)){
+                return true;
+            }
+        }
+        return false;
     }
 
     protected void removeDerivedAssociations(GenericArtifact artifact) {
@@ -194,7 +212,8 @@ public abstract class DiscoveryAgentExecutorSupport {
         return orphanArtifacts;
     }
 
-    protected void customizeOrphanArtifactStrategy(GenericArtifactManager genericArtifactManager, String seqNo,
+    protected void customizeOrphanArtifactStrategy(Registry registry, String shortName,
+                                                   List<DetachedGenericArtifact> artifacts, String seqNo,
                                                    String originProperty) {
         throw new UnsupportedOperationException("Override customizeOrphanArtifactStrategy method in a subclass of" +
                                                 " DiscoveryAgentExecutorTask  ");

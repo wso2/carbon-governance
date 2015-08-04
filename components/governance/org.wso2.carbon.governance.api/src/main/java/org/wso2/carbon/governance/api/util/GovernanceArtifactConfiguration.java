@@ -50,6 +50,7 @@ public class GovernanceArtifactConfiguration {
     private String artifactNamespaceAttribute = "overview_namespace";
     private String artifactElementRoot = "metadata";
     private String artifactElementNamespace = "http://www.wso2.org/governance/metadata";
+    List<String> uniqueAttributes = new ArrayList<>();
 
     private static final String WIDGET_ELEMENT = "table";
     private static final String ARGUMENT_ELMENT = "field";
@@ -203,6 +204,14 @@ public class GovernanceArtifactConfiguration {
      */
     public void setArtifactNamespaceAttribute(String artifactNamespaceAttribute) {
         this.artifactNamespaceAttribute = artifactNamespaceAttribute;
+    }
+
+    public List<String> getUniqueAttributes() {
+        return uniqueAttributes;
+    }
+
+    public void setUniqueAttributes(List<String> uniqueAttributes) {
+        this.uniqueAttributes = uniqueAttributes;
     }
 
     /**
@@ -419,6 +428,7 @@ public class GovernanceArtifactConfiguration {
      */
     public void setPathExpression(String pathExpression) {
         this.pathExpression = pathExpression;
+        setUniqueAttributes();
     }
 
     /**
@@ -615,6 +625,19 @@ public class GovernanceArtifactConfiguration {
             }
         }
         return res;
+    }
+
+    protected void setUniqueAttributes() {
+        if (pathExpression != null && !pathExpression.isEmpty()) {
+            String[] pathSegments = pathExpression.split("/");
+            for (String pathSegment : pathSegments) {
+                if (pathSegment.startsWith("@")) {
+                    String attribute = pathSegment.substring(1);
+                    attribute = attribute.replace("{", "").replace("}", "");
+                    uniqueAttributes.add(attribute);
+                }
+            }
+        }
     }
 
     private static class UIListConfiguration {

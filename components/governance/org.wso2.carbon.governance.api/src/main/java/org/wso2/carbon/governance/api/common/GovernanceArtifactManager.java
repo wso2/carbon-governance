@@ -132,7 +132,8 @@ public class GovernanceArtifactManager {
      * @throws GovernanceException if the operation failed.
      */
     public GovernanceArtifact newGovernanceArtifact() throws GovernanceException {
-        return GovernanceArtifactImpl.create(registry, UUID.randomUUID().toString());
+        List<String> uniqueAttributes = GovernanceUtils.getUniqueAttributesNames(registry, mediaType);
+        return GovernanceArtifactImpl.create(registry, UUID.randomUUID().toString(), uniqueAttributes);
     }
 
     /**
@@ -144,7 +145,8 @@ public class GovernanceArtifactManager {
      * @throws GovernanceException if the operation failed.
      */
     public GovernanceArtifact newGovernanceArtifact(OMElement content) throws GovernanceException {
-        return GovernanceArtifactImpl.create(registry, UUID.randomUUID().toString(), content);
+        List<String> uniqueAttributes = GovernanceUtils.getUniqueAttributesNames(registry, mediaType);
+        return GovernanceArtifactImpl.create(registry, UUID.randomUUID().toString(), content, uniqueAttributes);
     }
 
     /**
