@@ -37,8 +37,9 @@ public class ServerDiscoveryService extends DiscoveryAgentExecutorSupport {
 
     //TODO - change method name   persistArtifacts()
     public Map<String, List<String>> save(Map<String, List<DetachedGenericArtifact>> discovredArtifacts,
-            GenericArtifact server, String existArtifactStrategy, String orphanArtifactStrategy) throws
-            DiscoveryAgentException {
+                                          GenericArtifact server, String existArtifactStrategy,
+                                          String orphanArtifactStrategy) throws
+                                                                         DiscoveryAgentException {
 
         setExistArtifactStrategy(ExistArtifactStrategy.valueOf(existArtifactStrategy.toUpperCase()));
         setOrphanArtifactStrategy(OrphanArtifactStrategy.valueOf(orphanArtifactStrategy));
@@ -47,8 +48,8 @@ public class ServerDiscoveryService extends DiscoveryAgentExecutorSupport {
             String originProperty = getOriginProperty(server);
             String seqNo = getSequnceNo();
             Map<String, List<String>> feedback = persistDiscoveredArtifacts(govRegistry, discovredArtifacts, server,
-                                                                         seqNo, originProperty);
-            //handleOrphanArtifacts(govRegistry, discovredArtifacts, seqNo, originProperty);
+                                                                            seqNo, originProperty);
+            handleOrphanArtifacts(govRegistry, discovredArtifacts, seqNo, originProperty);
             return feedback;
         } catch (RegistryException e) {
             throw new DiscoveryAgentException("Exception occurred while accessing registry", e);

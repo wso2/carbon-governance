@@ -105,7 +105,7 @@ public class DiscoveryAgentExecutorTask extends DiscoveryAgentExecutorSupport im
             serverProperties.load(resource.getContentStream());
             String serverStr = serverProperties.getProperty(SERVERS_PROPERTY);
             if (serverStr != null) {
-                String[] servers = serverStr.split(SERVER_ID_SEPARATER);
+                String[] servers = serverStr.split(SERVER_ID_SEPARATOR);
                 return Arrays.asList(servers);
             }
         }
@@ -114,7 +114,7 @@ public class DiscoveryAgentExecutorTask extends DiscoveryAgentExecutorSupport im
 
     protected void setServerDiscoverOptions(Map<String, List<String>> options, String serverId) {
         if (serverId != null) {
-            int index = serverId.indexOf(NAME_VERSION_SEPARATER);
+            int index = serverId.indexOf(NAME_VERSION_SEPARATOR);
             if (index > 0) {
                 String serverName = serverId.substring(0, index);
                 String serverVersion = serverId.substring(index);

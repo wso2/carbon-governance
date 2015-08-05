@@ -30,7 +30,6 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,7 @@ public abstract class DiscoveryAgentExecutorSupport {
     public static final String SOURCE_GREG_DISCOVERY = "greg-discovery";
     public static final String RESOURCE_ORIGIN_PROPERTY = "resource.origin";
     public static final String RESOURCE_DISCOVERY_SEQNO_PROPERTY = "resource.discovery_seqno";
-    public static final String NAME_VERSION_SEPARATER = ":";
+    public static final String NAME_VERSION_SEPARATOR = ":";
 
     public static final String ON_ORPHAN_ARTIFACT_PROPERTY = "onOrphanArtifact";
     public static final String ON_EXIST_ARTIFACT_PROPERTY = "onExistArtifact";
@@ -50,15 +49,17 @@ public abstract class DiscoveryAgentExecutorSupport {
     public static final String CONFIG_FILE_PARAMETER = "configFile";
     public static final String DEFAULT_CONFIG_FILE = "discoveryagent.properties";
     public static final String SERVERS_PROPERTY = "servers";
-    //TODO - load mediaType from RXT itself.
     public static final String SERVER_RXT_SHORT_NAME = "server";
     public static final String SERVER_RXT_OVERVIEW_NAME = "overview_name";
     public static final String SERVER_RXT_OVERVIEW_VERSION = "overview_version";
-    public static final String SERVER_ID_SEPARATER = ",";
+    public static final String SERVER_ID_SEPARATOR = ",";
     public static final String ARTIFACT_ADDED = "added";
     public static final String ARTIFACT_REMOVED = "removed";
     public static final String ARTIFACT_REPLACED = "replaced";
     public static final String ARTIFACT_IGNORED = "ignored";
+    public static final String RESOURCE_DISCOVERY_SEQNO = "resource.discovery_seqno";
+    public static final String ASSOCIATION_AVAILABLE_ON = "availableOn";
+    public static final String ASSOCIATION_CONTAINS = "contains";
 
     private final Log log = LogFactory.getLog(DiscoveryAgentExecutorSupport.class);
 
@@ -153,8 +154,7 @@ public abstract class DiscoveryAgentExecutorSupport {
 
     protected void addServerToArtifactAssociation(GenericArtifact source,
                                                   GenericArtifact destination) throws GovernanceException {
-        //TODO
-        source.addBidirectionalAssociation("avialbleOn", "contains", destination);
+        source.addBidirectionalAssociation(ASSOCIATION_AVAILABLE_ON, ASSOCIATION_CONTAINS, destination);
     }
 
 
@@ -184,11 +184,11 @@ public abstract class DiscoveryAgentExecutorSupport {
         for (GenericArtifact artifact : findOrphanArtifacts(genericArtifactManager, seqNo, originProperty)) {
             /*
             NOTE - Though we updated 'seqNo" property in just discovered artifacts immediate Registry search may give
-            incorrect results due to the fact that indexer run as an asynchronous job and not yet run. To skip artifacts which
+            incorrect results due to the fact that indexer run as an asynchronous job. To skip artifacts which
             are already updated but yet to be updated in indexer, it's required to perform  isDiscoveredArtifact()
             check.
              */
-            if (!isDiscoveredArtifact(artifact, artifacts)) {
+            if (!isCurrentlyDiscoveredArtifact(artifact, artifacts)) {
                 removeDerivedAssociations(artifact);
                 genericArtifactManager.removeGenericArtifact(artifact.getId());
                 log.info("Removed orphan artifact belong to " + originProperty + " server : " + artifact);
@@ -196,9 +196,9 @@ public abstract class DiscoveryAgentExecutorSupport {
         }
     }
 
-    private boolean isDiscoveredArtifact(GenericArtifact artifact, List<DetachedGenericArtifact> artifacts) {
+    private boolean isCurrentlyDiscoveredArtifact(GenericArtifact artifact, List<DetachedGenericArtifact> artifacts) {
         for(DetachedGenericArtifact detachedGenericArtifact : artifacts){
-            if(artifact.equals(detachedGenericArtifact)){
+            if(artifact.uniqueTo(detachedGenericArtifact)){
                 return true;
             }
         }
@@ -212,10 +212,8 @@ public abstract class DiscoveryAgentExecutorSupport {
     protected List<GenericArtifact> findOrphanArtifacts(GenericArtifactManager genericArtifactManager, String seqNo,
                                                         String originProperty) throws GovernanceException {
         List<GenericArtifact> orphanArtifacts = new ArrayList<>();
-        Map<String, List<String>> options = new HashMap<>();
-        options.put("propertyName", Arrays.asList(RESOURCE_ORIGIN_PROPERTY));
-        options.put("rightOp", Arrays.asList("eq"));
-        options.put("rightPropertyValue", Arrays.asList(originProperty));
+        //resource.origin = originProperty
+        String query = RESOURCE_ORIGIN_PROPERTY + "=" + originProperty;
         Registry govRegistry;
         try {
             govRegistry = getGovRegistry();
@@ -223,15 +221,16 @@ public abstract class DiscoveryAgentExecutorSupport {
             throw new GovernanceException(e);
         }
         if (govRegistry != null) {
-            for (GenericArtifact artifact : genericArtifactManager.findGenericArtifacts(options)) {
+            for (GenericArtifact artifact : genericArtifactManager.findGovernanceArtifacts(query)) {
                 Resource resource = null;
                 try {
                     resource = govRegistry.get(artifact.getPath());
                 } catch (RegistryException e) {
                     //We still have to check other artifacts so continue...
+                    log.error(e);
                 }
                 if (resource != null) {
-                    String currentSeqNo = resource.getProperty("resource.discovery_seqno");
+                    String currentSeqNo = resource.getProperty(RESOURCE_DISCOVERY_SEQNO);
                     if (currentSeqNo == null || !seqNo.equals(currentSeqNo)) {
                         orphanArtifacts.add(artifact);
                     }
