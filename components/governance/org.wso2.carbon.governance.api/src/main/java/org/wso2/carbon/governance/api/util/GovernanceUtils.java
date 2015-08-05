@@ -952,12 +952,14 @@ public class GovernanceUtils {
             String artifactId =
                     artifactResource.getUUID();
             String mediaType = artifactResource.getMediaType();
+            List<String> uniqueAttributes = getUniqueAttributesNames(registry, mediaType);
             if (GovernanceConstants.WSDL_MEDIA_TYPE
                     .equals(mediaType)) {
                 Wsdl wsdl = new WsdlImpl(artifactId, registry);
                 ((WsdlImpl) wsdl).setLcName(artifactLC);
                 ((WsdlImpl) wsdl).setLcState(artifactLCState);
                 ((WsdlImpl) wsdl).setArtifactPath(artifactPath);
+                ((WsdlImpl) wsdl).setUniqueAttributes(uniqueAttributes);
                 if (artifactCache != null) {
                     artifactCache.addArtifact(artifactPath, wsdl);
                 }
@@ -968,6 +970,7 @@ public class GovernanceUtils {
                 ((SchemaImpl) schema).setLcName(artifactLC);
                 ((SchemaImpl) schema).setLcState(artifactLCState);
                 ((SchemaImpl) schema).setArtifactPath(artifactPath);
+                ((SchemaImpl) schema).setUniqueAttributes(uniqueAttributes);
                 if (artifactCache != null) {
                     artifactCache.addArtifact(artifactPath, schema);
                 }
@@ -978,6 +981,7 @@ public class GovernanceUtils {
                 ((PolicyImpl) policy).setLcName(artifactLC);
                 ((PolicyImpl) policy).setLcState(artifactLCState);
                 ((PolicyImpl) policy).setArtifactPath(artifactPath);
+                ((PolicyImpl) policy).setUniqueAttributes(uniqueAttributes);
                 if (artifactCache != null) {
                     artifactCache.addArtifact(artifactPath, policy);
                 }
@@ -988,6 +992,7 @@ public class GovernanceUtils {
                 ((EndpointImpl) endpoint).setLcName(artifactLC);
                 ((EndpointImpl) endpoint).setLcState(artifactLCState);
                 ((EndpointImpl) endpoint).setArtifactPath(artifactPath);
+                ((EndpointImpl) endpoint).setUniqueAttributes(uniqueAttributes);
                 if (artifactCache != null) {
                     artifactCache.addArtifact(artifactPath, endpoint);
                 }
@@ -1023,7 +1028,6 @@ public class GovernanceUtils {
                                 }
                                 artifact.setLcState(artifactLCState);
                                 artifact.setLcName(artifactLC);
-                                List<String> uniqueAttributes = getUniqueAttributesNames(registry, mediaType);
                                 artifact.setUniqueAttributes(uniqueAttributes);
                                 if (artifactCache != null) {
                                     artifactCache.addArtifact(artifactPath, artifact);
@@ -2281,12 +2285,15 @@ public class GovernanceUtils {
 
     public static List<String> getUniqueAttributesNames(Registry registry,
                                                         String mediaType) throws GovernanceException {
-        GovernanceArtifactConfiguration configuration = null;
         try {
-            configuration = getArtifactConfigurationByMediaType(registry, mediaType);
-            return configuration.getUniqueAttributes();
+            GovernanceArtifactConfiguration configuration = configuration = getArtifactConfigurationByMediaType
+                    (registry, mediaType);
+            if (configuration != null) {
+                return configuration.getUniqueAttributes();
+            }
         } catch (RegistryException e) {
             throw new GovernanceException(e);
         }
+        return null;
     }
 }

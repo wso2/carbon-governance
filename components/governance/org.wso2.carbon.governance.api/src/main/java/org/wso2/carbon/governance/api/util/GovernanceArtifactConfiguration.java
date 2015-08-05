@@ -634,6 +634,9 @@ public class GovernanceArtifactConfiguration {
                 if (pathSegment.startsWith("@")) {
                     String attribute = pathSegment.substring(1);
                     attribute = attribute.replace("{", "").replace("}", "");
+                    if(attribute.indexOf("_") == -1){
+                        attribute = "overview_".concat(attribute);
+                    }
                     uniqueAttributes.add(attribute);
                 }
             }

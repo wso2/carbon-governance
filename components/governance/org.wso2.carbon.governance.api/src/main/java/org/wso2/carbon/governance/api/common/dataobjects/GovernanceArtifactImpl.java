@@ -127,6 +127,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             this.properties = artifact.properties;
             this.lcName = artifact.lcName;
             this.lcState = artifact.lcState;
+            this.uniqueAttributes = artifact.uniqueAttributes;
 //            if (artifact.checkListItemBeans != null) {
 //                this.checkListItemBeans = Arrays.copyOf(artifact.checkListItemBeans, artifact.checkListItemBeans.length);
 //            }
@@ -1309,12 +1310,15 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
 
     public boolean uniqueTo(GovernanceArtifact artifact) {
         if (artifact != null) {
+            List<String> uAttributes = getUniqueAttributes(artifact);
             if (this == artifact || this.equals(artifact)) {
                 return true;
-            } else if (uniqueAttributes != null && uniqueAttributes.size() > 0) {
+            } else if (uAttributes != null && uAttributes.size() > 0) {
                 try {
-                    for (String attributeName : uniqueAttributes) {
-                        if (!this.getAttribute(attributeName).equals(artifact.getAttribute(attributeName))) {
+                    for (String attributeName : uAttributes) {
+                        if (this.getAttribute(attributeName) != null && artifact.getAttribute(attributeName) !=
+                                                                        null && !this.getAttribute(attributeName).equals
+                                (artifact.getAttribute(attributeName))) {
                             return false;
                         }
                     }
@@ -1326,6 +1330,15 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             }
         }
         return false;
+    }
+
+    private List<String> getUniqueAttributes(GovernanceArtifact artifact) {
+        if(this.uniqueAttributes != null){
+            return uniqueAttributes;
+        } else if(artifact instanceof GovernanceArtifactImpl){
+            return ((GovernanceArtifactImpl)artifact).getUniqueAttributes();
+        }
+        return null;
     }
 
     public boolean compareTo(GovernanceArtifact artifact) {
