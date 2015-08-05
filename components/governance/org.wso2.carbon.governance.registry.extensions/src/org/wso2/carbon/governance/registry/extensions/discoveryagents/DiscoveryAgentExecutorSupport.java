@@ -79,7 +79,7 @@ public abstract class DiscoveryAgentExecutorSupport {
                                       String shortName, GenericArtifact server, String seqNo,
                                       String originProperty, Map<String, List<String>> feedback)
             throws GovernanceException {
-        if (artifactManager.isExists(artifact)) {
+        if (isExists(artifactManager, artifact)) {
             switch (onExistArtifactStrategy) {
                 case IGNORE:
                     log.info("Ignored already existing artifact" + artifact);
@@ -100,6 +100,19 @@ public abstract class DiscoveryAgentExecutorSupport {
             addNewGenericArtifact(artifactManager, artifact, server, seqNo, originProperty);
             feedback.get(ARTIFACT_ADDED).add(shortName + ":" + artifact.getQName().getLocalPart());
         }
+    }
+
+    private boolean isExists(GenericArtifactManager artifactManager, DetachedGenericArtifact artifact)
+            throws GovernanceException {
+        String status = artifact.getAttribute(DiscoveryAgentExecutor.DISCOVERY_STATUS);
+        if (status != null) {
+            if (DiscoveryAgentExecutor.DISCOVERY_STATUS_EXISTING.equals(status)) {
+                return true;
+            }
+        } else {
+            return artifactManager.isExists(artifact);
+        }
+        return false;
     }
 
     private Map<String, List<String>> initFeedbackMap() {
