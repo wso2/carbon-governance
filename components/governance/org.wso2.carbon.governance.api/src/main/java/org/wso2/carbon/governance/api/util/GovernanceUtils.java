@@ -1816,7 +1816,9 @@ public class GovernanceUtils {
                         if(value.contains(" ")) {
                             value = value.replace(" ", "\\ ");
                         }
-                        possibleProperties.put(subParts[0], value);
+                        if(!subParts[0].equals("name")) {
+                            possibleProperties.put(subParts[0], value);
+                        }
                         fields.put("overview_" + subParts[0], value.toLowerCase());
                     }
                 }
@@ -1825,7 +1827,8 @@ public class GovernanceUtils {
 
         List<GovernanceArtifact> attributeSearchResults = performAttributeSearch(fields, registry);
 
-        if(possibleProperties.size() > 0) {
+        // Following check is done since Attribute Search service only has a way to search one property at a time
+        if(possibleProperties.size() == 1) {
             for(Map.Entry<String, String> entry : possibleProperties.entrySet()) {
                 String propertyName = entry.getKey();
                 fields.remove("overview_" + propertyName);
