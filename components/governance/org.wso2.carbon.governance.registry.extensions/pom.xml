@@ -320,6 +320,10 @@
             <artifactId>httpclient</artifactId>
             <version>4.1.1.wso2v1</version>
        </dependency>
+    <dependency>
+        <groupId>org.json.wso2</groupId>
+        <artifactId>json</artifactId>
+    </dependency>
     </dependencies>
     
 </project>

@@ -130,6 +130,11 @@ public class ExecutorConstants {
      * Defines the APIM endpoint(used to publish the service as API)
      */
     public static final String APIM_PASSWORD = "apim.password";
+
+    /**
+     * Defines the APIM publisher local or external to Governance Registry
+     */
+    public static final String APIM_PUBLISHER = "apim.publisher";
     
     /**
      * Defines the body of the web service request
@@ -248,5 +253,24 @@ public class ExecutorConstants {
 	public static final String APIM_LOGIN_UNDEFINED = "APIManager login credentials are not defined";
 	public static final String ENCODING_FAIL = "Failed when encoding the parameter list. ";
 
+    //API Manager 2.0.0 constants
+    public static final String DESIGN_API_ACTION = "design";
+    public static final String API_OVERVIEW_NAME = "overview_name";
+    public static final String API_OVERVIEW_PROVIDR = "overview_provider";
+    public static final String API_OVERVIEW_VERSION = "overview_version";
+    public static final String API_OVERVIEW_CONTEXT = "overview_context";
+    public static final String API_VISIBILITY = "visibility";
+    public static final String API_ROLES = "roles";
+    public static final String API_OVERVIEW_THUMBNAIL = "overview_thumbnail";
+    public static final String API_OVERVIEW_DESCRIPTION = "overview_description";
+    public static final String API_OVERVIEW_TAGS = "overview_tags";
+    public static final String API_SWAGGER = "swagger";
+    public static final String ACTION = "action";
+    public static final String DEFAULT_SWAGGER_DOC = "{\"paths\":{\"/*\":{\"put\":{\"responses\":{\"200\":{}}},"
+                                                     + "\"post\":{\"responses\":{\"200\":{}}},"
+                                                     + "\"get\":{\"responses\":{\"200\":{}}},"
+                                                     + "\"delete\":{\"responses\":{\"200\":{}}},"
+                                                     + "\"head\":{\"responses\":{\"200\":{}}}}},\"swagger\":\"2.0\","
+                                                     + "\"info\":{\"title\":\"\",\"version\":\"\"}}\n";
 
 }
