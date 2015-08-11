@@ -85,7 +85,5 @@ public class AssetStateMessageBodyWriter implements MessageBodyWriter<AssetState
         writer.close();
         printWriter.flush();
         printWriter.close();
-
-
     }
 }

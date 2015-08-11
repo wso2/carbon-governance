@@ -39,6 +39,8 @@ import java.util.Map;
 
 public class AuthenticationHandler implements RequestHandler {
 
+    public static final String WWW_AUTHENTICATE = "WWW-Authenticate";
+    public static final String AUTHORIZATION_HEADER_NAME = "Authorization";
     protected Log log = LogFactory.getLog(AuthenticationHandler.class);
 
     private final static String AUTH_TYPE_BASIC = "Basic";
@@ -81,7 +83,7 @@ public class AuthenticationHandler implements RequestHandler {
     }
 
     protected Response handleOAuth(Message message) {
-        ArrayList<String> headers = ((Map<String, ArrayList>) message.get(Message.PROTOCOL_HEADERS)).get("Authorization");
+        ArrayList<String> headers = ((Map<String, ArrayList>) message.get(Message.PROTOCOL_HEADERS)).get(AUTHORIZATION_HEADER_NAME);
         if (headers != null) {
             String authHeader = headers.get(0);
             if (authHeader.startsWith(AUTH_TYPE_OAuth)) {
@@ -161,7 +163,7 @@ public class AuthenticationHandler implements RequestHandler {
 
     private Response authenticationFail(String authType) {
         //authentication failed, request the authetication, add the realm name if needed to the value of WWW-Authenticate
-        return Response.status(401).header("WWW-Authenticate", authType).build();
+        return Response.status(401).header(WWW_AUTHENTICATE, authType).build();
     }
 
 

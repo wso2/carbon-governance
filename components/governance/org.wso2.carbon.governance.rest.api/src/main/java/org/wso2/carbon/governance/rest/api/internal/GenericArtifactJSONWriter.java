@@ -63,7 +63,6 @@ public class GenericArtifactJSONWriter {
 //        writer.endObject();
         writer.endObject();
 
-
         writer.flush();
         writer.close();
         printWriter.flush();
@@ -91,12 +90,10 @@ public class GenericArtifactJSONWriter {
         } catch (GovernanceException e) {
             e.printStackTrace();
         }
-
         //Add links
         writer.name("link").value(RESTUtil.generateLink(shortName, artifact.getId(), baseURI));
         writer.endObject();
     }
-
 
     private void writeToJSON(TypedList<?> typedList, OutputStream entityStream) {
         PrintWriter printWriter = new PrintWriter(entityStream);

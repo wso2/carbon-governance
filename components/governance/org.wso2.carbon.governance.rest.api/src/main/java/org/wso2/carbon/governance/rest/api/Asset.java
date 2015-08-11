@@ -18,8 +18,9 @@
 
 package org.wso2.carbon.governance.rest.api;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.DetachedGenericArtifact;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
@@ -58,6 +59,10 @@ import java.util.Map;
 //@RolesAllowed("GOV-REST")
 public class Asset {
 
+    public static final String MAXID_QUERY_PARAM = "maxid";
+    public static final String COUNT_QUERY_PARAM = "count";
+    public static final String ENDPOINTS = "endpoints";
+    private final Log log = LogFactory.getLog(Asset.class);
 
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}")
@@ -100,7 +105,7 @@ public class Asset {
     @Path("/endpoints")
     public Response getEndpoints(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-        return getGovernanceAssets("endpoints", queryParams);
+        return getGovernanceAssets(ENDPOINTS, queryParams);
     }
 
     @GET
@@ -113,7 +118,7 @@ public class Asset {
     @POST
     @Path("/endpoints")
     public Response createEndpoints(GenericArtifact genericArtifact, @Context UriInfo uriInfo) {
-        return persistGovernanceAsset("endpoints", (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
+        return persistGovernanceAsset(ENDPOINTS, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
     }
 
     @PUT
@@ -121,7 +126,7 @@ public class Asset {
     @Consumes("application/json")
     public Response modifyEndpoint(@PathParam("id") String id,
                                    GenericArtifact genericArtifact, @Context UriInfo uriInfo) {
-        return modifyGovernanceAsset("endpoints", id, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
+        return modifyGovernanceAsset(ENDPOINTS, id, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
     }
 
 
@@ -136,7 +141,7 @@ public class Asset {
     public Response getEndpointStates(@PathParam("id") String id,
                                       @Context UriInfo uriInfo) {
         String lc = uriInfo.getQueryParameters().getFirst("lc");
-        return getGovernanceAssetStates("endpoints", id, lc);
+        return getGovernanceAssetStates(ENDPOINTS, id, lc);
     }
 
     @GET
@@ -164,12 +169,13 @@ public class Asset {
             GenericArtifactManager manager = new GenericArtifactManager(getUserRegistry(), shortName);
             GenericArtifact artifact = manager.getGenericArtifact(id);
             if (artifact != null) {
+                //TODO - change to Gov level
                 getUserRegistry().invokeAspect(artifact.getPath(), stateChange.getLifecycle(),
                                                stateChange.getAction(), stateChange.getParameters());
-                return getGovernanceAssetStates(assetType, artifact, null);
+                return getGovernanceAssetStates(artifact, null);
             }
         } catch (RegistryException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return Response.ok().build();
     }
@@ -180,15 +186,14 @@ public class Asset {
         try {
             GenericArtifactManager manager = new GenericArtifactManager(getUserRegistry(), shortName);
             GenericArtifact artifact = manager.getGenericArtifact(id);
-            return getGovernanceAssetStates(assetType, artifact, lcName);
+            return getGovernanceAssetStates(artifact, lcName);
         } catch (RegistryException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return null;
     }
 
-    private Response getGovernanceAssetStates(String assetType, GenericArtifact artifact, String lcName) {
-        String shortName = getShortName(assetType);
+    private Response getGovernanceAssetStates(GenericArtifact artifact, String lcName) {
         try {
             AssetState assetState = null;
             if (artifact != null) {
@@ -212,7 +217,7 @@ public class Asset {
             }
             return Response.ok().entity(assetState).build();
         } catch (RegistryException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return null;
     }
@@ -232,7 +237,7 @@ public class Asset {
             return Response.serverError().build();
 
         } catch (MalformedURLException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e);
             return Response.created(null).build();
 
         }
@@ -251,7 +256,7 @@ public class Asset {
             return Response.serverError().build();
 
         } catch (MalformedURLException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e);
             return Response.created(null).build();
 
         }
@@ -261,7 +266,6 @@ public class Asset {
         String shortName = getShortName(assetType);
         try {
             GenericArtifactManager manager = getGenericArtifactManager(shortName);
-            //TODO - check and remove following line
             GenericArtifact artifact = getUniqueAsset(shortName, id);
             if (artifact != null) {
                 manager.removeGenericArtifact(artifact.getId());
@@ -270,6 +274,7 @@ public class Asset {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (RegistryException e) {
+            log.error(e);
             return Response.created(null).build();
         }
 
@@ -319,20 +324,20 @@ public class Asset {
     }
 
     private int getMaxid(MultivaluedMap<String, String> queryParams) {
-        if (queryParams.get("maxid") != null) {
-            String maxid = queryParams.get("maxid").get(0);
-            if (maxid != null || !"".equals(maxid)) {
-                return Integer.valueOf(maxid);
+        if (queryParams.get(MAXID_QUERY_PARAM) != null) {
+            String maxid = queryParams.get(MAXID_QUERY_PARAM).get(0);
+            if (maxid != null || !"".equals(MAXID_QUERY_PARAM)) {
+                return Integer.valueOf(MAXID_QUERY_PARAM);
             }
         }
         return 0;
     }
 
     private int getCount(MultivaluedMap<String, String> queryParams) {
-        if (queryParams.get("count") != null) {
-            String maxid = queryParams.get("count").get(0);
-            if (maxid != null || !"".equals(maxid)) {
-                return Integer.valueOf(maxid);
+        if (queryParams.get(COUNT_QUERY_PARAM) != null) {
+            String count = queryParams.get(COUNT_QUERY_PARAM).get(0);
+            if (count != null || !"".equals(COUNT_QUERY_PARAM)) {
+                return Integer.valueOf(COUNT_QUERY_PARAM);
             }
         }
         return 20;
@@ -352,7 +357,7 @@ public class Asset {
             GenericArtifact[] genericArtifacts = artifactManager.findGenericArtifacts(criteria);
             artifacts = Arrays.asList(genericArtifacts);
         } catch (RegistryException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return artifacts;
     }
@@ -390,7 +395,7 @@ public class Asset {
             GenericArtifactManager artifactManager = new GenericArtifactManager(registry, assetType);
             return artifactManager.getGenericArtifact(id);
         } catch (RegistryException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return null;
     }
@@ -407,7 +412,7 @@ public class Asset {
                 }
 
             } catch (RegistryException e) {
-                e.printStackTrace();
+                log.error(e);
             }
 
         }
@@ -415,9 +420,10 @@ public class Asset {
     }
 
     protected Registry getUserRegistry() throws RegistryException {
-        CarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        CarbonContext carbonContext = CarbonContext.getThreadLocalCarbonContext();
+        //TODO
         RegistryService registryService = (RegistryService) carbonContext.
-                getOSGiService(RegistryService.class);
+                getOSGiService(RegistryService.class, null);
         return registryService.getGovernanceUserRegistry(carbonContext.getUsername(), carbonContext.getTenantId());
 
     }
