@@ -46,7 +46,7 @@ public class ServerDiscoveryService extends DiscoveryAgentExecutorSupport {
         try {
             Registry govRegistry = getGovRegistry();
             String originProperty = getOriginProperty(server);
-            String seqNo = getSequnceNo();
+            String seqNo = getSequenceNo();
             Map<String, List<String>> feedback = persistDiscoveredArtifacts(govRegistry, discovredArtifacts, server,
                                                                             seqNo, originProperty);
             handleOrphanArtifacts(govRegistry, discovredArtifacts, seqNo, originProperty);

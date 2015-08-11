@@ -68,12 +68,11 @@ public class DiscoveryAgentExecutorTask extends DiscoveryAgentExecutorSupport im
                 log.info("Started to discover new governance artifacts on " + serverArtifact.getQName() + " server");
                 Map<String, List<DetachedGenericArtifact>> newArtifacts = discoveryAgentExecutor.executeDiscoveryAgent(serverArtifact);
                 String originProperty = getOriginProperty(serverArtifact);
-                String seqNo = getSequnceNo();
+                String seqNo = getSequenceNo();
                 Map<String, List<String>>  feedback = persistDiscoveredArtifacts(govRegistry, newArtifacts,
                                                                               serverArtifact, seqNo, originProperty);
                 printFeedback(feedback);
-                //TODO
-//                handleOrphanArtifacts(govRegistry, newArtifacts.keySet(), seqNo, originProperty);
+                handleOrphanArtifacts(govRegistry, newArtifacts, seqNo, originProperty);
             }
             log.info("DiscoveryAgentExecutorTask completed ....");
         } catch (DiscoveryAgentException | RegistryException | IOException e) {

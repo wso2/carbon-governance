@@ -124,6 +124,7 @@ public abstract class DiscoveryAgentExecutorSupport {
         String status = artifact.getAttribute(DiscoveryAgentExecutor.DISCOVERY_STATUS);
         if (status != null) {
             if (DiscoveryAgentExecutor.DISCOVERY_STATUS_EXISTING.equals(status)) {
+                artifact.removeAttribute(DiscoveryAgentExecutor.DISCOVERY_STATUS_EXISTING);
                 return true;
             }
         } else {
@@ -189,7 +190,6 @@ public abstract class DiscoveryAgentExecutorSupport {
             check.
              */
             if (!isCurrentlyDiscoveredArtifact(artifact, artifacts)) {
-                removeDerivedAssociations(artifact);
                 genericArtifactManager.removeGenericArtifact(artifact.getId());
                 log.info("Removed orphan artifact belong to " + originProperty + " server : " + artifact);
             }
@@ -203,10 +203,6 @@ public abstract class DiscoveryAgentExecutorSupport {
             }
         }
         return false;
-    }
-
-    protected void removeDerivedAssociations(GenericArtifact artifact) {
-        //TODO
     }
 
     protected List<GenericArtifact> findOrphanArtifacts(GenericArtifactManager genericArtifactManager, String seqNo,
@@ -292,7 +288,7 @@ public abstract class DiscoveryAgentExecutorSupport {
         return GovernanceRegistryExtensionsDataHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();
     }
 
-    protected String getSequnceNo() {
+    protected String getSequenceNo() {
         return UUID.randomUUID().toString();
     }
 
