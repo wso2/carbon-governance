@@ -106,7 +106,7 @@ public class AuthenticationHandler implements RequestHandler {
     private boolean authenticate(String userName, String password) throws RestApiBasicAuthenticationException {
         String tenantDomain = MultitenantUtils.getTenantDomain(userName);
         String tenantAwareUserName = MultitenantUtils.getTenantAwareUsername(userName);
-        userName = tenantAwareUserName + "@" + tenantDomain;
+        String userNameWithTenantDomain = tenantAwareUserName + "@" + tenantDomain;
 
         RealmService realmService = RegistryContext.getBaseInstance().getRealmService();
         TenantManager mgr = realmService.getTenantManager();
@@ -116,13 +116,13 @@ public class AuthenticationHandler implements RequestHandler {
             tenantId = mgr.getTenantId(tenantDomain);
         } catch (UserStoreException e) {
             throw new RestApiBasicAuthenticationException(
-                    "Identity exception thrown while getting tenant ID for user : " + userName, e);
+                    "Identity exception thrown while getting tenant ID for user : " + userNameWithTenantDomain, e);
         }
 
         // tenantId == -1, means an invalid tenant.
         if (tenantId == -1) {
             if (log.isDebugEnabled()) {
-                log.debug("Basic authentication request with an invalid tenant : " + userName);
+                log.debug("Basic authentication request with an invalid tenant : " + userNameWithTenantDomain);
             }
             return false;
         }
@@ -135,12 +135,12 @@ public class AuthenticationHandler implements RequestHandler {
             authStatus = userStoreManager.authenticate(tenantAwareUserName, password);
         } catch (UserStoreException e) {
             throw new RestApiBasicAuthenticationException(
-                    "User store exception thrown while authenticating user : " + userName, e);
+                    "User store exception thrown while authenticating user : " + userNameWithTenantDomain, e);
         }
 
         if (log.isDebugEnabled()) {
             log.debug("Basic authentication request completed. " +
-                      "Username : " + userName +
+                      "Username : " + userNameWithTenantDomain +
                       ", Authentication State : " + authStatus);
         }
 
