@@ -49,6 +49,8 @@ public final class Constants {
     public static final String UTF_8_ENCODE = "UTF-8";
 
     public static final int SUCCESS_RESPONSE_CODE = 200;
+    public static final int CREATED_RESPONSE_CODE = 201;
     public static final int APIM_PARAMETER_COUNT = 3;
-
+    public static final String APIM_2_0_0_ENDPOINT = "/publisher/apis/assets?type=api";
+    public static final String APIM_2_0_0_LOGIN_ENDPOINT = "/publisher/apis/authenticate";
 }
