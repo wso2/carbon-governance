@@ -276,7 +276,7 @@
             </form>
 
 
-            <form id="tempFilterForm" onKeydown="Javascript: if (event.keyCode==13) submitFilterForm();"
+            <form id="tempFilterForm" onKeydown="Javascript: if (event.keyCode==13) {submitFilterForm(); return false;}"
                   onsubmit="return submitFilterForm();" method="post">
                 <input type="hidden" name="singularLabel" value="<%=singularLabel%>"/>
                 <input type="hidden" name="pluralLabel" value="<%=pluralLabel%>"/>
