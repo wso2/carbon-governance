@@ -73,7 +73,7 @@
         if(errorMsg.contains("contains one or more illegal characters")) {
             error = "Failed to add the artifact, Special characters are not allowed in the name fields";
         } else if(errorMsg.contains("Governance artifact") && errorMsg.contains("already exists")){
-            error = "Failed to add the artifact, Governance artifact is already exists";
+            error = "Failed to add the artifact, Governance artifact already exists";
         } else {
             error = errorMsg.replace("org.apache.axis2.AxisFault:", "").trim();
         }
