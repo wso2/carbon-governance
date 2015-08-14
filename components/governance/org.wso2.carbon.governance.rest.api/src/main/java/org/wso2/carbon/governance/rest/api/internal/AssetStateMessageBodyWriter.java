@@ -38,7 +38,7 @@ import java.util.Map;
 
 
 @Provider
-@Consumes({"application/xml", "application/json"})
+@Consumes({"application/json"})
 public class AssetStateMessageBodyWriter implements MessageBodyWriter<AssetState> {
 
     @Context
@@ -72,12 +72,10 @@ public class AssetStateMessageBodyWriter implements MessageBodyWriter<AssetState
             writer.value(assetState.getState());
 
         } else if (assetState.getStates() != null) {
-            writer.beginArray();
             for (Map.Entry<String, String> stateEntry : assetState.getStates().entrySet()) {
                 writer.name(stateEntry.getKey());
                 writer.value(stateEntry.getValue());
             }
-            writer.endArray();
         }
         writer.endObject();
 

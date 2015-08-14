@@ -56,7 +56,7 @@ public class TestDiscoveryAgent extends AbstractDiscoveryAgent {
             }
             restArtifacts.add(artifact);
         }
-        for (int i = 1; i < 11; i++) {
+        for (int i = 1; i < 7; i++) {
             DetachedGenericArtifact artifact = (DetachedGenericArtifact) GenericArtifactManager
                     .newDetachedGovernanceArtifact(new QName("TestSOAPService" + i),
                                                    "application/vnd.wso2-soapservice+xml");

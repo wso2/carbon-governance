@@ -33,14 +33,22 @@ import java.util.Map;
 
 public class GenericArtifactJSONWriter {
 
+    public static final String ASSETS = "assets";
+    public static final String INDENT = "  ";
+    public static final String NAME = "name";
+    public static final String ID = "id";
+    public static final String TYPE = "type";
+    public static final String OVERVIEW = "overview_";
+    public static final String LINK = "link";
+
     public void writeTo(TypedList<GenericArtifact> typedList, OutputStream entityStream, String baseURI)
-            throws IOException {
+            throws IOException, GovernanceException {
         PrintWriter printWriter = new PrintWriter(entityStream);
         JsonWriter writer = new JsonWriter(printWriter);
-        writer.setIndent("  ");
+        writer.setIndent(INDENT);
 
         writer.beginObject();
-        writer.name("assets");
+        writer.name(ASSETS);
         if (typedList.hasData()) {
             writer.beginArray();
 
@@ -70,28 +78,24 @@ public class GenericArtifactJSONWriter {
     }
 
     private void writeGenericArtifact(JsonWriter writer, String shortName, GenericArtifact artifact, String baseURI)
-            throws IOException {
+            throws IOException, GovernanceException {
 
         writer.beginObject();
-        writer.name("name").value(artifact.getQName().getLocalPart());
-        writer.name("id").value(artifact.getId());
-        writer.name("type").value(shortName);
-        try {
-            for (String key : artifact.getAttributeKeys()) {
-                //TODO value can be something else not alweys String value
-                String value = artifact.getAttribute(key);
-                if (key.indexOf("overview_") > -1) {
-                    key = key.replace("overview_", "");
-                }
-                if (!"name".equals(key) && value != null) {
-                    writer.name(key).value(value);
-                }
+        writer.name(NAME).value(artifact.getQName().getLocalPart());
+        writer.name(ID).value(artifact.getId());
+        writer.name(TYPE).value(shortName);
+        for (String key : artifact.getAttributeKeys()) {
+            //TODO value can be something else not alweys String value
+            String value = artifact.getAttribute(key);
+            if (key.indexOf(OVERVIEW) > -1) {
+                key = key.replace(OVERVIEW, "");
             }
-        } catch (GovernanceException e) {
-            e.printStackTrace();
+            if (!NAME.equals(key) && value != null) {
+                writer.name(key).value(value);
+            }
         }
         //Add links
-        writer.name("link").value(RESTUtil.generateLink(shortName, artifact.getId(), baseURI));
+        writer.name(LINK).value(RESTUtil.generateLink(shortName, artifact.getId(), baseURI));
         writer.endObject();
     }
 
@@ -100,12 +104,11 @@ public class GenericArtifactJSONWriter {
         JsonObject jObject = convertToJSON(typedList);
         printWriter.write(jObject.toString());
         printWriter.flush();
-
     }
 
     private JsonObject convertToJSON(TypedList<?> typedList) {
         JsonObject jObject = new JsonObject();
-        jObject.addProperty("assets", 1);
+        jObject.addProperty(ASSETS, 1);
         if (GenericArtifact.class.isAssignableFrom(typedList.getType())) {
             // return converGenericArtifactToJSON((List<GenericArtifact>) typedList.getArtifacts());
         }

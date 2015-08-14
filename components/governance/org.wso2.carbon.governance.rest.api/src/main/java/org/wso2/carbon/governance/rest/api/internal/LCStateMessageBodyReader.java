@@ -19,11 +19,15 @@
 package org.wso2.carbon.governance.rest.api.internal;
 
 import com.google.gson.stream.JsonReader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.rest.api.model.LCStateChange;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +38,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LCStateMessageBodyReader extends JSONMessageBodyReader implements MessageBodyReader<LCStateChange> {
+
+    private final Log log = LogFactory.getLog(LCStateMessageBodyReader.class);
+
+    public static final String ATTR_LIFECYCLE = "lc";
+    public static final String ATTR_ACTION = "action";
+    public static final String UTF_8 = "UTF-8";
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -49,17 +59,21 @@ public class LCStateMessageBodyReader extends JSONMessageBodyReader implements M
     public LCStateChange readFrom(Class<LCStateChange> type, Type genericType, Annotation[] annotations,
                                   MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
                                   InputStream entityStream) throws IOException, WebApplicationException {
-
-        JsonReader reader = new JsonReader(new InputStreamReader(entityStream, "UTF-8"));
+        JsonReader reader = new JsonReader(new InputStreamReader(entityStream, UTF_8));
         Map<String, Object> map = new HashMap<>();
         reader.setLenient(true);
         handleJSON(reader, map);
-        return createLCStateChange(map);
+        try {
+            return createLCStateChange(map);
+        } catch (GovernanceException e) {
+            log.error(e);
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
     }
 
-    private LCStateChange createLCStateChange(Map<String, Object> map) {
-        String lc = (String) map.get("lc");
-        String action = (String) map.get("action");
+    private LCStateChange createLCStateChange(Map<String, Object> map) throws GovernanceException {
+        String lc = (String) map.get(ATTR_LIFECYCLE);
+        String action = (String) map.get(ATTR_ACTION);
         if (lc != null && action != null) {
             LCStateChange stateChange = new LCStateChange();
             stateChange.setLifecycle(lc);
@@ -73,15 +87,6 @@ public class LCStateMessageBodyReader extends JSONMessageBodyReader implements M
             }
             return stateChange;
         }
-        return null;
+        throw new GovernanceException("Can't create LCState");
     }
-
-    private String foramt(String key) {
-        int index = key.indexOf("_");
-        String lastPart = key.substring(0, index);
-        String firstPart = key.substring(index + 1);
-        return firstPart.concat(".").concat(lastPart);
-    }
-
-
 }

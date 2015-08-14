@@ -46,6 +46,10 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
         <bean class="org.wso2.carbon.governance.rest.api.internal.AssetStateMessageBodyWriter"/>
         <bean class="org.wso2.carbon.governance.rest.api.internal.TypedListMessageBodyReader"/>
         <bean class="org.wso2.carbon.governance.rest.api.internal.LCStateMessageBodyReader"/>
+        <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
+        <bean class="org.wso2.carbon.governance.rest.api.internal.RegistryExceptionHandler" />
+        <bean class="org.wso2.carbon.governance.rest.api.internal.GovernanceExceptionHandler" />
+
     </jaxrs:providers>
    </jaxrs:server>
 

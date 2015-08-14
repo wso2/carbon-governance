@@ -21,6 +21,8 @@ package org.wso2.carbon.governance.rest.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.DetachedGenericArtifact;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
@@ -41,7 +43,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -51,6 +55,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,29 +70,40 @@ public class Asset {
     private final Log log = LogFactory.getLog(Asset.class);
 
     @GET
+    @Path("/types")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTypes() {
+        return getAssetTypes();
+    }
+
+    @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getAssets(@PathParam("assetType") String assetType, @Context UriInfo uriInfo) {
-        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-        return getGovernanceAssets(assetType, queryParams);
+        String query = createQuery(uriInfo);
+        return getGovernanceAssets(assetType, query);
     }
 
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getAsset(@PathParam("assetType") String assetType, @PathParam("id") String id) {
         return getGovernanceAsset(assetType, id);
     }
 
     @POST
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}")
-    @Consumes("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response createAsset(@PathParam("assetType") String assetType, GenericArtifact genericArtifact,
                                 @Context UriInfo uriInfo) {
         return persistGovernanceAsset(assetType, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
     }
 
+
+
     @PUT
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}")
-    @Consumes("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response modifyAsset(@PathParam("assetType") String assetType, @PathParam("id") String id,
                                 GenericArtifact genericArtifact, @Context UriInfo uriInfo) {
         return modifyGovernanceAsset(assetType, id, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
@@ -103,13 +119,15 @@ public class Asset {
 
     @GET
     @Path("/endpoints")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getEndpoints(@Context UriInfo uriInfo) {
-        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-        return getGovernanceAssets(ENDPOINTS, queryParams);
+        String query = createQuery(uriInfo);
+        return getGovernanceAssets(ENDPOINTS, query);
     }
 
     @GET
     @Path("/endpoints/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getEndpoint(@PathParam("id") String id) {
         return getGovernanceAsset("endpoints", id);
     }
@@ -117,13 +135,14 @@ public class Asset {
 
     @POST
     @Path("/endpoints")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response createEndpoints(GenericArtifact genericArtifact, @Context UriInfo uriInfo) {
         return persistGovernanceAsset(ENDPOINTS, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
     }
 
     @PUT
     @Path("endpoints/{id}")
-    @Consumes("application/json")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response modifyEndpoint(@PathParam("id") String id,
                                    GenericArtifact genericArtifact, @Context UriInfo uriInfo) {
         return modifyGovernanceAsset(ENDPOINTS, id, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
@@ -138,6 +157,7 @@ public class Asset {
 
     @GET
     @Path("{endpoint/{id}/states")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getEndpointStates(@PathParam("id") String id,
                                       @Context UriInfo uriInfo) {
         String lc = uriInfo.getQueryParameters().getFirst("lc");
@@ -146,6 +166,7 @@ public class Asset {
 
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/states")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getAssetStates(@PathParam("assetType") String assetType, @PathParam("id") String id,
                                    @Context UriInfo uriInfo) {
         String lc = uriInfo.getQueryParameters().getFirst("lc");
@@ -155,11 +176,67 @@ public class Asset {
 
     @PUT
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/states")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response updateLCState(@PathParam("assetType") String assetType, @PathParam("id") String id,
                                   LCStateChange stateChange,
                                   @Context UriInfo uriInfo) {
         String lc = uriInfo.getQueryParameters().getFirst("lc");
         return updateLCState(assetType, id, stateChange);
+    }
+
+
+    private Response getAssetTypes() {
+        List<String> shortNames = new ArrayList<>();
+        try {
+            List<GovernanceArtifactConfiguration> configurations = GovernanceUtils.findGovernanceArtifactConfigurations
+                    (getUserRegistry());
+            for (GovernanceArtifactConfiguration configuration : configurations) {
+                shortNames.add(configuration.getSingularLabel());
+            }
+            return Response.ok().entity(shortNames).build();
+        } catch (RegistryException e) {
+            log.error(e);
+            return Response.serverError().build();
+        }
+    }
+
+
+    private String createQuery(UriInfo uriInfo) {
+        String requestURI = uriInfo.getRequestUri().toString();
+        String path = uriInfo.getAbsolutePath().toString();
+        if (requestURI.length() > path.length()) {
+            return requestURI.substring(path.length() + 1);
+        }
+        return "";
+    }
+
+    private Response searchGovernanceAssets(String query) throws RegistryException {
+        return searchGovernanceAssets("", query);
+    }
+
+    private Response searchGovernanceAssets(String assetType, String query)
+            throws RegistryException {
+           List<GenericArtifact> artifacts = findGovernanceArtifacts(query, assetType);
+           if (artifacts.size() > 0) {
+               TypedList<GenericArtifact> typedList = new TypedList<>(GenericArtifact.class, assetType, artifacts);
+               return Response.ok().entity(typedList).build();
+           } else {
+               return Response.status(Response.Status.NOT_FOUND).build();
+           }
+    }
+
+    private List<GenericArtifact> findGovernanceArtifacts(String query, String assetType) throws RegistryException {
+        List<GovernanceArtifact> governanceArtifacts = GovernanceUtils.findGovernanceArtifacts(query,
+                                                                                               getUserRegistry(), assetType);
+        if (governanceArtifacts.size() > 0) {
+            List<GenericArtifact> genericArtifacts = new ArrayList<>();
+            for (GovernanceArtifact artifact : governanceArtifacts) {
+                genericArtifacts.add((GenericArtifact) artifact);
+            }
+            return genericArtifacts;
+        }
+        return Collections.emptyList();
     }
 
 
@@ -204,14 +281,11 @@ public class Asset {
                 } else {
                     String[] stateNames = artifact.getLifecycleNames();
                     if (stateNames != null) {
-                        if (stateNames.length == 1) {
-                            assetState = new AssetState(artifact.getLifecycleState(stateNames[0]));
-                        } else if (stateNames.length > 0) {
-                            assetState = new AssetState();
-                            for (String name : stateNames) {
-                                assetState.addState(name, artifact.getLifecycleState(name));
-                            }
+                        assetState = new AssetState();
+                        for (String name : stateNames) {
+                            assetState.addState(name, artifact.getLifecycleState(name));
                         }
+
                     }
                 }
             }
@@ -251,14 +325,9 @@ public class Asset {
             manager.addGenericArtifact(artifact);
             URI link = new URL(RESTUtil.generateLink(assetType, artifact.getId(), baseURL, false)).toURI();
             return Response.created(link).build();
-        } catch (RegistryException e) {
-            e.printStackTrace();
-            return Response.serverError().build();
-
-        } catch (MalformedURLException | URISyntaxException e) {
+        } catch (RegistryException | MalformedURLException | URISyntaxException e) {
             log.error(e);
-            return Response.created(null).build();
-
+            return Response.serverError().build();
         }
     }
 
@@ -282,13 +351,16 @@ public class Asset {
     }
 
 
-    public Response getGovernanceAssets(String assetType, String name, String version,
-                                        MultivaluedMap<String, String> queryParams) {
+    public Response getGovernanceAssets(String assetType, String query) {
         String shortName = getShortName(assetType);
         if (validateAssetType(shortName)) {
-            List<GenericArtifact> artifacts = getAssetList(shortName, queryParams);
-            TypedList<GenericArtifact> typedList = new TypedList<>(GenericArtifact.class, shortName, artifacts);
-            return Response.ok().entity(typedList).build();
+            List<GenericArtifact> artifacts = getAssetList(shortName, query);
+            if (artifacts.size() > 0) {
+                TypedList<GenericArtifact> typedList = new TypedList<>(GenericArtifact.class, shortName, artifacts);
+                return Response.ok().entity(typedList).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
         } else {
             return validationFail(shortName);
         }
@@ -312,15 +384,6 @@ public class Asset {
 
     private GenericArtifactManager getGenericArtifactManager(String shortName) throws RegistryException {
         return new GenericArtifactManager(getUserRegistry(), shortName);
-    }
-
-    public Response getGovernanceAssets(String assetType, MultivaluedMap<String, String> queryParams) {
-        return getGovernanceAssets(assetType, null, null, queryParams);
-    }
-
-
-    public Response getGovernanceAssets(String assetType, String name, MultivaluedMap<String, String> queryParams) {
-        return getGovernanceAssets(assetType, name, null, queryParams);
     }
 
     private int getMaxid(MultivaluedMap<String, String> queryParams) {
@@ -348,13 +411,12 @@ public class Asset {
     }
 
 
-    private List<GenericArtifact> getAssetList(String assetType, MultivaluedMap<String, String> queryParams) {
+    private List<GenericArtifact> getAssetList(String assetType, String query) {
         List<GenericArtifact> artifacts = new ArrayList<>();
         try {
             Registry registry = getUserRegistry();
             GenericArtifactManager artifactManager = new GenericArtifactManager(registry, assetType);
-            Map<String, List<String>> criteria = createCriteria(queryParams);
-            GenericArtifact[] genericArtifacts = artifactManager.findGenericArtifacts(criteria);
+            GenericArtifact[] genericArtifacts = artifactManager.findGovernanceArtifacts(query);
             artifacts = Arrays.asList(genericArtifacts);
         } catch (RegistryException e) {
             log.error(e);
@@ -410,18 +472,15 @@ public class Asset {
                         return true;
                     }
                 }
-
             } catch (RegistryException e) {
                 log.error(e);
             }
-
         }
         return false;
     }
 
     protected Registry getUserRegistry() throws RegistryException {
-        CarbonContext carbonContext = CarbonContext.getThreadLocalCarbonContext();
-        //TODO
+        CarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         RegistryService registryService = (RegistryService) carbonContext.
                 getOSGiService(RegistryService.class, null);
         return registryService.getGovernanceUserRegistry(carbonContext.getUsername(), carbonContext.getTenantId());
