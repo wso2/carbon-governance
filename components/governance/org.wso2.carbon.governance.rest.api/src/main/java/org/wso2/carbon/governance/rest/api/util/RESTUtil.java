@@ -18,9 +18,16 @@
 
 package org.wso2.carbon.governance.rest.api.util;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class RESTUtil {
+
+    public static final String MAXID_QUERY_PARAM = "maxid";
+    public static final String COUNT_QUERY_PARAM = "count";
 
     public static String getResourceName(String shortName) {
         //TODO - handle "s" and "es"
@@ -40,5 +47,41 @@ public class RESTUtil {
         return uriInfo.getBaseUri().toString();
     }
 
+    public String formatKey(String key) {
+        if (key.indexOf("_") == -1) {
+            //Assume this is belong to "overview_"
+            return "overview_" + key;
+        }
+        return key;
+    }
 
+    public static List<String> formatValue(String value) {
+        List<String> values = new ArrayList<>();
+        values.addAll(Arrays.asList(value.split(",")));
+        return values;
+    }
+
+    public static String getShortName(String assetType) {
+        return assetType.substring(0, assetType.length() - 1);
+    }
+
+    public static int getMaxid(MultivaluedMap<String, String> queryParams) {
+        if (queryParams.get(MAXID_QUERY_PARAM) != null) {
+            String maxid = queryParams.get(MAXID_QUERY_PARAM).get(0);
+            if (maxid != null || !"".equals(MAXID_QUERY_PARAM)) {
+                return Integer.valueOf(MAXID_QUERY_PARAM);
+            }
+        }
+        return 0;
+    }
+
+    public static int getCount(MultivaluedMap<String, String> queryParams) {
+        if (queryParams.get(COUNT_QUERY_PARAM) != null) {
+            String count = queryParams.get(COUNT_QUERY_PARAM).get(0);
+            if (count != null || !"".equals(COUNT_QUERY_PARAM)) {
+                return Integer.valueOf(COUNT_QUERY_PARAM);
+            }
+        }
+        return 20;
+    }
 }
