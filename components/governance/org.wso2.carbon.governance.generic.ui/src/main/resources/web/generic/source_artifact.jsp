@@ -66,9 +66,6 @@
                  "            </column>\n" +
                  "        </list>\n" +
                  "    </ui>\n" +
-                 "    <relationships>\n" +
-                 "        <association type=\"isConsumedBy\" source=\"@{assets_entry:value}\"/>\n" +
-                 "    </relationships>\n" +
                  "    <content>\n" +
                  "        <table name=\"Overview\">\n" +
                  "            <field type=\"text\" required=\"true\">\n" +
