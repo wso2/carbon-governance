@@ -1069,9 +1069,8 @@ public class GovernanceUtils {
             }*/
 
         } catch (RegistryException e) {
-            String msg =
-                    "Error in retrieving governance artifact by path. path: " + artifactPath + ".";
-            log.error(msg, e);
+            String msg = "Error in retrieving governance artifact by path. path: " + artifactPath + ".";
+            //log.error(msg, e);
             throw new GovernanceException(msg, e);
         }
         return null;
