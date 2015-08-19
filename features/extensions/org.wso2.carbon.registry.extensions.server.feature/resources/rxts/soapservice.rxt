@@ -28,12 +28,6 @@
             <field type="text" required="true">
                 <name label="Version">Version</name>
             </field>
-            <field type="text">
-                <name label="Scopes">Scopes</name>
-            </field>
-            <field type="text">
-                <name label="Types">Types</name>
-            </field>
             <field type="text-area">
                 <name label="Description">Description</name>
             </field>
@@ -54,7 +48,7 @@
         </table>
         <table name="Interface">
             <field type="text">
-                <name label="WSDL/WADL URL">WSDL URL</name>
+                <name label="WSDL URL">WSDL URL</name>
             </field>
             <field type="options">
                 <name label="Transport Protocols">Transport Protocols</name>
