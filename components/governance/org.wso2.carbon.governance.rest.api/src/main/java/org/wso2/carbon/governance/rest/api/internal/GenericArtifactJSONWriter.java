@@ -49,11 +49,12 @@ public class GenericArtifactJSONWriter {
 
         writer.beginObject();
         writer.name(ASSETS);
+        String shortName = null;
         if (typedList.hasData()) {
             writer.beginArray();
 
             for (Map.Entry<String, List<GenericArtifact>> entry : typedList.getArtifacts().entrySet()) {
-                String shortName = entry.getKey();
+                shortName = entry.getKey();
                 for (GenericArtifact artifact : entry.getValue()) {
                     writeGenericArtifact(writer, shortName, artifact, baseURI);
                 }
@@ -62,19 +63,49 @@ public class GenericArtifactJSONWriter {
         } else {
             writer.nullValue();
         }
-         //TODO support pagination here.
-//        writer.name("links");
-//        writer.beginObject();
-//        writer.name("self").value(baseURI);
-//        writer.name("prev").value(baseURI);
-//        writer.name("next").value(baseURI);
-//        writer.endObject();
+
+        TypedList.Pagination pagination = typedList.getPagination();
+        if (pagination != null) {
+            String nextURI = null;
+            String prevURI = null;
+            String selfURI = generateLink(shortName, baseURI, pagination.getQuery(), pagination.getSelfStart(),
+                                          pagination.getCount());
+            if(pagination.getNextStart() != null) {
+                nextURI = generateLink(shortName, baseURI, pagination.getQuery(), pagination.getNextStart(),
+                                              pagination.getCount());
+            }
+            if(pagination.getPreviousStart() != null) {
+                prevURI = generateLink(shortName, baseURI, pagination.getQuery(), pagination.getPreviousStart(),
+                                              pagination.getCount());
+            }
+            writer.name("links");
+            writer.beginObject();
+            writer.name("self").value(selfURI);
+            if(prevURI != null) {
+                writer.name("prev").value(prevURI);
+            }
+            if(nextURI != null) {
+                writer.name("next").value(nextURI);
+            }
+            writer.endObject();
+        }
+
+;
         writer.endObject();
 
         writer.flush();
         writer.close();
         printWriter.flush();
         printWriter.close();
+    }
+
+    private String generateLink(String shortName, String baseURI, String query, int start, int count){
+        if(query != null && !query.isEmpty()){
+            query = query + "&";
+        }
+        String requestURI = RESTUtil.generateLink(shortName, baseURI, true) + "?" + query;
+        return requestURI + PaginationInfo.PAGINATION_PARAM_START + "=" + start+ "&" + PaginationInfo
+                .PAGINATION_PARAM_COUNT + "=" + count;
     }
 
     private void writeGenericArtifact(JsonWriter writer, String shortName, GenericArtifact artifact, String baseURI)

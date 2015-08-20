@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.governance.rest.api.util;
 
+import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
@@ -26,9 +28,6 @@ import java.util.List;
 
 public class RESTUtil {
 
-    public static final String MAXID_QUERY_PARAM = "maxid";
-    public static final String COUNT_QUERY_PARAM = "count";
-
     public static String getResourceName(String shortName) {
         //TODO - handle "s" and "es"
         return shortName.concat("s");
@@ -36,7 +35,10 @@ public class RESTUtil {
 
     public static String generateLink(String shortName, String id, String baseURI, boolean formatShortName) {
         String resourceName = formatShortName == Boolean.TRUE ? RESTUtil.getResourceName(shortName) : shortName;
-        return baseURI + resourceName + "/" + id;
+        if(id != null){
+            return baseURI + resourceName + "/" + id;
+        }
+        return baseURI + resourceName;
     }
 
     public static String generateLink(String shortName, String id, String baseURI) {
@@ -65,23 +67,70 @@ public class RESTUtil {
         return assetType.substring(0, assetType.length() - 1);
     }
 
-    public static int getMaxid(MultivaluedMap<String, String> queryParams) {
-        if (queryParams.get(MAXID_QUERY_PARAM) != null) {
-            String maxid = queryParams.get(MAXID_QUERY_PARAM).get(0);
-            if (maxid != null || !"".equals(MAXID_QUERY_PARAM)) {
-                return Integer.valueOf(MAXID_QUERY_PARAM);
-            }
+    public static PaginationInfo getPaginationInfo(MultivaluedMap<String, String> queryParams) {
+        PaginationInfo paginationInfo = new PaginationInfo();
+
+        Integer start = getFirstIntValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_START));
+        if(start != null){
+            paginationInfo.setStart(start);
         }
-        return 0;
+
+        Integer count = getFirstIntValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_COUNT));
+        if(count != null){
+            paginationInfo.setCount(count);
+        }
+
+        Integer limit = getFirstIntValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_LIMIT));
+        if(limit != null){
+            paginationInfo.setLimit(limit);
+        }
+
+        String sort = getFirstStringValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_SORT_ORDER));
+        if(sort != null){
+            paginationInfo.setSortOrder(sort);
+        }
+
+        String sortBy = getFirstStringValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_SORT_BY));
+        if(sortBy != null){
+            paginationInfo.setSortBy(sortBy);
+        }
+
+        return paginationInfo;
     }
 
-    public static int getCount(MultivaluedMap<String, String> queryParams) {
-        if (queryParams.get(COUNT_QUERY_PARAM) != null) {
-            String count = queryParams.get(COUNT_QUERY_PARAM).get(0);
-            if (count != null || !"".equals(COUNT_QUERY_PARAM)) {
-                return Integer.valueOf(COUNT_QUERY_PARAM);
+    public static void excludePaginationParameters(MultivaluedMap<String, String> queryParams){
+          queryParams.remove(PaginationInfo.PAGINATION_PARAM_START);
+          queryParams.remove(PaginationInfo.PAGINATION_PARAM_COUNT);
+          queryParams.remove(PaginationInfo.PAGINATION_PARAM_LIMIT);
+          queryParams.remove(PaginationInfo.PAGINATION_PARAM_SORT_ORDER);
+          queryParams.remove(PaginationInfo.PAGINATION_PARAM_SORT_BY);
+    }
+
+    private static String getFirstStringValue(List<String> values) {
+        if (values != null && values.size() > 0) {
+            return values.get(0);
+        }
+        return null;
+    }
+
+    private static Integer getFirstIntValue(List<String> values) {
+        if (values != null && values.size() > 0) {
+            /*
+            Special case where user provided incorrect values for start, count or limit parameters.
+            No point to throw NumberFormatException instead fallback to use default values for above
+            parameters and continue with the query.
+             */
+            try {
+                return Integer.valueOf(values.get(0));
+            } catch (NumberFormatException e) {
+                //ignore it.
             }
         }
-        return 20;
+        return null;
+    }
+
+
+    public static String generateLink(String shortName, String baseURI, boolean formatShortName) {
+        return generateLink(shortName, null, baseURI, formatShortName);
     }
 }

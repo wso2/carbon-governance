@@ -19,6 +19,8 @@
 package org.wso2.carbon.governance.rest.api.model;
 
 
+import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ public class TypedList<T> {
 
     private Class<T> type;
     private Map<String, List<T>> artifacts = new HashMap();
+    private Pagination pagination;
 
     public TypedList(Class<T> type, Map<String, List<T>> artifacts) {
         this.type = type;
@@ -37,9 +40,14 @@ public class TypedList<T> {
         this.type = type;
     }
 
-    public TypedList(Class<T> genericArtifactClass, String assetType, List<T> artifactList) {
+    public TypedList(Class<T> genericArtifactClass, String assetType, List<T> artifactList,
+                     PaginationInfo paginationInfo) {
         this.type = type;
         this.artifacts.put(assetType, artifactList);
+        if(paginationInfo != null) {
+            this.pagination = new Pagination(paginationInfo);
+        }
+
     }
 
     public Class<T> getType() {
@@ -59,6 +67,14 @@ public class TypedList<T> {
 
     }
 
+    public Pagination getPagination() {
+        return pagination;
+    }
+
+    public void setPagination(Pagination pagination) {
+        this.pagination = pagination;
+    }
+
     @Override
     public String toString() {
         return "TypedList{" +
@@ -66,4 +82,100 @@ public class TypedList<T> {
                ", artifacts=" + artifacts +
                '}';
     }
+
+    public class Pagination {
+
+        private Integer count;
+        private Integer selfStart;
+        private Integer nextStart;
+        private Integer previousStart;
+        private String query;
+
+        public Pagination() {
+        }
+
+        public Pagination(PaginationInfo info) {
+            this.count = info.getCount();
+            this.selfStart = info.getStart();
+            if (info.isMorePages()) {
+                this.nextStart = selfStart + count;
+            }
+            if (selfStart - count >= 0) {
+                this.previousStart = selfStart - count;
+            }
+            this.query = info.getQuery();
+        }
+
+        public Integer getCount() {
+            return count;
+        }
+
+        public void setCount(Integer count) {
+            this.count = count;
+        }
+
+        public Integer getSelfStart() {
+            return selfStart;
+        }
+
+        public void setSelfStart(Integer selfStart) {
+            this.selfStart = selfStart;
+        }
+
+        public Integer getNextStart() {
+            return nextStart;
+        }
+
+        public void setNextStart(Integer nextStart) {
+            this.nextStart = nextStart;
+        }
+
+        public Integer getPreviousStart() {
+            return previousStart;
+        }
+
+        public void setPreviousStart(Integer previousStart) {
+            this.previousStart = previousStart;
+        }
+
+        public String getQuery() {
+            return query;
+        }
+
+        public void setQuery(String query) {
+            this.query = query;
+        }
+
+        public class Entry {
+            private int start;
+            private int count;
+
+            public Entry() {
+            }
+
+            public Entry(int start, int count) {
+                this.start = start;
+                this.count = count;
+            }
+
+            public int getStart() {
+                return start;
+            }
+
+            public void setStart(int start) {
+                this.start = start;
+            }
+
+            public int getCount() {
+                return count;
+            }
+
+            public void setCount(int count) {
+                this.count = count;
+            }
+        }
+
+    }
+
+
 }
