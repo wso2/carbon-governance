@@ -84,7 +84,7 @@ public class GovernanceEventingHandler extends Handler {
             EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("lifecycle.checkpoint.notification", LifecycleNotificationEvent.EVENT_NAME, LifecycleNotificationEvent.EVENT_NAME);
 
             EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("publisher.checklist.checked", PublisherCheckListItemCheckedEvent.EVENT_NAME, null);
-            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("publisher.checklist.item.unchecked", PublisherCheckListItemUncheckedEvent.EVENT_NAME, null);
+            EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("publisher.checklist.unchecked", PublisherCheckListItemUncheckedEvent.EVENT_NAME, null);
             EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("publisher.lifecycle.state.changed", PublisherLifeCycleStateChangedEvent.EVENT_NAME, null);
             EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("publisher.update", PublisherResourceUpdatedEvent.EVENT_NAME,null);
             EventDataHolder.getInstance().getRegistryNotificationService().registerEventType("store.lifecycle.state.changed", StoreLifeCycleStateChangedEvent.EVENT_NAME, null);
