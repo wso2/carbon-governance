@@ -18,12 +18,11 @@
 
 package org.wso2.carbon.governance.rest.api.internal;
 
-import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
-import org.wso2.carbon.governance.rest.api.util.RESTUtil;
+import org.wso2.carbon.governance.rest.api.util.Util;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,6 +39,10 @@ public class GenericArtifactJSONWriter {
     public static final String TYPE = "type";
     public static final String OVERVIEW = "overview_";
     public static final String LINK = "link";
+    public static final String LINKS = "links";
+    public static final String SELF = "self";
+    public static final String PREV = "prev";
+    public static final String NEXT = "next";
 
     public void writeTo(TypedList<GenericArtifact> typedList, OutputStream entityStream, String baseURI)
             throws IOException, GovernanceException {
@@ -70,42 +73,49 @@ public class GenericArtifactJSONWriter {
             String prevURI = null;
             String selfURI = generateLink(shortName, baseURI, pagination.getQuery(), pagination.getSelfStart(),
                                           pagination.getCount());
-            if(pagination.getNextStart() != null) {
+            if (pagination.getNextStart() != null) {
                 nextURI = generateLink(shortName, baseURI, pagination.getQuery(), pagination.getNextStart(),
-                                              pagination.getCount());
+                                       pagination.getCount());
             }
-            if(pagination.getPreviousStart() != null) {
+            if (pagination.getPreviousStart() != null) {
                 prevURI = generateLink(shortName, baseURI, pagination.getQuery(), pagination.getPreviousStart(),
-                                              pagination.getCount());
+                                       pagination.getCount());
             }
-            writer.name("links");
+            writer.name(LINKS);
             writer.beginObject();
-            writer.name("self").value(selfURI);
-            if(prevURI != null) {
-                writer.name("prev").value(prevURI);
+            writer.name(SELF).value(selfURI);
+            if (prevURI != null) {
+                writer.name(PREV).value(prevURI);
             }
-            if(nextURI != null) {
-                writer.name("next").value(nextURI);
+            if (nextURI != null) {
+                writer.name(NEXT).value(nextURI);
             }
             writer.endObject();
         }
 
-;
         writer.endObject();
-
         writer.flush();
         writer.close();
         printWriter.flush();
         printWriter.close();
     }
 
-    private String generateLink(String shortName, String baseURI, String query, int start, int count){
-        if(query != null && !query.isEmpty()){
+    private String generateLink(String shortName, String baseURI, String query, int start, int count) {
+        if (query != null && !query.isEmpty()) {
             query = query + "&";
         }
-        String requestURI = RESTUtil.generateLink(shortName, baseURI, true) + "?" + query;
-        return requestURI + PaginationInfo.PAGINATION_PARAM_START + "=" + start+ "&" + PaginationInfo
-                .PAGINATION_PARAM_COUNT + "=" + count;
+        StringBuilder builder = new StringBuilder();
+        builder.append(Util.generateLink(shortName, baseURI, true));
+        builder.append("?");
+        builder.append(query);
+        builder.append(PaginationInfo.PAGINATION_PARAM_START);
+        builder.append("=");
+        builder.append(start);
+        builder.append("&");
+        builder.append(PaginationInfo.PAGINATION_PARAM_COUNT);
+        builder.append("=");
+        builder.append(count);
+        return builder.toString();
     }
 
     private void writeGenericArtifact(JsonWriter writer, String shortName, GenericArtifact artifact, String baseURI)
@@ -116,7 +126,7 @@ public class GenericArtifactJSONWriter {
         writer.name(ID).value(artifact.getId());
         writer.name(TYPE).value(shortName);
         for (String key : artifact.getAttributeKeys()) {
-            //TODO value can be something else not alweys String value
+            //TODO value can be something else not a String value
             String value = artifact.getAttribute(key);
             if (key.indexOf(OVERVIEW) > -1) {
                 key = key.replace(OVERVIEW, "");
@@ -125,25 +135,7 @@ public class GenericArtifactJSONWriter {
                 writer.name(key).value(value);
             }
         }
-        //Add links
-        writer.name(LINK).value(RESTUtil.generateLink(shortName, artifact.getId(), baseURI));
+        writer.name(LINK).value(Util.generateLink(shortName, artifact.getId(), baseURI));
         writer.endObject();
     }
-
-    private void writeToJSON(TypedList<?> typedList, OutputStream entityStream) {
-        PrintWriter printWriter = new PrintWriter(entityStream);
-        JsonObject jObject = convertToJSON(typedList);
-        printWriter.write(jObject.toString());
-        printWriter.flush();
-    }
-
-    private JsonObject convertToJSON(TypedList<?> typedList) {
-        JsonObject jObject = new JsonObject();
-        jObject.addProperty(ASSETS, 1);
-        if (GenericArtifact.class.isAssignableFrom(typedList.getType())) {
-            // return converGenericArtifactToJSON((List<GenericArtifact>) typedList.getArtifacts());
-        }
-        return null;
-    }
-
 }

@@ -22,7 +22,7 @@ import com.google.gson.stream.JsonReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
-import org.wso2.carbon.governance.rest.api.model.LCStateChange;
+import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -37,7 +37,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LCStateMessageBodyReader extends JSONMessageBodyReader implements MessageBodyReader<LCStateChange> {
+public class LCStateMessageBodyReader extends JSONMessageBodyReader implements MessageBodyReader<AssetStateChange> {
 
     private final Log log = LogFactory.getLog(LCStateMessageBodyReader.class);
 
@@ -47,7 +47,7 @@ public class LCStateMessageBodyReader extends JSONMessageBodyReader implements M
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        if (LCStateChange.class.getName().equals(type.getName())) {
+        if (AssetStateChange.class.getName().equals(type.getName())) {
             if (MediaType.APPLICATION_JSON_TYPE.equals(mediaType)) {
                 return true;
             }
@@ -56,7 +56,7 @@ public class LCStateMessageBodyReader extends JSONMessageBodyReader implements M
     }
 
     @Override
-    public LCStateChange readFrom(Class<LCStateChange> type, Type genericType, Annotation[] annotations,
+    public AssetStateChange readFrom(Class<AssetStateChange> type, Type genericType, Annotation[] annotations,
                                   MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
                                   InputStream entityStream) throws IOException, WebApplicationException {
         JsonReader reader = new JsonReader(new InputStreamReader(entityStream, UTF_8));
@@ -71,11 +71,11 @@ public class LCStateMessageBodyReader extends JSONMessageBodyReader implements M
         }
     }
 
-    private LCStateChange createLCStateChange(Map<String, Object> map) throws GovernanceException {
+    private AssetStateChange createLCStateChange(Map<String, Object> map) throws GovernanceException {
         String lc = (String) map.get(ATTR_LIFECYCLE);
         String action = (String) map.get(ATTR_ACTION);
         if (lc != null && action != null) {
-            LCStateChange stateChange = new LCStateChange();
+            AssetStateChange stateChange = new AssetStateChange();
             stateChange.setLifecycle(lc);
             stateChange.setAction(action);
             for (Map.Entry<String, Object> entry : map.entrySet()) {

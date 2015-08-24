@@ -32,10 +32,6 @@ public class AssetState {
         this.state = state;
     }
 
-    public AssetState(Map<String, String> states) {
-        this.states = states;
-    }
-
     public String getState() {
         return state;
     }

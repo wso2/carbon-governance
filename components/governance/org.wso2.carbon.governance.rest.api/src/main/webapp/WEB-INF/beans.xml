@@ -42,9 +42,9 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
     </jaxrs:serviceBeans>
     <jaxrs:providers>
         <bean class="org.wso2.carbon.governance.rest.api.security.AuthenticationHandler"/>
-        <bean class="org.wso2.carbon.governance.rest.api.internal.TypedListMessageBodyWriter"/>
+        <bean class="org.wso2.carbon.governance.rest.api.internal.GenericArtifactMessageBodyWriter"/>
         <bean class="org.wso2.carbon.governance.rest.api.internal.AssetStateMessageBodyWriter"/>
-        <bean class="org.wso2.carbon.governance.rest.api.internal.TypedListMessageBodyReader"/>
+        <bean class="org.wso2.carbon.governance.rest.api.internal.GenericArtifactMessageBodyReader"/>
         <bean class="org.wso2.carbon.governance.rest.api.internal.LCStateMessageBodyReader"/>
         <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
         <bean class="org.wso2.carbon.governance.rest.api.internal.RegistryExceptionHandler" />

@@ -39,9 +39,10 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TypedListMessageBodyReader extends JSONMessageBodyReader implements MessageBodyReader<GenericArtifact> {
+public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
+        implements MessageBodyReader<GenericArtifact> {
 
-    private final Log log = LogFactory.getLog(TypedListMessageBodyReader.class);
+    private final Log log = LogFactory.getLog(GenericArtifactMessageBodyReader.class);
 
     public static final String OVERVIEW_PREFIX = "overview_";
     public static final String RXT_SEPARATOR = "_";

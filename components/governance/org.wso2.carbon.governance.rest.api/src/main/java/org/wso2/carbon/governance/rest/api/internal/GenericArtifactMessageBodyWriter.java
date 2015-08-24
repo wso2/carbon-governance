@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
-import org.wso2.carbon.governance.rest.api.util.RESTUtil;
+import org.wso2.carbon.governance.rest.api.util.Util;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -42,9 +42,9 @@ import java.lang.reflect.Type;
 
 @Provider
 @Consumes({"application/json"})
-public class TypedListMessageBodyWriter implements MessageBodyWriter<TypedList<GenericArtifact>> {
+public class GenericArtifactMessageBodyWriter implements MessageBodyWriter<TypedList<GenericArtifact>> {
 
-    private final Log log = LogFactory.getLog(TypedListMessageBodyWriter.class);
+    private final Log log = LogFactory.getLog(GenericArtifactMessageBodyWriter.class);
 
     @Context
     UriInfo uriInfo;
@@ -69,7 +69,7 @@ public class TypedListMessageBodyWriter implements MessageBodyWriter<TypedList<G
             throws IOException, WebApplicationException {
         GenericArtifactJSONWriter messageWriter = new GenericArtifactJSONWriter();
         try {
-            messageWriter.writeTo(typedList, entityStream, RESTUtil.getBaseURL(uriInfo));
+            messageWriter.writeTo(typedList, entityStream, Util.getBaseURL(uriInfo));
         } catch (GovernanceException e) {
             log.error(e);
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

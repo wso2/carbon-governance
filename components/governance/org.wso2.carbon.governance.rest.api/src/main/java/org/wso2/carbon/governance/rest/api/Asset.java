@@ -30,9 +30,9 @@ import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
-import org.wso2.carbon.governance.rest.api.model.LCStateChange;
+import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
-import org.wso2.carbon.governance.rest.api.util.RESTUtil;
+import org.wso2.carbon.governance.rest.api.util.Util;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
@@ -97,9 +97,8 @@ public class Asset {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createAsset(@PathParam("assetType") String assetType, GenericArtifact genericArtifact,
                                 @Context UriInfo uriInfo) throws RegistryException {
-        return persistGovernanceAsset(assetType, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
+        return persistGovernanceAsset(assetType, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
     }
-
 
 
     @PUT
@@ -107,7 +106,7 @@ public class Asset {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response modifyAsset(@PathParam("assetType") String assetType, @PathParam("id") String id,
                                 GenericArtifact genericArtifact, @Context UriInfo uriInfo) throws RegistryException {
-        return modifyGovernanceAsset(assetType, id, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
+        return modifyGovernanceAsset(assetType, id, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
     }
 
 
@@ -139,7 +138,7 @@ public class Asset {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createEndpoints(GenericArtifact genericArtifact, @Context UriInfo uriInfo)
             throws RegistryException {
-        return persistGovernanceAsset(ENDPOINTS, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
+        return persistGovernanceAsset(ENDPOINTS, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
     }
 
     @PUT
@@ -147,7 +146,7 @@ public class Asset {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response modifyEndpoint(@PathParam("id") String id,
                                    GenericArtifact genericArtifact, @Context UriInfo uriInfo) throws RegistryException {
-        return modifyGovernanceAsset(ENDPOINTS, id, (DetachedGenericArtifact) genericArtifact, RESTUtil.getBaseURL(uriInfo));
+        return modifyGovernanceAsset(ENDPOINTS, id, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
     }
 
 
@@ -181,7 +180,7 @@ public class Asset {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateLCState(@PathParam("assetType") String assetType, @PathParam("id") String id,
-                                  LCStateChange stateChange,
+                                  AssetStateChange stateChange,
                                   @Context UriInfo uriInfo) throws RegistryException {
         return updateLCState(assetType, id, stateChange);
     }
@@ -201,7 +200,7 @@ public class Asset {
     private String createQuery(UriInfo uriInfo) {
         StringBuilder builder = new StringBuilder("");
         MultivaluedMap<String, String> queryParam = uriInfo.getQueryParameters();
-        RESTUtil.excludePaginationParameters(queryParam);
+        Util.excludePaginationParameters(queryParam);
         Iterator<Map.Entry<String, List<String>>> iterator = queryParam.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, List<String>> entry = iterator.next();
@@ -220,8 +219,8 @@ public class Asset {
     }
 
 
-    private Response updateLCState(String assetType, String id, LCStateChange stateChange) throws RegistryException {
-        String shortName = RESTUtil.getShortName(assetType);
+    private Response updateLCState(String assetType, String id, AssetStateChange stateChange) throws RegistryException {
+        String shortName = Util.getShortName(assetType);
         GenericArtifactManager manager = new GenericArtifactManager(getUserRegistry(), shortName);
         GenericArtifact artifact = manager.getGenericArtifact(id);
         if (artifact != null) {
@@ -235,7 +234,7 @@ public class Asset {
 
 
     private Response getGovernanceAssetStates(String assetType, String id, String lcName) throws RegistryException {
-        String shortName = RESTUtil.getShortName(assetType);
+        String shortName = Util.getShortName(assetType);
         GenericArtifactManager manager = new GenericArtifactManager(getUserRegistry(), shortName);
         GenericArtifact artifact = manager.getGenericArtifact(id);
         return getGovernanceAssetStates(artifact, lcName);
@@ -263,13 +262,13 @@ public class Asset {
 
     private Response modifyGovernanceAsset(String assetType, String id, DetachedGenericArtifact genericArtifact,
                                            String baseURL) throws RegistryException {
-        String shortName = RESTUtil.getShortName(assetType);
+        String shortName = Util.getShortName(assetType);
         try {
             GenericArtifactManager manager = getGenericArtifactManager(shortName);
             GenericArtifact artifact = genericArtifact.makeRegistryAware(manager);
             artifact.setId(id);
             manager.updateGenericArtifact(artifact);
-            URI link = new URL(RESTUtil.generateLink(assetType, id, baseURL)).toURI();
+            URI link = new URL(Util.generateLink(assetType, id, baseURL)).toURI();
             return Response.created(link).build();
         } catch (MalformedURLException | URISyntaxException e) {
             throw new GovernanceException(e);
@@ -278,12 +277,12 @@ public class Asset {
 
     private Response persistGovernanceAsset(String assetType, DetachedGenericArtifact genericArtifact,
                                             String baseURL) throws RegistryException {
-        String shortName = RESTUtil.getShortName(assetType);
+        String shortName = Util.getShortName(assetType);
         try {
             GenericArtifactManager manager = getGenericArtifactManager(shortName);
             GenericArtifact artifact = genericArtifact.makeRegistryAware(manager);
             manager.addGenericArtifact(artifact);
-            URI link = new URL(RESTUtil.generateLink(assetType, artifact.getId(), baseURL, false)).toURI();
+            URI link = new URL(Util.generateLink(assetType, artifact.getId(), baseURL, false)).toURI();
             return Response.created(link).build();
         } catch (MalformedURLException | URISyntaxException e) {
             throw new GovernanceException(e);
@@ -291,7 +290,7 @@ public class Asset {
     }
 
     private Response deleteGovernanceAsset(String assetType, String id) throws RegistryException {
-        String shortName = RESTUtil.getShortName(assetType);
+        String shortName = Util.getShortName(assetType);
         GenericArtifactManager manager = getGenericArtifactManager(shortName);
         GenericArtifact artifact = getUniqueAsset(shortName, id);
         if (artifact != null) {
@@ -304,16 +303,16 @@ public class Asset {
 
 
     public Response getGovernanceAssets(String assetType, UriInfo uriInfo) throws RegistryException {
-        String shortName = RESTUtil.getShortName(assetType);
+        String shortName = Util.getShortName(assetType);
         if (validateAssetType(shortName)) {
-            PaginationInfo pagination = RESTUtil.getPaginationInfo(uriInfo.getQueryParameters());
+            PaginationInfo pagination = Util.getPaginationInfo(uriInfo.getQueryParameters());
             String query = createQuery(uriInfo);
             pagination.setQuery(query);
             List<GenericArtifact> artifacts = getAssetList(shortName, query, pagination);
             if (artifacts.size() > 0) {
-                 if(artifacts.size() >= pagination.getCount()){
-                     pagination.setMorePages(true);
-                 }
+                if (artifacts.size() >= pagination.getCount()) {
+                    pagination.setMorePages(true);
+                }
                 TypedList<GenericArtifact> typedList = new TypedList<>(GenericArtifact.class, shortName, artifacts, pagination);
                 return Response.ok().entity(typedList).build();
             } else {
@@ -325,7 +324,7 @@ public class Asset {
     }
 
     public Response getGovernanceAsset(String assetType, String id) throws RegistryException {
-        String shortName = RESTUtil.getShortName(assetType);
+        String shortName = Util.getShortName(assetType);
         if (validateAssetType(shortName)) {
             GenericArtifact artifact = getUniqueAsset(shortName, id);
             if (artifact != null) {
@@ -344,7 +343,8 @@ public class Asset {
         return new GenericArtifactManager(getUserRegistry(), shortName);
     }
 
-    private List<GenericArtifact> getAssetList(String assetType, String query, PaginationInfo pagination) throws RegistryException {
+    private List<GenericArtifact> getAssetList(String assetType, String query, PaginationInfo pagination)
+            throws RegistryException {
         Registry registry = getUserRegistry();
         GenericArtifactManager artifactManager = new GenericArtifactManager(registry, assetType);
         PaginationContext.init(pagination.getStart(), pagination.getCount(), pagination.getSortOrder(), pagination.getSortBy(),

@@ -41,6 +41,8 @@ import java.util.Map;
 @Consumes({"application/json"})
 public class AssetStateMessageBodyWriter implements MessageBodyWriter<AssetState> {
 
+    public static final String INDENT = "  ";
+    public static final String STATE = "state";
     @Context
     UriInfo uriInfo;
 
@@ -64,13 +66,12 @@ public class AssetStateMessageBodyWriter implements MessageBodyWriter<AssetState
             throws IOException, WebApplicationException {
         PrintWriter printWriter = new PrintWriter(entityStream);
         JsonWriter writer = new JsonWriter(printWriter);
-        writer.setIndent("  ");
+        writer.setIndent(INDENT);
         writer.beginObject();
+
         if (assetState.getState() != null) {
-
-            writer.name("state");
+            writer.name(STATE);
             writer.value(assetState.getState());
-
         } else if (assetState.getStates() != null) {
             for (Map.Entry<String, String> stateEntry : assetState.getStates().entrySet()) {
                 writer.name(stateEntry.getKey());

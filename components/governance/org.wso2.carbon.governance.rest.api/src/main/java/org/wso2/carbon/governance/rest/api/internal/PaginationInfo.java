@@ -23,7 +23,6 @@ public class PaginationInfo {
     public static final int PAGINATION_DEFAULT_START = 0;
     public static final int PAGINATION_DEFAULT_COUNT = 10;
     public static final int PAGINATION_DEFAULT_LIMIT = 100;
-    public static final int PAGINATION_DEFAULT_PAGESIZE = 10;
     public static final String PAGINATION_PARAM_START = "start";
     public static final String PAGINATION_PARAM_COUNT = "count";
     public static final String PAGINATION_PARAM_LIMIT = "limit";
@@ -38,19 +37,16 @@ public class PaginationInfo {
     private int start;
     private int count;
     private int limit;
-    private int pageSize;
     private String sortOrder;
     private String sortBy;
     private String query;
     private boolean morePages = false;
 
 
-
     public PaginationInfo() {
         this.start = PAGINATION_DEFAULT_START;
         this.count = PAGINATION_DEFAULT_COUNT;
         this.limit = PAGINATION_DEFAULT_LIMIT;
-        this.pageSize = PAGINATION_DEFAULT_PAGESIZE;
         this.sortOrder = PAGINATION_SORT_ORDER_ASCENDING;
         this.sortBy = PAGINATION_SORT_BY_NAME;
     }
@@ -100,14 +96,6 @@ public class PaginationInfo {
         this.sortBy = sortBy;
     }
 
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
     public String getQuery() {
         return query;
     }
@@ -130,7 +118,6 @@ public class PaginationInfo {
                "start=" + start +
                ", count=" + count +
                ", limit=" + limit +
-               ", pageSize=" + pageSize +
                ", sortOrder='" + sortOrder + '\'' +
                ", sortBy='" + sortBy + '\'' +
                '}';

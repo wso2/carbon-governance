@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RESTUtil {
+public class Util {
 
     public static String getResourceName(String shortName) {
         //TODO - handle "s" and "es"
@@ -34,8 +34,8 @@ public class RESTUtil {
     }
 
     public static String generateLink(String shortName, String id, String baseURI, boolean formatShortName) {
-        String resourceName = formatShortName == Boolean.TRUE ? RESTUtil.getResourceName(shortName) : shortName;
-        if(id != null){
+        String resourceName = formatShortName == Boolean.TRUE ? Util.getResourceName(shortName) : shortName;
+        if (id != null) {
             return baseURI + resourceName + "/" + id;
         }
         return baseURI + resourceName;
@@ -71,39 +71,39 @@ public class RESTUtil {
         PaginationInfo paginationInfo = new PaginationInfo();
 
         Integer start = getFirstIntValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_START));
-        if(start != null){
+        if (start != null) {
             paginationInfo.setStart(start);
         }
 
         Integer count = getFirstIntValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_COUNT));
-        if(count != null){
+        if (count != null) {
             paginationInfo.setCount(count);
         }
 
         Integer limit = getFirstIntValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_LIMIT));
-        if(limit != null){
+        if (limit != null) {
             paginationInfo.setLimit(limit);
         }
 
         String sort = getFirstStringValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_SORT_ORDER));
-        if(sort != null){
+        if (sort != null) {
             paginationInfo.setSortOrder(sort);
         }
 
         String sortBy = getFirstStringValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_SORT_BY));
-        if(sortBy != null){
+        if (sortBy != null) {
             paginationInfo.setSortBy(sortBy);
         }
 
         return paginationInfo;
     }
 
-    public static void excludePaginationParameters(MultivaluedMap<String, String> queryParams){
-          queryParams.remove(PaginationInfo.PAGINATION_PARAM_START);
-          queryParams.remove(PaginationInfo.PAGINATION_PARAM_COUNT);
-          queryParams.remove(PaginationInfo.PAGINATION_PARAM_LIMIT);
-          queryParams.remove(PaginationInfo.PAGINATION_PARAM_SORT_ORDER);
-          queryParams.remove(PaginationInfo.PAGINATION_PARAM_SORT_BY);
+    public static void excludePaginationParameters(MultivaluedMap<String, String> queryParams) {
+        queryParams.remove(PaginationInfo.PAGINATION_PARAM_START);
+        queryParams.remove(PaginationInfo.PAGINATION_PARAM_COUNT);
+        queryParams.remove(PaginationInfo.PAGINATION_PARAM_LIMIT);
+        queryParams.remove(PaginationInfo.PAGINATION_PARAM_SORT_ORDER);
+        queryParams.remove(PaginationInfo.PAGINATION_PARAM_SORT_BY);
     }
 
     private static String getFirstStringValue(List<String> values) {

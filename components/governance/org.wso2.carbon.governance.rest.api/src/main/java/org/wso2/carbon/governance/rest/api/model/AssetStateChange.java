@@ -21,7 +21,7 @@ package org.wso2.carbon.governance.rest.api.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LCStateChange {
+public class AssetStateChange {
 
     private String lifecycle;
     private String action;
