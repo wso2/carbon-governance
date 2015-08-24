@@ -349,13 +349,11 @@ public class CommonUtil {
             if (!registryXML.exists()) {
                 String msg = "Registry configuration file (registry.xml) file does " +
                         "not exist in the path " + configPath;
-                log.error(msg);
                 throw new GovernanceException(msg);
             }
             return registryXML;
         } else {
             String msg = "Cannot find registry.xml";
-            log.error(msg);
             throw new GovernanceException(msg);
         }
     }
