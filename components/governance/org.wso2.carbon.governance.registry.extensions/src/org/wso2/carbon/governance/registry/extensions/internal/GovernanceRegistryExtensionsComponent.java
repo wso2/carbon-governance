@@ -23,11 +23,9 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.governance.common.GovernanceConfiguration;
 import org.wso2.carbon.governance.common.GovernanceConfigurationService;
 import org.wso2.carbon.governance.registry.extensions.listeners.RxtLoader;
 import org.wso2.carbon.governance.registry.extensions.utils.CommonUtil;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.securevault.SecretCallbackHandlerService;
@@ -58,6 +56,7 @@ public class GovernanceRegistryExtensionsComponent {
     protected void activate(ComponentContext componentContext) {
         BundleContext bundleCtx = componentContext.getBundleContext();
         RxtLoader rxtLoader = new RxtLoader();
+        CommonUtil.loadDependencyGraphMaxDepthConfig();
         ServiceRegistration tenantMgtListenerSR = bundleCtx.registerService(
                 Axis2ConfigurationContextObserver.class.getName(), rxtLoader, null);
         if (tenantMgtListenerSR != null) {

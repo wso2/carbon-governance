@@ -17,6 +17,7 @@
 package org.wso2.carbon.governance.registry.extensions.utils;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +25,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.wso2.carbon.CarbonException;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.registry.core.Collection;
@@ -58,6 +61,8 @@ public class CommonUtil {
 
     private final static Map<String, HashMap<String, String>>
             associationConfigMap = new HashMap<String, HashMap<String, String>>();
+
+    private static int dependencyGraphMaxDepth = -1;
 
 	private static RXTStoragePathService rxtSPService;
 
@@ -313,6 +318,50 @@ public class CommonUtil {
         }else{
             return null;
         }
+    }
+
+    public static void loadDependencyGraphMaxDepthConfig() {
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(getConfigFile());
+            StAXOMBuilder builder = new StAXOMBuilder(
+                    CarbonUtils.replaceSystemVariablesInXml(fileInputStream));
+            OMElement configElement = builder.getDocumentElement();
+            OMElement dependencyGraphMaxDepthConfig = configElement.getFirstChildWithName(
+                    new QName("dependencyGraphMaxDepth"));
+            if (dependencyGraphMaxDepthConfig != null) {
+                dependencyGraphMaxDepth = Integer.parseInt(dependencyGraphMaxDepthConfig.getText());
+            }
+        } catch (FileNotFoundException | GovernanceException e) {
+            log.error("Failed to find the registry.xml", e);
+        } catch (CarbonException e) {
+            log.error("Could not replace system variables in registry.xml", e);
+        } catch (XMLStreamException e) {
+            log.error("could not build registry.xml OM", e);
+        }
+    }
+
+    // Get registry.xml instance.
+    private static File getConfigFile() throws GovernanceException {
+        String configPath = CarbonUtils.getRegistryXMLPath();
+        if (configPath != null) {
+            File registryXML = new File(configPath);
+            if (!registryXML.exists()) {
+                String msg = "Registry configuration file (registry.xml) file does " +
+                        "not exist in the path " + configPath;
+                log.error(msg);
+                throw new GovernanceException(msg);
+            }
+            return registryXML;
+        } else {
+            String msg = "Cannot find registry.xml";
+            log.error(msg);
+            throw new GovernanceException(msg);
+        }
+    }
+
+    public static int getDependencyGraphMaxDepth(){
+        return dependencyGraphMaxDepth;
     }
 
     public static void addStoragePath(String mediaType, String storagePath) {
