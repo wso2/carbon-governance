@@ -43,9 +43,9 @@ under the License.
         resourceBundle="org.wso2.carbon.governance.notifications.ui.i18n.JSResources"
         request="<%=request%>" namespace="org.wso2.carbon.governance.notifications.ui"/>
 <fmt:bundle basename="org.wso2.carbon.governance.notifications.ui.i18n.Resources">
-   <%if(isSuperTenant) {%>
+
   <a class="view-notification" id="viewNotification"><%=workItems.length%></a>
-   <%}%>
+
     <div id="notificationPopupView" class="notificationPopup" style="display:none">
         <div class="popupPointer"></div>
         <div class="popupBox">
