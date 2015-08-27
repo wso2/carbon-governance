@@ -1,0 +1,8 @@
+<artifactType type="application/xquery+xml" fileExtension="xquery" shortName="xquery" singularLabel="xQuery" pluralLabel="xQuerys" hasNamespace="true" iconSet="5">
+    <storagePath>/trunk/xqueries/@{version}/@{name}</storagePath>
+    <content href="default">
+	    <field type="text">
+            <name label="Version">Version</name>
+        </field>
+    </content>
+</artifactType>

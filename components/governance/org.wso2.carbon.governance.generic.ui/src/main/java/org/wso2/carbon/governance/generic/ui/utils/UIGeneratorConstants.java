@@ -63,4 +63,5 @@ public final class UIGeneratorConstants {
 
     public static final String READONLY_ATTRIBUTE = "readonly";
     public static final String PATH_START_WITH ="startsWith";
+    public static final String PASSWORD_FIELD = "password";
 }

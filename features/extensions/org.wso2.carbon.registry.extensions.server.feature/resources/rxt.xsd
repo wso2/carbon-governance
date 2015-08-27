@@ -116,7 +116,8 @@
                     <xs:enumeration value="options"/>
                     <xs:enumeration value="option-text"/>
                     <xs:enumeration value="checkbox"/>
-                    <xs:enumeration value="date"/>                    
+                    <xs:enumeration value="date"/>
+                    <xs:enumeration value="password"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>

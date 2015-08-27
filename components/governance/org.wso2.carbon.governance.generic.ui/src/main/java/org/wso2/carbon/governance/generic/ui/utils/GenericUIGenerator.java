@@ -23,16 +23,11 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.core.util.CryptoException;
+import org.wso2.carbon.core.util.CryptoUtil;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
-import org.wso2.carbon.governance.generic.ui.common.dataobjects.AddLink;
-import org.wso2.carbon.governance.generic.ui.common.dataobjects.CheckBox;
-import org.wso2.carbon.governance.generic.ui.common.dataobjects.CloseAddLink;
-import org.wso2.carbon.governance.generic.ui.common.dataobjects.DateField;
-import org.wso2.carbon.governance.generic.ui.common.dataobjects.DropDown;
-import org.wso2.carbon.governance.generic.ui.common.dataobjects.OptionText;
-import org.wso2.carbon.governance.generic.ui.common.dataobjects.TextArea;
-import org.wso2.carbon.governance.generic.ui.common.dataobjects.TextField;
-import org.wso2.carbon.governance.generic.ui.common.dataobjects.UIComponent;
+import org.wso2.carbon.governance.generic.ui.common.dataobjects.*;
 import org.wso2.carbon.ui.CarbonUIUtil;
 
 import javax.servlet.ServletConfig;
@@ -154,43 +149,48 @@ public class GenericUIGenerator {
 	            OMElement arg = (OMElement) arguments.next();
 	            String maxOccurs = "";
 	            if (UIGeneratorConstants.ARGUMENT_ELMENT.equals(arg.getLocalName())) {
-	                if (isFilterOperation && Boolean.toString(false).equals(
-	                        arg.getAttributeValue(new QName(null, UIGeneratorConstants.FILTER_ATTRIBUTE)))) {
-	                    continue;
-	                }
-	                rowCount++; //this variable used to find the which raw is in and use this to print the sub header
-	                String elementType = arg.getAttributeValue(new QName(null, UIGeneratorConstants.TYPE_ATTRIBUTE));
-	                String tooltip = arg.getAttributeValue(new QName(null,
-	                        UIGeneratorConstants.TOOLTIP_ATTRIBUTE));
-	                if (tooltip == null) {
-	                    tooltip = "";
-	                }
-	                tooltip = StringEscapeUtils.escapeHtml(tooltip);
-	                //Read the maxOccurs value
-	                maxOccurs = arg.getAttributeValue(new QName(null, UIGeneratorConstants.MAXOCCUR_ELEMENT));
-	                if (maxOccurs != null) {
-	                    if (!UIGeneratorConstants.MAXOCCUR_BOUNDED.equals(maxOccurs) && !UIGeneratorConstants.MAXOCCUR_UNBOUNDED.equals(maxOccurs)) {
-	                        //if user has given something else other than unbounded
-	                        return ""; //TODO: throw an exception
-	                    }
-	                    if (!UIGeneratorConstants.MAXOCCUR_UNBOUNDED.equals(maxOccurs)) {
-	                        //if maxOccurs is not unbounded then print the sub header otherwise we will show the adding link
-	                        if (rowCount == 1) {
-	                            // We print the sub header only when we parse the first element otherwise we'll print sub header for each field element
-	                            table.append(printSubHeaders(subList.toArray(new String[subList.size()])));
-	                        }
-	                    }
-	                } else {
-						if (subList.size() == 2 && rowCount == 1) {
-	                        // We print the sub header only when we parse the first element otherwise we'll print sub header for each field element
-	                        // sub headers are printed in this position only if column number is exactly 2//
-	                        table.append(printSubHeaders(subList.toArray(new String[subList.size()])));
-	                    }
-	                }
+                    if (isFilterOperation && Boolean.toString(false).equals(
+                            arg.getAttributeValue(new QName(null, UIGeneratorConstants.FILTER_ATTRIBUTE)))) {
+                        continue;
+                    }
+                    rowCount++; //this variable used to find the which raw is in and use this to print the sub header
+                    String elementType = arg.getAttributeValue(new QName(null, UIGeneratorConstants.TYPE_ATTRIBUTE));
+                    String tooltip = arg.getAttributeValue(new QName(null,
+                            UIGeneratorConstants.TOOLTIP_ATTRIBUTE));
+                    if (tooltip == null) {
+                        tooltip = "";
+                    }
+                    tooltip = StringEscapeUtils.escapeHtml(tooltip);
+                    //Read the maxOccurs value
+                    maxOccurs = arg.getAttributeValue(new QName(null, UIGeneratorConstants.MAXOCCUR_ELEMENT));
+                    if (maxOccurs != null) {
+                        if (!UIGeneratorConstants.MAXOCCUR_BOUNDED.equals(maxOccurs)
+                                && !UIGeneratorConstants.MAXOCCUR_UNBOUNDED.equals(maxOccurs)) {
+                            //if user has given something else other than unbounded
+                            return ""; //TODO: throw an exception
+                        }
+                        if (!UIGeneratorConstants.MAXOCCUR_UNBOUNDED.equals(maxOccurs)) {
+                            //if maxOccurs is not unbounded, then print the sub header
+                            // otherwise we will show the adding link
+                            if (rowCount == 1) {
+                                // We print the sub header only when we parse the first element
+                                // otherwise we'll print sub header for each field element
+                                table.append(printSubHeaders(subList.toArray(new String[subList.size()])));
+                            }
+                        }
+                    } else {
+                        if (subList.size() == 2 && rowCount == 1) {
+                            // We print the sub header only when we parse the first element
+                            // otherwise we'll print sub header for each field element
+                            // Sub headers are printed in this position only if column number is exactly 2
+                            table.append(printSubHeaders(subList.toArray(new String[subList.size()])));
+                        }
+                    }
                     if (dataHead != null) {
                         //if the data xml contains the main element then get the element contains value
                         inner = GenericUtil.getChildWithName(dataHead, arg.getFirstChildWithName(
-                                new QName(null, UIGeneratorConstants.ARGUMENT_NAME)).getText().replaceAll(" ", "-"),
+                                        new QName(null, UIGeneratorConstants.ARGUMENT_NAME)).getText()
+                                        .replaceAll(" ", "-"),
                                 dataNamespace);
                     }
                     if (UIGeneratorConstants.TEXT_FIELD.equals(elementType)) {
@@ -200,7 +200,8 @@ public class GenericUIGenerator {
                         columnCount = handleDateField(isFilterOperation, markReadonly, columns, widgetName, table,
                                 columnCount, inner, arg, tooltip);
                     } else if (UIGeneratorConstants.OPTION_FIELD.equals(elementType)) {
-                        columnCount = handleOptionField(isFilterOperation, markReadonly, request, config, columns, widgetName, table,
+                        columnCount = handleOptionField(isFilterOperation, markReadonly, request, config, columns,
+                                widgetName, table,
                                 columnCount, inner, arg, tooltip);
                     } else if (UIGeneratorConstants.CHECKBOX_FIELD.equals(elementType)) {
                         columnCount = handleCheckBox(columns, widgetName, table, columnCount, inner, arg, tooltip);
@@ -210,12 +211,58 @@ public class GenericUIGenerator {
                     } else if (UIGeneratorConstants.OPTION_TEXT_FIELD.equals(elementType)) {
                         inner = handleOptionTextField(request, config, widgetName, dataHead, table, subList, inner, arg,
                                 maxOccurs, tooltip);
+                    } else if (UIGeneratorConstants.PASSWORD_FIELD.equals(elementType)) {
+                        columnCount = handlePasswordField(isFilterOperation, hasValue, columns,
+                                widgetName, table, columnCount, inner, arg, tooltip);
                     }
                 }
             }
         }
         table.append("</table></div>");
         return table.toString();
+    }
+
+    private int handlePasswordField(boolean isFilterOperation, boolean hasValue, int columns,
+            String widgetName, StringBuilder table, int columnCount, OMElement inner, OMElement arg, String tooltip) {
+        String value;
+        String mandatoryAttribute = arg.getAttributeValue(new QName(null, UIGeneratorConstants.MANDETORY_ATTRIBUTE));
+
+        if (isFilterOperation) {
+            mandatoryAttribute = "false";
+        }
+        if (inner != null) {
+            //if the element contains value is not null get the value
+            value = inner.getText();
+        } else {
+            value = arg.getAttributeValue(new QName(null, UIGeneratorConstants.DEFAULT_ATTRIBUTE));
+        }
+        if (columns > 2) {
+            if (columnCount == 0) {
+                table.append("<tr>");
+            }
+            UIComponent passwordField = new PasswordField(null, arg.getFirstChildWithName(new QName(null,
+                    UIGeneratorConstants.ARGUMENT_NAME)).getText(), null, null, widgetName,
+                    value, hasValue, tooltip, false);
+            table.append(passwordField.generate());
+            columnCount++;
+            if (columnCount == columns) {
+                table.append("</tr>");
+                columnCount = 0;
+            }
+        } else {
+            OMElement firstChildWithName = arg
+                    .getFirstChildWithName(new QName(null, UIGeneratorConstants.ARGUMENT_NAME));
+            String name = firstChildWithName.getText();
+            String label = firstChildWithName.getAttributeValue(new QName(UIGeneratorConstants.ARGUMENT_LABEL));
+            if (label == null) {
+                label = name;
+            }
+            UIComponent passwordField = new PasswordField(label, name, null, mandatoryAttribute, widgetName, value,
+                    hasValue, tooltip, false);
+
+            table.append(passwordField.generate());
+        }
+        return columnCount;
     }
 
     private void processElements(OMElement widget, OMElement data, HttpServletRequest request, ServletConfig config,
@@ -295,6 +342,10 @@ public class GenericUIGenerator {
                         DropDown dropDown = new DropDown(label, isReadOnly, name, elementId, null, optionValues.toArray(
                                 new String[optionValues.size()]), widgetName, value, tooltip, false);
                         table.append(dropDown.generate());
+                    } else if (UIGeneratorConstants.PASSWORD_FIELD.equals(elementType)) {
+                        PasswordField passwordField = new PasswordField(label, name, elementId, null, widgetName, value,
+                                true, tooltip, false);
+                        table.append(passwordField.generate());
                     } else if (UIGeneratorConstants.TEXT_AREA_FIELD.equals(elementType)) {
                         int height = -1;
                         int width = 200;
@@ -814,7 +865,8 @@ public class GenericUIGenerator {
     }
 
     /* This is the method which extract information from the UI and embedd them to xml using value elements */
-    public OMElement getDataFromUI(OMElement head, HttpServletRequest request) {
+    public OMElement getDataFromUI(OMElement head, HttpServletRequest request)
+            throws GovernanceException {
         OMFactory fac = OMAbstractFactory.getOMFactory();
         OMNamespace namespace = fac.createOMNamespace(dataNamespace, "");
         OMElement data = fac.createOMElement(dataElement, namespace);
@@ -918,11 +970,21 @@ public class GenericUIGenerator {
 	                        String input = request.getParameter(widgetName.replaceAll(" ", "") + "_" +
 	                                name.replaceAll(" ", ""));
 	                        OMElement text = null;
-	
-	                        if (input != null && !("".equals(input))) {
-	                            text = fac.createOMElement(GenericUtil.getDataElementName(name), namespace);
-	                            text.setText(input);
-	                            widgetData.addChild(text);	
+
+                            if (input != null && !("".equals(input))) {
+                                text = fac.createOMElement(GenericUtil.getDataElementName(name), namespace);
+                                if (GenericUtil.getDataElementName(name).toLowerCase().contains("password") ||
+                                    GenericUtil.getDataElementName(name).toLowerCase().contains("secret")) {
+                                    CryptoUtil cryptoUtil = CryptoUtil.getDefaultCryptoUtil();
+                                    try {
+                                        text.setText(cryptoUtil.encryptAndBase64Encode(input.getBytes()));
+                                    } catch (CryptoException e) {
+                                        throw new GovernanceException("Unable to encrypt the password or secret.", e);
+                                    }
+                                } else {
+                                    text.setText(input);
+                                }
+                                widgetData.addChild(text);
 	                        } else {
 	                            if (name.equals("Name") && widgetName.equalsIgnoreCase("overview")) {
 	                                text = fac.createOMElement(GenericUtil.getDataElementName(name), namespace);

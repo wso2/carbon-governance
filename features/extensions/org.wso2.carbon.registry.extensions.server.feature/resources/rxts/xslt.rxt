@@ -1,0 +1,8 @@
+<artifactType type="application/xslt+xml" fileExtension="xslt" shortName="xslt" singularLabel="XSLT" pluralLabel="XSLTs" hasNamespace="true" iconSet="4">
+    <storagePath>/trunk/xslts/@{version}/@{name}</storagePath>
+    <content href="default">
+	    <field type="text">
+            <name label="Version">Version</name>
+        </field>
+    </content>
+</artifactType>
