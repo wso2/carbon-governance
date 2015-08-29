@@ -21,6 +21,7 @@ package org.wso2.carbon.governance.rest.api.internal;
 import com.google.gson.stream.JsonReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
@@ -40,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
-        implements MessageBodyReader<GenericArtifact> {
+        implements MessageBodyReader<GovernanceArtifact> {
 
     private final Log log = LogFactory.getLog(GenericArtifactMessageBodyReader.class);
 
@@ -52,7 +53,8 @@ public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        if (GenericArtifact.class.getName().equals(type.getName())) {
+        if (GenericArtifact.class.getName().equals(type.getName()) || GovernanceArtifact.class.getName().
+                equals(type.getName())) {
             if (MediaType.APPLICATION_JSON_TYPE.equals(mediaType) || MediaType.APPLICATION_XML_TYPE.equals(mediaType)) {
                 return true;
             }
@@ -61,7 +63,7 @@ public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
     }
 
     @Override
-    public GenericArtifact readFrom(Class<GenericArtifact> type, Type genericType, Annotation[] annotations,
+    public GovernanceArtifact readFrom(Class<GovernanceArtifact> type, Type genericType, Annotation[] annotations,
                                     MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
                                     InputStream entityStream) throws IOException, WebApplicationException {
         JsonReader reader = new JsonReader(new InputStreamReader(entityStream, UTF_8));
@@ -76,11 +78,11 @@ public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
         }
     }
 
-    private GenericArtifact createGenericArtifact(Map<String, Object> map) throws GovernanceException {
+    private GovernanceArtifact createGenericArtifact(Map<String, Object> map) throws GovernanceException {
         String name = (String) map.get(ATTR_NAME);
         String type = (String) map.get(ATTR_TYPE);
         if (name != null && !name.isEmpty() && type != null && !type.isEmpty()) {
-            GenericArtifact artifact = GenericArtifactManager.newDetachedGovernanceArtifact(new QName(name), type);
+            GovernanceArtifact artifact = GenericArtifactManager.newDetachedGovernanceArtifact(new QName(name), type);
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String key = entry.getKey();
                 if (key.indexOf(RXT_SEPARATOR) == -1) {

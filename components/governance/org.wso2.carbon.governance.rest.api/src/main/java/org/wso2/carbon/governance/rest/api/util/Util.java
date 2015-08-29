@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.governance.rest.api.util;
 
+import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -27,6 +29,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Util {
+
+    public static final String TEMP_BELONG_TO_ASSET_ID = "_temp_belongToAssetID";
+    public static final String TEMP_BELONG_TO_ASSET_SHORT_NAME = "_temp_belongToAssetShortName";
+    public static final String ENDPOINT_ASSOCIATION_USE = "use";
+    public static final String ENDPOINT_ASSOCIATION_BELONG_TO = "belongTo";
 
     public static String getResourceName(String shortName) {
         //TODO - handle "s" and "es"
@@ -132,5 +139,16 @@ public class Util {
 
     public static String generateLink(String shortName, String baseURI, boolean formatShortName) {
         return generateLink(shortName, null, baseURI, formatShortName);
+    }
+
+    public static String generateBelongToLink(GovernanceArtifact artifact, String baseURI) throws GovernanceException {
+        String  id = artifact.getAttribute(Util.TEMP_BELONG_TO_ASSET_ID);
+        String shortName = artifact.getAttribute(Util.TEMP_BELONG_TO_ASSET_SHORT_NAME);
+        if(id != null && shortName != null){
+            artifact.removeAttribute(Util.TEMP_BELONG_TO_ASSET_SHORT_NAME);
+            artifact.removeAttribute(Util.TEMP_BELONG_TO_ASSET_ID);
+          return generateLink(shortName, id, baseURI);
+        }
+        return null;
     }
 }

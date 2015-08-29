@@ -20,8 +20,8 @@ package org.wso2.carbon.governance.rest.api.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
-import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
 import org.wso2.carbon.governance.rest.api.util.Util;
 
@@ -42,7 +42,7 @@ import java.lang.reflect.Type;
 
 @Provider
 @Consumes({"application/json"})
-public class GenericArtifactMessageBodyWriter implements MessageBodyWriter<TypedList<GenericArtifact>> {
+public class GenericArtifactMessageBodyWriter implements MessageBodyWriter<TypedList<GovernanceArtifact>> {
 
     private final Log log = LogFactory.getLog(GenericArtifactMessageBodyWriter.class);
 
@@ -58,13 +58,13 @@ public class GenericArtifactMessageBodyWriter implements MessageBodyWriter<Typed
     }
 
     @Override
-    public long getSize(TypedList<GenericArtifact> typedList, Class<?> type, Type genericType, Annotation[] annotations,
+    public long getSize(TypedList<GovernanceArtifact> typedList, Class<?> type, Type genericType, Annotation[] annotations,
                         MediaType mediaType) {
         return 0;
     }
 
     @Override
-    public void writeTo(TypedList<GenericArtifact> typedList, Class<?> type, Type genericType, Annotation[] annotations,
+    public void writeTo(TypedList<GovernanceArtifact> typedList, Class<?> type, Type genericType, Annotation[] annotations,
                         MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
             throws IOException, WebApplicationException {
         GenericArtifactJSONWriter messageWriter = new GenericArtifactJSONWriter();

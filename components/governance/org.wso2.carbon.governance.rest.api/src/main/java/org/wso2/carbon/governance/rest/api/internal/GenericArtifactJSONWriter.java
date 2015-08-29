@@ -19,8 +19,8 @@
 package org.wso2.carbon.governance.rest.api.internal;
 
 import com.google.gson.stream.JsonWriter;
+import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
-import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
 import org.wso2.carbon.governance.rest.api.util.Util;
 
@@ -43,8 +43,9 @@ public class GenericArtifactJSONWriter {
     public static final String SELF = "self";
     public static final String PREV = "prev";
     public static final String NEXT = "next";
+    public static final String BELONG_TO = "belong-to";
 
-    public void writeTo(TypedList<GenericArtifact> typedList, OutputStream entityStream, String baseURI)
+    public void writeTo(TypedList<GovernanceArtifact> typedList, OutputStream entityStream, String baseURI)
             throws IOException, GovernanceException {
         PrintWriter printWriter = new PrintWriter(entityStream);
         JsonWriter writer = new JsonWriter(printWriter);
@@ -56,9 +57,9 @@ public class GenericArtifactJSONWriter {
         if (typedList.hasData()) {
             writer.beginArray();
 
-            for (Map.Entry<String, List<GenericArtifact>> entry : typedList.getArtifacts().entrySet()) {
+            for (Map.Entry<String, List<GovernanceArtifact>> entry : typedList.getArtifacts().entrySet()) {
                 shortName = entry.getKey();
-                for (GenericArtifact artifact : entry.getValue()) {
+                for (GovernanceArtifact artifact : entry.getValue()) {
                     writeGenericArtifact(writer, shortName, artifact, baseURI);
                 }
             }
@@ -118,13 +119,14 @@ public class GenericArtifactJSONWriter {
         return builder.toString();
     }
 
-    private void writeGenericArtifact(JsonWriter writer, String shortName, GenericArtifact artifact, String baseURI)
+    private void writeGenericArtifact(JsonWriter writer, String shortName, GovernanceArtifact artifact, String baseURI)
             throws IOException, GovernanceException {
 
         writer.beginObject();
         writer.name(NAME).value(artifact.getQName().getLocalPart());
         writer.name(ID).value(artifact.getId());
         writer.name(TYPE).value(shortName);
+        String belongToLink = Util.generateBelongToLink(artifact, baseURI);
         for (String key : artifact.getAttributeKeys()) {
             //TODO value can be something else not a String value
             String value = artifact.getAttribute(key);
@@ -136,6 +138,9 @@ public class GenericArtifactJSONWriter {
             }
         }
         writer.name(LINK).value(Util.generateLink(shortName, artifact.getId(), baseURI));
+        if (belongToLink != null) {
+            writer.name(BELONG_TO).value(belongToLink);
+        }
         writer.endObject();
     }
 }

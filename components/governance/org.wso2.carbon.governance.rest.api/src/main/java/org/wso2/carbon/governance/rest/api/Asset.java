@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.DetachedGenericArtifact;
@@ -33,6 +34,7 @@ import org.wso2.carbon.governance.rest.api.model.AssetState;
 import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
 import org.wso2.carbon.governance.rest.api.util.Util;
+import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
@@ -67,6 +69,7 @@ public class Asset {
 
 
     public static final String ENDPOINTS = "endpoints";
+    public static final String ENDPOINT = "endpoint";
     private final Log log = LogFactory.getLog(Asset.class);
 
     @GET
@@ -90,6 +93,22 @@ public class Asset {
     public Response getAsset(@PathParam("assetType") String assetType, @PathParam("id") String id)
             throws RegistryException {
         return getGovernanceAsset(assetType, id);
+    }
+
+    @GET
+    @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/endpoints")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAssetEndpoints(@PathParam("assetType") String assetType, @Context UriInfo uriInfo)
+            throws RegistryException {
+        return getGovernanceEndpointAssets(assetType, null, uriInfo);
+    }
+
+    @GET
+    @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/endpoints")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAssetEndpoints(@PathParam("assetType") String assetType, @PathParam("id") String id,
+                                      @Context UriInfo uriInfo) throws RegistryException {
+        return getGovernanceEndpointAssets(assetType, id, uriInfo);
     }
 
     @POST
@@ -129,16 +148,33 @@ public class Asset {
     @Path("/endpoints/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getEndpoint(@PathParam("id") String id) throws RegistryException {
-        return getGovernanceAsset("endpoints", id);
+        return getGovernanceEndpoint(id);
     }
 
 
     @POST
     @Path("/endpoints")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createEndpoints(GenericArtifact genericArtifact, @Context UriInfo uriInfo)
+    public Response createEndpoint(GenericArtifact genericArtifact, @Context UriInfo uriInfo)
             throws RegistryException {
         return persistGovernanceAsset(ENDPOINTS, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
+    }
+
+    @POST
+    @Path("/endpoints/{assetType : [a-zA-Z][a-zA-Z_0-9]*}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createEndpoint(@PathParam("assetType") String assetType,
+                                   GenericArtifact genericArtifact, @Context UriInfo uriInfo) throws RegistryException {
+        return createEndpointWithAssociation(assetType, null, uriInfo, genericArtifact);
+    }
+
+
+    @POST
+    @Path("/endpoints/{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createEndpoint(@PathParam("assetType") String assetType, @PathParam("id") String id,
+                                   GenericArtifact genericArtifact, @Context UriInfo uriInfo) throws RegistryException {
+        return createEndpointWithAssociation(assetType, id, uriInfo, genericArtifact);
     }
 
     @PUT
@@ -185,17 +221,35 @@ public class Asset {
         return updateLCState(assetType, id, stateChange);
     }
 
+    protected Registry getUserRegistry() throws RegistryException {
+        CarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        RegistryService registryService = (RegistryService) carbonContext.
+                getOSGiService(RegistryService.class, null);
+        return registryService.getGovernanceUserRegistry(carbonContext.getUsername(), carbonContext.getTenantId());
 
-    private Response getAssetTypes() throws RegistryException {
-        List<String> shortNames = new ArrayList<>();
-        List<GovernanceArtifactConfiguration> configurations = GovernanceUtils.findGovernanceArtifactConfigurations
-                (getUserRegistry());
-        for (GovernanceArtifactConfiguration configuration : configurations) {
-            shortNames.add(configuration.getSingularLabel());
-        }
-        return Response.ok().entity(shortNames).build();
     }
 
+    private Response createEndpointWithAssociation(String assetType, String id, UriInfo uriInfo,
+                                                   GenericArtifact genericArtifact) throws RegistryException {
+        String shortName = Util.getShortName(assetType);
+        if (validateAssetType(shortName)) {
+            GenericArtifactManager manager = getGenericArtifactManager(ENDPOINT);
+            GenericArtifact newArtifact = ((DetachedGenericArtifact) genericArtifact).makeRegistryAware(manager);
+            Response response = persistGovernanceAsset(ENDPOINTS, manager, newArtifact, Util.getBaseURL(uriInfo));
+            createEndpointAssociation(shortName, id, uriInfo, newArtifact);
+            return response;
+        }
+        return validationFail(shortName);
+    }
+
+    private void createEndpointAssociation(String shortName, String id, UriInfo uriInfo,
+                                           GovernanceArtifact genericArtifact) throws RegistryException {
+        GenericArtifact source = getUniqueAsset(shortName, id, uriInfo);
+        if (source != null) {
+            source.addBidirectionalAssociation(Util.ENDPOINT_ASSOCIATION_BELONG_TO, Util.ENDPOINT_ASSOCIATION_USE,
+                                               genericArtifact);
+        }
+    }
 
     private String createQuery(UriInfo uriInfo) {
         StringBuilder builder = new StringBuilder("");
@@ -216,6 +270,16 @@ public class Asset {
             log.debug("Query : " + builder.toString());
         }
         return builder.toString();
+    }
+
+    private Response getAssetTypes() throws RegistryException {
+        List<String> shortNames = new ArrayList<>();
+        List<GovernanceArtifactConfiguration> configurations = GovernanceUtils.findGovernanceArtifactConfigurations
+                (getUserRegistry());
+        for (GovernanceArtifactConfiguration configuration : configurations) {
+            shortNames.add(configuration.getSingularLabel());
+        }
+        return Response.ok().entity(shortNames).build();
     }
 
 
@@ -289,6 +353,17 @@ public class Asset {
         }
     }
 
+    private Response persistGovernanceAsset(String assetType, GenericArtifactManager manager, GenericArtifact
+            genericArtifact, String baseURL) throws RegistryException {
+        try {
+            manager.addGenericArtifact(genericArtifact);
+            URI link = new URL(Util.generateLink(assetType, genericArtifact.getId(), baseURL, false)).toURI();
+            return Response.created(link).build();
+        } catch (MalformedURLException | URISyntaxException e) {
+            throw new GovernanceException(e);
+        }
+    }
+
     private Response deleteGovernanceAsset(String assetType, String id) throws RegistryException {
         String shortName = Util.getShortName(assetType);
         GenericArtifactManager manager = getGenericArtifactManager(shortName);
@@ -302,7 +377,7 @@ public class Asset {
     }
 
 
-    public Response getGovernanceAssets(String assetType, UriInfo uriInfo) throws RegistryException {
+    private Response getGovernanceAssets(String assetType, UriInfo uriInfo) throws RegistryException {
         String shortName = Util.getShortName(assetType);
         if (validateAssetType(shortName)) {
             PaginationInfo pagination = Util.getPaginationInfo(uriInfo.getQueryParameters());
@@ -323,7 +398,34 @@ public class Asset {
         }
     }
 
-    public Response getGovernanceAsset(String assetType, String id) throws RegistryException {
+    private Response getGovernanceEndpointAssets(String assetType, String id,
+                                                 UriInfo uriInfo) throws RegistryException {
+        String shortName = Util.getShortName(assetType);
+        if (validateAssetType(shortName)) {
+            GenericArtifact currentAsset = getUniqueAsset(shortName, id, uriInfo);
+            if (currentAsset != null) {
+                List<GovernanceArtifact> endpoints = new ArrayList<>();
+                Association[] associations = getUserRegistry().getAssociations(currentAsset.getPath(),
+                                                                               Util.ENDPOINT_ASSOCIATION_BELONG_TO);
+                if (associations.length > 0) {
+                    for (Association association : associations) {
+                        GovernanceArtifact endpoint = GovernanceUtils.retrieveGovernanceArtifactByPath
+                                (getUserRegistry(), association.getDestinationPath());
+                        endpoints.add(endpoint);
+                    }
+                    TypedList<GovernanceArtifact> typedList = new TypedList<>(GovernanceArtifact.class, ENDPOINT,
+                                                                              endpoints, null);
+                    return Response.ok().entity(typedList).build();
+                }
+
+            }
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return validationFail(shortName);
+        }
+    }
+
+    private Response getGovernanceAsset(String assetType, String id) throws RegistryException {
         String shortName = Util.getShortName(assetType);
         if (validateAssetType(shortName)) {
             GenericArtifact artifact = getUniqueAsset(shortName, id);
@@ -347,8 +449,10 @@ public class Asset {
             throws RegistryException {
         Registry registry = getUserRegistry();
         GenericArtifactManager artifactManager = new GenericArtifactManager(registry, assetType);
-        PaginationContext.init(pagination.getStart(), pagination.getCount(), pagination.getSortOrder(), pagination.getSortBy(),
-                               pagination.getLimit());
+        if (pagination != null) {
+            PaginationContext.init(pagination.getStart(), pagination.getCount(), pagination.getSortOrder(),
+                                   pagination.getSortBy(), pagination.getLimit());
+        }
         GenericArtifact[] genericArtifacts = artifactManager.findGovernanceArtifacts(query);
         PaginationContext.destroy();
         return Arrays.asList(genericArtifacts);
@@ -358,6 +462,19 @@ public class Asset {
         Registry registry = getUserRegistry();
         GenericArtifactManager artifactManager = new GenericArtifactManager(registry, assetType);
         return artifactManager.getGenericArtifact(id);
+    }
+
+    private GenericArtifact getUniqueAsset(String shortName, String id, UriInfo uriInfo) throws RegistryException {
+        if (id != null) {
+            return getUniqueAsset(shortName, id);
+        } else {
+            String query = createQuery(uriInfo);
+            List<GenericArtifact> artifacts = getAssetList(shortName, query, null);
+            if (artifacts.size() == 1) {
+                return artifacts.get(0);
+            }
+        }
+        return null;
     }
 
     private boolean validateAssetType(String assetType) throws RegistryException {
@@ -373,16 +490,63 @@ public class Asset {
         return false;
     }
 
-    protected Registry getUserRegistry() throws RegistryException {
-        CarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        RegistryService registryService = (RegistryService) carbonContext.
-                getOSGiService(RegistryService.class, null);
-        return registryService.getGovernanceUserRegistry(carbonContext.getUsername(), carbonContext.getTenantId());
-
-    }
-
     private Response validationFail(String assetType) {
         return Response.status(Response.Status.NOT_FOUND).entity("Asset type " + assetType + " not found.").build();
+    }
+
+    public Response getGovernanceEndpoint(String id) throws RegistryException {
+        String shortName = Util.getShortName(ENDPOINTS);
+        if (validateAssetType(shortName)) {
+            GenericArtifact artifact = getUniqueAsset(shortName, id);
+            GenericArtifact belongToAsset = getBelongtoAsset(artifact);
+            includeBelongToAssetInfo(artifact, belongToAsset);
+            if (artifact != null) {
+                TypedList<GenericArtifact> typedList = new TypedList<>(GenericArtifact.class, shortName,
+                                                                       Arrays.asList(artifact), null);
+                return Response.ok().entity(typedList).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } else {
+            return validationFail(shortName);
+        }
+    }
+
+    private void includeBelongToAssetInfo(GenericArtifact artifact, GenericArtifact belongToAsset)
+            throws RegistryException {
+        String belongToAssetID = getBelongToAssetID(belongToAsset);
+        String belongToAssetShortName = getBelongToAssetShortName(belongToAsset);
+        artifact.addAttribute(Util.TEMP_BELONG_TO_ASSET_ID, belongToAssetID);
+        artifact.addAttribute(Util.TEMP_BELONG_TO_ASSET_SHORT_NAME, belongToAssetShortName);
+    }
+
+    private String getBelongToAssetShortName(GenericArtifact belongToAsset) throws RegistryException {
+        String mediaType = belongToAsset.getMediaType();
+        GovernanceArtifactConfiguration configuration = GovernanceUtils
+                .findGovernanceArtifactConfigurationByMediaType(mediaType, getUserRegistry());
+        if (configuration != null) {
+            return configuration.getKey();
+        }
+        return null;
+    }
+
+    private String getBelongToAssetID(GenericArtifact belongToAsset) {
+        return belongToAsset.getId();
+    }
+
+    private GenericArtifact getBelongtoAsset(GenericArtifact artifact) throws RegistryException {
+        Association[] associations = getUserRegistry().getAssociations(artifact.getPath(),
+                                                                       Util.ENDPOINT_ASSOCIATION_BELONG_TO);
+        if (associations.length > 0) {
+            Association association = associations[0];
+            if (association != null) {
+                String sourcePath = association.getSourcePath();
+                GovernanceArtifact source = GovernanceUtils.retrieveGovernanceArtifactByPath(getUserRegistry(),
+                                                                                             sourcePath);
+                return (GenericArtifact) source;
+            }
+        }
+        return null;
     }
 
 }
