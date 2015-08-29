@@ -3,6 +3,7 @@
               pluralLabel="Endpoints" hasNamespace="false" iconSet="2">
     <storagePath>/trunk/endpoints/@{overview_name}</storagePath>
     <nameAttribute>overview_name</nameAttribute>
+    <lifecycle>EndpointLifeCycle</lifecycle>
     <ui>
         <list>
             <column name="Name">

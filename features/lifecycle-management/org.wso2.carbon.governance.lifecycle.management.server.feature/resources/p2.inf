@@ -1,6 +1,8 @@
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../resources/lifecycles);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.governance.lifecycle.management.server_${feature.version}/lifecycles/ServiceLifeCycle.xml,target:${installFolder}/../../resources/lifecycles/ServiceLifeCycle.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.governance.lifecycle.management.server_${feature.version}/lifecycles/ServerLifeCycle.xml,target:${installFolder}/../../resources/lifecycles/ServerLifeCycle.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.governance.lifecycle.management.server_${feature.version}/lifecycles/EndpointLifeCycle.xml,target:${installFolder}/../../resources/lifecycles/EndpointLifeCycle.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.governance.lifecycle.management.server_${feature.version}/scxml.xsd,target:${installFolder}/../../resources/scxml.xsd,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.governance.lifecycle.management.server_${feature.version}/lifecycle-config.xsd,target:${installFolder}/../../resources/lifecycle-config.xsd,overwrite:true);\
 
