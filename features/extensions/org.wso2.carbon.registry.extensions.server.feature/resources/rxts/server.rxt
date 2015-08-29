@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<artifactType type="application/vnd.wso2-server+xml" shortName="server" singularLabel="Server" pluralLabel="Servers" hasNamespace="false" iconSet="20">
+	<storagePath>/trunk/servers/@{name}</storagePath>
+	<nameAttribute>overview_name</nameAttribute>
+    <lifecycle>ServerLifeCycle</lifecycle>
+	<ui>
+		<list>
+			<column name="Name">
+				<data type="path" value="overview_name" href="@{storagePath}"/>
+			</column>
+		</list>
+	</ui>
+
+    <content>
+        <table name="Overview">
+            <field type="text" required="true">
+                <name>Name</name>
+            </field>
+            
+            <field type="options">
+		    <name label="Type">Type</name>
+		    <values>
+		        <value>Generic Server</value>
+		        <value>WSO2 AS</value>
+		        <value>WSO2 ESB</value>
+		        <value>WSO2 BPS</value>
+		        <value>WSO2 BRS</value>
+		        <value>WSO2 DSS</value>
+		        <value>WSO2 IS</value>
+		        <value>WSO2 BAM</value>
+		        <value>WSO2 CEP</value>
+		    </values>
+             </field>
+
+             <field type="text" tooltip="1.0.0" required="true">
+                 <name>Version</name>
+             </field>
+
+             <field type="text">
+             	<name>Environment</name>
+	     </field>
+        </table>
+
+	<table name="Root URL" columns="1"  maxoccurs="unbounded">
+	    <field type="text" url="true">
+		<name label="URL">URL</name>
+	    </field>
+	</table>
+
+	<table name="Credentials" columns="2" >
+		<field type="checkbox">
+			<name label="BasicAuth">BasicAuth</name>
+		</field>
+
+		<field type="checkbox">
+			<name label="OAuth">OAuth</name>
+		</field>
+	</table>
+
+	<table name="BasicAuth" columns="2" >
+		<field type="text">
+			<name>User Name</name>
+		</field>
+		<field type="text">
+			<name>Password</name>
+		</field>
+	</table>
+
+	<table name="OAuth" columns="2" >
+		<field type="text">
+			<name>Permission Grant Type</name>
+		</field>
+		<field type="text">
+			<name>Key</name>
+		</field>
+		<field type="text">
+			<name>Secret</name>
+		</field>
+		<field type="text">
+			<name>Access Code</name>
+		</field>
+	</table>
+
+    </content>
+</artifactType>
