@@ -27,5 +27,10 @@
         <Comparator class="org.wso2.carbon.governance.comparator.text.TextComparator"/>
         <Comparator class="org.wso2.carbon.governance.comparator.wsdl.WSDLComparator"/>
     </Comparators>
+
+    <!-- Possible values, enabled|disable-->|
+    <EndpointStateManagement>enabled</EndpointStateManagement>
+    <!-- Duration in seconds             -->|
+    <DefaultEndpointActiveDuration>90</DefaultEndpointActiveDuration>
 </GovernanceConfiguration>
 

@@ -52,6 +52,9 @@ public class GovernanceUtils {
     public static final String COMPARATORS = "Comparators";
     public static final String COMPARATOR = "Comparator";
     public static final String CLASS_ATTR = "class";
+    public static final String ENDPOINT_STATE_MANAGEMENT = "EndpointStateManagement";
+    public static final String ENDPOINT_STATE_MANAGEMENT_ENABLED = "enabled";
+    public static final String DEFAULT_ENDPOINT_ACTIVE_DURATION = "DefaultEndpointActiveDuration";
     private static Log log = LogFactory.getLog(GovernanceUtils.class);
 
 
@@ -108,6 +111,7 @@ public class GovernanceUtils {
                                           GovernanceConfiguration govConfig) {
         readDiscoveryAgents(config, govConfig);
         readComparators(config, govConfig);
+        readEndpointStateManagement(config, govConfig);
     }
 
     private static void readDiscoveryAgents(Element config,
@@ -141,6 +145,26 @@ public class GovernanceUtils {
             }
         }
 
+    }
+
+
+    private static void readEndpointStateManagement(Element config, GovernanceConfiguration govConfig) {
+        Element endpointStateManagementEle = getFirstElement(config, ENDPOINT_STATE_MANAGEMENT);
+        if (endpointStateManagementEle != null) {
+            String enabled = endpointStateManagementEle.getTextContent();
+            if (enabled != null && ENDPOINT_STATE_MANAGEMENT_ENABLED.equals(enabled.toLowerCase())) {
+                govConfig.setEndpointStateManagementEnabled(true);
+            }
+        }
+
+        Element DefaultEndpointActiveEle = getFirstElement(config, DEFAULT_ENDPOINT_ACTIVE_DURATION);
+        if (DefaultEndpointActiveEle != null) {
+            String durationStr = DefaultEndpointActiveEle.getTextContent();
+            if (durationStr != null) {
+                long duration = Long.valueOf(durationStr);
+                govConfig.setDefaultEndpointActiveDuration(duration);
+            }
+        }
     }
 
     private static Map<String, String> getProperties(Element agentEle) {
