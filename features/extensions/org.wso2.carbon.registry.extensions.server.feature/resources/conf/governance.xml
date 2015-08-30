@@ -29,7 +29,7 @@
     </Comparators>
 
     <!-- Possible values, enabled|disable-->|
-    <EndpointStateManagement>enabled</EndpointStateManagement>
+    <EndpointStateManagement>disable</EndpointStateManagement>
     <!-- Duration in seconds             -->|
     <DefaultEndpointActiveDuration>90</DefaultEndpointActiveDuration>
 </GovernanceConfiguration>
