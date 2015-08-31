@@ -29,6 +29,7 @@ import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
+import org.wso2.carbon.governance.common.utils.GovernanceUtils;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -272,35 +273,37 @@ public class CommonUtil {
      * @param tenantId the tenant id of the current tenant
      */
     public static void loadAssociationConfig(Registry systemRegistry, int tenantId) {
-        String associationConfigFile = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
-                "conf" + File.separator + "etc" + File.separator + "association-config.xml";
+        String associationConfigFile = CarbonUtils.getCarbonConfigDirPath() + File.separator + GovernanceUtils.GOVERNANCE_CONFIG_FILE;
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 
         try {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(new File(associationConfigFile));
             doc.getDocumentElement().normalize();
-            NodeList nodeList = doc.getElementsByTagName("Association");
+            NodeList associationConfigNode = doc.getElementsByTagName("AssociationConfig");
+            NodeList nodeList = associationConfigNode.item(0).getChildNodes();
 
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node association = nodeList.item(i);
-                HashMap<String, String> associationMap = new HashMap<String, String>();
-                NodeList childNodeList = association.getChildNodes();
+                if (association.getNodeType() == Node.ELEMENT_NODE) {
+                    HashMap<String, String> associationMap = new HashMap<String, String>();
+                    NodeList childNodeList = association.getChildNodes();
 
-                if (childNodeList != null) {
-                    for (int j = 0; j < childNodeList.getLength(); j++) {
-                        Node types = childNodeList.item(j);
-                        if (types.getNodeType() == Node.ELEMENT_NODE) {
-                            associationMap.put(types.getNodeName(), types.getFirstChild().getNodeValue());
+                    if (childNodeList != null) {
+                        for (int j = 0; j < childNodeList.getLength(); j++) {
+                            Node types = childNodeList.item(j);
+                            if (types.getNodeType() == Node.ELEMENT_NODE) {
+                                associationMap.put(types.getNodeName(), types.getFirstChild().getNodeValue());
+                            }
                         }
                     }
+                    associationConfigMap.put(((Element) association).getAttribute("type"), associationMap);
                 }
-                associationConfigMap.put(((Element) association).getAttribute("type"), associationMap);
             }
         } catch (FileNotFoundException e) {
-            log.error("Failed to find the Association Config xml", e);
+            log.error("Failed to find the governance.xml", e);
         } catch (ParserConfigurationException e) {
-            log.error("Failed to parse the association-config.xml", e);
+            log.error("Failed to parse the governance.xml", e);
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
