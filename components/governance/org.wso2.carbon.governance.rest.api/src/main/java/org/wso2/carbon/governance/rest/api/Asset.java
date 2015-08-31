@@ -131,7 +131,7 @@ public class Asset {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createAsset(@PathParam("assetType") String assetType, GenericArtifact genericArtifact,
                                 @Context UriInfo uriInfo) throws RegistryException {
-        return persistGovernanceAsset(assetType, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
+        return createGovernanceAsset(assetType, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
     }
 
 
@@ -192,7 +192,7 @@ public class Asset {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createEndpoint(GenericArtifact genericArtifact, @Context UriInfo uriInfo)
             throws RegistryException {
-        return persistGovernanceAsset(ENDPOINTS, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
+        return createGovernanceAsset(ENDPOINTS, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
     }
 
     @POST
@@ -364,15 +364,18 @@ public class Asset {
 
     private Response updateLCState(String assetType, String id, AssetStateChange stateChange) throws RegistryException {
         String shortName = Util.getShortName(assetType);
-        GenericArtifactManager manager = new GenericArtifactManager(getUserRegistry(), shortName);
-        GenericArtifact artifact = manager.getGenericArtifact(id);
-        if (artifact != null) {
-            //TODO - change to Gov level
-            getUserRegistry().invokeAspect(artifact.getPath(), stateChange.getLifecycle(),
-                                           stateChange.getAction(), stateChange.getParameters());
-            return getGovernanceAssetStates(artifact, null);
+        if(validateAssetType(shortName)){
+            GenericArtifactManager manager = new GenericArtifactManager(getUserRegistry(), shortName);
+            GenericArtifact artifact = manager.getGenericArtifact(id);
+            if (artifact != null) {
+                //TODO - change to Gov level
+                getUserRegistry().invokeAspect(artifact.getPath(), stateChange.getLifecycle(),
+                                               stateChange.getAction(), stateChange.getParameters());
+                return getGovernanceAssetStates(artifact, null);
+            }
+            return Response.ok().build();
         }
-        return Response.ok().build();
+        return validationFail(shortName);
     }
 
 
@@ -418,18 +421,47 @@ public class Asset {
         }
     }
 
-    private Response persistGovernanceAsset(String assetType, DetachedGenericArtifact genericArtifact,
-                                            String baseURL) throws RegistryException {
+    private Response createGovernanceAsset(String assetType, DetachedGenericArtifact genericArtifact,
+                                           String baseURL) throws RegistryException {
         String shortName = Util.getShortName(assetType);
-        try {
-            GenericArtifactManager manager = getGenericArtifactManager(shortName);
-            GenericArtifact artifact = genericArtifact.makeRegistryAware(manager);
-            manager.addGenericArtifact(artifact);
-            URI link = new URL(Util.generateLink(assetType, artifact.getId(), baseURL, false)).toURI();
-            return Response.created(link).build();
-        } catch (MalformedURLException | URISyntaxException e) {
-            throw new GovernanceException(e);
+        if (validateAssetType(shortName)){
+
+            if(isContentType(shortName , genericArtifact)){
+                //TODO
+                Response.status(Response.Status.CONFLICT).build();
+                //createContentAsset(shortName, genericArtifact);
+            } else {
+                try {
+                    GenericArtifactManager manager = getGenericArtifactManager(shortName);
+                    GenericArtifact artifact = genericArtifact.makeRegistryAware(manager);
+                    manager.addGenericArtifact(artifact);
+                    URI link = new URL(Util.generateLink(assetType, artifact.getId(), baseURL, false)).toURI();
+                    return Response.created(link).build();
+                } catch (MalformedURLException | URISyntaxException e) {
+                    throw new GovernanceException(e);
+                }
+            }
         }
+        return validationFail(shortName);
+    }
+
+    private void createContentAsset(String shortName, DetachedGenericArtifact genericArtifact)
+            throws GovernanceException {
+       //TODO
+    }
+
+    private boolean isContentType(String shortName, DetachedGenericArtifact genericArtifact)
+            throws GovernanceException {
+        String name = shortName.toLowerCase();
+        if (shortName != null && !shortName.isEmpty()) {
+            if ("wsdl".equals(name) || "wadl".equals(name) || "swagger".equals(name) ||
+                "schema".equals(name) || "policy".equals(name)) {
+                return true;
+            } else if (genericArtifact.getAttribute("content_type").equals("true")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Response persistGovernanceAsset(String assetType, GenericArtifactManager manager, GenericArtifact
@@ -445,14 +477,17 @@ public class Asset {
 
     private Response deleteGovernanceAsset(String assetType, String id) throws RegistryException {
         String shortName = Util.getShortName(assetType);
-        GenericArtifactManager manager = getGenericArtifactManager(shortName);
-        GenericArtifact artifact = getUniqueAsset(shortName, id);
-        if (artifact != null) {
-            manager.removeGenericArtifact(artifact.getId());
-            return Response.noContent().build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        if (validateAssetType(shortName)) {
+            GenericArtifactManager manager = getGenericArtifactManager(shortName);
+            GenericArtifact artifact = getUniqueAsset(shortName, id);
+            if (artifact != null) {
+                manager.removeGenericArtifact(artifact.getId());
+                return Response.noContent().build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
         }
+        return validationFail(shortName);
     }
 
 
