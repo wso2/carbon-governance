@@ -80,6 +80,7 @@ public class Asset {
     public static final String ENDPOINT_LIFE_CYCLE_ACTION_DEACTIVATE = "Deactivate";
     public static final String ENDPOINT_LIFE_CYCLE_ACTION_ACTIVATE = "Activate";
     public static final String ENDPOINT_LIFE_CYCLE_STATE_ACTIVE = "Active";
+    public static final String ENDPOINT_MEDIA_TYPE = "application/vnd.wso2-endpoint+xml";
 
     private final Log log = LogFactory.getLog(Asset.class);
 
@@ -487,15 +488,16 @@ public class Asset {
                                                                                Util.ENDPOINT_ASSOCIATION_BELONG_TO);
                 if (associations.length > 0) {
                     for (Association association : associations) {
-                        GovernanceArtifact endpoint = GovernanceUtils.retrieveGovernanceArtifactByPath
+                        GovernanceArtifact artifact = GovernanceUtils.retrieveGovernanceArtifactByPath
                                 (getUserRegistry(), association.getDestinationPath());
-                        endpoints.add(endpoint);
+                        if(ENDPOINT_MEDIA_TYPE.equals(artifact.getMediaType())) {
+                            endpoints.add(artifact);
+                        }
                     }
                     TypedList<GovernanceArtifact> typedList = new TypedList<>(GovernanceArtifact.class, ENDPOINT,
                                                                               endpoints, null);
                     return Response.ok().entity(typedList).build();
                 }
-
             }
             return Response.status(Response.Status.NOT_FOUND).build();
         } else {
