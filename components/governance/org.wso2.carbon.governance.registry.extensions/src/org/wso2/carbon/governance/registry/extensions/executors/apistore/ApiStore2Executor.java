@@ -245,6 +245,24 @@ public class ApiStore2Executor implements Execution {
 		params.add(new BasicNameValuePair(ExecutorConstants.API_OVERVIEW_PROVIDR, CarbonContext.getThreadLocalCarbonContext()
 				.getUsername()));
 		params.add(new BasicNameValuePair(ExecutorConstants.API_SWAGGER, ExecutorConstants.DEFAULT_SWAGGER_DOC));
+		String endpointConfigJson = "";
+		if (endPoints != null && endPoints.length > 0) {
+			for (int i = 0; i < endPoints.length; i++) {
+				if (endPoints[i] != null) {
+					if (endPoints[i] != null && endPoints[i].startsWith(ExecutorConstants.DEFAULT_ENDPOINT_ENV)) {
+						String url = endPoints[i].split(":")[1];
+						endpointConfigJson = "{\"production_endpoints\":{\"url\":\"" +
+								url + "\",\"config\":null},\"endpoint_type\":\"http\"}";
+						break;
+					}
+				}
+			}
+		}
+		if (!endpointConfigJson.equals("")) {
+			params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT_CONFIG, endpointConfigJson));
+		} else {
+			params.add(new BasicNameValuePair(ExecutorConstants.API_ENDPOINT_CONFIG, null));
+		}
 
 	}
 

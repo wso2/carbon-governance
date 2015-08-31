@@ -272,5 +272,6 @@ public class ExecutorConstants {
                                                      + "\"delete\":{\"responses\":{\"200\":{}}},"
                                                      + "\"head\":{\"responses\":{\"200\":{}}}}},\"swagger\":\"2.0\","
                                                      + "\"info\":{\"title\":\"\",\"version\":\"\"}}\n";
+    public static final String DEFAULT_ENDPOINT_ENV = "Default";
 
 }
