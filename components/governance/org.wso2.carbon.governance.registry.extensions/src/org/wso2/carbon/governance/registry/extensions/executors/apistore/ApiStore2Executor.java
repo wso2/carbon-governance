@@ -231,6 +231,9 @@ public class ApiStore2Executor implements Execution {
 	private void addParameters(List<NameValuePair> params, Resource resource, String serviceName) throws GovernanceException{
 
 		String[] endPoints=artifact.getAttributes(Constants.ENDPOINTS_ENTRY);
+		String[] urlPatterns = artifact.getAttributes(ExecutorConstants.API_URL_PATTERNS);
+		String[] httpVerbs = artifact.getAttributes(ExecutorConstants.API_URL_HTTPVERB);
+		String[] urlAuthType = artifact.getAttributes(ExecutorConstants.API_URL_AUTHTYPE);
 
 		//Parameters for create API
 		params.add(new BasicNameValuePair(ExecutorConstants.API_OVERVIEW_NAME, serviceName));
@@ -244,7 +247,27 @@ public class ApiStore2Executor implements Execution {
 		params.add(new BasicNameValuePair(ExecutorConstants.API_VISIBLITY, DEFAULT_VISIBILITY));
 		params.add(new BasicNameValuePair(ExecutorConstants.API_OVERVIEW_PROVIDR, CarbonContext.getThreadLocalCarbonContext()
 				.getUsername()));
-		params.add(new BasicNameValuePair(ExecutorConstants.API_SWAGGER, ExecutorConstants.DEFAULT_SWAGGER_DOC));
+		if (urlPatterns != null && urlPatterns.length > 0) {
+			StringBuffer sb = new StringBuffer();
+			sb.append("{\"paths\":{");
+			for (int i = 0; i < urlPatterns.length; i++) {
+				sb.append("\"");
+				sb.append(urlPatterns[i]);
+				sb.append("\":{\"");
+				sb.append(httpVerbs[i]);
+				sb.append("\":{\"responses\":{\"200\":{}}}");
+				sb.append("}");
+				if (urlPatterns.length > 1 && i != urlPatterns.length -1) {
+					sb.append(",");
+				}
+			}
+			sb.append("},");
+			sb.append("\"swagger\":\"2.0\",");
+			sb.append("\"info\":{\"title\":\"\",\"version\":\"\"}}\n");
+			params.add(new BasicNameValuePair(ExecutorConstants.API_SWAGGER, sb.toString()));
+		} else {
+			params.add(new BasicNameValuePair(ExecutorConstants.API_SWAGGER, ExecutorConstants.DEFAULT_SWAGGER_DOC));
+		}
 		String endpointConfigJson = "";
 		if (endPoints != null && endPoints.length > 0) {
 			for (int i = 0; i < endPoints.length; i++) {
