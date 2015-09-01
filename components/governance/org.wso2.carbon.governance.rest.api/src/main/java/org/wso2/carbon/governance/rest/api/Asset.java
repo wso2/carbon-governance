@@ -81,6 +81,12 @@ public class Asset {
     public static final String ENDPOINT_LIFE_CYCLE_ACTION_ACTIVATE = "Activate";
     public static final String ENDPOINT_LIFE_CYCLE_STATE_ACTIVE = "Active";
     public static final String ENDPOINT_MEDIA_TYPE = "application/vnd.wso2-endpoint+xml";
+    public static final String CONTENT_TYPE_WSDL = "wsdl";
+    public static final String CONTENT_TYPE_WADL = "wadl";
+    public static final String CONTENT_TYPE_SWAGGER = "swagger";
+    public static final String CONTENT_TYPE_SCHEMA = "schema";
+    public static final String CONTENT_TYPE_POLICY = "policy";
+    public static final String ATTR_CONTENT_TYPE = "content_type";
 
     private final Log log = LogFactory.getLog(Asset.class);
 
@@ -454,11 +460,14 @@ public class Asset {
             throws GovernanceException {
         String name = shortName.toLowerCase();
         if (shortName != null && !shortName.isEmpty()) {
-            if ("wsdl".equals(name) || "wadl".equals(name) || "swagger".equals(name) ||
-                "schema".equals(name) || "policy".equals(name)) {
+            if (CONTENT_TYPE_WSDL.equals(name) || CONTENT_TYPE_WADL.equals(name) || CONTENT_TYPE_SWAGGER.equals(name) ||
+                CONTENT_TYPE_SCHEMA.equals(name) || CONTENT_TYPE_POLICY.equals(name)) {
                 return true;
-            } else if (genericArtifact.getAttribute("content_type").equals("true")) {
-                return true;
+            } else {
+                String contentType = genericArtifact.getAttribute(ATTR_CONTENT_TYPE);
+                if (contentType != null && contentType.toLowerCase().equals("true")) {
+                    return true;
+                }
             }
         }
         return false;

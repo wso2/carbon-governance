@@ -92,7 +92,7 @@
                 <name label="Endpoint">Endpoint</name>
                 <values>
                     <value>None</value>
-                    <value>Unknown</value>
+                    <value>Default</value>
                     <value>Dev</value>
                     <value>Test</value>
                     <value>Stag</value>
