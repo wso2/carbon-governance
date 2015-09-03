@@ -1279,7 +1279,7 @@
 
         <!-- Carbon governance version comes here-->
         <carbon.governance.version>4.5.8-SNAPSHOT</carbon.governance.version>
-        <carbon.governance.package.export.version>4.5.7
+        <carbon.governance.package.export.version>4.5.8-SNAPSHOT
         </carbon.governance.package.export.version>
         <carbon.governance.package.import.version.range>[4.5.0, 4.6.0)
         </carbon.governance.package.import.version.range>
