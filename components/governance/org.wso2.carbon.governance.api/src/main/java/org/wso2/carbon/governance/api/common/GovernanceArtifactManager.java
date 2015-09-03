@@ -198,7 +198,10 @@ public class GovernanceArtifactManager {
             String artifactId = artifact.getId();
             resource.setUUID(artifactId);
             registry.put(path, resource);
-
+            String updatedPath = GovernanceUtils.getArtifactPath(registry, artifactId);
+            if(updatedPath != null && !path.equals(updatedPath)){
+                path = updatedPath;
+            }
             if (lifecycle != null){
                 registry.associateAspect(path, lifecycle);
             }

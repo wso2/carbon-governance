@@ -265,6 +265,9 @@ public class ExecutorConstants {
     public static final String API_OVERVIEW_DESCRIPTION = "overview_description";
     public static final String API_OVERVIEW_TAGS = "overview_tags";
     public static final String API_SWAGGER = "swagger";
+    public static final String API_URL_PATTERNS = "uritemplate_urlPattern";
+    public static final String API_URL_HTTPVERB = "uritemplate_httpVerb";
+    public static final String API_URL_AUTHTYPE = "security_authenticationType";
     public static final String ACTION = "action";
     public static final String DEFAULT_SWAGGER_DOC = "{\"paths\":{\"/*\":{\"put\":{\"responses\":{\"200\":{}}},"
                                                      + "\"post\":{\"responses\":{\"200\":{}}},"
@@ -272,5 +275,6 @@ public class ExecutorConstants {
                                                      + "\"delete\":{\"responses\":{\"200\":{}}},"
                                                      + "\"head\":{\"responses\":{\"200\":{}}}}},\"swagger\":\"2.0\","
                                                      + "\"info\":{\"title\":\"\",\"version\":\"\"}}\n";
+    public static final String DEFAULT_ENDPOINT_ENV = "Default";
 
 }

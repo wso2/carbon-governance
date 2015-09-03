@@ -32,8 +32,14 @@ public class Util {
 
     public static final String TEMP_BELONG_TO_ASSET_ID = "_temp_belongToAssetID";
     public static final String TEMP_BELONG_TO_ASSET_SHORT_NAME = "_temp_belongToAssetShortName";
-    public static final String ENDPOINT_ASSOCIATION_USE = "use";
-    public static final String ENDPOINT_ASSOCIATION_BELONG_TO = "belongTo";
+
+     // TODO - for SOAPService/RESTService -> Endpoint use cases introduce new associations as follows.
+//   public static final String ENDPOINT_ASSOCIATION_USE = "use";
+//   public static final String ENDPOINT_ASSOCIATION_BELONG_TO = "belongTo";
+    public static final String ENDPOINT_ASSOCIATION_USE = "usedBy";
+    public static final String ENDPOINT_ASSOCIATION_BELONG_TO = "depends";
+
+
 
     public static String getResourceName(String shortName) {
         //TODO - handle "s" and "es"

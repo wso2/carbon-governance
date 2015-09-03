@@ -26,6 +26,8 @@ public class GovernanceConfiguration {
 
     private Map<String, Map<String, String>> discoveryAgentConfigs = new HashMap();
     private List<String> comparators = new ArrayList<>();
+    private boolean endpointStateManagementEnabled = false;
+    private long defaultEndpointActiveDuration = 90;
 
     private static GovernanceConfiguration instance = new GovernanceConfiguration();
 
@@ -58,11 +60,30 @@ public class GovernanceConfiguration {
         this.comparators = comparators;
     }
 
+
+    public boolean isEndpointStateManagementEnabled() {
+        return endpointStateManagementEnabled;
+    }
+
+    public void setEndpointStateManagementEnabled(boolean endpointStateManagementEnabled) {
+        this.endpointStateManagementEnabled = endpointStateManagementEnabled;
+    }
+
+    public long getDefaultEndpointActiveDuration() {
+        return defaultEndpointActiveDuration;
+    }
+
+    public void setDefaultEndpointActiveDuration(long defaultEndpointActiveDuration) {
+        this.defaultEndpointActiveDuration = defaultEndpointActiveDuration;
+    }
+
     @Override
     public String toString() {
         return "GovernanceConfiguration{" +
                "discoveryAgentConfigs=" + discoveryAgentConfigs +
                ", comparators=" + comparators +
+               ", endpointStateManagementEnabled=" + endpointStateManagementEnabled +
+               ", defaultEndpointActiveDuration=" + defaultEndpointActiveDuration +
                '}';
     }
 }
