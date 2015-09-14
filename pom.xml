@@ -88,6 +88,34 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.11</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <!-- TODO We have issues with following headers with RAT plugin hence excluded but need to find root cause and fix it soon -->
+                            <excludes>
+                                <exclude>**/css/treeview.css</exclude>
+                                <exclude>**/js/yuiloader-min.js</exclude>
+                                <exclude>**/js/tinyxmlw3cdom.js</exclude>
+                                <exclude>**/js/element-min.js</exclude>
+                                <exclude>**/js/tinyxmlsax.js</exclude>
+                                <exclude>**/js/treeview-debug.js</exclude>
+                                <exclude>**/js/logger-min.js</exclude>
+                                <exclude>**/js/dom-min.js</exclude>
+                                <exclude>**/js/event-min.js</exclude>
+                                <exclude>**/js/json.js</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.1</version>
