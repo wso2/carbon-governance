@@ -151,7 +151,7 @@ public class LifecycleBeanPopulator {
 
                     if (propKey.startsWith("registry.lifecycle.")
 //                            || propKey.equals(Aspect.AVAILABLE_ASPECTS)
-                            || propKey.startsWith("registry.custom_lifecycle.checklist.") || propKey.equals("registry.LC.name")){
+                            || (propKey.startsWith("registry.custom_lifecycle.checklist.") && isPropertyKeyContainsAspectName(aspects, propKey)) || propKey.equals("registry.LC.name")){
 //                            || propKey.startsWith("registry.custom_lifecycle.js.")) {
                         Property property = new Property();
                         property.setKey(propKey);
@@ -247,5 +247,17 @@ public class LifecycleBeanPopulator {
                 cache.remove(cacheKey);
             }
         }
+    }
+
+    private static boolean isPropertyKeyContainsAspectName(List<String> aspects, String propKey) {
+        if(aspects != null) {
+            for (String aspect : aspects) {
+                if (propKey.contains(aspect)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
