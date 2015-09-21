@@ -24,9 +24,9 @@ public class CheckBox extends UIComponent {
     private String value;
     private boolean isSkipName;
 
-    public CheckBox(String name, String id, String widget, String value, String tooltip, boolean isSkipName,
+    public CheckBox(String label, String name, String id, String widget, String value, String tooltip, boolean isSkipName,
                     boolean isJSGenerating) {
-        super(null, name, id, null, widget.replaceAll(" ", ""), false, tooltip, isJSGenerating);
+        super(label, name, id, null, widget.replaceAll(" ", ""), false, tooltip, isJSGenerating);
         this.value = value;
         this.isSkipName = isSkipName;
     }
@@ -34,7 +34,7 @@ public class CheckBox extends UIComponent {
     @Override
     public String generate() {
         StringBuilder checkBoxHtml = new StringBuilder();
-        checkBoxHtml.append((isSkipName ? "<tr><td class=\"leftCol-big\">" + name + "</td>\n" : ""))
+        checkBoxHtml.append((isSkipName ? "<tr><td class=\"leftCol-big\">" + label + "</td>\n" : ""))
                 .append("<td><input type=\"checkbox\" name=\"").append(widget).append("_")
                 .append(name.replaceAll(" ", "")).append("\" value=\"true\" title=\"").append(tooltip).append("\"");
 
