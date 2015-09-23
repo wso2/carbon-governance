@@ -24,6 +24,7 @@ import org.wso2.carbon.governance.registry.extensions.beans.*;
 import org.wso2.carbon.governance.registry.extensions.interfaces.CustomValidations;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -46,7 +47,7 @@ public class Utils {
         return null;
     }
 
-    public static CustomValidations loadCustomValidators(String className, Map parameterMap) throws Exception {
+    public static CustomValidations loadCustomValidators(String className, Map parameterMap) throws RegistryException {
 
         CustomValidations customValidations;
         try {
@@ -54,26 +55,34 @@ public class Utils {
             Class<?> customCodeClass = Class.forName(className, true, loader);
             customValidations = (CustomValidations) customCodeClass.newInstance();
             customValidations.init(parameterMap);
-
-        }  catch (Exception e) {
+        } catch (ClassNotFoundException e) {
+            String msg = "Unable to find validations class";
+            throw new RegistryException(msg,e);
+        } catch (InstantiationException e) {
+            String msg = "Unable to create an instance of the validations class";
+            throw new RegistryException(msg,e);
+        } catch (IllegalAccessException e) {
             String msg = "Unable to load validations class";
-            log.error(msg, e);
-            throw new Exception(msg,e);
+            throw new RegistryException(msg,e);
         }
         return customValidations;
     }
-    public static Execution loadCustomExecutors(String className, Map parameterMap) throws Exception {
+    public static Execution loadCustomExecutors(String className, Map parameterMap) throws RegistryException {
 
         Execution customExecutors;
         try {
             Class<?> customCodeClass = Utils.class.getClassLoader().loadClass(className);
             customExecutors = (Execution) customCodeClass.newInstance();
             customExecutors.init(parameterMap);
-
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
+            String msg = "Unable to find executions class";
+            throw new RegistryException(msg,e);
+        } catch (InstantiationException e) {
+            String msg = "Unable to create an instance of the executions class";
+            throw new RegistryException(msg,e);
+        } catch (IllegalAccessException e) {
             String msg = "Unable to load executions class";
-            log.error(msg, e);
-            throw new Exception(msg,e);
+            throw new RegistryException(msg,e);
         }
         return customExecutors;
     }
@@ -92,7 +101,7 @@ public class Utils {
     	approveBean.setForEvent(permChild.getAttributeValue(new QName(LifecycleConstants.FOR_EVENT)));
         if (permChild.getAttributeValue(new QName("roles")) != null) {
         	String[] roles = permChild.getAttributeValue(new QName("roles")).split(",");
-        	if (roles.length == 1 && roles[0].equals("")) {
+        	if (roles.length == 1 && "".equals(roles[0])) {
         		roles = new String[0];
         	}
         	approveBean.setRoles(Arrays.asList(roles));
@@ -103,7 +112,7 @@ public class Utils {
         return approveBean;
     }
 
-    public static CustomCodeBean createCustomCodeBean(OMElement customCodeChild,String type) throws Exception {
+    public static CustomCodeBean createCustomCodeBean(OMElement customCodeChild,String type) throws RegistryException {
         CustomCodeBean customCodeBean = new CustomCodeBean();
         Map<String, String> paramNameValues = new HashMap<String, String>();
 
@@ -116,7 +125,7 @@ public class Utils {
             	paramNameValues.put(paramChild.getAttributeValue(new QName(LifecycleConstants.NAME)),
                         paramChild.getAttributeValue(new QName("value")));
 			} else {
-				if (!(paramChild.getText()).equals("")) {
+				if (!"".equals(paramChild.getText().trim())) {
 					paramNameValues.put(paramChild.getAttributeValue(new QName(LifecycleConstants.NAME)),
 	                        paramChild.getText());
 				} else {
@@ -126,10 +135,10 @@ public class Utils {
 			}
             
         }
-        if (type.equals(LifecycleConstants.VALIDATION)) {
+        if (LifecycleConstants.VALIDATION.equals(type)) {
             customCodeBean.setClassObeject(loadCustomValidators(
                     customCodeChild.getAttributeValue(new QName("class")), paramNameValues));
-        } else if(type.equals(LifecycleConstants.EXECUTION)) {
+        } else if(LifecycleConstants.EXECUTION.equals(type)) {
             customCodeBean.setClassObeject(loadCustomExecutors(
                     customCodeChild.getAttributeValue(new QName("class")), paramNameValues));
         }
@@ -167,10 +176,10 @@ public class Utils {
                 items.add("order:" + order);
 
                 String resourcePropertyNameForItem =
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "." + order
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + '.' + order
                                 + LifecycleConstants.ITEM;
                 String resourcePropertyNameForItemPermission =
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "." + order
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + '.' + order
                                 + LifecycleConstants.ITEM_PERMISSION;
 
                 resource.setProperty(resourcePropertyNameForItem, items);
@@ -194,8 +203,8 @@ public class Utils {
                     items.add(scriptBean.getFunctionName());
 
                     String resourcePropertyNameForScript =
-                            LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_JS_SCRIPT_CONSOLE + aspectName + "." + state
-                                    + "." + scriptBean.getEventName();
+                            LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_JS_SCRIPT_CONSOLE + aspectName + '.'
+                                    + state + '.' + scriptBean.getEventName();
                     resource.setProperty(resourcePropertyNameForScript, items);
                 }
             }
@@ -206,8 +215,9 @@ public class Utils {
         List<String> tobeRemoved = new ArrayList<String>();
         Properties properties = resource.getProperties();
         for (Object key : properties.keySet()) {
-            if(key.toString().startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_TRANSITION_UI + aspectName)){
-                tobeRemoved.add(key.toString());
+            String StringKey = key.toString();
+            if(StringKey.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_TRANSITION_UI + aspectName)){
+                tobeRemoved.add(StringKey);
             }
         }
         for (String key : tobeRemoved) {
@@ -217,8 +227,8 @@ public class Utils {
         if (transitionUI != null) {
             for (Map.Entry<String, String> entry : transitionUI.entrySet()) {
                 resource.setProperty(
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_TRANSITION_UI + aspectName + "." + entry.getKey()
-                        ,entry.getValue());
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_TRANSITION_UI + aspectName + '.' +
+                        entry.getKey(),entry.getValue());
             }
         }
     }
@@ -284,9 +294,10 @@ public class Utils {
     }
 
     public static void populateTransitionExecutors(String currentStateName, OMElement node,
-                                                   Map<String,List<CustomCodeBean>> transitionExecution) throws Exception {
+                                                   Map<String,List<CustomCodeBean>> transitionExecution)
+            throws RegistryException {
         if (!transitionExecution.containsKey(currentStateName)
-                && (node.getAttributeValue(new QName(LifecycleConstants.NAME)).equals("transitionExecution"))) {
+                && ("transitionExecution".equals(node.getAttributeValue(new QName(LifecycleConstants.NAME))))) {
             List<CustomCodeBean> customCodeBeanList = new ArrayList<CustomCodeBean>();
             Iterator executorsIterator = node.getChildElements();
             while (executorsIterator.hasNext()) {
@@ -301,7 +312,7 @@ public class Utils {
                                              Map<String, Map<String,String>> transitionUIs) {
         //                    Adding the transition UIs
         if (!transitionUIs.containsKey(currentStateName)
-                && (node.getAttributeValue(new QName(LifecycleConstants.NAME)).equals("transitionUI"))) {
+                && ("transitionUI".equals(node.getAttributeValue(new QName(LifecycleConstants.NAME))))) {
             Map<String,String> uiEventMap = new HashMap<String, String>();
             Iterator uiIterator = node.getChildElements();
 
@@ -318,7 +329,7 @@ public class Utils {
                                                  Map<String, List<ScriptBean>> scriptElements) {
         //                  Adding the script elements
         if (!scriptElements.containsKey(currentStateName)
-                && (node.getAttributeValue(new QName(LifecycleConstants.NAME)).equals("transitionScripts"))) {
+                && ("transitionScripts".equals(node.getAttributeValue(new QName(LifecycleConstants.NAME))))) {
             List<ScriptBean> scriptBeans = new ArrayList<ScriptBean>();
             Iterator scriptIterator = node.getChildElements();
 
@@ -327,10 +338,10 @@ public class Utils {
                 Iterator scriptChildIterator = script.getChildElements();
                 while (scriptChildIterator.hasNext()) {
                     OMElement scriptChild = (OMElement) scriptChildIterator.next();
-                    scriptBeans.add(new ScriptBean(scriptChild.getQName().getLocalPart().equals("console"),
-                            scriptChild.getAttributeValue(new QName("function")),
-                            script.getAttributeValue(new QName(LifecycleConstants.FOR_EVENT)),
-                            scriptChild.getFirstElement().toString()));
+                    scriptBeans.add(new ScriptBean("console".equals(scriptChild.getQName().getLocalPart()),
+                                                   scriptChild.getAttributeValue(new QName("function")),
+                                                   script.getAttributeValue(new QName(LifecycleConstants.FOR_EVENT)),
+                                                   scriptChild.getFirstElement().toString()));
                 }
             }
             scriptElements.put(currentStateName, scriptBeans);
@@ -341,7 +352,7 @@ public class Utils {
                                                      Map<String, List<PermissionsBean>> transitionPermission) {
         //                  Adding the transition permissions
         if (!transitionPermission.containsKey(currentStateName)
-                && (node.getAttributeValue(new QName(LifecycleConstants.NAME)).equals("transitionPermission"))) {
+                && ("transitionPermission".equals(node.getAttributeValue(new QName(LifecycleConstants.NAME))))) {
             List<PermissionsBean> permissionsBeanList = new ArrayList<PermissionsBean>();
             Iterator permissionIterator = node.getChildElements();
             while (permissionIterator.hasNext()) {
@@ -353,10 +364,11 @@ public class Utils {
     }
 
     public static void populateTransitionValidations(String currentStateName, OMElement node,
-                                                     Map<String, List<CustomCodeBean>> transitionValidations) throws Exception {
+                                                     Map<String, List<CustomCodeBean>> transitionValidations)
+            throws RegistryException {
         //                  Adding the state validations
         if (!transitionValidations.containsKey(currentStateName)
-                && (node.getAttributeValue(new QName(LifecycleConstants.NAME)).equals("transitionValidation"))) {
+                && ("transitionValidation".equals(node.getAttributeValue(new QName(LifecycleConstants.NAME))))) {
             List<CustomCodeBean> customCodeBeanList = new ArrayList<CustomCodeBean>();
             Iterator validationsIterator = node.getChildElements();
             while (validationsIterator.hasNext()) {
@@ -368,10 +380,10 @@ public class Utils {
     }
 
     public static void populateCheckItems(String currentStateName, OMElement node,
-                                          Map<String, List<CheckItemBean>> checkListItems) throws Exception {
+                                          Map<String, List<CheckItemBean>> checkListItems) throws RegistryException {
         //                    adding the checkItems
         if (!checkListItems.containsKey(currentStateName)
-                && (node.getAttributeValue(new QName(LifecycleConstants.NAME)).equals("checkItems"))) {
+                && ("checkItems".equals(node.getAttributeValue(new QName(LifecycleConstants.NAME))))) {
 
             List<CheckItemBean> checkItems = new ArrayList<CheckItemBean>();
 
@@ -433,7 +445,7 @@ public class Utils {
 			Map<String, List<ApprovalBean>> transitionApproval) {
 		// Adding the transition approval
 		if (!transitionApproval.containsKey(currentStateName) 
-				&& (node.getAttributeValue(new QName(LifecycleConstants.NAME)).equals("transitionApproval"))) {
+				&& ("transitionApproval".equals(node.getAttributeValue(new QName(LifecycleConstants.NAME))))) {
 			List<ApprovalBean> approvalBeanList = new ArrayList<ApprovalBean>();
 			Iterator approvalIterator = node.getChildElements();
 			while (approvalIterator.hasNext()) {
@@ -461,10 +473,10 @@ public class Utils {
                 items.add("order:" + order);
 
                 String resourcePropertyNameForItem =
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "." + order
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + '.' + order
                                 + LifecycleConstants.VOTE;
                 String resourcePropertyNameForVotePermission =
-                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "." + order
+                        LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + '.' + order
                                 + LifecycleConstants.VOTE_PERMISSION;
 
                 resource.setProperty(resourcePropertyNameForItem, items);
