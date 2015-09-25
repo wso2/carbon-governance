@@ -715,8 +715,9 @@ public class GenericUIGenerator {
 
     private int handleCheckBox(int columns, String widgetName, StringBuilder table, int columnCount, OMElement inner,
                                OMElement arg, String tooltip) {
-        String name = arg.getFirstChildWithName(new QName(null, UIGeneratorConstants.ARGUMENT_NAME)).getText();
-        String label = arg.getAttributeValue(new QName(UIGeneratorConstants.ARGUMENT_LABEL));
+        OMElement firstChildWithName = arg.getFirstChildWithName(new QName(null, UIGeneratorConstants.ARGUMENT_NAME));
+        String name = firstChildWithName.getText();
+        String label = firstChildWithName.getAttributeValue(new QName(UIGeneratorConstants.ARGUMENT_LABEL));
 
         if (label == null) {
             label = name;
