@@ -375,6 +375,9 @@ public class Asset {
             GenericArtifact artifact = manager.getGenericArtifact(id);
             if (artifact != null) {
                 //TODO - change to Gov level
+                if(stateChange.getParameters().size() > 0) {
+                    getUserRegistry().invokeAspect(artifact.getPath(), stateChange.getLifecycle(), "itemClick", stateChange.getParameters());
+                }
                 getUserRegistry().invokeAspect(artifact.getPath(), stateChange.getLifecycle(),
                                                stateChange.getAction(), stateChange.getParameters());
                 return getGovernanceAssetStates(artifact, null);
