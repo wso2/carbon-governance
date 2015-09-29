@@ -287,7 +287,7 @@ public class GenericUIGenerator {
                                 value, isReadOnly, tooltip, false, false);
                         table.append(dateField.generate());
                     } else if (UIGeneratorConstants.CHECKBOX_FIELD.equals(elementType)) {
-                        UIComponent checkBox  = new CheckBox(name, elementId, widgetName, value, tooltip, false, false);
+                        UIComponent checkBox  = new CheckBox(label,name, elementId, widgetName, value, tooltip, false, false);
                         table.append(checkBox.generate());
 
                     } else if (UIGeneratorConstants.OPTION_FIELD.equals(elementType)) {
@@ -715,7 +715,13 @@ public class GenericUIGenerator {
 
     private int handleCheckBox(int columns, String widgetName, StringBuilder table, int columnCount, OMElement inner,
                                OMElement arg, String tooltip) {
-        String name = arg.getFirstChildWithName(new QName(null, UIGeneratorConstants.ARGUMENT_NAME)).getText();
+        OMElement firstChildWithName = arg.getFirstChildWithName(new QName(null, UIGeneratorConstants.ARGUMENT_NAME));
+        String name = firstChildWithName.getText();
+        String label = firstChildWithName.getAttributeValue(new QName(UIGeneratorConstants.ARGUMENT_LABEL));
+
+        if (label == null) {
+            label = name;
+        }
         String optionValue = null;
         if (inner != null) {
             //if the element contains value is not null get the value
@@ -725,7 +731,7 @@ public class GenericUIGenerator {
             if (columnCount == 0) {
                 table.append("<tr>");
             }
-            UIComponent checkBox  = new CheckBox(name, null, widgetName, optionValue, tooltip, true, false);
+            UIComponent checkBox  = new CheckBox(label,name, null, widgetName, optionValue, tooltip, true, false);
             table.append(checkBox.generate());
             columnCount++;
             if (columnCount == columns) {
@@ -734,7 +740,7 @@ public class GenericUIGenerator {
             }
 
         } else {
-            UIComponent checkBox  = new CheckBox(name, null, widgetName, optionValue, tooltip, true, false);
+            UIComponent checkBox  = new CheckBox(label,name, null, widgetName, optionValue, tooltip, true, false);
             table.append(checkBox.generate());
         }
         return columnCount;
@@ -1521,7 +1527,7 @@ public class GenericUIGenerator {
                         		
                             } else if (UIGeneratorConstants.CHECKBOX_FIELD.equals(elementType)) {
                             	
-                            	UIComponent checkBox  = new CheckBox(name, null, widgetName, null,tooltip,false,true);    	                        
+                            	UIComponent checkBox  = new CheckBox(name, name, null, widgetName, null,tooltip,false,true);
     	                        builder.append("theTd"+a+".innerHTML = '" + checkBox.generate() + "';");
     	                        
                             } else if (UIGeneratorConstants.OPTION_FIELD.equals(elementType)) {                          	

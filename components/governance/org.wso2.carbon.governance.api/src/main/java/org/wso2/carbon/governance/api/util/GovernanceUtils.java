@@ -1423,10 +1423,11 @@ public class GovernanceUtils {
                 if (artifactAttributes != null) {
                     for (String artifactAttribute : artifactAttributes) {
                         String[] parts = artifactAttribute.split(":");
-                        output.addAll(fixExpressionForMultiplePaths(artifact,
-                                expression.replace("@{" + key + ":key}", parts[0]).replace(
-                                        "@{" + key + ":value}", parts[1])
-                        ));
+                        if (parts.length > 1) {
+                            output.addAll(fixExpressionForMultiplePaths(artifact,
+                                    expression.replace("@{" + key + ":key}", parts[0])
+                                            .replace("@{" + key + ":value}", parts[1])));
+                        }
                     }
                 }
                 break;

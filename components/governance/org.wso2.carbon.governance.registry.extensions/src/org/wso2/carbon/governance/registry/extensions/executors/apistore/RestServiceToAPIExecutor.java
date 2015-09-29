@@ -127,7 +127,7 @@ public class RestServiceToAPIExecutor implements Execution {
             String serviceName = CommonUtil.getServiceName(xmlContent);
             GenericArtifactManager manager = new GenericArtifactManager(
                     RegistryCoreServiceComponent.getRegistryService().getGovernanceUserRegistry(user, CarbonContext
-                            .getThreadLocalCarbonContext().getTenantId()), "restservcie");
+                            .getThreadLocalCarbonContext().getTenantId()), "restservice");
 
             GenericArtifact api = manager.getGenericArtifact(context.getResource().getUUID());
 
