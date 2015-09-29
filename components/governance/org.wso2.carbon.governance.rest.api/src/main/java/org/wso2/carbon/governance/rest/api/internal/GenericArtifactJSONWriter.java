@@ -19,6 +19,11 @@
 package org.wso2.carbon.governance.rest.api.internal;
 
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
@@ -44,6 +49,8 @@ public class GenericArtifactJSONWriter {
     public static final String PREV = "prev";
     public static final String NEXT = "next";
     public static final String BELONG_TO = "belong-to";
+
+    private static final Log log = LogFactory.getLog(GenericArtifactJSONWriter.class);
 
     public void writeTo(TypedList<GovernanceArtifact> typedList, OutputStream entityStream, String baseURI)
             throws IOException, GovernanceException {
@@ -129,12 +136,36 @@ public class GenericArtifactJSONWriter {
         String belongToLink = Util.generateBelongToLink(artifact, baseURI);
         for (String key : artifact.getAttributeKeys()) {
             //TODO value can be something else not a String value
-            String value = artifact.getAttribute(key);
             if (key.indexOf(OVERVIEW) > -1) {
                 key = key.replace(OVERVIEW, "");
             }
+            // Get all attributes.
+            String[] value = artifact.getAttributes(key);
             if (!NAME.equals(key) && value != null) {
-                writer.name(key).value(value);
+                // If the attributes are more than one.
+                if (value.length > 1) {
+                    JSONArray jsonArray = new JSONArray();
+                    for (int i = 0; i < value.length; i++) {
+                        JSONObject jsonObject = new JSONObject();
+                        String key2 = Integer.toString(i);
+                        try {
+                            if(value[i] == null){
+                                // Setting the key and empty string map in JSON for empty values.
+                                value[i] = "";
+                            }
+                            jsonObject.put(key2, value[i]);
+                            jsonArray.put(jsonObject);
+                        } catch (JSONException e) {
+                            log.error("Error while adding attribute value " + key2 + " to Json object.");
+                        }
+                    }
+                    writer.name(key).value(jsonArray.toString());
+                // If only one attribute is received.
+                } else if (value.length == 1) {
+                    writer.name(key).value(value[0]);
+                } else {
+                    writer.name(key).nullValue();
+                }
             }
         }
         writer.name(LINK).value(Util.generateLink(shortName, artifact.getId(), baseURI));
