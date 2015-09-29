@@ -69,11 +69,6 @@
             <artifactId>org.wso2.carbon.registry.core</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.json.wso2</groupId>
-            <artifactId>json</artifactId>
-            <version>2.0.0.wso2v1</version>
-        </dependency>
 
         <!-- CXF Dependencies -->
         <dependency>
