@@ -268,8 +268,13 @@ public class GovernanceArtifactManager {
                     }
                     for (String targetPath :
                             GovernanceUtils.getPathsFromPathExpression(target, artifact)) {
-                        associationInteger.getAssociations().add(
-                                new Association(path, targetPath, type));
+                        if (registry.resourceExists(targetPath)) {
+                            associationInteger.getAssociations().add(new Association(path, targetPath, type));
+                        } else {
+                            if(log.isDebugEnabled()){
+                                log.debug("Can not add association. Resource does not exist at"+ targetPath);
+                            }
+                        }
                     }
                 } else if (target == null) {
                     if (associationInteger.getInteger() > 0) {
@@ -277,8 +282,13 @@ public class GovernanceArtifactManager {
                     }
                     for (String sourcePath :
                             GovernanceUtils.getPathsFromPathExpression(source, artifact)) {
-                        associationInteger.getAssociations().add(
-                                new Association(sourcePath, path, type));
+                        if(registry.resourceExists(sourcePath)) {
+                            associationInteger.getAssociations().add(new Association(sourcePath, path, type));
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Can not add association. Resource does not exist at" + sourcePath);
+                            }
+                        }
                     }
                 }
             } else {
@@ -287,15 +297,25 @@ public class GovernanceArtifactManager {
                     associationInteger.setInteger(1);
                     for (String targetPath :
                             GovernanceUtils.getPathsFromPathExpression(target, artifact)) {
-                        associationInteger.getAssociations().add(
-                                new Association(path, targetPath, type));
+                        if(registry.resourceExists(targetPath)) {
+                            associationInteger.getAssociations().add(new Association(path, targetPath, type));
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Can not add association. Resource does not exist at" + targetPath);
+                            }
+                        }
                     }
                 } else if (target == null) {
                     associationInteger.setInteger(-1);
                     for (String sourcePath :
                             GovernanceUtils.getPathsFromPathExpression(source, artifact)) {
-                        associationInteger.getAssociations().add(
-                                new Association(sourcePath, path, type));
+                        if(registry.resourceExists(sourcePath)) {
+                            associationInteger.getAssociations().add(new Association(sourcePath, path, type));
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Can not add association. Resource does not exist at" + sourcePath);
+                            }
+                        }
                     }
                 }
                 typeMap.put(type, associationInteger);
