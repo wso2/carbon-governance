@@ -2298,4 +2298,72 @@ public class GovernanceUtils {
         }
         return null;
     }
+
+    /**
+     * Validates a given artifact to ensure all the mandatory fields are filled
+     * If a mandatory field is left empty this check method will throw an exception
+     * indicating field name to be filled.
+     *
+     * @param registry              the instance of the registry.
+     * @param elementString         the short name of the artifact type.
+     * @param artifact              artifact to be checked for mandatory fields.
+     * @throws GovernanceException
+     */
+    public static void CheckMandatoryFields(Registry registry, String elementString, GovernanceArtifact artifact)
+            throws GovernanceException {
+        if (artifact instanceof WsdlImpl || artifact instanceof SchemaImpl || artifact instanceof PolicyImpl) {
+            return;
+        }
+
+        GovernanceArtifactConfiguration configuration = null;
+        try {
+            configuration = GovernanceUtils.findGovernanceArtifactConfiguration(elementString, registry);
+        } catch (RegistryException e) {
+            throw new GovernanceException("Retrieving RXT configuration for type :" + elementString + "failed.", e);
+        }
+
+        if (configuration == null) {
+            throw new GovernanceException("Could not find RXT configuration for type :" + elementString);
+        }
+
+        List<Map> mandatoryAttributes = configuration.getMandatoryAttributes();
+
+        if (mandatoryAttributes == null) {
+            return;
+        }
+        Map<String, Object> map;
+        for (int i = 0; i < mandatoryAttributes.size(); ++i) {
+            map = mandatoryAttributes.get(i);
+            String prop = (String) map.get("properties");
+            List<String> keys = (List<String>) map.get("keys");
+
+            if (prop != null && "unbounded".equals(prop)) {
+                //assume there are only 1 key
+                String[] values = artifact.getAttributes((String) keys.get(0));
+                if (values != null) {
+                    for (int j = 0; j < values.length; ++j) {
+                        if (values[j] == null || "".equals(values[j])) {
+                            //return an exception to stop adding artifact
+                            throw new GovernanceException((String) map.get("name") + " is a required field, " +
+                                                          "Please provide a value for this parameter.");
+                        }
+                    }
+                }
+            } else {
+                String value = "";
+                for (int j = 0; j < keys.size(); ++j) {
+                    String v = artifact.getAttribute(keys.get(j));
+                    if (j != 0) {
+                        value += ":";
+                    }
+                    value += (v == null ? "" : v);
+                }
+                if (value == null || "".equals(value)) {
+                    //return an exception to stop adding artifact
+                    throw new GovernanceException((String) map.get("name") + " is a required field, " +
+                                                  "Please provide a value for this parameter.");
+                }
+            }
+        }
+    }
 }
