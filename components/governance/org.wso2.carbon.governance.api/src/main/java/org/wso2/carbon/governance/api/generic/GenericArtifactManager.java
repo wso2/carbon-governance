@@ -30,6 +30,7 @@ import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifactImpl;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -271,6 +272,10 @@ public class GenericArtifactManager {
     public GenericArtifact[] findGenericArtifacts(Map<String, List<String>> criteria)
             throws GovernanceException {
         return getGenericArtifacts(manager.findGovernanceArtifacts(criteria));
+    }
+
+    public TermData[] getTermData(Map<String, List<String>> criteria) throws GovernanceException {
+        return manager.getTermData(criteria);
     }
 
     /**

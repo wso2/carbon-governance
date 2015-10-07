@@ -29,14 +29,15 @@ import org.wso2.carbon.core.common.AuthenticationException;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.registry.indexing.stub.generated.ArrayOfString;
 import org.wso2.carbon.registry.indexing.stub.generated.ContentSearchAdminServiceStub;
 import org.wso2.carbon.registry.indexing.stub.generated.xsd.SearchResultsBean;
-import org.wso2.carbon.utils.CarbonUtils;
 
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -201,5 +202,87 @@ public class WSRegistrySearchClient {
             }
         });
 
+         GovernanceUtils.setTermsSearchService(new TermsSearchService() {
+
+
+             @Override
+             public TermData[] search(UserRegistry userRegistry, Map<String, String> stringStringMap) throws RegistryException {
+                 throw new UnsupportedOperationException();
+             }
+
+             @Override
+             public TermData[] search(int i, Map<String, String> stringStringMap) throws RegistryException {
+                 throw new UnsupportedOperationException();
+             }
+
+             @Override
+             public TermData[] search(Map<String, String> stringStringMap) throws RegistryException {
+
+                 ContentSearchAdminServiceStub stub = null;
+                 List<TermData> termDataList = new ArrayList<>();
+                 List<ArrayOfString> arrayOfStringList = new ArrayList<>();
+                 try {
+                     for (Map.Entry<String, String> map : stringStringMap.entrySet()) {
+
+                         ArrayOfString arrayOfString = new ArrayOfString();
+                         arrayOfString.setArray(new String[]{map.getKey(), map.getValue()});
+                         arrayOfStringList.add(arrayOfString);
+                     }
+
+                     org.wso2.carbon.registry.indexing.stub.generated.xsd.TermData[] termDatas;
+
+                     epr = serverURL + "ContentSearchAdminService";
+                     try {
+                         stub = new ContentSearchAdminServiceStub(configContext, epr);
+                         ServiceClient client = stub._getServiceClient();
+                         Options options = client.getOptions();
+                         options.setManageSession(true);
+                         options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
+                         stub._getServiceClient().getOptions().setProperty(Constants.Configuration.ENABLE_MTOM,
+                                 Constants.VALUE_TRUE);
+                         stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(1000000);
+
+                         if (PaginationContext.getInstance() != null) {
+                             PaginationUtils.copyPaginationContext(stub._getServiceClient());
+                         }
+
+                     } catch (Exception axisFault) {
+                         String msg = "Failed to initiate WSRegistrySearchClient. " + axisFault.getMessage();
+                         log.error(msg, axisFault);
+                         throw new RegistryException(msg, axisFault);
+                     }
+
+                     SearchResultsBean searchResultsBean =
+                             stub.getTermSearchResults(arrayOfStringList.toArray(
+                                     new ArrayOfString[arrayOfStringList.size()]));
+                     termDatas = searchResultsBean.getTermDataList();
+
+                     if (termDatas != null && termDatas.length > 0) {
+                         for (org.wso2.carbon.registry.indexing.stub.generated.xsd.TermData data : termDatas) {
+                             TermData termData = new TermData(data.getTerm(),data.getFrequency());
+                             termDataList.add(termData);
+                         }
+                     } else {
+
+                         return new TermData[0];
+                     }
+
+                 } catch (RemoteException e) {
+                     String msg = "Failed to get results";
+                     log.error("Failed to get results ", e);
+                     throw new RegistryException(msg, e);
+
+                 } finally {
+                     if (stub != null) {
+                         try {
+                             stub._getServiceClient().cleanupTransport();
+                         } catch (AxisFault axisFault) {
+                             log.warn("failed to cleanup transport");
+                         }
+                     }
+                 }
+                 return termDataList.toArray(new TermData[termDataList.size()]);
+             }
+         });
      }
 }

@@ -30,6 +30,7 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
@@ -691,6 +692,17 @@ public class GovernanceArtifactManager {
             return artifacts.toArray(new GovernanceArtifact[artifacts.size()]);
         } else {
             return new GovernanceArtifact[0];
+        }
+    }
+
+    public TermData[] getTermData(Map<String, List<String>> criteria) throws GovernanceException {
+        List<TermData> termsList;
+        termsList = GovernanceUtils.getTermDataList(criteria != null ? criteria :
+                Collections.<String, List<String>>emptyMap(), mediaType);
+        if (termsList != null) {
+            return termsList.toArray(new TermData[termsList.size()]);
+        } else {
+            return new TermData[0];
         }
     }
 

@@ -43,6 +43,7 @@ import org.wso2.carbon.governance.api.wsdls.dataobjects.Wsdl;
 import org.wso2.carbon.governance.api.wsdls.dataobjects.WsdlImpl;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -56,6 +57,7 @@ import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
+import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -94,6 +96,8 @@ public class GovernanceUtils {
     private final static RXTConfigCacheEntryRemovedListener<String, Boolean> entryRemovedListener = new RXTConfigCacheEntryRemovedListener<String, Boolean>();
     private final static RXTConfigCacheEntryUpdatedListener<String, Boolean> entryUpdatedListener = new RXTConfigCacheEntryUpdatedListener<String, Boolean>();
     private static boolean rxtCacheInitiated = false;
+
+    private static TermsSearchService termsSearchService;
     /**
      * Setting the registry service.
      *
@@ -1671,6 +1675,14 @@ public class GovernanceUtils {
         GovernanceUtils.attributeSearchService = attributeSearchService;
     }
 
+    public static TermsSearchService getTermsSearchService() {
+        return termsSearchService;
+    }
+
+    public static void setTermsSearchService(TermsSearchService termsSearchService) {
+        GovernanceUtils.termsSearchService = termsSearchService;
+    }
+
     /**
      * Method to make an aspect to default.
      * @param path path of the resource
@@ -1892,6 +1904,38 @@ public class GovernanceUtils {
             throw new GovernanceException("Unable to search by attribute", e);
         }
         return artifacts;
+    }
+
+    public static List<TermData> getTermDataList(Map<String, List<String>> criteria, String mediaType) throws GovernanceException {
+        if (getTermsSearchService() == null) {
+            throw new GovernanceException("Term Search Service not Found");
+        }
+        List<TermData> termDataList = new ArrayList<>();
+        Map<String, String> fields = new HashMap<String, String>();
+        if (mediaType != null) {
+            fields.put("mediaType", mediaType);
+        }
+        for (Map.Entry<String, List<String>> e : criteria.entrySet()) {
+            StringBuilder builder = new StringBuilder();
+            for (String referenceValue : e.getValue()) {
+                if (referenceValue != null && !"".equals(referenceValue)) {
+                    String referenceValueModified = referenceValue;
+                    if(referenceValueModified.contains(" ")) {
+                        referenceValueModified = referenceValueModified.replace(" ", "\\ ");
+                    }
+                    builder.append(referenceValueModified.toLowerCase()).append(",");
+                }
+            }
+            if (builder.length() > 0) {
+                fields.put(e.getKey(), builder.substring(0, builder.length() - 1));
+            }
+        }
+        try {
+            TermData[] termData = getTermsSearchService().search(fields);
+            return Arrays.asList(termData);
+        } catch (RegistryException e) {
+            throw new GovernanceException("Unable to get terms of the fields ", e);
+        }
     }
 
      /**
