@@ -1822,6 +1822,10 @@ public class GovernanceUtils {
                         if(value.contains(" ")) {
                             value = value.replace(" ", "\\ ");
                         }
+                        String[] tableParts = subParts[0].split(":");
+                        if ("overview".equals(tableParts[0])) {
+                            possibleProperties.put(tableParts[1], value);
+                        }
                         fields.put(subParts[0].replace(":", "_"), value);
                     } else {
                         String value = subParts[1];
