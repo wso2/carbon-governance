@@ -695,10 +695,18 @@ public class GovernanceArtifactManager {
         }
     }
 
-    public TermData[] getTermData(Map<String, List<String>> criteria) throws GovernanceException {
+    /**
+     * Find all possible terms and its count for the given facet field and query criteria
+     * @param criteria the filter criteria to be matched
+     * @param facetField field used for faceting
+     * @param authRequired authorization required flag
+     * @return term results
+     * @throws GovernanceException
+     */
+    public TermData[] getTermData(Map<String, List<String>> criteria, String facetField, boolean authRequired) throws GovernanceException {
         List<TermData> termsList;
-        termsList = GovernanceUtils.getTermDataList(criteria != null ? criteria :
-                Collections.<String, List<String>>emptyMap(), mediaType);
+        termsList = GovernanceUtils.getTermDataList((criteria != null) ? criteria :
+                Collections.<String, List<String>>emptyMap(), facetField, mediaType, authRequired);
         if (termsList != null) {
             return termsList.toArray(new TermData[termsList.size()]);
         } else {

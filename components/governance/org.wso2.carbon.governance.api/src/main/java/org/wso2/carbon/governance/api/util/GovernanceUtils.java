@@ -57,6 +57,7 @@ import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
+import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -1910,21 +1911,29 @@ public class GovernanceUtils {
         return artifacts;
     }
 
-    public static List<TermData> getTermDataList(Map<String, List<String>> criteria, String mediaType) throws GovernanceException {
+    /**
+     * Find all possible terms and its count for the given facet field and query criteria
+     * @param criteria the filter criteria to be matched
+     * @param facetField field used for faceting : required
+     * @param mediaType artifact type need to filter : optional
+     * @param authRequired authorization required flag
+     * @return term results
+     * @throws GovernanceException
+     */
+    public static List<TermData> getTermDataList(Map<String, List<String>> criteria, String facetField, String mediaType, boolean authRequired) throws GovernanceException {
         if (getTermsSearchService() == null) {
             throw new GovernanceException("Term Search Service not Found");
         }
-        List<TermData> termDataList = new ArrayList<>();
-        Map<String, String> fields = new HashMap<String, String>();
+        Map<String, String> fields = new HashMap<>();
         if (mediaType != null) {
-            fields.put("mediaType", mediaType);
+            fields.put(IndexingConstants.FIELD_MEDIA_TYPE, mediaType);
         }
         for (Map.Entry<String, List<String>> e : criteria.entrySet()) {
             StringBuilder builder = new StringBuilder();
             for (String referenceValue : e.getValue()) {
                 if (referenceValue != null && !"".equals(referenceValue)) {
                     String referenceValueModified = referenceValue;
-                    if(referenceValueModified.contains(" ")) {
+                    if (referenceValueModified.contains(" ")) {
                         referenceValueModified = referenceValueModified.replace(" ", "\\ ");
                     }
                     builder.append(referenceValueModified.toLowerCase()).append(",");
@@ -1934,11 +1943,21 @@ public class GovernanceUtils {
                 fields.put(e.getKey(), builder.substring(0, builder.length() - 1));
             }
         }
+        //set whether authorization is required for the facet search.
+        fields.put(IndexingConstants.AUTH_REQUIRED, String.valueOf(authRequired));
+
+        //setting the facet Field which needs grouping. Facet Field is required for searching.
+        if (facetField != null) {
+            fields.put(IndexingConstants.FACET_FIELD_NAME, facetField);
+        } else {
+            throw new GovernanceException("Facet field is required. field cannot be null");
+        }
+
         try {
             TermData[] termData = getTermsSearchService().search(fields);
             return Arrays.asList(termData);
         } catch (RegistryException e) {
-            throw new GovernanceException("Unable to get terms of the fields ", e);
+            throw new GovernanceException("Unable to get terms for the given field", e);
         }
     }
 

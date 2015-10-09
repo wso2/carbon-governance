@@ -274,8 +274,16 @@ public class GenericArtifactManager {
         return getGenericArtifacts(manager.findGovernanceArtifacts(criteria));
     }
 
-    public TermData[] getTermData(Map<String, List<String>> criteria) throws GovernanceException {
-        return manager.getTermData(criteria);
+    /**
+     * Find all possible terms and its count for the given facet field and query criteria
+     * @param criteria the filter criteria to be matched
+     * @param facetField field used for faceting
+     * @param authRequired authorization required flag
+     * @return term results
+     * @throws GovernanceException
+     */
+    public TermData[] getTermData(Map<String, List<String>> criteria, String facetField, boolean authRequired) throws GovernanceException {
+        return manager.getTermData(criteria, facetField, authRequired);
     }
 
     /**
