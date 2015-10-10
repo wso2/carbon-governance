@@ -218,7 +218,7 @@ public class WSRegistrySearchClient {
              @Override
              public TermData[] search(Map<String, String> stringStringMap) throws RegistryException {
 
-                 ContentSearchAdminServiceStub stub = null;
+                 ContentSearchAdminServiceStub contentSearchAdminServiceStub = null;
                  List<TermData> termDataList = new ArrayList<>();
                  List<ArrayOfString> arrayOfStringList = new ArrayList<>();
                  try {
@@ -233,17 +233,17 @@ public class WSRegistrySearchClient {
 
                      epr = serverURL + "ContentSearchAdminService";
                      try {
-                         stub = new ContentSearchAdminServiceStub(configContext, epr);
-                         ServiceClient client = stub._getServiceClient();
+                         contentSearchAdminServiceStub = new ContentSearchAdminServiceStub(configContext, epr);
+                         ServiceClient client = contentSearchAdminServiceStub._getServiceClient();
                          Options options = client.getOptions();
                          options.setManageSession(true);
                          options.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
-                         stub._getServiceClient().getOptions().setProperty(Constants.Configuration.ENABLE_MTOM,
+                         contentSearchAdminServiceStub._getServiceClient().getOptions().setProperty(Constants.Configuration.ENABLE_MTOM,
                                  Constants.VALUE_TRUE);
-                         stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(1000000);
+                         contentSearchAdminServiceStub._getServiceClient().getOptions().setTimeOutInMilliSeconds(1000000);
 
                          if (PaginationContext.getInstance() != null) {
-                             PaginationUtils.copyPaginationContext(stub._getServiceClient());
+                             PaginationUtils.copyPaginationContext(contentSearchAdminServiceStub._getServiceClient());
                          }
 
                      } catch (Exception axisFault) {
@@ -253,7 +253,7 @@ public class WSRegistrySearchClient {
                      }
 
                      SearchResultsBean searchResultsBean =
-                             stub.getTermSearchResults(arrayOfStringList.toArray(
+                             contentSearchAdminServiceStub.getTermSearchResults(arrayOfStringList.toArray(
                                      new ArrayOfString[arrayOfStringList.size()]));
                      termDatas = searchResultsBean.getTermDataList();
 
@@ -268,16 +268,14 @@ public class WSRegistrySearchClient {
                      }
 
                  } catch (RemoteException e) {
-                     String msg = "Failed to get results";
-                     log.error("Failed to get results ", e);
-                     throw new RegistryException(msg, e);
+                     throw new RegistryException("Failed to get results", e);
 
                  } finally {
-                     if (stub != null) {
+                     if (contentSearchAdminServiceStub != null) {
                          try {
-                             stub._getServiceClient().cleanupTransport();
+                             contentSearchAdminServiceStub._getServiceClient().cleanupTransport();
                          } catch (AxisFault axisFault) {
-                             log.warn("failed to cleanup transport");
+                             log.warn("failed to cleanup transport", axisFault);
                          }
                      }
                  }

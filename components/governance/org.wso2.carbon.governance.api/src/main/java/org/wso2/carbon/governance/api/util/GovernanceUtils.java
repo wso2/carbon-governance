@@ -1932,11 +1932,8 @@ public class GovernanceUtils {
             StringBuilder builder = new StringBuilder();
             for (String referenceValue : e.getValue()) {
                 if (referenceValue != null && !"".equals(referenceValue)) {
-                    String referenceValueModified = referenceValue;
-                    if (referenceValueModified.contains(" ")) {
-                        referenceValueModified = referenceValueModified.replace(" ", "\\ ");
-                    }
-                    builder.append(referenceValueModified.toLowerCase()).append(",");
+                    String referenceValueModified = referenceValue.replace(" ", "\\ ");
+                    builder.append(referenceValueModified.toLowerCase()).append(',');
                 }
             }
             if (builder.length() > 0) {
