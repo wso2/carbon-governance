@@ -43,6 +43,7 @@ import org.wso2.carbon.governance.api.wsdls.dataobjects.Wsdl;
 import org.wso2.carbon.governance.api.wsdls.dataobjects.WsdlImpl;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -56,6 +57,8 @@ import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
+import org.wso2.carbon.registry.indexing.IndexingConstants;
+import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -94,6 +97,8 @@ public class GovernanceUtils {
     private final static RXTConfigCacheEntryRemovedListener<String, Boolean> entryRemovedListener = new RXTConfigCacheEntryRemovedListener<String, Boolean>();
     private final static RXTConfigCacheEntryUpdatedListener<String, Boolean> entryUpdatedListener = new RXTConfigCacheEntryUpdatedListener<String, Boolean>();
     private static boolean rxtCacheInitiated = false;
+
+    private static TermsSearchService termsSearchService;
     /**
      * Setting the registry service.
      *
@@ -1671,6 +1676,14 @@ public class GovernanceUtils {
         GovernanceUtils.attributeSearchService = attributeSearchService;
     }
 
+    public static TermsSearchService getTermsSearchService() {
+        return termsSearchService;
+    }
+
+    public static void setTermsSearchService(TermsSearchService termsSearchService) {
+        GovernanceUtils.termsSearchService = termsSearchService;
+    }
+
     /**
      * Method to make an aspect to default.
      * @param path path of the resource
@@ -1810,6 +1823,10 @@ public class GovernanceUtils {
                         if(value.contains(" ")) {
                             value = value.replace(" ", "\\ ");
                         }
+                        String[] tableParts = subParts[0].split(":");
+                        if ("overview".equals(tableParts[0])) {
+                            possibleProperties.put(tableParts[1], value);
+                        }
                         fields.put(subParts[0].replace(":", "_"), value);
                     } else {
                         String value = subParts[1];
@@ -1892,6 +1909,53 @@ public class GovernanceUtils {
             throw new GovernanceException("Unable to search by attribute", e);
         }
         return artifacts;
+    }
+
+    /**
+     * Find all possible terms and its count for the given facet field and query criteria
+     * @param criteria the filter criteria to be matched
+     * @param facetField field used for faceting : required
+     * @param mediaType artifact type need to filter : optional
+     * @param authRequired authorization required flag
+     * @return term results
+     * @throws GovernanceException
+     */
+    public static List<TermData> getTermDataList(Map<String, List<String>> criteria, String facetField, String mediaType, boolean authRequired) throws GovernanceException {
+        if (getTermsSearchService() == null) {
+            throw new GovernanceException("Term Search Service not Found");
+        }
+        Map<String, String> fields = new HashMap<>();
+        if (mediaType != null) {
+            fields.put(IndexingConstants.FIELD_MEDIA_TYPE, mediaType);
+        }
+        for (Map.Entry<String, List<String>> e : criteria.entrySet()) {
+            StringBuilder builder = new StringBuilder();
+            for (String referenceValue : e.getValue()) {
+                if (referenceValue != null && !"".equals(referenceValue)) {
+                    String referenceValueModified = referenceValue.replace(" ", "\\ ");
+                    builder.append(referenceValueModified.toLowerCase()).append(',');
+                }
+            }
+            if (builder.length() > 0) {
+                fields.put(e.getKey(), builder.substring(0, builder.length() - 1));
+            }
+        }
+        //set whether authorization is required for the facet search.
+        fields.put(IndexingConstants.AUTH_REQUIRED, String.valueOf(authRequired));
+
+        //setting the facet Field which needs grouping. Facet Field is required for searching.
+        if (facetField != null) {
+            fields.put(IndexingConstants.FACET_FIELD_NAME, facetField);
+        } else {
+            throw new GovernanceException("Facet field is required. field cannot be null");
+        }
+
+        try {
+            TermData[] termData = getTermsSearchService().search(fields);
+            return Arrays.asList(termData);
+        } catch (RegistryException e) {
+            throw new GovernanceException("Unable to get terms for the given field", e);
+        }
     }
 
      /**
