@@ -51,6 +51,7 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.secure.AuthorizationFailedException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
@@ -940,7 +941,16 @@ public class GovernanceUtils {
         try {
             Resource artifactResource;
             if (registry.resourceExists(artifactPath)) {
-                artifactResource = registry.get(artifactPath);
+                try {
+                    artifactResource = registry.get(artifactPath);
+                } catch (AuthorizationFailedException e) {
+                    // if the the user does not have access to the specified path, we are returning null.
+                    if (log.isDebugEnabled()) {
+                        String msg = "User does not have access to path " + artifactPath + ".";
+                        log.debug(msg);
+                    }
+                    return null;
+                }
                 artifactLC = artifactResource.getProperty("registry.LC.name");
 
                 if (artifactLC != null) {
