@@ -22,18 +22,10 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.core.services.callback.LoginEvent;
-import org.wso2.carbon.core.services.callback.LoginListener;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
-import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.AbstractAxis2ConfigurationContextObserver;
-import org.wso2.carbon.utils.CarbonUtils;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class LifecycleLoader extends AbstractAxis2ConfigurationContextObserver {
     

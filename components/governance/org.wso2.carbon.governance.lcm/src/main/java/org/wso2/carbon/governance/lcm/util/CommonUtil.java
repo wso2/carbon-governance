@@ -16,11 +16,7 @@
 
 package org.wso2.carbon.governance.lcm.util;
 
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMAttribute;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.OMText;
+import org.apache.axiom.om.*;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.commons.io.FileUtils;
@@ -29,22 +25,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.governance.lcm.beans.LifecycleBean;
-import org.wso2.carbon.registry.common.AttributeSearchService;
-import org.wso2.carbon.registry.core.Aspect;
+import org.wso2.carbon.governance.lcm.internal.LifeCycleServiceHolder;
+import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.Collection;
-import org.wso2.carbon.registry.core.CollectionImpl;
-import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.RegistryConstants;
-import org.wso2.carbon.registry.core.Resource;
-import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.config.RegistryConfigurationProcessor;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.config.StaticConfiguration;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ServerConstants;
 import org.xml.sax.SAXException;
@@ -57,32 +46,13 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 public class CommonUtil {
 
     private static final Log log = LogFactory.getLog(CommonUtil.class);
     private static String contextRoot = null;
-
-    // Registry service used to do registry operations.
-    private static RegistryService registryService;
-
-    // Content search service used in content search operations.
-    private static ContentSearchService contentSearchService;
-
-    // Attribute search service used in attribute search operations.
-    private static AttributeSearchService attributeSearchService;
 
     // Lifecycle property search query.
     public static final String searchLCMPropertiesQuery = RegistryConstants.QUERIES_COLLECTION_PATH +
@@ -90,29 +60,21 @@ public class CommonUtil {
 
     private static Validator lifecycleSchemaValidator = null;
 
-    public static synchronized void setRegistryService(RegistryService service) {
-        if (registryService == null) {
-            registryService = service;
-        }
-    }
-
-    public static RegistryService getRegistryService() {
-        return registryService;
-    }
-
     public static UserRegistry getRootSystemRegistry() throws RegistryException {
-        if (registryService == null) {
+        if (LifeCycleServiceHolder.getInstance().getRegistryService() == null) {
             return null;
         } else {
-            return registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+            return LifeCycleServiceHolder.getInstance().getRegistryService().getRegistry(
+                    CarbonConstants.REGISTRY_SYSTEM_USERNAME);
         }
     }
 
     public static UserRegistry getRootSystemRegistry(int tenantId) throws RegistryException {
-        if (registryService == null) {
+        if (LifeCycleServiceHolder.getInstance().getRegistryService() == null) {
             return null;
         } else {
-            return registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME, tenantId);
+            return LifeCycleServiceHolder.getInstance().getRegistryService().getRegistry(
+                    CarbonConstants.REGISTRY_SYSTEM_USERNAME, tenantId);
         }
     }
 
@@ -502,7 +464,7 @@ public class CommonUtil {
                 }
             };
             File[] lifecycleConfigFiles = defaultLifecycleConfigDirectory.listFiles(filenameFilter);
-            if (lifecycleConfigFiles.length == 0) {
+            if (lifecycleConfigFiles != null && lifecycleConfigFiles.length == 0) {
                 return false;
             }
 
@@ -813,23 +775,5 @@ public class CommonUtil {
 				}
 			}
 		}    	
-    }
-
-    /**
-     * This method is used to set attribute indexing service.
-     *
-     * @param service   Attribute indexing service.
-     */
-    public static void setAttributeSearchService(AttributeSearchService service) {
-        attributeSearchService = service;
-    }
-
-    /**
-     * This method is used to get Attribute search service.
-     *
-     * @return  attribute search service.
-     */
-    public static AttributeSearchService getAttributeSearchService() {
-        return attributeSearchService;
     }
 }
