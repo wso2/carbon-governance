@@ -923,6 +923,9 @@ public class GenericUIGenerator {
 	                    } else {
 	                        String input = request.getParameter(widgetName.replaceAll(" ", "") + "_" +
 	                                name.replaceAll(" ", ""));
+                            if ("checkbox".equals(elementType) && input == null){
+                                input = "false";
+                            }
 	                        OMElement text = null;
 	
 	                        if (input != null && !("".equals(input))) {

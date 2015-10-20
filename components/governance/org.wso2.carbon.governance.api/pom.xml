@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance</artifactId>
-        <version>4.5.9-SNAPSHOT</version>
+        <version>4.5.10-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -220,7 +220,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
