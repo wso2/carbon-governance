@@ -816,9 +816,9 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             }
             registry.invokeAspect(getArtifactPath(), aspectName, action, parameters);
         } catch (RegistryException e) {
-            String msg = "Invoking lifecycle action \"" + action + "\" failed";
+            String msg = "Invoking lifecycle action \"" + action + "\" failed. " + e.getMessage();
             log.error(msg, e);
-            throw new GovernanceException(msg, e);
+            throw new GovernanceException(e.getMessage(), e);
         }
     }
 
