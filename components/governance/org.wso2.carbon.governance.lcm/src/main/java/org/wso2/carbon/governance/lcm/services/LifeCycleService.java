@@ -19,7 +19,7 @@
 package org.wso2.carbon.governance.lcm.services;
 
 import org.wso2.carbon.governance.lcm.beans.DurationBean;
-import org.wso2.carbon.governance.lcm.beans.LifeCycleStateBean;
+import org.wso2.carbon.governance.lcm.beans.LCStateBean;
 import org.wso2.carbon.governance.lcm.exception.LifeCycleException;
 
 import java.util.List;
@@ -42,8 +42,8 @@ public interface LifeCycleService {
     public DurationBean getLifecycleCurrentStateDuration(String artifactId, String lifecycleName)
             throws LifeCycleException;
 
-    public LifeCycleStateBean getLifeCycleStateBean(String artifactId, String artifactLC) throws LifeCycleException;
+    public LCStateBean getLifeCycleStateBean(String artifactId, String artifactLC) throws LifeCycleException;
 
-    public List<LifeCycleStateBean> getLifeCycleStateBeans(String artifactId) throws LifeCycleException;
+    public List<LCStateBean> getLifeCycleStateBeans(String artifactId) throws LifeCycleException;
 
 }

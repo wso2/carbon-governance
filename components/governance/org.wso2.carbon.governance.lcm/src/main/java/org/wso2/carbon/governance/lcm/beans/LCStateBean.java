@@ -19,7 +19,7 @@ package org.wso2.carbon.governance.lcm.beans;
 
 import java.util.List;
 
-public class LifeCycleStateBean {
+public class LCStateBean {
 
     private String lifeCycleName;
 
