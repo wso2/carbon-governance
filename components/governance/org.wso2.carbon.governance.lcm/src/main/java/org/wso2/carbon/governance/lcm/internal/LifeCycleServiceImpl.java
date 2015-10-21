@@ -87,7 +87,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     @Override
-    public LifeCycleStateBean getLifeCycleStateBean(String artifactId, String artifactLC)
+    public LCStateBean getLifeCycleStateBean(String artifactId, String artifactLC)
             throws LifeCycleException {
         try {
             UserRegistry registry = (UserRegistry) getGovernanceUserRegistry();
@@ -107,10 +107,10 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     @Override
-    public List<LifeCycleStateBean> getLifeCycleStateBeans(String artifactId)
+    public List<LCStateBean> getLifeCycleStateBeans(String artifactId)
             throws LifeCycleException {
         try {
-            List<LifeCycleStateBean> lifeCycleStateBeans = new ArrayList<>();
+            List<LCStateBean> lifeCycleStateBeans = new ArrayList<>();
             UserRegistry registry = (UserRegistry) getGovernanceUserRegistry();
             UserRealm userRealm = registry.getUserRealm();
             String[] rolesList = userRealm.getUserStoreManager().getRoleListOfUser(registry.getUserName());
@@ -120,7 +120,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 List<String> aspects = resource.getAspects();
                 if (aspects != null) {
                     for (String aspect : aspects) {
-                        LifeCycleStateBean lifeCycleStateBean =
+                        LCStateBean lifeCycleStateBean =
                                 getCheckListItems(resource, aspect, rolesList, registry);
                         lifeCycleStateBeans.add(lifeCycleStateBean);
                     }
@@ -143,13 +143,13 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         return PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
     }
 
-    private LifeCycleStateBean getCheckListItems(Resource artifactResource, String artifactLC, String[] roleNames,
+    private LCStateBean getCheckListItems(Resource artifactResource, String artifactLC, String[] roleNames,
                                                  UserRegistry registry)
             throws RegistryException {
 
         String artifactLCState = artifactResource.getProperty("registry.lifecycle." + artifactLC + ".state");
 
-        LifeCycleStateBean lifeCycleStateBean = new LifeCycleStateBean();
+        LCStateBean lifeCycleStateBean = new LCStateBean();
 
         lifeCycleStateBean.setLifeCycleName(artifactLC);
         lifeCycleStateBean.setLifeCycleState(artifactLCState);
