@@ -21,9 +21,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
-import org.wso2.carbon.governance.lcm.tasks.events.LifecycleNotificationEvent;
 import org.wso2.carbon.governance.lcm.tasks.LCNotificationScheduler;
-import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.*;
+import org.wso2.carbon.governance.lcm.tasks.events.LifecycleNotificationEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.CheckListItemCheckedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.CheckListItemUncheckedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleApprovalNeededEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleApprovalWithdrawnEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleApprovedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleCreatedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleDeletedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.LifeCycleStateChangedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.PublisherCheckListItemCheckedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.PublisherCheckListItemUncheckedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.PublisherLifeCycleStateChangedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.PublisherResourceUpdatedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.StoreLifeCycleStateChangedEvent;
+import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.StoreResourceUpdatedEvent;
 import org.wso2.carbon.governance.registry.eventing.internal.EventDataHolder;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.core.Collection;
@@ -36,8 +49,14 @@ import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.eventing.services.EventingServiceImpl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class GovernanceEventingHandler extends Handler {
     private static final Log log = LogFactory.getLog(GovernanceEventingHandler.class);
@@ -699,6 +718,11 @@ public class GovernanceEventingHandler extends Handler {
     private boolean sendNotifications(RequestContext requestContext, String relativePath) {
 
         boolean isMountPath = false;
+        List<String> mediatypes = EventingServiceImpl.listOfMediaTypes;
+        String resourceMediaType = null;
+        if (requestContext.getResource() != null) {
+            resourceMediaType = requestContext.getResource().getMediaType();
+        }
         List<Mount> mounts = requestContext.getRegistry().getRegistryContext().getMounts();
         for (Mount mount : mounts) {
             String mountPath = mount.getPath();
@@ -715,7 +739,11 @@ public class GovernanceEventingHandler extends Handler {
         } else {
             int requestDepth = getRequestDepth(requestContext);
             if (!(requestDepth == 1 || requestDepth == 3)) {
-                return false;
+                if (requestDepth == 2 && resourceMediaType != null && !mediatypes.contains(resourceMediaType)) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return true;
             }

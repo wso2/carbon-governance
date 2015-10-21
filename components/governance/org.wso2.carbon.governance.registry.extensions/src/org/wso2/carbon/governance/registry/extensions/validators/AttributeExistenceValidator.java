@@ -62,8 +62,11 @@ public class AttributeExistenceValidator implements CustomValidations {
         }
         resourcePath = resourcePath.substring(index);
         try {
-            UserRegistry registry = ((UserRegistry) context.getSystemRegistry())
-                    .getChrootedRegistry(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH);
+            UserRegistry registry = ((UserRegistry) context.getSystemRegistry());
+            if (!registry.resourceExists(resourcePath)) {
+                registry = ((UserRegistry) context.getSystemRegistry())
+                        .getChrootedRegistry(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH);
+            }
             GovernanceArtifact governanceArtifact =
                     GovernanceUtils.retrieveGovernanceArtifactByPath(registry, resourcePath);
             for (String attribute : attributes) {
