@@ -26,17 +26,15 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourcePath;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
-import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.getHistoryInfoElement;
 import static org.wso2.carbon.governance.registry.extensions.executors.utils.Utils.addNewId;
 import static org.wso2.carbon.governance.registry.extensions.executors.utils.Utils.populateParameterMap;
 
 public class CopyExecutor implements Execution {
-    private static final Log log = LogFactory.getLog(ServiceVersionExecutor.class);
+    private static final Log log = LogFactory.getLog(CopyExecutor.class);
     private static final String KEY = ExecutorConstants.RESOURCE_VERSION;
     protected Map parameterMap;
 

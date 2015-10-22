@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.governance.generic.ui.utils;
 
+import org.wso2.carbon.registry.core.Registry;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,5 +37,15 @@ public interface DropDownDataPopulator {
      * @return the list of strings.
      */
     public String[] getList(HttpServletRequest request, ServletConfig config);
+
+    /**
+     * Method to obtain the list of strings to be displayed in ascending order.
+     *
+     * @param uuid UUID of the resource
+     * @param path path of the resource
+     * @param registry  Registry instance.
+     * @return the list of strings.
+     */
+    public String[] getList(String uuid, String path, Registry registry);
 
 }
