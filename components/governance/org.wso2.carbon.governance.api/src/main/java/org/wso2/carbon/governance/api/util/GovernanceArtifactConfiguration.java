@@ -627,6 +627,68 @@ public class GovernanceArtifactConfiguration {
         return res;
     }
 
+    /**
+     * Method to get a list of maps containing mandatory fields for a given artifact
+     *
+     * @return A list of maps containing mandatory fields for a given artifact
+     */
+    public List<Map> getMandatoryAttributes() {
+        List<Map> res = new ArrayList<Map>();
+
+        Iterator it = contentDefinition.getChildrenWithName(new QName(WIDGET_ELEMENT));
+        while (it.hasNext()) {
+            OMElement widget = (OMElement) it.next();
+            String widgetName = widget.getAttributeValue(new QName(null, ARGUMENT_NAME));
+            Iterator arguments = widget.getChildrenWithLocalName(ARGUMENT_ELMENT);
+            OMElement arg = null;
+            while (arguments.hasNext()) {
+                arg = (OMElement) arguments.next();
+                if (ARGUMENT_ELMENT.equals(arg.getLocalName())) {
+                    //check the validation fields and get the id's of them
+                    String value = arg.getAttributeValue(new QName(null,
+                                                                   MANDETORY_ATTRIBUTE));
+
+                    if (value != null && "true".equals(value)) {
+                        String elementType = arg.getAttributeValue(new QName(null, TYPE_ATTRIBUTE));
+                        String name = arg.getFirstChildWithName(new QName(null, ARGUMENT_NAME)).getText();
+                        List<String> keys = new ArrayList<String>();
+
+                        if (OPTION_TEXT_FIELD.equals(elementType)) {
+                            if (MAXOCCUR_UNBOUNDED.equals(
+                                    arg.getAttributeValue(new QName(null, MAXOCCUR_ELEMENT)))) {
+                                Map<String, Object> map = new HashMap<String, Object>();
+
+                                keys.add(getDataElementName(widgetName + "_" + ENTRY_FIELD));
+                                map.put("keys", keys);
+                                map.put("name", name);
+                                map.put("properties", "unbounded");
+
+                                res.add(map);
+                            } else {
+                                Map<String, Object> map = new HashMap<String, Object>();
+
+                                keys.add(getDataElementName(widgetName + "_"  + name));
+                                keys.add(getDataElementName(widgetName + "_"  + TEXT_FIELD +
+                                                            name));
+                                map.put("keys", keys);
+                                map.put("name", name);
+                                res.add(map);
+                            }
+                        } else {
+                            Map<String, Object> map = new HashMap<String, Object>();
+
+                            keys.add(getDataElementName(widgetName + "_"  + name));
+                            map.put("keys", keys);
+                            map.put("name", name);
+                            res.add(map);
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
     protected void setUniqueAttributes() {
         if (pathExpression != null && !pathExpression.isEmpty()) {
             String[] pathSegments = pathExpression.split("/");

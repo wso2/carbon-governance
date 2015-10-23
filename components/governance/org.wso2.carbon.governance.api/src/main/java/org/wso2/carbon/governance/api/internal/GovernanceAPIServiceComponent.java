@@ -22,7 +22,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.service.RegistryService;
-
+import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 
 
 /**
@@ -35,6 +35,9 @@ import org.wso2.carbon.registry.core.service.RegistryService;
  * @scr.reference name="registry.search.component"
  * interface="org.wso2.carbon.registry.common.AttributeSearchService"
  * cardinality="1..1" policy="dynamic" bind="setAttributeSearchService" unbind="unsetAttributeSearchService"
+ * @scr.reference name="registry.term.component"
+ * interface="org.wso2.carbon.registry.indexing.service.TermsSearchService"
+ * cardinality="1..1" policy="dynamic" bind="setTermsSearchService" unbind="unsetTermsSearchService"
  */
 @SuppressWarnings({"JavaDoc", "unused"})
 public class GovernanceAPIServiceComponent {
@@ -98,6 +101,21 @@ public class GovernanceAPIServiceComponent {
             log.debug("Unsetting ContentBasedSearchService");
         }
         GovernanceUtils.setAttributeSearchService(null);
+
+    }
+
+    protected void setTermsSearchService(TermsSearchService searchService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting TermSearchService");
+        }
+        GovernanceUtils.setTermsSearchService(searchService);
+    }
+
+    protected void  unsetTermsSearchService(TermsSearchService searchService){
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting TermSearchService");
+        }
+        GovernanceUtils.setTermsSearchService(null);
 
     }
 }

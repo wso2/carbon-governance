@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.lcm.internal.LifeCycleServiceHolder;
 import org.wso2.carbon.governance.lcm.tasks.events.LifecycleNotificationEvent;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.governance.lcm.util.LifecycleStateDurationUtils;
@@ -39,13 +40,7 @@ import org.wso2.carbon.registry.indexing.IndexingConstants;
 import javax.xml.namespace.QName;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * This Util class holds methods to send checkpoint notifications and add schedulers.
@@ -259,7 +254,7 @@ public class LCNotificationScheduler {
     private ArrayList<LCNotification> getValidNotifications() throws RegistryException {
 
         ArrayList<LCNotification> notifications = new ArrayList<>();
-        AttributeSearchService attributeSearchService = CommonUtil.getAttributeSearchService();
+        AttributeSearchService attributeSearchService = LifeCycleServiceHolder.getInstance().getAttributeSearchService();
         Map<String, String> searchAttributes = new HashMap<>();
         searchAttributes.put(IndexingConstants.FIELD_PROPERTY_NAME, lcCheckPointPropertyName);
         searchAttributes.put(IndexingConstants.FIELD_RIGHT_PROPERTY_VAL, "%" + getCurrentDate()

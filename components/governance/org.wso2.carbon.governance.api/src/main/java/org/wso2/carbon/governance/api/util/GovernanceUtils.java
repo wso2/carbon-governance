@@ -43,6 +43,7 @@ import org.wso2.carbon.governance.api.wsdls.dataobjects.Wsdl;
 import org.wso2.carbon.governance.api.wsdls.dataobjects.WsdlImpl;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -50,12 +51,15 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.secure.AuthorizationFailedException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
+import org.wso2.carbon.registry.indexing.IndexingConstants;
+import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -94,6 +98,8 @@ public class GovernanceUtils {
     private final static RXTConfigCacheEntryRemovedListener<String, Boolean> entryRemovedListener = new RXTConfigCacheEntryRemovedListener<String, Boolean>();
     private final static RXTConfigCacheEntryUpdatedListener<String, Boolean> entryUpdatedListener = new RXTConfigCacheEntryUpdatedListener<String, Boolean>();
     private static boolean rxtCacheInitiated = false;
+
+    private static TermsSearchService termsSearchService;
     /**
      * Setting the registry service.
      *
@@ -935,7 +941,16 @@ public class GovernanceUtils {
         try {
             Resource artifactResource;
             if (registry.resourceExists(artifactPath)) {
-                artifactResource = registry.get(artifactPath);
+                try {
+                    artifactResource = registry.get(artifactPath);
+                } catch (AuthorizationFailedException e) {
+                    // if the the user does not have access to the specified path, we are returning null.
+                    if (log.isDebugEnabled()) {
+                        String msg = "User does not have access to path " + artifactPath + ".";
+                        log.debug(msg);
+                    }
+                    return null;
+                }
                 artifactLC = artifactResource.getProperty("registry.LC.name");
 
                 if (artifactLC != null) {
@@ -1671,6 +1686,14 @@ public class GovernanceUtils {
         GovernanceUtils.attributeSearchService = attributeSearchService;
     }
 
+    public static TermsSearchService getTermsSearchService() {
+        return termsSearchService;
+    }
+
+    public static void setTermsSearchService(TermsSearchService termsSearchService) {
+        GovernanceUtils.termsSearchService = termsSearchService;
+    }
+
     /**
      * Method to make an aspect to default.
      * @param path path of the resource
@@ -1810,6 +1833,10 @@ public class GovernanceUtils {
                         if(value.contains(" ")) {
                             value = value.replace(" ", "\\ ");
                         }
+                        String[] tableParts = subParts[0].split(":");
+                        if ("overview".equals(tableParts[0])) {
+                            possibleProperties.put(tableParts[1], value);
+                        }
                         fields.put(subParts[0].replace(":", "_"), value);
                     } else {
                         String value = subParts[1];
@@ -1892,6 +1919,53 @@ public class GovernanceUtils {
             throw new GovernanceException("Unable to search by attribute", e);
         }
         return artifacts;
+    }
+
+    /**
+     * Find all possible terms and its count for the given facet field and query criteria
+     * @param criteria the filter criteria to be matched
+     * @param facetField field used for faceting : required
+     * @param mediaType artifact type need to filter : optional
+     * @param authRequired authorization required flag
+     * @return term results
+     * @throws GovernanceException
+     */
+    public static List<TermData> getTermDataList(Map<String, List<String>> criteria, String facetField, String mediaType, boolean authRequired) throws GovernanceException {
+        if (getTermsSearchService() == null) {
+            throw new GovernanceException("Term Search Service not Found");
+        }
+        Map<String, String> fields = new HashMap<>();
+        if (mediaType != null) {
+            fields.put(IndexingConstants.FIELD_MEDIA_TYPE, mediaType);
+        }
+        for (Map.Entry<String, List<String>> e : criteria.entrySet()) {
+            StringBuilder builder = new StringBuilder();
+            for (String referenceValue : e.getValue()) {
+                if (referenceValue != null && !"".equals(referenceValue)) {
+                    String referenceValueModified = referenceValue.replace(" ", "\\ ");
+                    builder.append(referenceValueModified.toLowerCase()).append(',');
+                }
+            }
+            if (builder.length() > 0) {
+                fields.put(e.getKey(), builder.substring(0, builder.length() - 1));
+            }
+        }
+        //set whether authorization is required for the facet search.
+        fields.put(IndexingConstants.AUTH_REQUIRED, String.valueOf(authRequired));
+
+        //setting the facet Field which needs grouping. Facet Field is required for searching.
+        if (facetField != null) {
+            fields.put(IndexingConstants.FACET_FIELD_NAME, facetField);
+        } else {
+            throw new GovernanceException("Facet field is required. field cannot be null");
+        }
+
+        try {
+            TermData[] termData = getTermsSearchService().search(fields);
+            return Arrays.asList(termData);
+        } catch (RegistryException e) {
+            throw new GovernanceException("Unable to get terms for the given field", e);
+        }
     }
 
      /**
@@ -2297,5 +2371,73 @@ public class GovernanceUtils {
             throw new GovernanceException(e);
         }
         return null;
+    }
+
+    /**
+     * Validates a given artifact to ensure all the mandatory fields are filled
+     * If a mandatory field is left empty this check method will throw an exception
+     * indicating field name to be filled.
+     *
+     * @param registry              the instance of the registry.
+     * @param elementString         the short name of the artifact type.
+     * @param artifact              artifact to be checked for mandatory fields.
+     * @throws GovernanceException
+     */
+    public static void CheckMandatoryFields(Registry registry, String elementString, GovernanceArtifact artifact)
+            throws GovernanceException {
+        if (artifact instanceof WsdlImpl || artifact instanceof SchemaImpl || artifact instanceof PolicyImpl) {
+            return;
+        }
+
+        GovernanceArtifactConfiguration configuration = null;
+        try {
+            configuration = GovernanceUtils.findGovernanceArtifactConfiguration(elementString, registry);
+        } catch (RegistryException e) {
+            throw new GovernanceException("Retrieving RXT configuration for type :" + elementString + "failed.", e);
+        }
+
+        if (configuration == null) {
+            throw new GovernanceException("Could not find RXT configuration for type :" + elementString);
+        }
+
+        List<Map> mandatoryAttributes = configuration.getMandatoryAttributes();
+
+        if (mandatoryAttributes == null) {
+            return;
+        }
+        Map<String, Object> map;
+        for (int i = 0; i < mandatoryAttributes.size(); ++i) {
+            map = mandatoryAttributes.get(i);
+            String prop = (String) map.get("properties");
+            List<String> keys = (List<String>) map.get("keys");
+
+            if (prop != null && "unbounded".equals(prop)) {
+                //assume there are only 1 key
+                String[] values = artifact.getAttributes((String) keys.get(0));
+                if (values != null) {
+                    for (int j = 0; j < values.length; ++j) {
+                        if (values[j] == null || "".equals(values[j])) {
+                            //return an exception to stop adding artifact
+                            throw new GovernanceException((String) map.get("name") + " is a required field, " +
+                                                          "Please provide a value for this parameter.");
+                        }
+                    }
+                }
+            } else {
+                String value = "";
+                for (int j = 0; j < keys.size(); ++j) {
+                    String v = artifact.getAttribute(keys.get(j));
+                    if (j != 0) {
+                        value += ":";
+                    }
+                    value += (v == null ? "" : v);
+                }
+                if (value == null || "".equals(value)) {
+                    //return an exception to stop adding artifact
+                    throw new GovernanceException((String) map.get("name") + " is a required field, " +
+                                                  "Please provide a value for this parameter.");
+                }
+            }
+        }
     }
 }
