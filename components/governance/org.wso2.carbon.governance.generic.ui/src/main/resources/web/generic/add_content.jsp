@@ -21,6 +21,7 @@
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUtil" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
+<%@ page import="org.wso2.carbon.utils.NetworkUtils" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <%@ page import="org.wso2.carbon.registry.extensions.utils.CommonConstants" %>
@@ -31,6 +32,20 @@
 <jsp:include page="../resources/resources-i18n-ajaxprocessor.jsp"/>
 <jsp:include page="../resources/resource_exists_ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
+<style type="text/css">
+td.deprecate-warning {
+    position: absolute;
+    top: 135px;
+    left: 262px;
+    right: 19px;
+    background-color: #FEEFB3;
+    font-weight: 600;
+    font-size: 12px;
+    color: #000;
+    padding: 10px;
+    width: auto;
+}
+</style>
 <fmt:bundle basename="org.wso2.carbon.governance.generic.ui.i18n.Resources">
     <carbon:jsi18n
             resourceBundle="org.wso2.carbon.governance.generic.ui.i18n.JSResources"
@@ -361,9 +376,21 @@
         resourceBundle="org.wso2.carbon.governance.generic.ui.i18n.Resources"
         topPage="true"
         request="<%=request%>"/>
-<script type="text/javascript">
-</script>
-<div id="middle">
+        <%
+        String hostName = "localhost";
+        String port = "9443";
+        try {
+            hostName = NetworkUtils.getMgtHostName();
+            port =  System.getProperty("mgt.transport.https.port");
+        } catch (Exception ignored) {
+        }
+        %>
+<table width="100%">
+            <tr>
+                <td class="deprecate-warning">From version 5.1.0 onwards, performing governance operations are deprecated from the management console. Please use the publisher app(<a href='https://<%=hostName%>:<%=port%>/publisher'>https://<%=hostName%>:<%=port%>/publisher</a>) instead.</td>
+            </tr>
+        </table>
+<div id="middle" style="margin-top: 15px;">
 
     <h2><fmt:message key="add.file"><fmt:param value="<%=singularLabel%>"/></fmt:message></h2>
 
