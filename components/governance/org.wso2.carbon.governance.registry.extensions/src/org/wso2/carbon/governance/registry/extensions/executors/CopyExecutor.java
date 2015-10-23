@@ -100,9 +100,6 @@ public class CopyExecutor implements Execution {
                 addNewId(requestContext.getRegistry(), newResource, newPath);
             }
 
-            requestContext.setResource(newResource);
-            requestContext.setResourcePath(new ResourcePath(newPath));
-
 //            Copying comments
             copyComments(requestContext.getRegistry(), newPath, resourcePath);
 
