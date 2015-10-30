@@ -899,7 +899,7 @@ public class GovernanceArtifactManager {
                     if (j != 0) value += ":";
                     value += (v == null ? "" : v);
                 }
-                if (!value.matches((String)map.get("regexp"))) {
+                if (value != null && !value.equals("") && !value.matches((String)map.get("regexp"))) {
                     //return an exception to stop adding artifact
                     throw new GovernanceException((String)map.get("name") + " doesn't match regex: " +
                             (String)map.get("regexp"));
