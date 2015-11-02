@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance.lifecycle.management-feature</artifactId>
-        <version>4.5.10-SNAPSHOT</version>
+        <version>4.6.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
