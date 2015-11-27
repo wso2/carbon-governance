@@ -38,21 +38,21 @@
             <security>policy</security>
             <ownedBy>soapservice,restservice,wsdl</ownedBy>
             <usedBy>soapservice,restservice,wsdl</usedBy>
-            <dependancies>soapservice,restservice,wsdl</dependancies>
+            <dependencies>soapservice,restservice,wsdl</dependencies>
         </Association>
 
         <Association type="restservice">
             <security>policy</security>
             <ownedBy>restservice,soapservice,wsdl</ownedBy>
             <usedBy>restservice,soapservice,wsdl</usedBy>
-            <dependancies>restservice,soapservice,wsdl,endpoint</dependancies>
+            <dependencies>restservice,soapservice,wsdl,endpoint</dependencies>
         </Association>
 
         <Association type="soapservice">
             <security>policy</security>
             <ownedBy>soapservice,restservice,wsdl</ownedBy>
             <usedBy>soapservice,restservice,wsdl</usedBy>
-            <dependancies>soapservice,restservice,wsdl,endpoint</dependancies>
+            <dependencies>soapservice,restservice,wsdl,endpoint</dependencies>
         </Association>
 
     </AssociationConfig>
