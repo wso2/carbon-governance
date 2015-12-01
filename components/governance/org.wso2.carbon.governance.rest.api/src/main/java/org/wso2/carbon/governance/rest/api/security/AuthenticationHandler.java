@@ -90,7 +90,7 @@ public class AuthenticationHandler implements RequestHandler {
                 return authenticationFail(AUTH_TYPE_OAuth);
             }
         }
-        return authenticationFail(AUTH_TYPE_OAuth);
+        return authenticationFail(AUTH_TYPE_BASIC);
     }
 
     /**
