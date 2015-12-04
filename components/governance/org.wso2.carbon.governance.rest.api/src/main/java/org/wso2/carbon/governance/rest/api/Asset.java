@@ -116,7 +116,7 @@ public class Asset {
     }
 
     @GET
-    @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/raw")
+    @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/content")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getContentAssetRawContent(@PathParam("assetType") String assetType, @PathParam("id") String id)
             throws RegistryException {
@@ -578,20 +578,23 @@ public class Asset {
     private Response getRawContentOfGovernanceAsset(String assetType, String id) throws RegistryException {
         String shortName = Util.getShortName(assetType);
         if (validateAssetType(shortName)) {
-            if (isShortNameAContentType(shortName)) {
-                GenericArtifact artifact = getUniqueAsset(shortName, id);
-                if (artifact != null) {
-                    Resource resource = getUserRegistry().get(artifact.getPath());
-                    String fileName = artifact.getPath().substring(artifact.getPath().lastIndexOf('/') + 1);
-                    String mediaType = artifact.getMediaType().substring(0, artifact.getMediaType().indexOf('/') + 1) +
-                                       artifact.getMediaType().substring(artifact.getMediaType().indexOf('+') + 1);
-                    return Response.ok(resource.getContentStream()).type(mediaType).
-                            header("Content-Disposition", "filename=" + fileName).build();
+            GenericArtifact artifact = getUniqueAsset(shortName, id);
+            if (artifact != null) {
+                Resource resource = getUserRegistry().get(artifact.getPath());
+                String fileName;
+                if (isShortNameAContentType(shortName)) {
+                    fileName = artifact.getPath().substring(artifact.getPath().lastIndexOf('/') + 1);
                 } else {
-                    return Response.status(Response.Status.NOT_FOUND).build();
+                    GovernanceArtifactConfiguration config = GovernanceUtils.
+                            findGovernanceArtifactConfiguration(shortName, getUserRegistry());
+                    fileName = artifact.getAttribute(config.getArtifactNameAttribute());
                 }
+                String mediaType = artifact.getMediaType().substring(0, artifact.getMediaType().indexOf('/') + 1) +
+                                   artifact.getMediaType().substring(artifact.getMediaType().indexOf('+') + 1);
+                return Response.ok(resource.getContentStream()).type(mediaType).
+                        header("Content-Disposition", "filename=" + fileName).build();
             } else {
-                return Response.status(Response.Status.BAD_REQUEST).build();
+                return Response.status(Response.Status.NOT_FOUND).build();
             }
         } else {
             return validationFail(shortName);
