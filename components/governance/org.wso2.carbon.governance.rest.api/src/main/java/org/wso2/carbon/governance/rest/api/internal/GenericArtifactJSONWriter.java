@@ -38,7 +38,8 @@ public class GenericArtifactJSONWriter {
     public static final String ID = "id";
     public static final String TYPE = "type";
     public static final String OVERVIEW = "overview_";
-    public static final String LINK = "link";
+    public static final String SELF_LINK = "self-link";
+    public static final String CONTENT_LINK = "content-link";
     public static final String LINKS = "links";
     public static final String SELF = "self";
     public static final String PREV = "prev";
@@ -137,7 +138,9 @@ public class GenericArtifactJSONWriter {
                 writer.name(key).value(value);
             }
         }
-        writer.name(LINK).value(Util.generateLink(shortName, artifact.getId(), baseURI));
+        String self_link = Util.generateLink(shortName, artifact.getId(), baseURI);
+        writer.name(SELF_LINK).value(self_link);
+        writer.name(CONTENT_LINK).value(self_link + "/content");
         if (belongToLink != null) {
             writer.name(BELONG_TO).value(belongToLink);
         }
