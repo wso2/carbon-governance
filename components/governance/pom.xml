@@ -45,6 +45,7 @@
         <module>org.wso2.carbon.governance.generic</module>
         <module>org.wso2.carbon.governance.gadgetsource</module>
         <module>org.wso2.carbon.governance.gadgets.ui</module>
+	<module>org.wso2.carbon.governance.metadata</module>
         <module>org.wso2.carbon.governance.notifications.ui</module>
         <module>org.wso2.carbon.governance.lcm</module>
         <module>org.wso2.carbon.governance.lcm.ui</module>
