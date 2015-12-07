@@ -87,6 +87,7 @@ public class Asset {
     public static final String CONTENT_TYPE_SCHEMA = "schema";
     public static final String CONTENT_TYPE_POLICY = "policy";
     public static final String ATTR_CONTENT_TYPE = "content_type";
+    public static final String CONTENT_DISPOSITION = "Content-Disposition";
 
     private final Log log = LogFactory.getLog(Asset.class);
 
@@ -581,18 +582,9 @@ public class Asset {
             GenericArtifact artifact = getUniqueAsset(shortName, id);
             if (artifact != null) {
                 Resource resource = getUserRegistry().get(artifact.getPath());
-                String fileName;
-                if (isShortNameAContentType(shortName)) {
-                    fileName = artifact.getPath().substring(artifact.getPath().lastIndexOf('/') + 1);
-                } else {
-                    GovernanceArtifactConfiguration config = GovernanceUtils.
-                            findGovernanceArtifactConfiguration(shortName, getUserRegistry());
-                    fileName = artifact.getAttribute(config.getArtifactNameAttribute());
-                }
-                String mediaType = artifact.getMediaType().substring(0, artifact.getMediaType().indexOf('/') + 1) +
-                                   artifact.getMediaType().substring(artifact.getMediaType().indexOf('+') + 1);
+                String mediaType = getMediaTypeForDownloading(artifact.getMediaType());
                 return Response.ok(resource.getContentStream()).type(mediaType).
-                        header("Content-Disposition", "filename=" + fileName).build();
+                        header(CONTENT_DISPOSITION, "filename=" + getFileName(shortName, artifact)).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -601,7 +593,21 @@ public class Asset {
         }
     }
 
-    private boolean isShortNameAContentType(String shortName) throws RegistryException {
+    private String getMediaTypeForDownloading(String mediaType) {
+        return mediaType.substring(0, mediaType.indexOf('/') + 1) + mediaType.substring(mediaType.indexOf('+') + 1);
+    }
+
+    private String getFileName(String shortName, GenericArtifact artifact) throws RegistryException {
+        if (isContentType(shortName)) {
+            return artifact.getPath().substring(artifact.getPath().lastIndexOf('/') + 1);
+        } else {
+            GovernanceArtifactConfiguration config = GovernanceUtils.
+                    findGovernanceArtifactConfiguration(shortName, getUserRegistry());
+            return artifact.getAttribute(config.getArtifactNameAttribute());
+        }
+    }
+
+    private boolean isContentType(String shortName) throws RegistryException {
         GovernanceArtifactConfiguration config = GovernanceUtils.findGovernanceArtifactConfiguration(shortName,
                                                                                                      getUserRegistry());
         if (config.getExtension() != null) {
