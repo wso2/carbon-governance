@@ -44,6 +44,7 @@ public class AuthenticationHandler implements RequestHandler {
     protected Log log = LogFactory.getLog(AuthenticationHandler.class);
 
     private final static String AUTH_TYPE_BASIC = "Basic";
+    private final static String AUTH_TYPE_BASIC_REALM_VALUE = " Realm=\"WSO2-Registry\"";
     private final static String AUTH_TYPE_OAuth = "Bearer";
 
 
@@ -90,7 +91,7 @@ public class AuthenticationHandler implements RequestHandler {
                 return authenticationFail(AUTH_TYPE_OAuth);
             }
         }
-        return authenticationFail(AUTH_TYPE_BASIC);
+        return authenticationFail(AUTH_TYPE_BASIC + AUTH_TYPE_BASIC_REALM_VALUE);
     }
 
     /**
@@ -158,7 +159,7 @@ public class AuthenticationHandler implements RequestHandler {
     }
 
     private Response authenticationFail() {
-        return authenticationFail(AUTH_TYPE_BASIC);
+        return authenticationFail(AUTH_TYPE_BASIC + AUTH_TYPE_BASIC_REALM_VALUE);
     }
 
     private Response authenticationFail(String authType) {

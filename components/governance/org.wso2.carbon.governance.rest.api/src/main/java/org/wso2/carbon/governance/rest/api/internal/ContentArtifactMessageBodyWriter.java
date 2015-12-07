@@ -20,16 +20,25 @@ package org.wso2.carbon.governance.rest.api.internal;
 
 import org.apache.commons.io.IOUtils;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+/**
+ * This message body writer is to handle special case where
+ * a content artifact type consist of application/json data
+ */
+
+@Provider
+@Consumes({"application/json"})
 public class ContentArtifactMessageBodyWriter implements MessageBodyWriter<ByteArrayInputStream> {
     @Override
     public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
@@ -46,6 +55,11 @@ public class ContentArtifactMessageBodyWriter implements MessageBodyWriter<ByteA
     public void writeTo(ByteArrayInputStream byteArrayInputStream, Class<?> aClass, Type type, Annotation[] annotations,
                         MediaType mediaType, MultivaluedMap<String, Object> stringObjectMultivaluedMap,
                         OutputStream outputStream) throws IOException, WebApplicationException {
+        writeContentArtifact(byteArrayInputStream, outputStream);
+    }
+
+    private void writeContentArtifact(ByteArrayInputStream byteArrayInputStream, OutputStream outputStream)
+            throws IOException {
         IOUtils.copy(byteArrayInputStream, outputStream);
         byteArrayInputStream.close();
         outputStream.close();
