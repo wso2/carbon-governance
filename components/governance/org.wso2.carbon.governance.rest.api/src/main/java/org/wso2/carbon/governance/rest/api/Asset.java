@@ -43,6 +43,17 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -56,17 +67,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 
 //TODO - test this
@@ -431,7 +431,9 @@ public class Asset {
             GenericArtifact artifact = genericArtifact.makeRegistryAware(manager);
             artifact.setId(id);
             manager.updateGenericArtifact(artifact);
-            URI link = new URL(Util.generateLink(assetType, id, baseURL)).toURI();
+            //Use 'generateLink' method with four parameters.
+            //Fix for REGISTRY-3129
+            URI link = new URL(Util.generateLink(assetType, id, baseURL, false)).toURI();
             return Response.created(link).build();
         } catch (MalformedURLException | URISyntaxException e) {
             throw new GovernanceException(e);
