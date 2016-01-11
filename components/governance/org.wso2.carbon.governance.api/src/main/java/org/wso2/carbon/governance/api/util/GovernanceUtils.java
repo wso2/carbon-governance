@@ -64,6 +64,10 @@ import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import java.io.StringReader;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -71,10 +75,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.StringReader;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Utilities used by various Governance API related functionality.
@@ -1794,7 +1794,15 @@ public class GovernanceUtils {
                 "updater", "updater!", "tags", "content", "mediaType", "mediaType!", "lcName", "lcState");
 
         String[] tempList = criteria.split("&");
-        for(String temp : tempList) {
+        List<String> finalTempList = new ArrayList<>();
+        for (int i = 0; i < tempList.length; i++) {
+            if (tempList[i].contains("=")) {
+                finalTempList.add(tempList[i]);
+            } else {
+                finalTempList.set(i - 1, finalTempList.get(i - 1) + "&" + tempList[i]);
+            }
+        }
+        for(String temp : finalTempList) {
             String[] subParts = temp.split("=");
             if(subParts.length != 2) {
                 String value = subParts[0].toLowerCase();
