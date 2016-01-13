@@ -272,8 +272,8 @@ public class GovernanceArtifactManager {
                         if (registry.resourceExists(targetPath)) {
                             associationInteger.getAssociations().add(new Association(path, targetPath, type));
                         } else {
-                            if(log.isDebugEnabled()){
-                                log.debug("Can not add association. Resource does not exist at"+ targetPath);
+                            if (log.isDebugEnabled()) {
+                                log.debug("Can not add association. Resource does not exist at" + targetPath);
                             }
                         }
                     }
@@ -283,7 +283,7 @@ public class GovernanceArtifactManager {
                     }
                     for (String sourcePath :
                             GovernanceUtils.getPathsFromPathExpression(source, artifact)) {
-                        if(registry.resourceExists(sourcePath)) {
+                        if (registry.resourceExists(sourcePath)) {
                             associationInteger.getAssociations().add(new Association(sourcePath, path, type));
                         } else {
                             if (log.isDebugEnabled()) {
@@ -298,7 +298,7 @@ public class GovernanceArtifactManager {
                     associationInteger.setInteger(1);
                     for (String targetPath :
                             GovernanceUtils.getPathsFromPathExpression(target, artifact)) {
-                        if(registry.resourceExists(targetPath)) {
+                        if (registry.resourceExists(targetPath)) {
                             associationInteger.getAssociations().add(new Association(path, targetPath, type));
                         } else {
                             if (log.isDebugEnabled()) {
@@ -310,7 +310,7 @@ public class GovernanceArtifactManager {
                     associationInteger.setInteger(-1);
                     for (String sourcePath :
                             GovernanceUtils.getPathsFromPathExpression(source, artifact)) {
-                        if(registry.resourceExists(sourcePath)) {
+                        if (registry.resourceExists(sourcePath)) {
                             associationInteger.getAssociations().add(new Association(sourcePath, path, type));
                         } else {
                             if (log.isDebugEnabled()) {
