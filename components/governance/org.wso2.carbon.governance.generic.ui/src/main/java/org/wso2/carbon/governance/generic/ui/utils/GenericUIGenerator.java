@@ -21,6 +21,7 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
@@ -695,6 +696,9 @@ public class GenericUIGenerator {
             if (colonIndex < entryText.length() - 1) {
                 entryKey = entryText.substring(0, colonIndex);
                 entryText = entryText.substring(colonIndex + 1);
+            } else if (colonIndex == entryText.length() -1) {
+                entryKey = entryText.substring(0, colonIndex);
+                entryText = StringUtils.EMPTY;
             }
             entryVal = entryText;
 
