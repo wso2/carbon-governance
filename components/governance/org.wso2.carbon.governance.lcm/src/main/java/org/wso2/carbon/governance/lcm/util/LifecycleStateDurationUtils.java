@@ -35,6 +35,7 @@ import org.wso2.carbon.governance.lcm.beans.CheckpointBean;
 import org.wso2.carbon.governance.lcm.beans.DurationBean;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
@@ -72,7 +73,7 @@ public class LifecycleStateDurationUtils {
      *                                      <li>If xPath reading fails in history file.</li>
      *                                  </ul>
      */
-    public static DurationBean getCurrentLifecycleStateDuration(String registryPathToResource, String lifecycleName,
+/*    public static DurationBean getCurrentLifecycleStateDuration(String registryPathToResource, String lifecycleName,
             Registry registry) throws GovernanceException {
         if (StringUtils.isEmpty(registryPathToResource) || StringUtils.isEmpty(lifecycleName) || registry == null) {
             throw new IllegalArgumentException("Invalid arguments supplied as registryPathToResource: '" +
@@ -107,6 +108,30 @@ public class LifecycleStateDurationUtils {
                 throw new GovernanceException(
                         "Error while checking resource exists for: '" + registryPathToResource + "'", e);
             }
+        return durationBean;
+    }*/
+    public static DurationBean getCurrentLifecycleStateDuration(String registryPathToResource, String lifecycleName,
+                                                                Registry registry) throws GovernanceException {
+        if (StringUtils.isEmpty(registryPathToResource) || StringUtils.isEmpty(lifecycleName) || registry == null) {
+            throw new IllegalArgumentException("Invalid arguments supplied as registryPathToResource: '" +
+                    registryPathToResource + "', lifecycleName: " + lifecycleName + " and registry.");
+        }
+        DurationBean durationBean = null;
+        UserRegistry userRegistry = (UserRegistry) registry;
+        try {
+            if (userRegistry.resourceExists(registryPathToResource)) {
+                Resource resource = userRegistry.get(registryPathToResource);
+                String lastStateChangedTime = resource.getProperty(LifecycleConstants.LIFECYCLE_STATE_TIME.replace("aspect", lifecycleName));
+                // Return checkpoint object.
+                if (lastStateChangedTime != null) {
+                    durationBean = getCheckpointByDuration(lifecycleName, calculateTimeDifference(getCurrentTime(),
+                            lastStateChangedTime), registryPathToResource, registry);
+                }
+            }
+        } catch (RegistryException e) {
+            throw new GovernanceException(
+                    "Error while checking resource exists for: '" + registryPathToResource, e);
+        }
         return durationBean;
     }
 
