@@ -459,19 +459,17 @@ public class DefaultLifeCycle extends Aspect {
 	        if (!currentState.equals(nextState)) {
 	            State state = (State) scxml.getChildren().get(nextState);
 	            resource.setProperty(stateProperty, state.getId().replace(".", " "));
-
-                resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
+	            resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
 	            clearCheckItems(resource, aspectName);
 	            clearTransitionApprovals(resource, aspectName);
 	            addCheckItems(resource, checkListItems.get(state.getId()), state.getId(), aspectName);
 	            addTransitionApprovalItems(resource, transitionApproval.get(state.getId()), state.getId(), aspectName);
 	            addScripts(state.getId(), resource,scriptElements.get(state.getId()), aspectName);
 	            addTransitionUI(resource, transitionUIs.get(state.getId()), aspectName);
-	
-	//            For auditing purposes
+	            //for auditing purposes
 	            statCollection.setTargetState(nextState);
-                //add lifecycle state transition time as resource property
-                resource.setProperty(LifecycleConstants.LIFECYCLE_STATE_TIME.replace("aspect", aspectName), String.valueOf((new Timestamp(statCollection.getTimeMillis()))));
+	            //add lifecycle state transition time as resource property
+	            resource.setProperty(LifecycleConstants.LIFECYCLE_STATE_TIME.replace("aspect", aspectName), String.valueOf((new Timestamp(statCollection.getTimeMillis()))));
 	        }
 	        if (!preserveOldResource) {
 	            requestContext.getRegistry().delete(resourcePath);
