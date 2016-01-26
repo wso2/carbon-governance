@@ -580,8 +580,10 @@ public class GovernanceArtifactConfiguration {
                     //check the validation fields and get the id's of them
                     String value = arg.getAttributeValue(new QName(null,
                             VALIDATE_ATTRIBUTE));
+                    String isMandatory = arg.getAttributeValue(new QName(null,
+                                                                         MANDETORY_ATTRIBUTE));
 
-                    if (value != null && !"".equals(value)) {
+                    if ((value != null && !"".equals(value)) || (isMandatory != null && "true".equals(isMandatory))) {
                         String elementType = arg.getAttributeValue(new QName(null, TYPE_ATTRIBUTE));
                         String name = arg.getFirstChildWithName(new QName(null, ARGUMENT_NAME)).getText();
                         List<String> keys = new ArrayList<String>();
@@ -594,7 +596,12 @@ public class GovernanceArtifactConfiguration {
                                 keys.add(getDataElementName(widgetName + "_" + ENTRY_FIELD));
                                 map.put("keys", keys);
                                 map.put("name", name);
-                                map.put("regexp", value);
+                                if (value != null && !"".equals(value)) {
+                                    map.put("regexp", value);
+                                }
+                                if (isMandatory != null && "true".equals(isMandatory)) {
+                                    map.put("isMandatory", true);
+                                }
                                 map.put("properties", "unbounded");
 
                                 res.add(map);
@@ -606,7 +613,12 @@ public class GovernanceArtifactConfiguration {
                                         name));
                                 map.put("keys", keys);
                                 map.put("name", name);
-                                map.put("regexp", value);
+                                if (value != null && !"".equals(value)) {
+                                    map.put("regexp", value);
+                                }
+                                if (isMandatory != null && "true".equals(isMandatory)) {
+                                    map.put("isMandatory", true);
+                                }
 
                                 res.add(map);
                             }
@@ -616,7 +628,12 @@ public class GovernanceArtifactConfiguration {
                             keys.add(getDataElementName(widgetName + "_"  + name));
                             map.put("keys", keys);
                             map.put("name", name);
-                            map.put("regexp", value);
+                            if (value != null && !"".equals(value)) {
+                                map.put("regexp", value);
+                            }
+                            if (isMandatory != null && "true".equals(isMandatory)) {
+                                map.put("isMandatory", true);
+                            }
 
                             res.add(map);
                         }
