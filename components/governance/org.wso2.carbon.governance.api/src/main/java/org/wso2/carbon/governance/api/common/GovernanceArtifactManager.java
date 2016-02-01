@@ -169,7 +169,6 @@ public class GovernanceArtifactManager {
             log.error(msg);
             throw new GovernanceException(msg);
         }
-        validateArtifact(artifact);
         String artifactName = artifact.getQName().getLocalPart();
         artifact.setAttributes(artifactNameAttribute,
                 new String[]{artifactName});
@@ -179,6 +178,7 @@ public class GovernanceArtifactManager {
             artifact.setAttributes(artifactNamespaceAttribute,
                     new String[]{namespace});
         }
+        validateArtifact(artifact);
 
         ((GovernanceArtifactImpl)artifact).associateRegistry(registry);
         boolean succeeded = false;
@@ -894,7 +894,13 @@ public class GovernanceArtifactManager {
                 String[] values = artifact.getAttributes((String)keys.get(0));
                 if (values != null) {
                     for (int j=0; j<values.length; ++j) {
-                        if (!values[j].matches((String)map.get("regexp"))) {
+                        if (map.containsKey("isMandatory") && (boolean)map.get("isMandatory") &&
+                            (values[j] == null || "".equals(values[j]))) {
+                            //return an exception to stop adding artifact
+                            throw new GovernanceException((String) map.get("name") + " is a required field, " +
+                                                          "Please provide a value for this parameter.");
+                        }
+                        if (map.containsKey("regexp") && !values[j].matches((String)map.get("regexp"))) {
                             //return an exception to stop adding artifact
                             throw new GovernanceException((String)map.get("name") + " doesn't match regex: " +
                                     (String)map.get("regexp"));
@@ -907,7 +913,14 @@ public class GovernanceArtifactManager {
                     if (j != 0) value += ":";
                     value += (v == null ? "" : v);
                 }
-                if (value != null && !value.equals("") && !value.matches((String)map.get("regexp"))) {
+                if (map.containsKey("isMandatory") && (boolean)map.get("isMandatory") &&
+                    (value == null || "".equals(value))) {
+                    //return an exception to stop adding artifact
+                    throw new GovernanceException((String) map.get("name") + " is a required field, " +
+                                                  "Please provide a value for this parameter.");
+                }
+                if (map.containsKey("regexp") && value != null && !value.equals("") &&
+                    !value.matches((String)map.get("regexp"))) {
                     //return an exception to stop adding artifact
                     throw new GovernanceException((String)map.get("name") + " doesn't match regex: " +
                             (String)map.get("regexp"));
