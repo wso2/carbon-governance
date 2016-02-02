@@ -41,6 +41,12 @@ public class ComparatorConstants {
 
     //Text messages
     public static final String TEXT_CHANGE = "";
+    public static final String XML = "xml";
+    public static final String JSON = "json";
+    public static final String XML_INDENT_AMOUNT = "{http://xml.apache.org/xslt}indent-amount";
+    public static final String TWO = "2";
+    public static final String YES = "yes";
+    public static final String UTF_8 = "UTF-8";
 
 
     //WSDL messages
