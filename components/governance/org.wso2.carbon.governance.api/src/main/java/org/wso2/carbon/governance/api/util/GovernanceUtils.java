@@ -19,6 +19,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jaxen.JaxenException;
@@ -1793,15 +1794,18 @@ public class GovernanceUtils {
         List<String> possibleKeys = Arrays.asList("createdAfter", "createdBefore", "updatedAfter", "updatedBefore", "author", "author!", "associationType", "associationDest",
                 "updater", "updater!", "tags", "content", "mediaType", "mediaType!", "lcName", "lcState");
 
-        String[] tempList = criteria.split("&");
         List<String> finalTempList = new ArrayList<>();
-        for (int i = 0; i < tempList.length; i++) {
-            if (tempList[i].contains("=")) {
-                finalTempList.add(tempList[i]);
-            } else {
-                finalTempList.set(i - 1, finalTempList.get(i - 1) + "&" + tempList[i]);
+        if (StringUtils.isNotEmpty(criteria)) {
+            String[] tempList = criteria.split("&");
+            for (int i = 0; i < tempList.length; i++) {
+                if (tempList[i].contains("=")) {
+                    finalTempList.add(tempList[i]);
+                } else {
+                    finalTempList.set(i - 1, finalTempList.get(i - 1) + "&" + tempList[i]);
+                }
             }
         }
+
         for(String temp : finalTempList) {
             String[] subParts = temp.split("=");
             if(subParts.length != 2) {
