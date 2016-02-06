@@ -22,6 +22,8 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMText;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
@@ -204,7 +206,13 @@ public class GovernanceArtifactManager {
                 path = updatedPath;
             }
             if (lifecycle != null){
-                registry.associateAspect(path, lifecycle);
+                String[] lifeCycles = lifecycle.split(",");
+                ArrayUtils.reverse(lifeCycles);
+                for (String attachingLifeCycle : lifeCycles) {
+                    if (StringUtils.isNotEmpty(attachingLifeCycle)) {
+                        registry.associateAspect(path, attachingLifeCycle);
+                    }
+                }
             }
 
             ((GovernanceArtifactImpl)artifact).updatePath();
