@@ -179,6 +179,7 @@ public class GovernanceArtifactManager {
         if (artifactNamespaceAttribute != null && StringUtils.isNotEmpty(namespace)) {
             artifact.setAttributes(artifactNamespaceAttribute, new String[]{namespace});
         }
+        setQName(artifact, artifactName, namespace);
 
         validateArtifact(artifact);
 
@@ -260,6 +261,16 @@ public class GovernanceArtifactManager {
                     log.error(msg, e);
                 }
             }
+        }
+    }
+
+    private void setQName(GovernanceArtifact artifact, String artifactName, String namespace) throws GovernanceException {
+        if (StringUtils.isNotEmpty(artifactNamespaceAttribute) && StringUtils.isNotEmpty(artifactNameAttribute)) {
+            QName qname = new QName(namespace, artifactName);
+            artifact.setQName(qname);
+        } else if (StringUtils.isNotEmpty(artifactNameAttribute)) {
+            QName qname = new QName(artifactName);
+            artifact.setQName(qname);
         }
     }
 
@@ -403,16 +414,10 @@ public class GovernanceArtifactManager {
             String namespace = artifact.getQName().getNamespaceURI();
             if (artifactNamespaceAttribute != null && StringUtils.isNotEmpty(namespace)) {
                 artifact.setAttributes(artifactNamespaceAttribute, new String[]{namespace});
-            } else if (artifactNamespaceAttribute != null ) {
+            } else if (artifactNamespaceAttribute != null) {
                 namespace = artifact.getAttribute(artifactNamespaceAttribute);
             }
-            if (StringUtils.isNotEmpty(artifactNamespaceAttribute) && StringUtils.isNotEmpty(artifactNameAttribute)){
-                QName qname= new QName(namespace, artifactName);
-                artifact.setQName(qname);
-            } else if (StringUtils.isNotEmpty(artifactNameAttribute)) {
-                QName qname= new QName(artifactName);
-                artifact.setQName(qname);
-            }
+            setQName(artifact, artifactName, namespace);
             validateArtifact(artifact);
 
             GovernanceArtifact oldArtifact = getGovernanceArtifact(artifact.getId());
