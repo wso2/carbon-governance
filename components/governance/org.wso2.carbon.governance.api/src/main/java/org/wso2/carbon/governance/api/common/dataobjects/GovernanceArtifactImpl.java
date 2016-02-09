@@ -207,6 +207,9 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             public QName getQName() {
                 return null;
             }
+            public void setQName(QName qName) throws GovernanceException {
+
+            }
         };
     }
 
@@ -220,6 +223,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             public QName getQName() {
                 return null;
             }
+            public void setQName (QName qName)  throws GovernanceException {}
         };
     }
 
