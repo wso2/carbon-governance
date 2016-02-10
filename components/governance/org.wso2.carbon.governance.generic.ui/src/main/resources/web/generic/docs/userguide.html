@@ -1,4 +1,4 @@
-<!--
+    <!--
  ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~ WSO2 Inc. licenses this file to you under the Apache License,
@@ -36,7 +36,7 @@
     <li><a href="#configLanguage">XML Language for Customizing Configurable Governance Artifacts</a></li>
     <li><a href="#deployingRXT">Deploying a Configurable Governance Artifact</a></li>
     <li><a href="#govArtifacts">Storing Governance Artifacts in GReg</a></li>
-    <li><a href="#defaultArtifacts">API and URI Artifacts</a></li>
+    <li><a href="#defaultArtifacts">URI Artifact</a></li>
 </ul>
 
 <a name="configurableArtifacts"></a>
@@ -69,14 +69,14 @@
 </p>
 <p>
     To customize each content template, user can simply edit the corresponding configuration XML by
-    clicking <b>Configure -> <i>artifact name</i></b> link in the right-hand side menu of WSO2 GReg.
-    For example, to customize Services, click on <b>Configure -> Services</b>.
+    clicking <b>Extensions -> <i>Artifact Types</i></b> link in the left-hand side menu of WSO2 GReg.
+    For example, to customize Services, click on <b>Extensions -> Configure -> Artifact Types -> View/Edit</b>.
 </p>
 
 <a name="configuringServices"></a>
 <h2>Configuring Services</h2>
 <p>
-    To customize Service content template. Click <b>Configure -> Services</b>. XML editor will
+    To customize Service content template. Click <b>Extensions -> Configure -> Artifact Types -> View/Edit</b>. XML editor will
     appear as shown in Figure 1. XML language described <a href="#configLanguage">here</a> should be
     used for this configuration.
 </p>
@@ -108,7 +108,7 @@
         &#160;&#160;&lt;field type=&#34;text&#34; required=&#34;true&#34;&gt;
         &lt;name&gt;Namespace&lt;/name&gt;
         &lt;/field&gt;<br/>
-        &#160;&#160;&lt;field type=&#34;text&#34;&gt;
+        &#160;&#160;&lt;field type=&#34;text&#34; required=&#34;true&#34;&gt;
         &lt;name&gt;Version&lt;/name&gt;
         &lt;/field&gt;<br/>
         &#160;&#160;&lt;field type=&#34;text-area&#34;&gt;
@@ -380,7 +380,7 @@
 
 <ul>
     <li>Start up the WSO2 Governance Registry.</li>
-    <li>Go to Main->Browse->Detail to view and add the registry extension file to /_system/governance/repository/components/org.wso2.carbon.governance/types.</li>
+    <li>Go to Main->Browse->Detail view and add the registry extension file to /_system/governance/repository/components/org.wso2.carbon.governance/types.</li>
     <li>Sign-out and Sign-in.</li>
     <li>Now you can see the newly added extension type in the "Metadata Add" and "List" panes.</li>
 </ul>
@@ -410,17 +410,11 @@
 <p>Figure 4: Adding Policy using Local File System</p>
 
 <a name="defaultArtifacts"></a>
-<h2>API and URI Artifacts</h2>
+<h2>URI Artifact</h2>
 <p>
-    API and URI are two artifact types which are implemented as Configurable Governance Artifacts. API is an artifact which
-    can be published to an Artifact Store which is defined to perform a particular task. URI artifact is used in order to
+    URI is a artifact type which is implemented as Configurable Governance Artifact. It is used in order to
     maintain and govern resources which are physically residing at an external repository and stored in the registry by its URI.
 </p>
-<p><img src="images/addAPI.png" width="900px"/></p>
-<p>Figure 5: Add API</p>
-
-<p><img src="images/apiList.png" width="900px"/></p>
-<p>Figure 6: List API</p>
 
 <p><img src="images/addURI.png" width="900px"/></p>
 <p>Figure 7: Add URI</p>
