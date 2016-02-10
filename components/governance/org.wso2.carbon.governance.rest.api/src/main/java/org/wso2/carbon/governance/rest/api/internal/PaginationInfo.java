@@ -33,6 +33,7 @@ public class PaginationInfo {
     public static final String PAGINATION_SORT_ORDER_DESCENDING = "des";
     public static final String PAGINATION_SORT_BY_NAME = "overview_name";
     public static final String OVERVIEW_PREFIX = "overview_";
+    public static final String PAGINATION_PARAM_TENANT = "tenant";
 
     private int start;
     private int count;
@@ -41,6 +42,7 @@ public class PaginationInfo {
     private String sortBy;
     private String query;
     private boolean morePages = false;
+    private String tenant;
 
 
     public PaginationInfo() {
@@ -112,6 +114,14 @@ public class PaginationInfo {
         this.morePages = morePages;
     }
 
+    public String getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
+    }
+
     @Override
     public String toString() {
         return "PaginationInfo{" +
@@ -120,6 +130,9 @@ public class PaginationInfo {
                ", limit=" + limit +
                ", sortOrder='" + sortOrder + '\'' +
                ", sortBy='" + sortBy + '\'' +
+               ", query='" + query + '\'' +
+               ", morePages=" + morePages +
+               ", tenant='" + tenant + '\'' +
                '}';
     }
 

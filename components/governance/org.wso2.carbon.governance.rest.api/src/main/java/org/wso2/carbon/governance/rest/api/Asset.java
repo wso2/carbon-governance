@@ -57,6 +57,7 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -103,9 +104,10 @@ public class Asset {
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAssets(@PathParam("assetType") String assetType, @Context UriInfo uriInfo)
+    public Response getAssets(@PathParam("assetType") String assetType, @Context UriInfo uriInfo,
+                              @HeaderParam("X_TENANT") String tenant)
             throws RegistryException {
-        return getGovernanceAssets(assetType, uriInfo);
+        return getGovernanceAssets(assetType, uriInfo, tenant);
     }
 
     @GET
@@ -119,7 +121,7 @@ public class Asset {
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/content")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getContentAssetRawContent(@PathParam("assetType") String assetType, @PathParam("id") String id)
+    public Response getAssetRawContent(@PathParam("assetType") String assetType, @PathParam("id") String id)
             throws RegistryException {
         return getRawContentOfGovernanceAsset(assetType, id);
     }
@@ -189,8 +191,8 @@ public class Asset {
     @GET
     @Path("/endpoints")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getEndpoints(@Context UriInfo uriInfo) throws RegistryException {
-        return getGovernanceAssets(ENDPOINTS, uriInfo);
+    public Response getEndpoints(@Context UriInfo uriInfo, @HeaderParam("X_TENANT") String tenant) throws RegistryException {
+        return getGovernanceAssets(ENDPOINTS, uriInfo, tenant);
     }
 
     @GET
@@ -352,7 +354,7 @@ public class Asset {
         while (iterator.hasNext()) {
             Map.Entry<String, List<String>> entry = iterator.next();
             String value = entry.getValue().get(0);
-            if (value != null) {
+            if (value != null && !"tenant".equals(entry.getKey())) {
                 builder.append(entry.getKey() + "=" + value);
             }
             if (iterator.hasNext()) {
@@ -513,10 +515,11 @@ public class Asset {
     }
 
 
-    private Response getGovernanceAssets(String assetType, UriInfo uriInfo) throws RegistryException {
+    private Response getGovernanceAssets(String assetType, UriInfo uriInfo, String tenantHeader)
+            throws RegistryException {
         String shortName = Util.getShortName(assetType);
         if (validateAssetType(shortName)) {
-            PaginationInfo pagination = Util.getPaginationInfo(uriInfo.getQueryParameters());
+            PaginationInfo pagination = Util.getPaginationInfo(uriInfo.getQueryParameters(), tenantHeader);
             String query = createQuery(uriInfo);
             pagination.setQuery(query);
             List<GenericArtifact> artifacts = getAssetList(shortName, query, pagination);
