@@ -170,14 +170,17 @@ public class GovernanceArtifactManager {
             throw new GovernanceException(msg);
         }
         String artifactName = artifact.getQName().getLocalPart();
-        artifact.setAttributes(artifactNameAttribute,
-                new String[]{artifactName});
-        // namespace can be null
-        String namespace = artifact.getQName().getNamespaceURI();
-        if (artifactNamespaceAttribute != null) {
-            artifact.setAttributes(artifactNamespaceAttribute,
-                    new String[]{namespace});
+        if (artifactNameAttribute != null) {
+            if (StringUtils.isNotEmpty(artifactName)) {
+                artifact.setAttributes(artifactNameAttribute, new String[]{artifactName});
+            }
         }
+        String namespace = artifact.getQName().getNamespaceURI();
+        if (artifactNamespaceAttribute != null && StringUtils.isNotEmpty(namespace)) {
+            artifact.setAttributes(artifactNamespaceAttribute, new String[]{namespace});
+        }
+        setQName(artifact, artifactName, namespace);
+
         validateArtifact(artifact);
 
         ((GovernanceArtifactImpl)artifact).associateRegistry(registry);
@@ -258,6 +261,16 @@ public class GovernanceArtifactManager {
                     log.error(msg, e);
                 }
             }
+        }
+    }
+
+    private void setQName(GovernanceArtifact artifact, String artifactName, String namespace) throws GovernanceException {
+        if (StringUtils.isNotEmpty(artifactNamespaceAttribute) && StringUtils.isNotEmpty(artifactNameAttribute)) {
+            QName qname = new QName(namespace, artifactName);
+            artifact.setQName(qname);
+        } else if (StringUtils.isNotEmpty(artifactNameAttribute)) {
+            QName qname = new QName(artifactName);
+            artifact.setQName(qname);
         }
     }
 
@@ -389,7 +402,24 @@ public class GovernanceArtifactManager {
         boolean succeeded = false;
         try {
             registry.beginTransaction();
+
+            String artifactName = artifact.getQName().getLocalPart();
+            if (artifactNameAttribute != null) {
+                if (StringUtils.isNotEmpty(artifactName)) {
+                    artifact.setAttributes(artifactNameAttribute, new String[]{artifactName});
+                } else {
+                    artifactName = artifact.getAttribute(artifactNameAttribute);
+                }
+            }
+            String namespace = artifact.getQName().getNamespaceURI();
+            if (artifactNamespaceAttribute != null && StringUtils.isNotEmpty(namespace)) {
+                artifact.setAttributes(artifactNamespaceAttribute, new String[]{namespace});
+            } else if (artifactNamespaceAttribute != null) {
+                namespace = artifact.getAttribute(artifactNamespaceAttribute);
+            }
+            setQName(artifact, artifactName, namespace);
             validateArtifact(artifact);
+
             GovernanceArtifact oldArtifact = getGovernanceArtifact(artifact.getId());
             // first check for the old artifact and remove it.
             String oldPath = null;
@@ -400,15 +430,6 @@ public class GovernanceArtifactManager {
                     // then it is analogue to moving the resource for the new location
                     // so just delete the old path
                     registry.delete(temp);
-
-                    String artifactName = artifact.getQName().getLocalPart();
-                    artifact.setAttributes(artifactNameAttribute,
-                            new String[]{artifactName});
-                    String namespace = artifact.getQName().getNamespaceURI();
-                    if (artifactNamespaceAttribute != null) {
-                        artifact.setAttributes(artifactNamespaceAttribute,
-                                new String[]{namespace});
-                    }
                 } else {
                     oldPath = oldArtifact.getPath();
                 }

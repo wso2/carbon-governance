@@ -285,4 +285,16 @@ public class WsdlImpl extends GovernanceArtifactImpl implements Wsdl {
             }
         }
     }
+
+    /**
+     * Method to set the qualified name of this service artifact.
+     *
+     * @param qName the qualified name.
+     *
+     * @throws GovernanceException if the operation failed.
+     */
+    public void setQName(QName qName) throws GovernanceException {
+        // the path will be synced with the qualified name
+        this.qname = qName;
+    }
 }
