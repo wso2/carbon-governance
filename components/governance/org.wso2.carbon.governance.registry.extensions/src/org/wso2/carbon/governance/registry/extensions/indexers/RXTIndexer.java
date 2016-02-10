@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.common.SolrException;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
@@ -99,6 +100,11 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
         }
 
         public QName getQName() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setQName(QName qName) throws GovernanceException {
             throw new UnsupportedOperationException();
         }
 

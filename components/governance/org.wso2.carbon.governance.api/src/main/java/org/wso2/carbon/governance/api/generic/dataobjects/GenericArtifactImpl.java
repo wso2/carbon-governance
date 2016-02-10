@@ -204,7 +204,7 @@ public class GenericArtifactImpl extends GovernanceArtifactImpl implements Gener
      *
      * @throws GovernanceException if the operation failed.
      */
-    public void setQName(QName qName) throws GovernanceException {
+    public void setQName(QName qName) {
         // the path will be synced with the qualified name
         this.qName = qName;
     }
