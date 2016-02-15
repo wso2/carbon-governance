@@ -20,6 +20,7 @@ package org.wso2.carbon.governance.rest.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
@@ -41,6 +42,7 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
+import org.wso2.carbon.registry.core.secure.AuthorizationFailedException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 
 import java.net.MalformedURLException;
@@ -573,12 +575,32 @@ public class Asset {
                 TypedList<GenericArtifact> typedList = new TypedList<>(GenericArtifact.class, shortName,
                                                                        Arrays.asList(artifact), null);
                 return Response.ok().entity(typedList).build();
+
+                // Check whether artifact is actually does not exists or we are getting null because of anonymous user.
+            } else if (isAnonymousUser()) {
+                return handleStatusCode(id);
+
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } else {
             return validationFail(shortName);
         }
+    }
+
+    private Response handleStatusCode(String id) throws RegistryException {
+        String artifactPath = GovernanceUtils.getArtifactPath(getUserRegistry(), id);
+        try {
+            getUserRegistry().get(artifactPath);
+        } catch (AuthorizationFailedException e) {
+            return Response.status(401).header("WWW-Authenticate", "Basic  Realm=\"WSO2-Registry\"").build();
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    private boolean isAnonymousUser() {
+        return CarbonConstants.REGISTRY_ANONNYMOUS_USERNAME.equals
+                (CarbonContext.getThreadLocalCarbonContext().getUsername());
     }
 
     private Response getRawContentOfGovernanceAsset(String assetType, String id) throws RegistryException {
@@ -590,6 +612,11 @@ public class Asset {
                 String mediaType = getMediaTypeForDownloading(artifact.getMediaType());
                 return Response.ok(resource.getContentStream()).type(mediaType).
                         header(CONTENT_DISPOSITION, "filename=" + getFileName(shortName, artifact)).build();
+
+            // Check whether artifact is actually does not exists or we are getting null because of anonymous user.
+            } else if (isAnonymousUser()) {
+                return handleStatusCode(id);
+
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -687,7 +714,11 @@ public class Asset {
                 if (artifact != null) {
                     TypedList<GenericArtifact> typedList = new TypedList<>(GenericArtifact.class, shortName,
                                                                            Arrays.asList(artifact), null);
-                    return Response.ok().entity(typedList).build();
+                    return Response.ok().entity(typedList).build();// Check whether artifact is actually does not exists or we are getting null because of anonymous user.
+
+                    // Check whether artifact is actually does not exists or we are getting null because of anonymous user.
+                } else if (isAnonymousUser()) {
+                    return handleStatusCode(id);
                 }
             }
             return Response.status(Response.Status.NOT_FOUND).build();
