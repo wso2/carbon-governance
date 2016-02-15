@@ -113,6 +113,16 @@
     </build>
 
     <repositories>
+       <repository>
+            <id>wso2.444</id>
+            <name>Apache Snapshot Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/orgwso2carbon-328/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
         <repository>
             <id>wso2-nexus</id>
             <name>WSO2 internal Repository</name>
@@ -1261,7 +1271,7 @@
 
     <properties>
         <!-- Carbon kernel version -->
-        <carbon.kernel.version>4.4.1</carbon.kernel.version>
+        <carbon.kernel.version>4.4.4</carbon.kernel.version>
         <carbon.kernel.imp.pkg.version>[4.4.0, 4.5.0)</carbon.kernel.imp.pkg.version>
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
@@ -1298,13 +1308,13 @@
         <rampart.wso2.version>1.6.1.wso2v16</rampart.wso2.version>
 
         <!-- Apache Axiom -->
-        <axiom.version>1.2.11-wso2v6</axiom.version>
-        <orbit.version.axiom>1.2.11.wso2v6</orbit.version.axiom>
-        <axiom.wso2.version>1.2.11.wso2v6</axiom.wso2.version>
-        <exp.pkg.version.axiom>1.2.11.wso2v6</exp.pkg.version.axiom>
-        <imp.pkg.version.axiom>[1.2.11.wso2v6, 1.3.0)</imp.pkg.version.axiom>
-        <axiom.osgi.version.range>[1.2.11.wso2v6, 1.3.0)</axiom.osgi.version.range>
-        <version.axiom>1.2.11-wso2v6</version.axiom>
+        <axiom.version>1.2.11-wso2v10</axiom.version>
+        <orbit.version.axiom>1.2.11.wso2v10</orbit.version.axiom>
+        <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
+        <exp.pkg.version.axiom>1.2.11.wso2v10</exp.pkg.version.axiom>
+        <imp.pkg.version.axiom>[1.2.11, 1.3.0)</imp.pkg.version.axiom>
+        <axiom.osgi.version.range>[1.2.11, 1.3.0)</axiom.osgi.version.range>
+        <version.axiom>1.2.11-wso2v10</version.axiom>
 
         <!-- XmlSchema Versions -->
         <orbit.version.xmlschema>1.4.7.wso2v2</orbit.version.xmlschema>

@@ -79,6 +79,7 @@
                             org.wso2.carbon.governance.common.*,
                         </Export-Package>
                         <Import-Package>
+                            javax.xml.parsers;version=0.0.0,
                             org.wso2.carbon.base.*,
                             org.wso2.carbon.utils.*,
                             javax.xml.parsers.*,
