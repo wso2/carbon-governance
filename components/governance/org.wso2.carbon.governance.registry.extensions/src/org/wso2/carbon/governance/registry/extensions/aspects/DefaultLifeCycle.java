@@ -64,6 +64,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.*;
 
 import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.*;
@@ -254,6 +255,8 @@ public class DefaultLifeCycle extends Aspect {
         statCollection.setUserName(CurrentSession.getUser());
         statCollection.setOriginalPath(resource.getPath());
         statCollection.setAspectName(aspectName);
+        //add lifecycle associate time as resource property
+        resource.setProperty(LifecycleConstants.LIFECYCLE_STATE_TIME.replace("aspect", aspectName), String.valueOf((new Timestamp(statCollection.getTimeMillis()))));
 
 //      writing the logs to the registry
         if (isAuditEnabled) {
@@ -456,17 +459,17 @@ public class DefaultLifeCycle extends Aspect {
 	        if (!currentState.equals(nextState)) {
 	            State state = (State) scxml.getChildren().get(nextState);
 	            resource.setProperty(stateProperty, state.getId().replace(".", " "));
-
-                resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
+	            resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
 	            clearCheckItems(resource, aspectName);
 	            clearTransitionApprovals(resource, aspectName);
 	            addCheckItems(resource, checkListItems.get(state.getId()), state.getId(), aspectName);
 	            addTransitionApprovalItems(resource, transitionApproval.get(state.getId()), state.getId(), aspectName);
 	            addScripts(state.getId(), resource,scriptElements.get(state.getId()), aspectName);
 	            addTransitionUI(resource, transitionUIs.get(state.getId()), aspectName);
-	
-	//            For auditing purposes
+	            //for auditing purposes
 	            statCollection.setTargetState(nextState);
+	            //add lifecycle state transition time as resource property
+	            resource.setProperty(LifecycleConstants.LIFECYCLE_STATE_TIME.replace("aspect", aspectName), String.valueOf((new Timestamp(statCollection.getTimeMillis()))));
 	        }
 	        if (!preserveOldResource) {
 	            requestContext.getRegistry().delete(resourcePath);
@@ -488,6 +491,8 @@ public class DefaultLifeCycle extends Aspect {
         if (resource != null) {
             resource.removeProperty(stateProperty);
             resource.removeProperty(lifecycleProperty);
+            //remote the property when removing the lifecycle
+            resource.removeProperty(LifecycleConstants.LIFECYCLE_STATE_TIME.replace("aspect",lifecycleProperty));
         }
     }
 

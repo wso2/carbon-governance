@@ -211,4 +211,6 @@ public class LifecycleConstants {
      * lifecycle checkpoint name QName.
      */
     public static final String LIFECYCLE_CHECKPOINT_NAME = "id";
+
+    public static final String LIFECYCLE_STATE_TIME = "registry.lifecycle.aspect.state.timestamp";
 }
