@@ -58,10 +58,16 @@ import static org.wso2.carbon.governance.api.util.GovernanceUtils.getGovernanceA
 import static org.wso2.carbon.governance.api.util.GovernanceUtils.getRXTConfigCache;
 
 public class CommonUtil {
+
     private static final Log log = LogFactory.getLog(CommonUtil.class);
 
     private final static Map<String, HashMap<String, String>>
-            associationConfigMap = new HashMap<String, HashMap<String, String>>();
+            associationConfigMap = new HashMap<>();
+    private final static Map<String, HashMap<String, String>>
+            reverseAssociationConfigMap = new HashMap<>();
+    public static final String REVERSE_ASSOCIATION = "reverseAssociation";
+    public static final String TYPE = "type";
+    public static final String ASSOCIATION_CONFIG = "AssociationConfig";
 
     private static int dependencyGraphMaxDepth = -1;
 
@@ -179,7 +185,7 @@ public class CommonUtil {
     }
 
     public static void addRxtConfigs(Registry systemRegistry, int tenantId) throws RegistryException {
-        loadAssociationConfig(systemRegistry, tenantId);
+        loadAssociationConfig();
         Cache<String,Boolean> rxtConfigCache = getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
         String rxtDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
                 "resources" + File.separator + "rxts";
@@ -268,25 +274,25 @@ public class CommonUtil {
     }
 
     /**
-     * This method reads the Association Config xml and populates the association map
-     * @param systemRegistry the registry object
-     * @param tenantId the tenant id of the current tenant
+     * This method reads the Association Config xml and populates the association and reverse association map.
      */
-    public static void loadAssociationConfig(Registry systemRegistry, int tenantId) {
-        String associationConfigFile = CarbonUtils.getCarbonConfigDirPath() + File.separator + GovernanceUtils.GOVERNANCE_CONFIG_FILE;
+    public static void loadAssociationConfig() {
+        String associationConfigFile =
+                CarbonUtils.getCarbonConfigDirPath() + File.separator + GovernanceUtils.GOVERNANCE_CONFIG_FILE;
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 
         try {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(new File(associationConfigFile));
             doc.getDocumentElement().normalize();
-            NodeList associationConfigNode = doc.getElementsByTagName("AssociationConfig");
+            NodeList associationConfigNode = doc.getElementsByTagName(ASSOCIATION_CONFIG);
             NodeList nodeList = associationConfigNode.item(0).getChildNodes();
 
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node association = nodeList.item(i);
                 if (association.getNodeType() == Node.ELEMENT_NODE) {
-                    HashMap<String, String> associationMap = new HashMap<String, String>();
+                    HashMap<String, String> associationMap = new HashMap<>();
+                    HashMap<String, String> reverseAssociationMap = new HashMap<>();
                     NodeList childNodeList = association.getChildNodes();
 
                     if (childNodeList != null) {
@@ -294,30 +300,86 @@ public class CommonUtil {
                             Node types = childNodeList.item(j);
                             if (types.getNodeType() == Node.ELEMENT_NODE) {
                                 associationMap.put(types.getNodeName(), types.getFirstChild().getNodeValue());
+                                if (((Element) types).hasAttribute(REVERSE_ASSOCIATION)) {
+                                    reverseAssociationMap.put(types.getNodeName(),
+                                            ((Element) types).getAttribute(REVERSE_ASSOCIATION));
+                                }
                             }
                         }
                     }
-                    associationConfigMap.put(((Element) association).getAttribute("type"), associationMap);
+                    associationConfigMap.put(((Element) association).getAttribute(TYPE), associationMap);
+                    reverseAssociationConfigMap.put(((Element) association).getAttribute(TYPE), reverseAssociationMap);
                 }
             }
         } catch (FileNotFoundException e) {
             log.error("Failed to find the governance.xml", e);
-        } catch (ParserConfigurationException e) {
+        } catch (ParserConfigurationException | SAXException e) {
             log.error("Failed to parse the governance.xml", e);
-        } catch (SAXException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error while reading the governance.xml", e);
         }
     }
 
-    public static HashMap<String, String> getAssociationConfig(String mediaType){
+    /**
+     * This method is used by greg-publisher-api.js to read the association configuration map.
+     * @param shortName     short name of the artifact type.
+     * @return              map containing association type as key and
+     */
+    public static HashMap<String, String> getAssociationConfig(String shortName){
         if(associationConfigMap.size() == 0){
             log.warn("Failed to find association mappings");
             return null;
         }
-        if(associationConfigMap.containsKey(mediaType)){
-            return associationConfigMap.get(mediaType);
+        if(associationConfigMap.containsKey(shortName)){
+            return associationConfigMap.get(shortName);
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * This method is used by greg-publisher-api.js to read the reverse association type for a given short name and
+     * association type.
+     * @param shortName         short name of the artifact type.
+     * @param associationType   association type from source asset to destination asset.
+     * @return                  reverse association type from destination asset to source asset.
+     */
+    public static String getReverseAssociationType(String shortName, String associationType){
+        if(reverseAssociationConfigMap.size() == 0){
+            log.warn("Failed to find reverse association mappings");
+            return null;
+        }
+        if(reverseAssociationConfigMap.containsKey(shortName) && reverseAssociationConfigMap.get(shortName)
+                .containsKey(associationType)){
+            return reverseAssociationConfigMap.get(shortName).get(associationType);
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * This method is used by greg-publisher-api.js to read the reverse association type for a given short name and
+     * association type when removing the bi-directional association. If the association removal is done from the
+     * destination asset, then this method will determine association type from source asset to destination asset.
+     * @param shortName         short name of the artifact type.
+     * @param associationType   association type from source asset to destination asset.
+     * @return                  reverse association type from source asset to destination asset.
+     */
+    public static String getAssociationTypeForRemoveOperation (String shortName, String
+            associationType){
+        if(reverseAssociationConfigMap.size() == 0){
+            log.warn("Failed to find association mappings");
+            return null;
+        }
+        String reverseAssociationType = null;
+        if(reverseAssociationConfigMap.containsKey(shortName)){
+            for (Map.Entry<String, String> entry : reverseAssociationConfigMap.get(shortName).entrySet()){
+                if(associationType.equals(entry.getValue())) {
+                    reverseAssociationType = entry.getKey();
+                    break;
+                }
+            }
+            return reverseAssociationType;
         }else{
             return null;
         }
