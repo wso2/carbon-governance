@@ -85,8 +85,9 @@ public class ComparatorUtils extends RegistryAbstractAdmin {
     public Comparison getArtifactTextDiff(String resourcePathOne, String resourcePathTwo)
             throws ComparisonException, WSDLException, RegistryException, UnsupportedEncodingException {
 
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-        Registry registry = RegistryCoreServiceComponent.getRegistryService().getSystemRegistry();
+        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Registry registry = RegistryCoreServiceComponent.getRegistryService().getRegistry(username, tenantId);
         Resource resourceOne = registry.get(resourcePathOne);
         Resource resourceTwo = registry.get(resourcePathTwo);
 
@@ -117,8 +118,9 @@ public class ComparatorUtils extends RegistryAbstractAdmin {
     public Comparison getArtifactDetailDiff(String resourcePathOne, String resourcePathTwo, String mediaType)
             throws ComparisonException, WSDLException, RegistryException, UnsupportedEncodingException {
 
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-        Registry registry = RegistryCoreServiceComponent.getRegistryService().getSystemRegistry();
+        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Registry registry = RegistryCoreServiceComponent.getRegistryService().getRegistry(username, tenantId);
         Resource resourceOne = registry.get(resourcePathOne);
         Resource resourceTwo = registry.get(resourcePathTwo);
 
