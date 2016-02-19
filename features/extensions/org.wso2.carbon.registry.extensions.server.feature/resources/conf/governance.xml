@@ -35,24 +35,24 @@
     <AssociationConfig>
 
         <Association type="default">
-            <security>policy</security>
-            <ownedBy>soapservice,restservice,wsdl</ownedBy>
-            <usedBy>soapservice,restservice,wsdl</usedBy>
-            <dependencies>soapservice,restservice,wsdl</dependencies>
+            <security reverseAssociation ="secures">policy</security>
+            <ownedBy reverseAssociation ="owns">soapservice,restservice,wsdl</ownedBy>
+            <usedBy reverseAssociation ="depends">soapservice,restservice,wsdl</usedBy>
+            <depends reverseAssociation ="usedBy">soapservice,restservice,wsdl</depends>
         </Association>
 
         <Association type="restservice">
-            <security>policy</security>
-            <ownedBy>restservice,soapservice,wsdl</ownedBy>
-            <usedBy>restservice,soapservice,wsdl</usedBy>
-            <dependencies>restservice,soapservice,wsdl,endpoint</dependencies>
+            <security reverseAssociation ="secures">policy</security>
+            <ownedBy reverseAssociation ="owns">restservice,soapservice,wsdl</ownedBy>
+            <usedBy reverseAssociation ="depends">restservice,soapservice,wsdl</usedBy>
+            <depends reverseAssociation ="usedBy">restservice,soapservice,wsdl,endpoint</depends>
         </Association>
 
         <Association type="soapservice">
-            <security>policy</security>
-            <ownedBy>soapservice,restservice,wsdl</ownedBy>
-            <usedBy>soapservice,restservice,wsdl</usedBy>
-            <dependencies>soapservice,restservice,wsdl,endpoint</dependencies>
+            <security reverseAssociation ="secures">policy</security>
+            <ownedBy reverseAssociation ="owns">soapservice,restservice,wsdl</ownedBy>
+            <usedBy reverseAssociation ="depends">soapservice,restservice,wsdl</usedBy>
+            <depends reverseAssociation ="usedBy">soapservice,restservice,wsdl,endpoint</depends>
         </Association>
 
     </AssociationConfig>
