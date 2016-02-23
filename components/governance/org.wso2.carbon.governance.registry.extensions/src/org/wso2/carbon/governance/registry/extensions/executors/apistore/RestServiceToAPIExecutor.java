@@ -173,7 +173,9 @@ public class RestServiceToAPIExecutor implements Execution {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
 
             for (String key : api.getAttributeKeys()) {
-                log.error(key + "  :  " + api.getAttribute(key));
+                if (log.isDebugEnabled()) {
+                    log.error(key + "  :  " + api.getAttribute(key));
+                }
             }
 
             if (api.getAttribute("overview_endpointURL") != null &&
