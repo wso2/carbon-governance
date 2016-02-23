@@ -707,7 +707,7 @@ public class Asset {
         if (validateAssetType(shortName)) {
             GenericArtifact artifact = getUniqueAsset(shortName, id);
             if (artifact != null) {
-                GenericArtifact belongToAsset = getBelongtoAsset(artifact);
+                GovernanceArtifact belongToAsset = getBelongtoAsset(artifact);
                 if (belongToAsset != null) {
                     includeBelongToAssetInfo(artifact, belongToAsset);
                 }
@@ -728,7 +728,7 @@ public class Asset {
         }
     }
 
-    private void includeBelongToAssetInfo(GenericArtifact artifact, GenericArtifact belongToAsset)
+    private void includeBelongToAssetInfo(GenericArtifact artifact, GovernanceArtifact belongToAsset)
             throws RegistryException {
         String belongToAssetID = getBelongToAssetID(belongToAsset);
         String belongToAssetShortName = getBelongToAssetShortName(belongToAsset);
@@ -736,7 +736,7 @@ public class Asset {
         artifact.addAttribute(Util.TEMP_BELONG_TO_ASSET_SHORT_NAME, belongToAssetShortName);
     }
 
-    private String getBelongToAssetShortName(GenericArtifact belongToAsset) throws RegistryException {
+    private String getBelongToAssetShortName(GovernanceArtifact belongToAsset) throws RegistryException {
         String mediaType = belongToAsset.getMediaType();
         GovernanceArtifactConfiguration configuration = GovernanceUtils
                 .findGovernanceArtifactConfigurationByMediaType(mediaType, getUserRegistry());
@@ -746,11 +746,11 @@ public class Asset {
         return null;
     }
 
-    private String getBelongToAssetID(GenericArtifact belongToAsset) {
+    private String getBelongToAssetID(GovernanceArtifact belongToAsset) {
         return belongToAsset.getId();
     }
 
-    private GenericArtifact getBelongtoAsset(GenericArtifact artifact) throws RegistryException {
+    private GovernanceArtifact getBelongtoAsset(GovernanceArtifact artifact) throws RegistryException {
         Association[] associations = getUserRegistry().getAssociations(artifact.getPath(),
                                                                        Util.ENDPOINT_ASSOCIATION_BELONG_TO);
         if (associations.length > 0) {
@@ -759,7 +759,7 @@ public class Asset {
                 String sourcePath = association.getSourcePath();
                 GovernanceArtifact source = GovernanceUtils.retrieveGovernanceArtifactByPath(getUserRegistry(),
                                                                                              sourcePath);
-                return (GenericArtifact) source;
+                return (GovernanceArtifact) source;
             }
         }
         return null;
