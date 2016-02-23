@@ -1784,6 +1784,7 @@ public class GovernanceUtils {
             throws GovernanceException {
         Map<String, String> fields = new HashMap<String, String>();
         Map<String, String> possibleProperties = new HashMap<String, String>();
+        GovernanceArtifactConfiguration artifactConfiguration;
 
         if (mediaType != null && !"".equals(mediaType)) {
             fields.put("mediaType", mediaType);
@@ -1791,6 +1792,11 @@ public class GovernanceUtils {
             return null;
         }
 
+        try {
+            artifactConfiguration = findGovernanceArtifactConfigurationByMediaType(mediaType, registry);
+        } catch (RegistryException e) {
+            throw new GovernanceException(e);
+        }
         List<String> possibleKeys = Arrays.asList("createdAfter", "createdBefore", "updatedAfter", "updatedBefore", "author", "author!", "associationType", "associationDest",
                 "updater", "updater!", "tags", "content", "mediaType", "mediaType!", "lcName", "lcState");
 
@@ -1857,8 +1863,14 @@ public class GovernanceUtils {
                         }
                         if(!subParts[0].equals("name")) {
                             possibleProperties.put(subParts[0], value);
+                            fields.put("overview_" + subParts[0], value.toLowerCase());
+                        } else {
+                            if (artifactConfiguration != null) {
+                                fields.put(artifactConfiguration.getArtifactNameAttribute(), value.toLowerCase());
+                            } else {
+                                fields.put("overview_" + subParts[0], value.toLowerCase());
+                            }
                         }
-                        fields.put("overview_" + subParts[0], value.toLowerCase());
                     }
                 }
             }
