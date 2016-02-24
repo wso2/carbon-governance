@@ -83,6 +83,8 @@ import javax.xml.stream.XMLStreamReader;
 public class GovernanceUtils {
 
     private static final Log log = LogFactory.getLog(GovernanceUtils.class);
+    private static final String OVERVIEW = "overview";
+    private static final String UNDERSCORE = "_";
     private static RegistryService registryService;
     //private static final String SEPARATOR = ":";
     private final static Map<Integer, List<GovernanceArtifactConfiguration>>
@@ -1863,12 +1865,12 @@ public class GovernanceUtils {
                         }
                         if(!subParts[0].equals("name")) {
                             possibleProperties.put(subParts[0], value);
-                            fields.put("overview_" + subParts[0], value.toLowerCase());
+                            fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
                         } else {
                             if (artifactConfiguration != null) {
                                 fields.put(artifactConfiguration.getArtifactNameAttribute(), value.toLowerCase());
                             } else {
-                                fields.put("overview_" + subParts[0], value.toLowerCase());
+                                fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
                             }
                         }
                     }
