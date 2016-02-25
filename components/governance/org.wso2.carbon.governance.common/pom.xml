@@ -81,7 +81,7 @@
                         <Import-Package>
                             org.wso2.carbon.base.*,
                             org.wso2.carbon.utils.*,
-                            javax.xml.parsers.*,
+                            javax.xml.parsers;version=0.0.0,
                             org.w3c.dom.*,
                             org.xml.sax.*,
                             org.apache.commons.logging.*,
