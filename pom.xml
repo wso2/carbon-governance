@@ -1261,12 +1261,12 @@
 
     <properties>
         <!-- Carbon kernel version -->
-        <carbon.kernel.version>4.4.1</carbon.kernel.version>
+        <carbon.kernel.version>4.4.3</carbon.kernel.version>
         <carbon.kernel.imp.pkg.version>[4.4.0, 4.5.0)</carbon.kernel.imp.pkg.version>
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.4.8</carbon.commons.version>
+        <carbon.commons.version>4.4.9</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.4.0, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Business Process -->
@@ -1274,7 +1274,7 @@
         <carbon.business.process.imp.pkg.version>[4.4.0, 4.5.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.5.1-SNAPSHOT</carbon.registry.version>
+        <carbon.registry.version>4.5.2-SNAPSHOT</carbon.registry.version>
         <carbon.registry.imp.pkg.version>[4.5.0, 5.0.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon governance version comes here-->
@@ -1295,7 +1295,7 @@
         <axis2.osgi.version.range>[1.6.1.wso2v12, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>
-        <rampart.wso2.version>1.6.1.wso2v16</rampart.wso2.version>
+        <rampart.wso2.version>1.6.1.wso2v19</rampart.wso2.version>
 
         <!-- Apache Axiom -->
         <axiom.version>1.2.11-wso2v6</axiom.version>
