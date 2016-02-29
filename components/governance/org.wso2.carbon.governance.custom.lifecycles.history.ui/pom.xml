@@ -55,7 +55,7 @@
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.apache.lucene.*,
                             org.wso2.carbon.governance.custom.lifecycles.checklist.stub.*;version="${carbon.governance.package.import.version.range}",
-                            org.wso2.carbon.user.mgt.stub.*;version="${carbon.commons.imp.pkg.version}",
+                            org.wso2.carbon.user.mgt.stub.*;version="${carbon.identity.imp.pkg.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
@@ -128,7 +128,7 @@
             <artifactId>org.wso2.carbon.registry.resource.stub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.commons</groupId>
+            <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.user.mgt.stub</artifactId>
         </dependency>
         <dependency>

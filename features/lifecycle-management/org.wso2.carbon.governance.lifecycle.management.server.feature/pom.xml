@@ -52,10 +52,10 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.mashup.utils</artifactId>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.mashup.javascript.hostobjects.registry</artifactId>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>rhino.wso2</groupId>
             <artifactId>js</artifactId>
@@ -123,7 +123,7 @@
                             <importBundles>
                                 <importBundleDef>org.wso2.carbon:org.wso2.carbon.mashup.utils</importBundleDef>
                                 <importBundleDef>
-                                    org.wso2.carbon:org.wso2.carbon.mashup.javascript.hostobjects.registry
+                                    org.wso2.carbon.governance:org.wso2.carbon.mashup.javascript.hostobjects.registry
                                 </importBundleDef>
                                 <importBundleDef>rhino.wso2:js</importBundleDef>
                                 <importBundleDef>commons-scxml.wso2:commons-scxml</importBundleDef>
