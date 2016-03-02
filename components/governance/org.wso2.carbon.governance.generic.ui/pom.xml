@@ -52,6 +52,7 @@
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
                             org.apache.lucene.*,
+                            org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.wso2.carbon.governance.generic.stub.*;version="${carbon.governance.package.import.version.range}",
                             *;resolution:=optional
                         </Import-Package>
