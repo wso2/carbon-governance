@@ -104,7 +104,7 @@
                 <heading>Environments</heading>
                 <heading>URL</heading>
             </subheading>
-            <field type="option-text" maxoccurs="unbounded">
+            <field type="option-text" maxoccurs="unbounded" url="true">
                 <name label="Endpoint">Endpoint</name>
                 <values>
                     <value>None</value>
