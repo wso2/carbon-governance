@@ -470,7 +470,8 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 Resource resource = registry.get(path);
                 for (Object object : resource.getProperties().keySet()) {
                     String property = (String) object;
-                    if (property.startsWith("registry.lifecycle.") && property.endsWith(".state") && property.contains(lifeCycleName)) {
+                    if (property.startsWith("registry.lifecycle.") && property.endsWith(".state") &&
+                            property.substring(0,property.lastIndexOf(".")).endsWith(lifeCycleName)) {
                         return resource.getProperty(property);
                     }
                 }
