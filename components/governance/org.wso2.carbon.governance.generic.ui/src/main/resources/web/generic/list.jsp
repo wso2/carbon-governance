@@ -666,8 +666,6 @@ td.deprecate-warning {
                                 key="delete"/></a><% } %>
                             <a onclick="downloadDependencies('<%=artifact.getPath()%>')"  href="#"
                                 class="icon-link registryWriteOperation" style="background-image:url(../resources/images/icon-download.jpg);"><fmt:message key="download"/></a>
-                            <a  href="../../publisher/pages/impact?path=<%=URLEncoder.encode(artifact.getPath(), "UTF-8")%>"
-                                class="icon-link" style="background-image:url(../relations/images/dep-tree.gif);"><fmt:message key="impact.analysis"/></a>
                         </td>
                         <%
                         } else {
