@@ -725,7 +725,10 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 if (!destinationPath.equals(path)) {
                     GovernanceArtifact governanceArtifact =
                             GovernanceUtils.retrieveGovernanceArtifactByPath(registry, destinationPath);
-                    governanceArtifacts.add(governanceArtifact);
+                    //The Governance Artifact may not be returned if the user does not have permission to access it
+                    if(governanceArtifact!=null){
+                        governanceArtifacts.add(governanceArtifact);
+                    }
                 }
             }
         } catch (RegistryException e) {
@@ -757,7 +760,10 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 if (!destinationPath.equals(path)) {
                     GovernanceArtifact governanceArtifact =
                             GovernanceUtils.retrieveGovernanceArtifactByPath(registry, destinationPath);
-                    governanceArtifacts.add(governanceArtifact);
+                    //The Governance Artifact may not be returned if the user does not have permission to access it
+                    if(governanceArtifact!=null){
+                        governanceArtifacts.add(governanceArtifact);
+                    }
                 }
             }
         } catch (RegistryException e) {
