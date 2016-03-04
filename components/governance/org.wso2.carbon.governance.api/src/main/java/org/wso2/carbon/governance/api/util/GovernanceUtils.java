@@ -32,6 +32,7 @@ import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.common.util.ApproveItemBean;
 import org.wso2.carbon.governance.api.common.util.CheckListItemBean;
+import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.api.endpoints.dataobjects.Endpoint;
 import org.wso2.carbon.governance.api.endpoints.dataobjects.EndpointImpl;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
@@ -1104,13 +1105,13 @@ public class GovernanceUtils {
      * @return CheckListItemBean array extracted from the resource
      * @throws GovernanceException GovernanceException  if the operation failed.
      */
-    public static CheckListItemBean[] getAllCheckListItemBeans(Resource artifactResource,
-                                                               GovernanceArtifact artifact, String artifactLC) throws GovernanceException {
+    public static CheckListItemBean[] getAllCheckListItemBeans(Resource artifactResource, GovernanceArtifact artifact,
+            String artifactLC) throws GovernanceException {
         String defaultLC = artifactResource.getProperty("registry.LC.name");
 
         String artifactLCState = artifactResource.getProperty("registry.lifecycle." + artifactLC + ".state");
 
-        if(artifactLC.equals(defaultLC)) {
+        if (artifactLC.equals(defaultLC)) {
             ((GovernanceArtifactImpl) artifact).setLcState(artifactLCState);
         }
 
@@ -1123,7 +1124,8 @@ public class GovernanceUtils {
             String checkListPrefix = "registry.custom_lifecycle.checklist.";
             String checkListSuffix = ".item";
 
-            if (propertyKey.startsWith(checkListPrefix) && propertyKey.endsWith(checkListSuffix) && propertyKey.contains(artifactLC)) {
+            if (propertyKey.startsWith(checkListPrefix) && propertyKey.endsWith(checkListSuffix) && propertyKey
+                    .contains(GovernanceConstants.DOT + artifactLC + GovernanceConstants.DOT)) {
                 List<String> propValues = (List<String>) lifecycleProps.get(propertyKey);
                 CheckListItemBean checkListItem = new CheckListItemBean();
                 if (propValues != null && propValues.size() > 2) {
@@ -1651,7 +1653,8 @@ public class GovernanceUtils {
                         || propKey.startsWith("registry.custom_lifecycle.checklist.")
                         || propKey.startsWith("registry.LC.name")
                         || propKey.startsWith("registry.lifecycle.")
-                        || propKey.startsWith("registry.Aspects")) && propKey.contains(aspect)) {
+                        || propKey.startsWith("registry.Aspects"))
+                        && propKey.contains(GovernanceConstants.DOT + aspect + GovernanceConstants.DOT)) {
                     propertiesToRemove.add(propKey);
                 }
             }
