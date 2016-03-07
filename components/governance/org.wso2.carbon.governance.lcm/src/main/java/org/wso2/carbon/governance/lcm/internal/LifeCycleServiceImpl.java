@@ -25,10 +25,17 @@ import org.wso2.carbon.governance.lcm.exception.LifeCycleException;
 import org.wso2.carbon.governance.lcm.services.LifeCycleService;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.governance.lcm.util.LifecycleStateDurationUtils;
+import org.wso2.carbon.registry.api.GhostResource;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.caching.RegistryCacheKey;
+import org.wso2.carbon.registry.core.config.DataBaseConfiguration;
+import org.wso2.carbon.registry.core.config.Mount;
+import org.wso2.carbon.registry.core.config.RemoteConfiguration;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
 
@@ -36,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import javax.cache.Cache;
 
 /**
  * API implementation of the LifeCycleService(Used to fetch lifecycle information) .
@@ -72,7 +80,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             throws LifeCycleException {
         try {
             Registry registry = CommonUtil.getRootSystemRegistry(getTenantId());
-            String path = GovernanceUtils.getDirectArtifactPath(registry,artifactId);
+            String path = GovernanceUtils.getDirectArtifactPath(registry, artifactId);
             if (path != null) {
                 return LifecycleStateDurationUtils.getCurrentLifecycleStateDuration(path, lifecycleName,
                                                                                     registry);
@@ -95,6 +103,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             String[] roleNames = userRealm.getUserStoreManager().getRoleListOfUser(registry.getUserName());
             String path = GovernanceUtils.getArtifactPath(registry, artifactId);
             if (path != null) {
+                removeCache(registry, path);
                 Resource resource = registry.get(path);
                 return getCheckListItems(resource, artifactLC, roleNames, registry);
             } else {
@@ -278,5 +287,47 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         lifeCycleStateBean.setLifeCycleCheckListItemBeans(checkListItemList);
 
         return lifeCycleStateBean;
+    }
+
+    /**
+     * This method clears the cache for particular resource at given path.
+     * @param registry
+     * @param path
+     */
+    private static void removeCache(Registry registry, String path) {
+        String updatedPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + path;
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Cache<RegistryCacheKey, GhostResource> cache = RegistryUtils.
+                getResourceCache(RegistryConstants.REGISTRY_CACHE_BACKED_ID);
+        RegistryCacheKey cacheKey = null;
+
+        if (registry.getRegistryContext().getRemoteInstances().size() > 0) {
+            for (Mount mount : registry.getRegistryContext().getMounts()) {
+                for (RemoteConfiguration configuration : registry.getRegistryContext().getRemoteInstances()) {
+                    if (updatedPath.startsWith(mount.getPath())) {
+                        DataBaseConfiguration dataBaseConfiguration = registry.getRegistryContext().
+                                getDBConfig(configuration.getDbConfig());
+                        String connectionId = (dataBaseConfiguration.getUserName() != null
+                                               ? dataBaseConfiguration.getUserName().
+                                split("@")[0] : dataBaseConfiguration.getUserName()) + "@" + dataBaseConfiguration.getDbUrl();
+                        cacheKey = RegistryUtils.buildRegistryCacheKey(connectionId, tenantId, updatedPath);
+
+                        if (cacheKey != null && cache.containsKey(cacheKey)) {
+                            cache.remove(cacheKey);
+                        }
+                    }
+                }
+            }
+        } else {
+            DataBaseConfiguration dataBaseConfiguration = registry.getRegistryContext().getDefaultDataBaseConfiguration();
+            String connectionId = (dataBaseConfiguration.getUserName() != null
+                                   ? dataBaseConfiguration.getUserName().
+                    split("@")[0] : dataBaseConfiguration.getUserName()) + "@" + dataBaseConfiguration.getDbUrl();
+            cacheKey = RegistryUtils.buildRegistryCacheKey(connectionId, tenantId, updatedPath);
+
+            if (cacheKey != null && cache.containsKey(cacheKey)) {
+                cache.remove(cacheKey);
+            }
+        }
     }
 }
