@@ -1653,8 +1653,7 @@ public class GovernanceUtils {
                         || propKey.startsWith("registry.custom_lifecycle.checklist.")
                         || propKey.startsWith("registry.LC.name")
                         || propKey.startsWith("registry.lifecycle.")
-                        || propKey.startsWith("registry.Aspects"))
-                        && propKey.contains(GovernanceConstants.DOT + aspect + GovernanceConstants.DOT)) {
+                        || propKey.startsWith("registry.Aspects")) && propKey.contains(aspect)) {
                     propertiesToRemove.add(propKey);
                 }
             }
