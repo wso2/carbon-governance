@@ -37,17 +37,21 @@ public class GovernanceDiffGeneratorFactory implements DiffGeneratorFactory {
             List<String> comparatorClasses = GovernanceComparatorDataHolder.getInstance().getGovernanceConfiguration()
                     .getComparators();
             List<Comparator<?>> comparators = getcomparators(comparatorClasses);
-
+            DiffGenerator diffGenerator = new DiffGenerator(comparators);
+            return diffGenerator;
         }
-        return diffGenerator;
+        return null;
     }
 
     private List<Comparator<?>> getcomparators(List<String> comparatorClasses) {
         List<Comparator<?>> comparators = new ArrayList<>();
         for (String comparatorClass : comparatorClasses) {
             try {
-                Comparator<?> comparator = (Comparator<?>) getClass().getClassLoader().loadClass(comparatorClass).newInstance();
-                comparators.add(comparator);
+                if (!comparatorClass.contains("TextComparator")) {
+                    Comparator<?> comparator = (Comparator<?>) getClass().getClassLoader().loadClass(comparatorClass)
+                            .newInstance();
+                    comparators.add(comparator);
+                }
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 log.error("Error instantiating  Comparator class " + comparatorClass);
             }

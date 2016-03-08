@@ -30,6 +30,7 @@ public class ComparatorConstants {
     // WSDL constants
     public static final String WSDL_DECLARATION = "wsdl_declaration";
     public static final String WSDL_IMPORTS = "wsdl_imports";
+    public static final String WSDL_BINDINGS = "wsdl_bindings";
     public static final String WSDL_MESSAGES = "wsdl_messages";
     public static final String WSDL_PORTTYPES = "wsdl_porttype";
     public static final String WSDL_OPERATIONS = "wsdl_operations";

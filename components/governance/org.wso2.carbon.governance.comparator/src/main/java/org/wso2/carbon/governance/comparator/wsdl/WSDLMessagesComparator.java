@@ -72,21 +72,18 @@ public class WSDLMessagesComparator extends AbstractWSDLComparator {
 
 
         Set<QName> commonKeys = Sets.intersection(baseKeys, changedKeys);
-        if (section == null && commonKeys.size() > 0) {
-            section = comparison.newSection();
-        }
-        processChanges(section, commonKeys, base, changed);
+        processChanges(section, commonKeys, base, changed, comparison);
 
 
         if (section != null) {
-            comparison.addSection(ComparatorConstants.WSDL_IMPORTS, section);
+            comparison.addSection(ComparatorConstants.WSDL_MESSAGES, section);
         }
 
 
     }
 
     protected void processChanges(DefaultComparison.DefaultSection section,
-                                  Set<QName> commonKeys, Definition base, Definition changed) {
+            Set<QName> commonKeys, Definition base, Definition changed, DefaultComparison comparison) {
         Map<String, Message> baseMessages = base.getMessages();
         Map<String, Message> changedMessages = changed.getMessages();
         List<Message> leftMessages = new ArrayList<>();
@@ -101,6 +98,9 @@ public class WSDLMessagesComparator extends AbstractWSDLComparator {
                 }
             }
             if (leftMessages.size() > 0) {
+                if (section == null && commonKeys.size() > 0) {
+                    section = comparison.newSection();
+                }
                 section.addSectionSummary(Comparison.SectionType.CONTENT_CHANGE, ComparatorConstants.CHANGED_MESSAGES);
                 DefaultComparison.DefaultSection.DefaultTextChangeContent content = section.newTextChangeContent();
                 DefaultComparison.DefaultSection.DefaultTextChange textChange = section.newTextChange();
