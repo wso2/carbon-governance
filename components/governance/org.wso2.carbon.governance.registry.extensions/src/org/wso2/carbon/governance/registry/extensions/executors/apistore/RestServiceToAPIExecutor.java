@@ -33,6 +33,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.api.services.dataobjects.Service;
@@ -149,7 +150,7 @@ public class RestServiceToAPIExecutor implements Execution {
      * @param api
      * @param serviceName
      */
-    private void publishDataToAPIM(GenericArtifact api, String serviceName) {
+    private void publishDataToAPIM(GenericArtifact api, String serviceName) throws GovernanceException {
 
         if (apimEndpoint == null || apimUsername == null || apimPassword == null) {
             String msg = "APIManager endpoint URL or credentials are not defined";
@@ -214,7 +215,9 @@ public class RestServiceToAPIExecutor implements Execution {
             }
 
         } catch (Exception e) {
-            log.error("Error in updating APIM DB", e);
+            log.error("Error in updating APIM", e);
+            throw new GovernanceException("Error in updating APIM", e);
+
         }
         // after publishing update the lifecycle status
         //updateStatus(service, serviceName, httpContext);
@@ -225,7 +228,7 @@ public class RestServiceToAPIExecutor implements Execution {
      *
      * @param httpContext
      */
-    private void authenticateAPIM(HttpContext httpContext) {
+    private void authenticateAPIM(HttpContext httpContext) throws GovernanceException {
         String loginEP = apimEndpoint + "publisher/site/blocks/user/login/ajax/login.jag";
         try {
             // create a post request to addAPI.
@@ -247,6 +250,7 @@ public class RestServiceToAPIExecutor implements Execution {
 
         } catch (Exception e) {
             log.error("Authentication with APIM fails", e);
+            throw new GovernanceException("Authentication with APIM fails", e);
         }
     }
 
@@ -257,7 +261,7 @@ public class RestServiceToAPIExecutor implements Execution {
      * @param serviceName
      * @param httpContext
      */
-    private void updateStatus(Service service, String serviceName, HttpContext httpContext) {
+    private void updateStatus(Service service, String serviceName, HttpContext httpContext) throws GovernanceException {
         String lifeCycleEP =
                 apimEndpoint +
                 "publisher/site/blocks/life-cycles/ajax/life-cycles.jag";
@@ -285,6 +289,7 @@ public class RestServiceToAPIExecutor implements Execution {
 
         } catch (Exception e) {
             log.error("PublishedAPI status update failed", e);
+            throw new GovernanceException("PublishedAPI status update failed", e);
         }
     }
 }
