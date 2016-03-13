@@ -223,7 +223,7 @@ public class ServiceToAPIExecutor implements Execution {
         String[] endPoints=artifact.getAttributes(Constants.ENDPOINTS_ENTRY);
         List<String> endPointsList=Arrays.asList(endPoints);
 
-        params.add(new BasicNameValuePair(API_ENDPOINT,getEnvironmentUrl(endPointsList)));
+        //params.add(new BasicNameValuePair(API_ENDPOINT,getEnvironmentUrl(endPointsList)));
         params.add(new BasicNameValuePair(API_ACTION, API_ADD_ACTION));
         params.add(new BasicNameValuePair(API_NAME, serviceName));
         params.add(new BasicNameValuePair(API_CONTEXT, serviceName));
