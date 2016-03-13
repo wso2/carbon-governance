@@ -39,6 +39,7 @@ import org.wso2.carbon.governance.api.generic.dataobjects.GenericArtifact;
 import org.wso2.carbon.governance.api.services.dataobjects.Service;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
 import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsComponent;
+import org.wso2.carbon.governance.registry.extensions.utils.Constants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
@@ -49,10 +50,7 @@ import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
 
 import javax.xml.stream.XMLStreamException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants.*;
 
@@ -66,6 +64,7 @@ public class RestServiceToAPIExecutor implements Execution {
     private String apimEndpoint = null;
     private String apimUsername = null;
     private String apimPassword = null;
+    private String apimEnv = null;
     private String defaultTier = "Unlimited";
     private String apiThrottlingTier = "Unlimited,Unlimited,Unlimited,Unlimited,Unlimited";
 
@@ -107,6 +106,9 @@ public class RestServiceToAPIExecutor implements Execution {
         }
         if (parameterMap.get(THROTTLING_TIER) != null) {
             apiThrottlingTier = parameterMap.get(THROTTLING_TIER).toString();
+        }
+        if (parameterMap.get(Constants.APIM_ENV) != null) {
+            apimEnv = parameterMap.get(Constants.APIM_ENV).toString();
         }
     }
 
@@ -186,7 +188,7 @@ public class RestServiceToAPIExecutor implements Execution {
                 log.warn(msg);
             }
 
-            params.add(new BasicNameValuePair(API_ENDPOINT, api.getAttribute("overview_endpointURL")));
+            //params.add(new BasicNameValuePair(API_ENDPOINT, api.getAttribute("overview_endpointURL")));
             params.add(new BasicNameValuePair(API_ACTION, API_ADD_ACTION));
             params.add(new BasicNameValuePair(API_NAME, serviceName));
             params.add(new BasicNameValuePair(API_CONTEXT, serviceName));
@@ -200,10 +202,15 @@ public class RestServiceToAPIExecutor implements Execution {
             params.add(new BasicNameValuePair(API_VISIBLITY, DEFAULT_VISIBILITY));
             params.add(new BasicNameValuePair(API_THROTTLING_TIER, apiThrottlingTier));
 
-            String endpointConfigJson =
-                    "{\"production_endpoints\":{\"url\":\"" + api.getAttribute("overview_endpointURL") +
-                    "\",\"config\":null},\"endpoint_type\":\"http\"}";
-            params.add(new BasicNameValuePair("endpoint_config", endpointConfigJson));
+            String[] endPoints=api.getAttributes(Constants.ENDPOINTS_ENTRY);
+            List<String> endPointsList= Arrays.asList(endPoints);
+
+            if (endPointsList.size() > 0) {
+                String endpointConfigJson = "{\"production_endpoints\":{\"url\":\"" +
+                        getEnvironmentUrl(endPointsList) +
+                        "\",\"config\":null},\"endpoint_type\":\"http\"}";
+                params.add(new BasicNameValuePair(Constants.ENDPOINT_CONFIG, endpointConfigJson));
+            }
 
             httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
@@ -291,5 +298,14 @@ public class RestServiceToAPIExecutor implements Execution {
             log.error("PublishedAPI status update failed", e);
             throw new GovernanceException("PublishedAPI status update failed", e);
         }
+    }
+
+    private String getEnvironmentUrl(List<String> endpointsEntry) throws GovernanceException{
+        for (String att : endpointsEntry) {
+            if (att.substring(0, att.indexOf(Constants.COLUNM_SEPERATOR)).equalsIgnoreCase(apimEnv)) {
+                return att.substring(att.indexOf(Constants.COLUNM_SEPERATOR) + 1);
+            }
+        }
+        throw new GovernanceException("Related url is not available");
     }
 }
