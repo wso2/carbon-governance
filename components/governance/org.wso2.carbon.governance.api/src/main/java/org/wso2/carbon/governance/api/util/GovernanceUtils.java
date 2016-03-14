@@ -67,6 +67,8 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1808,10 +1810,10 @@ public class GovernanceUtils {
         if (StringUtils.isNotEmpty(criteria)) {
             String[] tempList = criteria.split("&");
             for (int i = 0; i < tempList.length; i++) {
-                if (tempList[i].contains("=")) {
-                    finalTempList.add(tempList[i]);
-                } else {
-                    finalTempList.set(i - 1, finalTempList.get(i - 1) + "&" + tempList[i]);
+                try {
+                    finalTempList.add(URLDecoder.decode(tempList[i], "utf-8"));
+                } catch (UnsupportedEncodingException e) {
+                    throw new GovernanceException("Error occurred while decoding the query params");
                 }
             }
         }
