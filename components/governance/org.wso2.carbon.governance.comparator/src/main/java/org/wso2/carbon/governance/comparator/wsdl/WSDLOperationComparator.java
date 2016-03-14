@@ -159,8 +159,8 @@ public class WSDLOperationComparator extends AbstractWSDLComparator {
             tempDefinition.addPortType(portType);
             WSDLComparisonUtils.copyNamespaces(definition, tempDefinition);
             String content = WSDLComparisonUtils.getWSDLWithoutDeclaration(tempDefinition);
-            content = content.replace("<wsdl:portType name=\"temp\">", "");
-            content = content.substring(content.indexOf("<"));
+            content = content.substring(content.indexOf(">") + 2);
+//            content = content.replace("<wsdl:portType name=\"temp\">", "");
             return content.replace("</wsdl:portType>", "");
 
         } catch (WSDLException e) {

@@ -73,10 +73,7 @@ public class WSDLBindingsComparator extends AbstractWSDLComparator {
         processRemovals(section, removals, base);
 
         Map<QName, MapDifference.ValueDifference<Binding>> changes = mapDiff.entriesDiffering();
-        if (section == null && changes.size() > 0) {
-            section = comparison.newSection();
-        }
-        processChanges(section, changes, base, changed);
+        section = processChanges(section, comparison, changes, base, changed);
 
         if (section != null) {
             comparison.addSection(ComparatorConstants.WSDL_BINDINGS, section);
@@ -105,23 +102,31 @@ public class WSDLBindingsComparator extends AbstractWSDLComparator {
         }
     }
 
-    private void processChanges(DefaultComparison.DefaultSection section,
+    private DefaultComparison.DefaultSection processChanges(DefaultComparison.DefaultSection section, DefaultComparison comparison,
             Map<QName, MapDifference.ValueDifference<Binding>> changes, Definition base, Definition changed) {
         if (changes.size() > 0) {
-            section.addSectionSummary(Comparison.SectionType.CONTENT_CHANGE, ComparatorConstants.CHANGED_BINDING);
-            DefaultComparison.DefaultSection.DefaultTextChangeContent content = section.newTextChangeContent();
-            DefaultComparison.DefaultSection.DefaultTextChange change = section.newTextChange();
             List<Binding> left = new ArrayList<>();
             List<Binding> right = new ArrayList<>();
             for (MapDifference.ValueDifference<Binding> diff: changes.values()) {
-                left.add(diff.leftValue());
-                right.add(diff.rightValue());
+                if (!diff.leftValue().toString().equals(diff.rightValue().toString())) {
+                    left.add(diff.leftValue());
+                    right.add(diff.rightValue());
+                }
             }
-            change.setOriginal(getBindingsOnly(left, base));
-            change.setChanged(getBindingsOnly(right, changed));
-            content.setContent(change);
-            section.addContent(Comparison.SectionType.CONTENT_CHANGE, content);
+            if (left.size() > 0) {
+                if (section == null) {
+                    section = comparison.newSection();
+                }
+                section.addSectionSummary(Comparison.SectionType.CONTENT_CHANGE, ComparatorConstants.CHANGED_BINDING);
+                DefaultComparison.DefaultSection.DefaultTextChangeContent content = section.newTextChangeContent();
+                DefaultComparison.DefaultSection.DefaultTextChange change = section.newTextChange();
+                change.setOriginal(getBindingsOnly(left, base));
+                change.setChanged(getBindingsOnly(right, changed));
+                content.setContent(change);
+                section.addContent(Comparison.SectionType.CONTENT_CHANGE, content);
+            }
         }
+        return section;
     }
 
     private String getBindingsOnly(Collection<Binding> bindings, Definition definition) {
@@ -136,6 +141,5 @@ public class WSDLBindingsComparator extends AbstractWSDLComparator {
             log.error(e);
         }
         return null;
-
     }
 }
