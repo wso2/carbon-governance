@@ -45,6 +45,7 @@ public class WSDLTypesComparator extends AbstractWSDLComparator {
     protected void compareTypes (Definition base, Definition changed, DefaultComparison comparison) {
         DefaultComparison.DefaultSection section = null;
         Types baseTypes = base.getTypes();
-        baseTypes.
+        Types changedTypes = changed.getTypes();
+        // TODO : Fix me
     }
 }
