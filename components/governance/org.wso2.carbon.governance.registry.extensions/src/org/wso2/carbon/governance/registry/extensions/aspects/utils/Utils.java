@@ -141,7 +141,8 @@ public class Utils {
         Properties properties = (Properties) resource.getProperties().clone();
         for (Object o : properties.keySet()) {
             String key = (String) o;
-            if(key.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName)){
+            if(key.startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName +
+                    LifecycleConstants.DOT)){
                 resource.removeProperty(key);
             }
         }
