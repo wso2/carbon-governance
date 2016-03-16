@@ -34,7 +34,7 @@ public class TextComparator implements Comparator<String> {
     @Override
     public void compare(String base, String changed, Comparison comparison) throws ComparisonException {
         DefaultComparison.DefaultSection section = ((DefaultComparison) comparison).newSection();
-        section.addSectionSummary(Comparison.SectionType.CONTENT_TEXT, ComparatorConstants.TEXT_CHANGE);
+        section.addSectionSummary(Comparison.SectionType.CONTENT_TEXT, ComparatorConstants.TEXT_CHANGE_SUMMARY);
         DefaultComparison.DefaultSection.DefaultTextChangeContent content = section.newTextChangeContent();
         DefaultComparison.DefaultSection.DefaultTextChange textChange = section.newTextChange();
         textChange.setOriginal(base);

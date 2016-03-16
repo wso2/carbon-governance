@@ -128,7 +128,7 @@ public class ComparatorUtils extends RegistryAbstractAdmin {
         case ComparatorConstants.WSDL_MEDIA_TYPE:
             return getWSDLComparison(resourceOne, resourceTwo);
         default:
-            return null;
+            return getArtifactTextDiff(resourcePathOne, resourcePathTwo);
         }
     }
 

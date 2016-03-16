@@ -43,7 +43,8 @@ public class ComparatorConstants {
     public static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
     //Text messages
-    public static final String TEXT_CHANGE = "";
+    public static final String TEXT_CHANGE = "default";
+    public static final String TEXT_CHANGE_SUMMARY = "There are modifications";
     public static final String XML = "xml";
     public static final String JSON = "json";
     public static final String XML_INDENT_AMOUNT = "{http://xml.apache.org/xslt}indent-amount";
