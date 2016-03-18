@@ -203,14 +203,22 @@ public class RestServiceToAPIExecutor implements Execution {
             params.add(new BasicNameValuePair(API_THROTTLING_TIER, apiThrottlingTier));
 
             String[] endPoints=api.getAttributes(Constants.ENDPOINTS_ENTRY);
-            List<String> endPointsList= Arrays.asList(endPoints);
-
-            if (endPointsList.size() > 0) {
-                String endpointConfigJson = "{\"production_endpoints\":{\"url\":\"" +
-                        getEnvironmentUrl(endPointsList) +
-                        "\",\"config\":null},\"endpoint_type\":\"http\"}";
-                params.add(new BasicNameValuePair(Constants.ENDPOINT_CONFIG, endpointConfigJson));
+            if (endPoints != null && endPoints.length > 0) {
+                List<String> endPointsList= Arrays.asList(endPoints);
+                if (endPointsList.size() > 0) {
+                    String endpointConfigJson = "{\"production_endpoints\":{\"url\":\"" +
+                            getEnvironmentUrl(endPointsList) +
+                            "\",\"config\":null},\"endpoint_type\":\"http\"}";
+                    params.add(new BasicNameValuePair(Constants.ENDPOINT_CONFIG, endpointConfigJson));
+                }else {
+                    String msg = "Endpoint is a must attribute to create an API definition at the APIStore";
+                    throw new GovernanceException(msg);
+                }
+            } else {
+                String msg = "Endpoint is a must attribute to create an API definition at the APIStore";
+                throw new GovernanceException(msg);
             }
+
 
             httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
