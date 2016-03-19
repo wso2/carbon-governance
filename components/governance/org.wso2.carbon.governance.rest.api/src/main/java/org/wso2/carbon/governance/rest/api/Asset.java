@@ -494,6 +494,7 @@ public class Asset {
     }
 
     /**
+     * Adding content type rxt resource to registry.
      *
      * @param registry          registry instance.
      * @param parentPath        storage path if have any.
