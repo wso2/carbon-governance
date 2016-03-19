@@ -37,6 +37,7 @@ import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
 import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
+import org.wso2.carbon.governance.rest.api.util.CommonConstants;
 import org.wso2.carbon.governance.rest.api.util.Util;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
@@ -98,7 +99,6 @@ public class Asset {
     public static final String CONTENT_TYPE_POLICY = "policy";
     public static final String ATTR_CONTENT_TYPE = "content_type";
     public static final String CONTENT_DISPOSITION = "Content-Disposition";
-    public static final String OVERVIEW_VERSION = "overview_version";
 
     private final Log log = LogFactory.getLog(Asset.class);
 
@@ -459,19 +459,21 @@ public class Asset {
 
             if (isContentType(shortName, genericArtifact)) {
                 String[][] propertyArray = new String[2][2];
-                propertyArray[0][0] = "version";
-                propertyArray[0][1] = genericArtifact.getAttribute(OVERVIEW_VERSION);
-                propertyArray[1][0] = "resource.source";
-                propertyArray[1][1] = "GovernanceAPI";
+                propertyArray[0][0] = CommonConstants.VERSION;
+                propertyArray[0][1] = genericArtifact.getAttribute(CommonConstants.OVERVIEW_VERSION);
+                propertyArray[1][0] = CommonConstants.RESOURCE_SOURCE;
+                propertyArray[1][1] = CommonConstants.GOVERNANCE_API;
 
                 Registry registry = getUserRegistry();
 
-                // overview_path is not a mandatory for known asset types.
-                // for unknown asset types '/_system/governance/' will be appended by the system
+                // overview_path(storage path) is not mandatory for known asset types such as wsdl, wadl, swagger,etc...
+                // For unknown asset types '/_system/governance/' will be appended by the system
                 boolean isSuccessful = importResourceWithRegistry(registry,
-                        genericArtifact.getAttribute("overview_path") + genericArtifact.getAttribute(OVERVIEW_VERSION),
-                        genericArtifact.getAttribute("overview_name"), genericArtifact.getAttribute("overview_type"),
-                        null, genericArtifact.getAttribute("overview_url"), null, propertyArray);
+                        genericArtifact.getAttribute(CommonConstants.OVERVIEW_PATH) + genericArtifact
+                                .getAttribute(CommonConstants.OVERVIEW_VERSION),
+                        genericArtifact.getAttribute(CommonConstants.OVERVIEW_NAME),
+                        genericArtifact.getAttribute(CommonConstants.OVERVIEW_TYPE), null,
+                        genericArtifact.getAttribute(CommonConstants.OVERVIEW_URL), null, propertyArray);
                 if (isSuccessful) {
                     return Response.status(Response.Status.CREATED).build();
                 } else {
