@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.governance.rest.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
@@ -32,6 +33,7 @@ import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.governance.common.GovernanceConfiguration;
 import org.wso2.carbon.governance.common.GovernanceConfigurationService;
+import org.wso2.carbon.governance.generic.services.ManageGenericArtifactService;
 import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
 import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
@@ -44,6 +46,12 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.secure.AuthorizationFailedException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.resource.services.ResourceService;
+import org.wso2.carbon.registry.resource.services.utils.AddResourceUtil;
+import org.wso2.carbon.registry.resource.services.utils.CommonUtil;
+import org.wso2.carbon.registry.resource.services.utils.GetTextContentUtil;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -91,6 +99,7 @@ public class Asset {
     public static final String CONTENT_TYPE_POLICY = "policy";
     public static final String ATTR_CONTENT_TYPE = "content_type";
     public static final String CONTENT_DISPOSITION = "Content-Disposition";
+    public static final String OVERVIEW_VERSION = "overview_version";
 
     private final Log log = LogFactory.getLog(Asset.class);
 
@@ -449,10 +458,26 @@ public class Asset {
         String shortName = Util.getShortName(assetType);
         if (validateAssetType(shortName)){
 
-            if(isContentType(shortName , genericArtifact)){
-                //TODO
-                Response.status(Response.Status.CONFLICT).build();
-                //createContentAsset(shortName, genericArtifact);
+            if (isContentType(shortName, genericArtifact)) {
+                String[][] propertyArray = new String[2][2];
+                propertyArray[0][0] = "version";
+                propertyArray[0][1] = genericArtifact.getAttribute(OVERVIEW_VERSION);
+                propertyArray[1][0] = "resource.source";
+                propertyArray[1][1] = "GovernanceAPI";
+
+                Registry registry = getUserRegistry();
+
+                // overview_path is not a mandatory for known asset types.
+                // for unknown asset types '/_system/governance/' will be appended by the system
+                boolean isSuccessful = importResourceWithRegistry(registry,
+                        genericArtifact.getAttribute("overview_path") + genericArtifact.getAttribute(OVERVIEW_VERSION),
+                        genericArtifact.getAttribute("overview_name"), genericArtifact.getAttribute("overview_type"),
+                        null, genericArtifact.getAttribute("overview_url"), null, propertyArray);
+                if (isSuccessful) {
+                    return Response.status(Response.Status.CREATED).build();
+                } else {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                }
             } else {
                 try {
                     GenericArtifactManager manager = getGenericArtifactManager(shortName);
@@ -466,6 +491,46 @@ public class Asset {
             }
         }
         return validationFail(shortName);
+    }
+
+    /**
+     *
+     * @param registry          registry instance.
+     * @param parentPath        storage path if have any.
+     * @param resourceName      user defend resource name.
+     * @param mediaType         registry media type.
+     * @param description       resource description if have any.
+     * @param fetchURL          resource URL.
+     * @param symlinkLocation   symlink location if have any.
+     * @param properties        resource properties.
+     * @return isSuccessful     is successful or not.
+     * @throws RegistryException
+     */
+    private boolean importResourceWithRegistry(Registry registry, String parentPath, String resourceName,
+            String mediaType, String description, String fetchURL, String symlinkLocation, String[][] properties)
+            throws RegistryException {
+        if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
+            return false;
+        }
+
+        // Fix for file importation security verification - FileSystemImportationSecurityHotFixTestCase
+        if (StringUtils.isNotBlank(fetchURL) && fetchURL.toLowerCase().startsWith("file:")) {
+            String msg = "The source URL must not be file in the server's local file system";
+            throw new RegistryException(msg);
+        }
+
+        // Adding Source URL as property to end of the properties array.
+        String[][] newProperties = CommonUtil.setProperties(properties, "sourceURL", fetchURL);
+
+        // Data is directed to below AddResourceUtil.addResource from ImportResourceUtil.importResource
+        // Hence resource upload path will now go through put.
+        try {
+            AddResourceUtil.addResource(CommonUtil.calculatePath(parentPath, resourceName), mediaType, description,
+                    GetTextContentUtil.getByteContent(fetchURL), symlinkLocation, registry, newProperties);
+        } catch (Exception e) {
+            throw new GovernanceException("Error occurred while adding the resource.", e);
+        }
+        return true;
     }
 
     private void createContentAsset(String shortName, DetachedGenericArtifact genericArtifact)
