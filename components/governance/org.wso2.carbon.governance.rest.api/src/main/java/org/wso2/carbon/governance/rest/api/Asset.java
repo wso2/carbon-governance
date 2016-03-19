@@ -33,7 +33,6 @@ import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.governance.common.GovernanceConfiguration;
 import org.wso2.carbon.governance.common.GovernanceConfigurationService;
-import org.wso2.carbon.governance.generic.services.ManageGenericArtifactService;
 import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
 import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
