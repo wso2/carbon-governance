@@ -393,14 +393,14 @@ public class CommonUtil {
         }
     }
 
-    public static HashMap<String, String> getAssociationIcons(String shortName) {
-        if(associationTypeIconConfigMap.size() == 0) {
+    public static HashMap<String, String> getAssociationWithIcons(String shortName) {
+        if (associationTypeIconConfigMap.size() == 0) {
             log.warn("Failed to find association mappings");
             return null;
         }
-        if(associationTypeIconConfigMap.containsKey(shortName)){
+        if (associationTypeIconConfigMap.containsKey(shortName)) {
             return associationTypeIconConfigMap.get(shortName);
-        }else{
+        } else {
             return null;
         }
     }
