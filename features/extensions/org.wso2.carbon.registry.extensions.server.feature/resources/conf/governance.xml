@@ -35,24 +35,24 @@
     <AssociationConfig>
 
         <Association type="default">
-            <security reverseAssociation ="secures">policy</security>
-            <ownedBy reverseAssociation ="owns">soapservice,restservice,wsdl</ownedBy>
-            <usedBy reverseAssociation ="depends">soapservice,restservice,wsdl</usedBy>
-            <depends reverseAssociation ="usedBy">soapservice,restservice,wsdl</depends>
+            <security reverseAssociation ="secures" iconClass="fw-circle">policy</security>
+            <ownedBy reverseAssociation ="owns" iconClass="fw-circle">soapservice,restservice,wsdl</ownedBy>
+            <usedBy reverseAssociation ="depends" iconClass="fw-circle">soapservice,restservice,wsdl</usedBy>
+            <depends reverseAssociation ="usedBy" iconClass="fw-circle">soapservice,restservice,wsdl</depends>
         </Association>
 
         <Association type="restservice">
-            <security reverseAssociation ="secures">policy</security>
-            <ownedBy reverseAssociation ="owns">restservice,soapservice,wsdl</ownedBy>
-            <usedBy reverseAssociation ="depends">restservice,soapservice,wsdl</usedBy>
-            <depends reverseAssociation ="usedBy">restservice,soapservice,wsdl,endpoint</depends>
+            <security reverseAssociation ="secures" iconClass="fw-circle">policy</security>
+            <ownedBy reverseAssociation ="owns" iconClass="fw-circle">restservice,soapservice,wsdl</ownedBy>
+            <usedBy reverseAssociation ="depends" iconClass="fw-circle">restservice,soapservice,wsdl</usedBy>
+            <depends reverseAssociation ="usedBy" iconClass="fw-circle">restservice,soapservice,wsdl,endpoint</depends>
         </Association>
 
         <Association type="soapservice">
-            <security reverseAssociation ="secures">policy</security>
-            <ownedBy reverseAssociation ="owns">soapservice,restservice,wsdl</ownedBy>
-            <usedBy reverseAssociation ="depends">soapservice,restservice,wsdl</usedBy>
-            <depends reverseAssociation ="usedBy">soapservice,restservice,wsdl,endpoint</depends>
+            <security reverseAssociation ="secures" iconClass="fw-circle">policy</security>
+            <ownedBy reverseAssociation ="owns" iconClass="fw-circle">soapservice,restservice,wsdl</ownedBy>
+            <usedBy reverseAssociation ="depends" iconClass="fw-circle">soapservice,restservice,wsdl</usedBy>
+            <depends reverseAssociation ="usedBy" iconClass="fw-circle">soapservice,restservice,wsdl,endpoint</depends>
         </Association>
 
     </AssociationConfig>
