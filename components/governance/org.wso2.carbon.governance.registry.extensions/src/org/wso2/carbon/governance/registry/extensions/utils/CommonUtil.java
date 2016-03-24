@@ -65,9 +65,11 @@ public class CommonUtil {
             associationConfigMap = new HashMap<>();
     private final static Map<String, HashMap<String, String>>
             reverseAssociationConfigMap = new HashMap<>();
+    private static final Map<String, HashMap<String, String>> associationTypeIconConfigMap = new HashMap();
     public static final String REVERSE_ASSOCIATION = "reverseAssociation";
     public static final String TYPE = "type";
     public static final String ASSOCIATION_CONFIG = "AssociationConfig";
+    public static final String ICON_CLASS = "iconClass";
 
     private static int dependencyGraphMaxDepth = -1;
 
@@ -293,6 +295,7 @@ public class CommonUtil {
                 if (association.getNodeType() == Node.ELEMENT_NODE) {
                     HashMap<String, String> associationMap = new HashMap<>();
                     HashMap<String, String> reverseAssociationMap = new HashMap<>();
+                    HashMap iconClassMap = new HashMap();
                     NodeList childNodeList = association.getChildNodes();
 
                     if (childNodeList != null) {
@@ -304,11 +307,16 @@ public class CommonUtil {
                                     reverseAssociationMap.put(types.getNodeName(),
                                             ((Element) types).getAttribute(REVERSE_ASSOCIATION));
                                 }
+
+                                if(((Element)types).hasAttribute(ICON_CLASS)) {
+                                    iconClassMap.put(types.getNodeName(), ((Element)types).getAttribute(ICON_CLASS));
+                                }
                             }
                         }
                     }
                     associationConfigMap.put(((Element) association).getAttribute(TYPE), associationMap);
                     reverseAssociationConfigMap.put(((Element) association).getAttribute(TYPE), reverseAssociationMap);
+                    associationTypeIconConfigMap.put(((Element)association).getAttribute(TYPE), iconClassMap);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -380,6 +388,18 @@ public class CommonUtil {
                 }
             }
             return reverseAssociationType;
+        }else{
+            return null;
+        }
+    }
+
+    public static HashMap<String, String> getAssociationIcons(String shortName) {
+        if(associationTypeIconConfigMap.size() == 0) {
+            log.warn("Failed to find association mappings");
+            return null;
+        }
+        if(associationTypeIconConfigMap.containsKey(shortName)){
+            return associationTypeIconConfigMap.get(shortName);
         }else{
             return null;
         }
