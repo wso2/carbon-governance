@@ -1853,6 +1853,7 @@ public class GovernanceUtils {
                             fields.put("mediaTypeNegate", "on");
                             break;
                         case "tags":
+                        case "associationType":
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
                             break;
