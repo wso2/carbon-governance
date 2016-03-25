@@ -35,24 +35,24 @@
     <AssociationConfig>
 
         <Association type="default">
-            <security>policy</security>
-            <ownedBy>soapservice,restservice,wsdl</ownedBy>
-            <usedBy>soapservice,restservice,wsdl</usedBy>
-            <dependancies>soapservice,restservice,wsdl</dependancies>
+            <security reverseAssociation ="secures" iconClass="fw-security">policy</security>
+            <ownedBy reverseAssociation ="owns" iconClass="fw-wso2">soapservice,restservice,wsdl</ownedBy>
+            <usedBy reverseAssociation ="depends" iconClass="fw-wso2">soapservice,restservice,wsdl</usedBy>
+            <depends reverseAssociation ="usedBy" iconClass="fw-wso2">soapservice,restservice,wsdl</depends>
         </Association>
 
         <Association type="restservice">
-            <security>policy</security>
-            <ownedBy>restservice,soapservice,wsdl</ownedBy>
-            <usedBy>restservice,soapservice,wsdl</usedBy>
-            <dependancies>restservice,soapservice,wsdl,endpoint</dependancies>
+            <security reverseAssociation ="secures" iconClass="fw-security">policy</security>
+            <ownedBy reverseAssociation ="owns" iconClass="fw-wso2">restservice,soapservice,wsdl</ownedBy>
+            <usedBy reverseAssociation ="depends" iconClass="fw-wso2">restservice,soapservice,wsdl</usedBy>
+            <depends reverseAssociation ="usedBy" iconClass="fw-wso2">restservice,soapservice,wsdl,endpoint</depends>
         </Association>
 
         <Association type="soapservice">
-            <security>policy</security>
-            <ownedBy>soapservice,restservice,wsdl</ownedBy>
-            <usedBy>soapservice,restservice,wsdl</usedBy>
-            <dependancies>soapservice,restservice,wsdl,endpoint</dependancies>
+            <security reverseAssociation ="secures" iconClass="fw-security">policy</security>
+            <ownedBy reverseAssociation ="owns" iconClass="fw-wso2">soapservice,restservice,wsdl</ownedBy>
+            <usedBy reverseAssociation ="depends" iconClass="fw-wso2">soapservice,restservice,wsdl</usedBy>
+            <depends reverseAssociation ="usedBy" iconClass="fw-wso2">soapservice,restservice,wsdl,endpoint</depends>
         </Association>
 
     </AssociationConfig>

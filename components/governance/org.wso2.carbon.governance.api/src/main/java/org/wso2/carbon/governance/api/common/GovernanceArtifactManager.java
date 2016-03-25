@@ -22,6 +22,8 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMText;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
@@ -167,16 +169,19 @@ public class GovernanceArtifactManager {
             log.error(msg);
             throw new GovernanceException(msg);
         }
-        validateArtifact(artifact);
         String artifactName = artifact.getQName().getLocalPart();
-        artifact.setAttributes(artifactNameAttribute,
-                new String[]{artifactName});
-        // namespace can be null
-        String namespace = artifact.getQName().getNamespaceURI();
-        if (artifactNamespaceAttribute != null) {
-            artifact.setAttributes(artifactNamespaceAttribute,
-                    new String[]{namespace});
+        if (artifactNameAttribute != null) {
+            if (StringUtils.isNotEmpty(artifactName)) {
+                artifact.setAttributes(artifactNameAttribute, new String[]{artifactName});
+            }
         }
+        String namespace = artifact.getQName().getNamespaceURI();
+        if (artifactNamespaceAttribute != null && StringUtils.isNotEmpty(namespace)) {
+            artifact.setAttributes(artifactNamespaceAttribute, new String[]{namespace});
+        }
+        setQName(artifact, artifactName, namespace);
+
+        validateArtifact(artifact);
 
         ((GovernanceArtifactImpl)artifact).associateRegistry(registry);
         boolean succeeded = false;
@@ -204,7 +209,13 @@ public class GovernanceArtifactManager {
                 path = updatedPath;
             }
             if (lifecycle != null){
-                registry.associateAspect(path, lifecycle);
+                String[] lifeCycles = lifecycle.split(",");
+                ArrayUtils.reverse(lifeCycles);
+                for (String attachingLifeCycle : lifeCycles) {
+                    if (StringUtils.isNotEmpty(attachingLifeCycle)) {
+                        registry.associateAspect(path, attachingLifeCycle);
+                    }
+                }
             }
 
             ((GovernanceArtifactImpl)artifact).updatePath();
@@ -253,6 +264,16 @@ public class GovernanceArtifactManager {
         }
     }
 
+    private void setQName(GovernanceArtifact artifact, String artifactName, String namespace) throws GovernanceException {
+        if (StringUtils.isNotEmpty(artifactNamespaceAttribute) && StringUtils.isNotEmpty(artifactNameAttribute)) {
+            QName qname = new QName(namespace, artifactName);
+            artifact.setQName(qname);
+        } else if (StringUtils.isNotEmpty(artifactNameAttribute)) {
+            QName qname = new QName(artifactName);
+            artifact.setQName(qname);
+        }
+    }
+
     private void addRelationships(String path, GovernanceArtifact artifact)
             throws RegistryException {
         Map<String, AssociationInteger> typeMap =
@@ -272,8 +293,8 @@ public class GovernanceArtifactManager {
                         if (registry.resourceExists(targetPath)) {
                             associationInteger.getAssociations().add(new Association(path, targetPath, type));
                         } else {
-                            if(log.isDebugEnabled()){
-                                log.debug("Can not add association. Resource does not exist at"+ targetPath);
+                            if (log.isDebugEnabled()) {
+                                log.debug("Can not add association. Resource does not exist at" + targetPath);
                             }
                         }
                     }
@@ -283,7 +304,7 @@ public class GovernanceArtifactManager {
                     }
                     for (String sourcePath :
                             GovernanceUtils.getPathsFromPathExpression(source, artifact)) {
-                        if(registry.resourceExists(sourcePath)) {
+                        if (registry.resourceExists(sourcePath)) {
                             associationInteger.getAssociations().add(new Association(sourcePath, path, type));
                         } else {
                             if (log.isDebugEnabled()) {
@@ -298,7 +319,7 @@ public class GovernanceArtifactManager {
                     associationInteger.setInteger(1);
                     for (String targetPath :
                             GovernanceUtils.getPathsFromPathExpression(target, artifact)) {
-                        if(registry.resourceExists(targetPath)) {
+                        if (registry.resourceExists(targetPath)) {
                             associationInteger.getAssociations().add(new Association(path, targetPath, type));
                         } else {
                             if (log.isDebugEnabled()) {
@@ -310,7 +331,7 @@ public class GovernanceArtifactManager {
                     associationInteger.setInteger(-1);
                     for (String sourcePath :
                             GovernanceUtils.getPathsFromPathExpression(source, artifact)) {
-                        if(registry.resourceExists(sourcePath)) {
+                        if (registry.resourceExists(sourcePath)) {
                             associationInteger.getAssociations().add(new Association(sourcePath, path, type));
                         } else {
                             if (log.isDebugEnabled()) {
@@ -381,7 +402,24 @@ public class GovernanceArtifactManager {
         boolean succeeded = false;
         try {
             registry.beginTransaction();
+
+            String artifactName = artifact.getQName().getLocalPart();
+            if (artifactNameAttribute != null) {
+                if (StringUtils.isNotEmpty(artifactName)) {
+                    artifact.setAttributes(artifactNameAttribute, new String[]{artifactName});
+                } else {
+                    artifactName = artifact.getAttribute(artifactNameAttribute);
+                }
+            }
+            String namespace = artifact.getQName().getNamespaceURI();
+            if (artifactNamespaceAttribute != null && StringUtils.isNotEmpty(namespace)) {
+                artifact.setAttributes(artifactNamespaceAttribute, new String[]{namespace});
+            } else if (artifactNamespaceAttribute != null) {
+                namespace = artifact.getAttribute(artifactNamespaceAttribute);
+            }
+            setQName(artifact, artifactName, namespace);
             validateArtifact(artifact);
+
             GovernanceArtifact oldArtifact = getGovernanceArtifact(artifact.getId());
             // first check for the old artifact and remove it.
             String oldPath = null;
@@ -392,15 +430,6 @@ public class GovernanceArtifactManager {
                     // then it is analogue to moving the resource for the new location
                     // so just delete the old path
                     registry.delete(temp);
-
-                    String artifactName = artifact.getQName().getLocalPart();
-                    artifact.setAttributes(artifactNameAttribute,
-                            new String[]{artifactName});
-                    String namespace = artifact.getQName().getNamespaceURI();
-                    if (artifactNamespaceAttribute != null) {
-                        artifact.setAttributes(artifactNamespaceAttribute,
-                                new String[]{namespace});
-                    }
                 } else {
                     oldPath = oldArtifact.getPath();
                 }
@@ -886,7 +915,13 @@ public class GovernanceArtifactManager {
                 String[] values = artifact.getAttributes((String)keys.get(0));
                 if (values != null) {
                     for (int j=0; j<values.length; ++j) {
-                        if (!values[j].matches((String)map.get("regexp"))) {
+                        if (map.containsKey("isMandatory") && (boolean)map.get("isMandatory") &&
+                            (values[j] == null || "".equals(values[j]))) {
+                            //return an exception to stop adding artifact
+                            throw new GovernanceException((String) map.get("name") + " is a required field, " +
+                                                          "Please provide a value for this parameter.");
+                        }
+                        if (map.containsKey("regexp") && !values[j].matches((String)map.get("regexp"))) {
                             //return an exception to stop adding artifact
                             throw new GovernanceException((String)map.get("name") + " doesn't match regex: " +
                                     (String)map.get("regexp"));
@@ -899,7 +934,14 @@ public class GovernanceArtifactManager {
                     if (j != 0) value += ":";
                     value += (v == null ? "" : v);
                 }
-                if (!value.matches((String)map.get("regexp"))) {
+                if (map.containsKey("isMandatory") && (boolean)map.get("isMandatory") &&
+                    (value == null || "".equals(value))) {
+                    //return an exception to stop adding artifact
+                    throw new GovernanceException((String) map.get("name") + " is a required field, " +
+                                                  "Please provide a value for this parameter.");
+                }
+                if (map.containsKey("regexp") && value != null && !value.equals("") &&
+                    !value.matches((String)map.get("regexp"))) {
                     //return an exception to stop adding artifact
                     throw new GovernanceException((String)map.get("name") + " doesn't match regex: " +
                             (String)map.get("regexp"));

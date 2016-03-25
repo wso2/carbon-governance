@@ -90,6 +90,7 @@ public class TypedList<T> {
         private Integer nextStart;
         private Integer previousStart;
         private String query;
+        private String tenant;
 
         public Pagination() {
         }
@@ -104,6 +105,7 @@ public class TypedList<T> {
                 this.previousStart = selfStart - count;
             }
             this.query = info.getQuery();
+            this.tenant = info.getTenant();
         }
 
         public Integer getCount() {
@@ -144,6 +146,14 @@ public class TypedList<T> {
 
         public void setQuery(String query) {
             this.query = query;
+        }
+
+        public String getTenant() {
+            return tenant;
+        }
+
+        public void setTenant(String tenant) {
+            this.tenant = tenant;
         }
 
         public class Entry {

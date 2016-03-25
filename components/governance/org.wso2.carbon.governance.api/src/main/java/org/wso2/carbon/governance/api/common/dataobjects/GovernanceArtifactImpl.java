@@ -207,6 +207,9 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             public QName getQName() {
                 return null;
             }
+            public void setQName(QName qName) throws GovernanceException {
+
+            }
         };
     }
 
@@ -220,6 +223,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             public QName getQName() {
                 return null;
             }
+            public void setQName (QName qName)  throws GovernanceException {}
         };
     }
 
@@ -466,7 +470,8 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 Resource resource = registry.get(path);
                 for (Object object : resource.getProperties().keySet()) {
                     String property = (String) object;
-                    if (property.startsWith("registry.lifecycle.") && property.endsWith(".state") && property.contains(lifeCycleName)) {
+                    if (property.startsWith("registry.lifecycle.") && property.endsWith(".state") &&
+                            property.substring(0,property.lastIndexOf(".")).endsWith(lifeCycleName)) {
                         return resource.getProperty(property);
                     }
                 }
@@ -720,7 +725,10 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 if (!destinationPath.equals(path)) {
                     GovernanceArtifact governanceArtifact =
                             GovernanceUtils.retrieveGovernanceArtifactByPath(registry, destinationPath);
-                    governanceArtifacts.add(governanceArtifact);
+                    //The Governance Artifact may not be returned if the user does not have permission to access it
+                    if(governanceArtifact!=null){
+                        governanceArtifacts.add(governanceArtifact);
+                    }
                 }
             }
         } catch (RegistryException e) {
@@ -752,7 +760,10 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 if (!destinationPath.equals(path)) {
                     GovernanceArtifact governanceArtifact =
                             GovernanceUtils.retrieveGovernanceArtifactByPath(registry, destinationPath);
-                    governanceArtifacts.add(governanceArtifact);
+                    //The Governance Artifact may not be returned if the user does not have permission to access it
+                    if(governanceArtifact!=null){
+                        governanceArtifacts.add(governanceArtifact);
+                    }
                 }
             }
         } catch (RegistryException e) {

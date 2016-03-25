@@ -20,6 +20,7 @@ package org.wso2.carbon.governance.rest.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
@@ -41,21 +42,9 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
+import org.wso2.carbon.registry.core.secure.AuthorizationFailedException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -67,6 +56,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 
 //TODO - test this
@@ -87,6 +90,7 @@ public class Asset {
     public static final String CONTENT_TYPE_SCHEMA = "schema";
     public static final String CONTENT_TYPE_POLICY = "policy";
     public static final String ATTR_CONTENT_TYPE = "content_type";
+    public static final String CONTENT_DISPOSITION = "Content-Disposition";
 
     private final Log log = LogFactory.getLog(Asset.class);
 
@@ -102,9 +106,10 @@ public class Asset {
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAssets(@PathParam("assetType") String assetType, @Context UriInfo uriInfo)
+    public Response getAssets(@PathParam("assetType") String assetType, @Context UriInfo uriInfo,
+                              @HeaderParam("X_TENANT") String tenant)
             throws RegistryException {
-        return getGovernanceAssets(assetType, uriInfo);
+        return getGovernanceAssets(assetType, uriInfo, tenant);
     }
 
     @GET
@@ -112,8 +117,15 @@ public class Asset {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAsset(@PathParam("assetType") String assetType, @PathParam("id") String id)
             throws RegistryException {
-        //TODO - Implement special logic to Content-Type Artifacts, e,g - for WSDL return WSDL content not attributes.
         return getGovernanceAsset(assetType, id);
+    }
+
+    @GET
+    @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/content")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAssetRawContent(@PathParam("assetType") String assetType, @PathParam("id") String id)
+            throws RegistryException {
+        return getRawContentOfGovernanceAsset(assetType, id);
     }
 
     @GET
@@ -181,8 +193,8 @@ public class Asset {
     @GET
     @Path("/endpoints")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getEndpoints(@Context UriInfo uriInfo) throws RegistryException {
-        return getGovernanceAssets(ENDPOINTS, uriInfo);
+    public Response getEndpoints(@Context UriInfo uriInfo, @HeaderParam("X_TENANT") String tenant) throws RegistryException {
+        return getGovernanceAssets(ENDPOINTS, uriInfo, tenant);
     }
 
     @GET
@@ -344,7 +356,7 @@ public class Asset {
         while (iterator.hasNext()) {
             Map.Entry<String, List<String>> entry = iterator.next();
             String value = entry.getValue().get(0);
-            if (value != null) {
+            if (value != null && !"tenant".equals(entry.getKey())) {
                 builder.append(entry.getKey() + "=" + value);
             }
             if (iterator.hasNext()) {
@@ -423,7 +435,9 @@ public class Asset {
             GenericArtifact artifact = genericArtifact.makeRegistryAware(manager);
             artifact.setId(id);
             manager.updateGenericArtifact(artifact);
-            URI link = new URL(Util.generateLink(assetType, id, baseURL)).toURI();
+            //Use 'generateLink' method with four parameters.
+            //Fix for REGISTRY-3129
+            URI link = new URL(Util.generateLink(assetType, id, baseURL, false)).toURI();
             return Response.created(link).build();
         } catch (MalformedURLException | URISyntaxException e) {
             throw new GovernanceException(e);
@@ -503,10 +517,11 @@ public class Asset {
     }
 
 
-    private Response getGovernanceAssets(String assetType, UriInfo uriInfo) throws RegistryException {
+    private Response getGovernanceAssets(String assetType, UriInfo uriInfo, String tenantHeader)
+            throws RegistryException {
         String shortName = Util.getShortName(assetType);
         if (validateAssetType(shortName)) {
-            PaginationInfo pagination = Util.getPaginationInfo(uriInfo.getQueryParameters());
+            PaginationInfo pagination = Util.getPaginationInfo(uriInfo.getQueryParameters(), tenantHeader);
             String query = createQuery(uriInfo);
             pagination.setQuery(query);
             List<GenericArtifact> artifacts = getAssetList(shortName, query, pagination);
@@ -560,11 +575,77 @@ public class Asset {
                 TypedList<GenericArtifact> typedList = new TypedList<>(GenericArtifact.class, shortName,
                                                                        Arrays.asList(artifact), null);
                 return Response.ok().entity(typedList).build();
+
+                // Check whether artifact is actually does not exists or we are getting null because of anonymous user.
+            } else if (isAnonymousUser()) {
+                return handleStatusCode(id);
+
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } else {
             return validationFail(shortName);
+        }
+    }
+
+    private Response handleStatusCode(String id) throws RegistryException {
+        String artifactPath = GovernanceUtils.getArtifactPath(getUserRegistry(), id);
+        try {
+            getUserRegistry().get(artifactPath);
+        } catch (AuthorizationFailedException e) {
+            return Response.status(401).header("WWW-Authenticate", "Basic  Realm=\"WSO2-Registry\"").build();
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    private boolean isAnonymousUser() {
+        return CarbonConstants.REGISTRY_ANONNYMOUS_USERNAME.equals
+                (CarbonContext.getThreadLocalCarbonContext().getUsername());
+    }
+
+    private Response getRawContentOfGovernanceAsset(String assetType, String id) throws RegistryException {
+        String shortName = Util.getShortName(assetType);
+        if (validateAssetType(shortName)) {
+            GenericArtifact artifact = getUniqueAsset(shortName, id);
+            if (artifact != null) {
+                Resource resource = getUserRegistry().get(artifact.getPath());
+                String mediaType = getMediaTypeForDownloading(artifact.getMediaType());
+                return Response.ok(resource.getContentStream()).type(mediaType).
+                        header(CONTENT_DISPOSITION, "filename=" + getFileName(shortName, artifact)).build();
+
+            // Check whether artifact is actually does not exists or we are getting null because of anonymous user.
+            } else if (isAnonymousUser()) {
+                return handleStatusCode(id);
+
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } else {
+            return validationFail(shortName);
+        }
+    }
+
+    private String getMediaTypeForDownloading(String mediaType) {
+        return mediaType.substring(0, mediaType.indexOf('/') + 1) + mediaType.substring(mediaType.indexOf('+') + 1);
+    }
+
+    private String getFileName(String shortName, GenericArtifact artifact) throws RegistryException {
+        if (isContentType(shortName)) {
+            return artifact.getPath().substring(artifact.getPath().lastIndexOf('/') + 1);
+        } else {
+            GovernanceArtifactConfiguration config = GovernanceUtils.
+                    findGovernanceArtifactConfiguration(shortName, getUserRegistry());
+            return artifact.getAttribute(config.getArtifactNameAttribute());
+        }
+    }
+
+    private boolean isContentType(String shortName) throws RegistryException {
+        GovernanceArtifactConfiguration config = GovernanceUtils.findGovernanceArtifactConfiguration(shortName,
+                                                                                                     getUserRegistry());
+        if (config.getExtension() != null) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -626,14 +707,18 @@ public class Asset {
         if (validateAssetType(shortName)) {
             GenericArtifact artifact = getUniqueAsset(shortName, id);
             if (artifact != null) {
-                GenericArtifact belongToAsset = getBelongtoAsset(artifact);
+                GovernanceArtifact belongToAsset = getBelongtoAsset(artifact);
                 if (belongToAsset != null) {
                     includeBelongToAssetInfo(artifact, belongToAsset);
                 }
                 if (artifact != null) {
                     TypedList<GenericArtifact> typedList = new TypedList<>(GenericArtifact.class, shortName,
                                                                            Arrays.asList(artifact), null);
-                    return Response.ok().entity(typedList).build();
+                    return Response.ok().entity(typedList).build();// Check whether artifact is actually does not exists or we are getting null because of anonymous user.
+
+                    // Check whether artifact is actually does not exists or we are getting null because of anonymous user.
+                } else if (isAnonymousUser()) {
+                    return handleStatusCode(id);
                 }
             }
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -643,7 +728,7 @@ public class Asset {
         }
     }
 
-    private void includeBelongToAssetInfo(GenericArtifact artifact, GenericArtifact belongToAsset)
+    private void includeBelongToAssetInfo(GenericArtifact artifact, GovernanceArtifact belongToAsset)
             throws RegistryException {
         String belongToAssetID = getBelongToAssetID(belongToAsset);
         String belongToAssetShortName = getBelongToAssetShortName(belongToAsset);
@@ -651,7 +736,7 @@ public class Asset {
         artifact.addAttribute(Util.TEMP_BELONG_TO_ASSET_SHORT_NAME, belongToAssetShortName);
     }
 
-    private String getBelongToAssetShortName(GenericArtifact belongToAsset) throws RegistryException {
+    private String getBelongToAssetShortName(GovernanceArtifact belongToAsset) throws RegistryException {
         String mediaType = belongToAsset.getMediaType();
         GovernanceArtifactConfiguration configuration = GovernanceUtils
                 .findGovernanceArtifactConfigurationByMediaType(mediaType, getUserRegistry());
@@ -661,11 +746,11 @@ public class Asset {
         return null;
     }
 
-    private String getBelongToAssetID(GenericArtifact belongToAsset) {
+    private String getBelongToAssetID(GovernanceArtifact belongToAsset) {
         return belongToAsset.getId();
     }
 
-    private GenericArtifact getBelongtoAsset(GenericArtifact artifact) throws RegistryException {
+    private GovernanceArtifact getBelongtoAsset(GovernanceArtifact artifact) throws RegistryException {
         Association[] associations = getUserRegistry().getAssociations(artifact.getPath(),
                                                                        Util.ENDPOINT_ASSOCIATION_BELONG_TO);
         if (associations.length > 0) {
@@ -674,7 +759,7 @@ public class Asset {
                 String sourcePath = association.getSourcePath();
                 GovernanceArtifact source = GovernanceUtils.retrieveGovernanceArtifactByPath(getUserRegistry(),
                                                                                              sourcePath);
-                return (GenericArtifact) source;
+                return (GovernanceArtifact) source;
             }
         }
         return null;

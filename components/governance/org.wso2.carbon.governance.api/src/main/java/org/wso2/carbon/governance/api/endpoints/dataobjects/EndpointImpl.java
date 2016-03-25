@@ -88,6 +88,11 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
         return new QName(name);
     }
 
+    @Override
+    public void setQName(QName qName) throws GovernanceException {
+        this.name = qName.getLocalPart();
+    }
+
     /**
      * Method to load the endpoint details into this artifact.
      *

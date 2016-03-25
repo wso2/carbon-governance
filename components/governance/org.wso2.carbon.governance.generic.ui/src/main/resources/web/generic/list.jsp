@@ -30,6 +30,7 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
+<%@ page import="org.wso2.carbon.utils.NetworkUtils" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.wso2.carbon.registry.core.pagination.PaginationContext" %>
@@ -50,6 +51,20 @@
 <script type="text/javascript" src="../generic/js/genericpagi.js"></script>
 <script type="text/javascript" src="../generic/js/generic.js"></script>
 <script type="text/javascript" src="js/artifacts-list.js"></script>
+<style type="text/css">
+td.deprecate-warning {
+    position: absolute;
+    top: 135px;
+    left: 262px;
+    right: 19px;
+    background-color: #FEEFB3;
+    font-weight: 600;
+    font-size: 12px;
+    color: #000;
+    padding: 10px;
+    width: auto;
+}
+</style>
 <%
     String key = request.getParameter("key");
     String breadcrumb = request.getParameter("breadcrumb");
@@ -249,7 +264,20 @@
             }, org_wso2_carbon_governance_generic_ui_jsi18n["session.timed.out"]);
         }
     </script>
-
+    <%
+            String hostName = "localhost";
+            String port = "9443";
+            try {
+                hostName = NetworkUtils.getMgtHostName();
+                port =  System.getProperty("mgt.transport.https.port");
+            } catch (Exception ignored) {
+            }
+     %>
+     <table width="100%" style="margin: 0px 0px 5px 0px;">
+        <tr>
+            <td class="deprecate-warning">From version 5.1.0 onwards, performing governance operations are deprecated from the management console. Please use the store app(<a href='https://<%=hostName%>:<%=port%>/store'>https://<%=hostName%>:<%=port%>/store</a>) instead.</td>
+        </tr>
+    </table>
     <div id="middle">
         <h2><fmt:message key="artifact.list"><fmt:param value="<%=singularLabel%>"/><</fmt:message></h2>
 
@@ -638,8 +666,6 @@
                                 key="delete"/></a><% } %>
                             <a onclick="downloadDependencies('<%=artifact.getPath()%>')"  href="#"
                                 class="icon-link registryWriteOperation" style="background-image:url(../resources/images/icon-download.jpg);"><fmt:message key="download"/></a>
-                            <a  href="../../publisher/pages/impact?path=<%=URLEncoder.encode(artifact.getPath(), "UTF-8")%>"
-                                class="icon-link" style="background-image:url(../relations/images/dep-tree.gif);"><fmt:message key="impact.analysis"/></a>
                         </td>
                         <%
                         } else {

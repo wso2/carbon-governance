@@ -80,6 +80,11 @@ public class GovernanceConstants {
     public static final String ENTRY_VALUE_SEPARATOR = ":";
 
     /**
+     * This is the character used in lifecycle property keys
+     */
+    public static final String DOT = ".";
+
+    /**
      * The index path of the governance artifacts.
      */
     public static final String GOVERNANCE_ARTIFACT_INDEX_PATH =

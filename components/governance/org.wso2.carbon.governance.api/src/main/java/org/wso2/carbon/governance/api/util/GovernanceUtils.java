@@ -19,6 +19,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jaxen.JaxenException;
@@ -72,7 +73,21 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
-import java.util.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,6 +97,8 @@ import java.util.regex.Pattern;
 public class GovernanceUtils {
 
     private static final Log log = LogFactory.getLog(GovernanceUtils.class);
+    private static final String OVERVIEW = "overview";
+    private static final String UNDERSCORE = "_";
     private static RegistryService registryService;
     //private static final String SEPARATOR = ":";
     private final static Map<Integer, List<GovernanceArtifactConfiguration>>
@@ -1101,13 +1118,13 @@ public class GovernanceUtils {
      * @return CheckListItemBean array extracted from the resource
      * @throws GovernanceException GovernanceException  if the operation failed.
      */
-    public static CheckListItemBean[] getAllCheckListItemBeans(Resource artifactResource,
-                                                               GovernanceArtifact artifact, String artifactLC) throws GovernanceException {
+    public static CheckListItemBean[] getAllCheckListItemBeans(Resource artifactResource, GovernanceArtifact artifact,
+            String artifactLC) throws GovernanceException {
         String defaultLC = artifactResource.getProperty("registry.LC.name");
 
         String artifactLCState = artifactResource.getProperty("registry.lifecycle." + artifactLC + ".state");
 
-        if(artifactLC.equals(defaultLC)) {
+        if (artifactLC.equals(defaultLC)) {
             ((GovernanceArtifactImpl) artifact).setLcState(artifactLCState);
         }
 
@@ -1120,7 +1137,8 @@ public class GovernanceUtils {
             String checkListPrefix = "registry.custom_lifecycle.checklist.";
             String checkListSuffix = ".item";
 
-            if (propertyKey.startsWith(checkListPrefix) && propertyKey.endsWith(checkListSuffix) && propertyKey.contains(artifactLC)) {
+            if (propertyKey.startsWith(checkListPrefix) && propertyKey.endsWith(checkListSuffix) && propertyKey
+                    .contains(GovernanceConstants.DOT + artifactLC + GovernanceConstants.DOT)) {
                 List<String> propValues = (List<String>) lifecycleProps.get(propertyKey);
                 CheckListItemBean checkListItem = new CheckListItemBean();
                 if (propValues != null && propValues.size() > 2) {
@@ -1783,6 +1801,7 @@ public class GovernanceUtils {
             throws GovernanceException {
         Map<String, String> fields = new HashMap<String, String>();
         Map<String, String> possibleProperties = new HashMap<String, String>();
+        GovernanceArtifactConfiguration artifactConfiguration;
 
         if (mediaType != null && !"".equals(mediaType)) {
             fields.put("mediaType", mediaType);
@@ -1790,11 +1809,27 @@ public class GovernanceUtils {
             return null;
         }
 
+        try {
+            artifactConfiguration = findGovernanceArtifactConfigurationByMediaType(mediaType, registry);
+        } catch (RegistryException e) {
+            throw new GovernanceException(e);
+        }
         List<String> possibleKeys = Arrays.asList("createdAfter", "createdBefore", "updatedAfter", "updatedBefore", "author", "author!", "associationType", "associationDest",
                 "updater", "updater!", "tags", "content", "mediaType", "mediaType!", "lcName", "lcState");
 
-        String[] tempList = criteria.split("&");
-        for(String temp : tempList) {
+        List<String> finalTempList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(criteria)) {
+            String[] tempList = criteria.split("&");
+            for (int i = 0; i < tempList.length; i++) {
+                try {
+                    finalTempList.add(URLDecoder.decode(tempList[i], "utf-8"));
+                } catch (UnsupportedEncodingException e) {
+                    throw new GovernanceException("Error occurred while decoding the query params");
+                }
+            }
+        }
+
+        for(String temp : finalTempList) {
             String[] subParts = temp.split("=");
             if(subParts.length != 2) {
                 String value = subParts[0].toLowerCase();
@@ -1818,6 +1853,7 @@ public class GovernanceUtils {
                             fields.put("mediaTypeNegate", "on");
                             break;
                         case "tags":
+                        case "associationType":
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
                             break;
@@ -1845,8 +1881,14 @@ public class GovernanceUtils {
                         }
                         if(!subParts[0].equals("name")) {
                             possibleProperties.put(subParts[0], value);
+                            fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
+                        } else {
+                            if (artifactConfiguration != null) {
+                                fields.put(artifactConfiguration.getArtifactNameAttribute(), value.toLowerCase());
+                            } else {
+                                fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
+                            }
                         }
-                        fields.put("overview_" + subParts[0], value.toLowerCase());
                     }
                 }
             }

@@ -42,7 +42,8 @@ public class GenericArtifactJSONWriter {
     public static final String ID = "id";
     public static final String TYPE = "type";
     public static final String OVERVIEW = "overview_";
-    public static final String LINK = "link";
+    public static final String SELF_LINK = "self-link";
+    public static final String CONTENT_LINK = "content-link";
     public static final String LINKS = "links";
     public static final String SELF = "self";
     public static final String PREV = "prev";
@@ -79,14 +80,14 @@ public class GenericArtifactJSONWriter {
             String nextURI = null;
             String prevURI = null;
             String selfURI = generateLink(shortName, baseURI, pagination.getQuery(), pagination.getSelfStart(),
-                                          pagination.getCount());
+                                          pagination.getCount(), pagination.getTenant());
             if (pagination.getNextStart() != null) {
                 nextURI = generateLink(shortName, baseURI, pagination.getQuery(), pagination.getNextStart(),
-                                       pagination.getCount());
+                                       pagination.getCount(), pagination.getTenant());
             }
             if (pagination.getPreviousStart() != null) {
                 prevURI = generateLink(shortName, baseURI, pagination.getQuery(), pagination.getPreviousStart(),
-                                       pagination.getCount());
+                                       pagination.getCount(), pagination.getTenant());
             }
             writer.name(LINKS);
             writer.beginObject();
@@ -107,7 +108,7 @@ public class GenericArtifactJSONWriter {
         printWriter.close();
     }
 
-    private String generateLink(String shortName, String baseURI, String query, int start, int count) {
+    private String generateLink(String shortName, String baseURI, String query, int start, int count, String tenant) {
         if (query != null && !query.isEmpty()) {
             query = query + "&";
         }
@@ -122,6 +123,12 @@ public class GenericArtifactJSONWriter {
         builder.append(PaginationInfo.PAGINATION_PARAM_COUNT);
         builder.append("=");
         builder.append(count);
+        if (tenant != null) {
+            builder.append("&");
+            builder.append(PaginationInfo.PAGINATION_PARAM_TENANT);
+            builder.append("=");
+            builder.append(tenant);
+        }
         return builder.toString();
     }
 
@@ -161,7 +168,9 @@ public class GenericArtifactJSONWriter {
                 }
             }
         }
-        writer.name(LINK).value(Util.generateLink(shortName, artifact.getId(), baseURI));
+        String self_link = Util.generateLink(shortName, artifact.getId(), baseURI);
+        writer.name(SELF_LINK).value(self_link);
+        writer.name(CONTENT_LINK).value(self_link + "/content");
         if (belongToLink != null) {
             writer.name(BELONG_TO).value(belongToLink);
         }

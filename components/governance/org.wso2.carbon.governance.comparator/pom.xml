@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance</artifactId>
-        <version>4.5.10-SNAPSHOT</version>
+        <version>4.6.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -75,6 +75,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.extensions.handlers.*,
+                            javax.xml.parsers; version=0.0.0,
                             org.apache.axis2.*; version="${axis2.osgi.version.range}",
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",

@@ -211,4 +211,9 @@ public class LifecycleConstants {
      * lifecycle checkpoint name QName.
      */
     public static final String LIFECYCLE_CHECKPOINT_NAME = "id";
+
+    /**
+     * This is the character used in lifecycle property keys
+     */
+    public static final String DOT = ".";
 }

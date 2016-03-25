@@ -80,7 +80,7 @@ public class Util {
         return assetType.substring(0, assetType.length() - 1);
     }
 
-    public static PaginationInfo getPaginationInfo(MultivaluedMap<String, String> queryParams) {
+    public static PaginationInfo getPaginationInfo(MultivaluedMap<String, String> queryParams, String tenantHeader) {
         PaginationInfo paginationInfo = new PaginationInfo();
 
         Integer start = getFirstIntValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_START));
@@ -106,6 +106,13 @@ public class Util {
         String sortBy = getFirstStringValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_SORT_BY));
         if (sortBy != null) {
             paginationInfo.setSortBy(sortBy);
+        }
+
+        String tenant = getFirstStringValue(queryParams.get(PaginationInfo.PAGINATION_PARAM_TENANT));
+        if (tenant != null) {
+            paginationInfo.setTenant(tenant);
+        } else if (tenantHeader != null) {
+            paginationInfo.setTenant(tenantHeader);
         }
 
         return paginationInfo;

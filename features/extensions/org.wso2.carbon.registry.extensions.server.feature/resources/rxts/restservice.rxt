@@ -31,13 +31,13 @@
     </ui>
     <content>
         <table name="Overview">
-            <field type="text" required="true">
+            <field type="text" required="true" readonly="true">
                 <name>Name</name>
             </field>
             <field type="text" required="true">
                 <name>Context</name>
             </field>
-            <field type="text" required="true">
+            <field type="text" required="true" readonly="true">
                 <name>Version</name>
             </field>
             <field type="text-area">
@@ -104,7 +104,7 @@
                 <heading>Environments</heading>
                 <heading>URL</heading>
             </subheading>
-            <field type="option-text" maxoccurs="unbounded">
+            <field type="option-text" maxoccurs="unbounded" url="true">
                 <name label="Endpoint">Endpoint</name>
                 <values>
                     <value>None</value>

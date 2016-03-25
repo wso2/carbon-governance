@@ -197,6 +197,10 @@ public class ServiceToAPIExecutor implements Execution {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
 
             String[] endPoints=artifact.getAttributes(Constants.ENDPOINTS_ENTRY);
+            if (endPoints == null || endPoints.length == 0){
+                String msg = "Service Endpoint is a must attribute to create an API definition at the APIStore";
+                throw new GovernanceException(msg);
+            }
             List<String> endPointsList= Arrays.asList(endPoints);
             if (endPointsList==null){
                 String msg = "Service Endpoint is a must attribute to create an API definition at the APIStore";
@@ -223,7 +227,7 @@ public class ServiceToAPIExecutor implements Execution {
         String[] endPoints=artifact.getAttributes(Constants.ENDPOINTS_ENTRY);
         List<String> endPointsList=Arrays.asList(endPoints);
 
-        params.add(new BasicNameValuePair(API_ENDPOINT,getEnvironmentUrl(endPointsList)));
+        //params.add(new BasicNameValuePair(API_ENDPOINT,getEnvironmentUrl(endPointsList)));
         params.add(new BasicNameValuePair(API_ACTION, API_ADD_ACTION));
         params.add(new BasicNameValuePair(API_NAME, serviceName));
         params.add(new BasicNameValuePair(API_CONTEXT, serviceName));

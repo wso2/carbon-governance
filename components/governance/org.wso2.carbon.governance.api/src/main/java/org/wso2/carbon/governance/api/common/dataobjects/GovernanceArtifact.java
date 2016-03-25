@@ -31,6 +31,13 @@ public interface GovernanceArtifact {
     QName getQName();
 
     /**
+     * Set the QName of the artifact.
+     *
+     * @param qName of the artifact
+     */
+    void setQName(QName qName) throws GovernanceException;
+
+    /**
      * Returns the id of the artifact
      *
      * @return the id

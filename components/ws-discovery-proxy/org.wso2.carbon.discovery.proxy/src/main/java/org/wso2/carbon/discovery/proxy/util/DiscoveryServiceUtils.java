@@ -27,7 +27,6 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.core.multitenancy.utils.TenantAxisUtils;
-import org.wso2.carbon.discovery.DiscoveryConstants;
 import org.wso2.carbon.discovery.DiscoveryException;
 import org.wso2.carbon.discovery.messages.Probe;
 import org.wso2.carbon.discovery.messages.TargetService;
@@ -103,7 +102,7 @@ public class DiscoveryServiceUtils {
         newService.addAttribute(SERVICE_VERSION_PREFIX, DEFAULT_SERVICE_VERSION);
         // Set the version if provided
         if (service.getMetadataVersion() != -1) {
-            newService.addAttribute(DiscoveryConstants.ATTR_METADATA_VERSION,
+            newService.addAttribute(DiscoveryConstants.ATTR_ARTIFACT_VERSION,
                     String.valueOf(service.getMetadataVersion()));
         }
 
