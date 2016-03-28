@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.governance.rest.api.internal;
 
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +29,7 @@ import org.wso2.carbon.governance.rest.api.util.Util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,16 +150,22 @@ public class GenericArtifactJSONWriter {
             if (!NAME.equals(key) && value != null) {
                 // If the attributes are more than one.
                 if (value.length > 1) {
-                    Map<Integer, String> valueMap = new HashMap<>();
+                    StringWriter stringWriter = new StringWriter();
+                    JsonWriter jsonWriter = new JsonWriter(stringWriter);
+                    jsonWriter.beginObject();
                     for (int i = 0; i < value.length; i++) {
                         // Setting the key and empty string map in JSON for empty values.
                         if (value[i] == null) {
                             value[i] = "";
                         }
-                        valueMap.put(i, value[i]);
+                        jsonWriter.name(Integer.toString(i)).value(value[i]);
                     }
-                    String jsonString = new Gson().toJson(valueMap);
-                    writer.name(key).value(jsonString);
+                    jsonWriter.endObject();
+                    jsonWriter.flush();
+                    jsonWriter.close();
+                    writer.name(key).value(stringWriter.toString());
+                    stringWriter.flush();
+                    stringWriter.close();
                     // If only one attribute is received.
                 } else if (value.length == 1) {
                     writer.name(key).value(value[0]);
