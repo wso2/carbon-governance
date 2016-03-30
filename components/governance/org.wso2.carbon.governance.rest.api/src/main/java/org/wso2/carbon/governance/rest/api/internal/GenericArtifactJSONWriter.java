@@ -137,11 +137,11 @@ public class GenericArtifactJSONWriter {
         String belongToLink = Util.generateBelongToLink(artifact, baseURI);
         for (String key : artifact.getAttributeKeys()) {
             //TODO value can be something else not a String value
+            // Get all attributes.
+            String[] value = artifact.getAttributes(key);
             if (key.indexOf(OVERVIEW) > -1) {
                 key = key.replace(OVERVIEW, "");
             }
-            // Get all attributes.
-            String[] value = artifact.getAttributes(key);
             if (!NAME.equals(key) && value != null) {
                 // If the attributes are more than one.
                 if (value.length > 1) {
