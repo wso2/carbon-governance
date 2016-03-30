@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.apache.axiom.om.OMElement" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUIGenerator" %>
@@ -161,22 +162,22 @@
   
 </script>
 <div id="middle">
-<h2><fmt:message key="filter.artifacts"><fmt:param value="<%=request.getParameter("pluralLabel")%>"/></fmt:message></h2>
+<h2><fmt:message key="filter.artifacts"><fmt:param value="<%=Encode.forHtmlContent(request.getParameter("pluralLabel"))%>"/></fmt:message></h2>
 <div id="workArea">
             <p style="padding:5px">
-                <fmt:message key="filter.artifacts.description"><fmt:param value="<%=request.getParameter("singularLabel")%>"/></fmt:message>
+                <fmt:message key="filter.artifacts.description"><fmt:param value="<%=Encode.forHtmlContent(request.getParameter("singularLabel"))%>"/></fmt:message>
             </p>
             <div id="activityReason" style="display: none;"></div>
             <form id="filterForm" action="filter_ajaxprocessor.jsp"
                   onsubmit="return submitFilterForm();" method="post">
-                <input type="hidden" name="dataName" value="<%=request.getParameter("dataName")%>"/>
-                <input type="hidden" name="singularLabel" value="<%=request.getParameter("singularLabel")%>"/>
-                <input type="hidden" name="pluralLabel" value="<%=request.getParameter("pluralLabel")%>"/>
-                <input type="hidden" name="dataNamespace" value="<%=request.getParameter("dataNamespace")%>">
-                <input type="hidden" name="key" value="<%=request.getParameter("key")%>">
-                <input type="hidden" name="region" value="<%=request.getParameter("list_region")%>">
-                <input type="hidden" name="item" value="<%=request.getParameter("list_item")%>">
-                <input type="hidden" name="breadcrumb" value="<%=request.getParameter("list_breadcrumb")%>">
+                <input type="hidden" name="dataName" value="<%=Encode.forHtmlContent(request.getParameter("dataName"))%>"/>
+                <input type="hidden" name="singularLabel" value="<%=Encode.forHtmlContent(request.getParameter("singularLabel"))%>"/>
+                <input type="hidden" name="pluralLabel" value="<%=Encode.forHtmlContent(request.getParameter("pluralLabel"))%>"/>
+                <input type="hidden" name="dataNamespace" value="<%=Encode.forHtmlContent(request.getParameter("dataNamespace"))%>">
+                <input type="hidden" name="key" value="<%=Encode.forHtmlContent(request.getParameter("key"))%>">
+                <input type="hidden" name="region" value="<%=Encode.forHtmlContent(request.getParameter("list_region"))%>">
+                <input type="hidden" name="item" value="<%=Encode.forHtmlContent(request.getParameter("list_item"))%>">
+                <input type="hidden" name="breadcrumb" value="<%=Encode.forHtmlContent(request.getParameter("list_breadcrumb"))%>">
                 <table class="styledLeft" id="#_innerTable">
                     <tr><td>
                         <%=table.toString()%>

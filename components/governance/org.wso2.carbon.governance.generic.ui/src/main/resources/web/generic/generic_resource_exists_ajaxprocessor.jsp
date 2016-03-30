@@ -37,7 +37,7 @@
 				for(int i = 0; i < bean.getSize(); i++)
 				{
 					String resourceName = bean.getName()[i];
-                    String path     = bean.getPath()[i];
+                    String path = bean.getPath()[i];
 					if(version != null)
 					{
                         //This fix was added to resolve the problem of false resource exists message when a different

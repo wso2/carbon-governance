@@ -18,6 +18,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUIGenerator" %>
 <%@ page import="org.apache.axiom.om.OMElement" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.UIGeneratorConstants" %>
@@ -109,10 +111,10 @@ td.deprecate-warning {
 
     <script type="text/javascript">
         <% if (request.getParameter("wsdlError") != null) { %>
-            CARBON.showErrorDialog(decodeURIComponent("<%=URLDecoder.decode(request.getParameter("wsdlError"), "UTF-8")%>"));
+            CARBON.showErrorDialog(decodeURIComponent("<%=URLDecoder.decode(Encode.forJavaScript(request.getParameter("wsdlError")), "UTF-8")%>"));
         <% } %>
         function addEditArtifact(){      
-        	
+            
         sessionAwareFunction(function() {
             var versionElement = document.getElementById('id_Overview_Version');
             if (versionElement) {
@@ -126,7 +128,7 @@ td.deprecate-warning {
                         return;
                     }
                 }
-            }	  
+            }     
             
                 getArtifactName();
                 var reason = "";
@@ -138,11 +140,11 @@ td.deprecate-warning {
             <%
                 //validate date fields
                 for (int i=0; i<dateIdAndNameList.length; ++i) { %>
-	                if (document.getElementById('<%=dateIdAndNameList[i][0]%>') != null) {
-	                	reason
-	                    += validateDate(document.getElementById('<%=dateIdAndNameList[i][0]%>'),
-	                       "<%=dateIdAndNameList[i][1]%>");
-	                }
+                    if (document.getElementById('<%=dateIdAndNameList[i][0]%>') != null) {
+                        reason
+                        += validateDate(document.getElementById('<%=dateIdAndNameList[i][0]%>'),
+                           "<%=dateIdAndNameList[i][1]%>");
+                    }
                     
                 <%}
             %>
@@ -338,8 +340,8 @@ td.deprecate-warning {
         }
         %>
         
-		<%=uigen.getUnboundedWidgets(head, request,config)%>
-		
+        <%=uigen.getUnboundedWidgets(head, request,config)%>
+        
     </script>
     <%
         if(table != null){
@@ -370,10 +372,10 @@ td.deprecate-warning {
                 <input type="hidden" name="dataName" value="<%=dataName%>"/>
                 <input type="hidden" name="dataNamespace" value="<%=dataNamespace%>"/>
                 <input type="hidden" name="breadcrumb" value="<%=breadcrumb%>"/>
-                <input type="hidden" name="region" value="<%=request.getParameter("region")%>"/>
-                <input type="hidden" name="item" value="<%=request.getParameter("item")%>"/>
-                <input type="hidden" name="key" value="<%=request.getParameter("key")%>"/>
-                <input type="hidden" name="lifecycleAttribute" value="<%=request.getParameter("lifecycleAttribute")%>"/>
+                <input type="hidden" name="region" value="<%=Encode.forHtml(request.getParameter("region"))%>"/>
+                <input type="hidden" name="item" value="<%=Encode.forHtml(request.getParameter("item"))%>"/>
+                <input type="hidden" name="key" value="<%=Encode.forHtml(request.getParameter("key"))%>"/>
+                <input type="hidden" name="lifecycleAttribute" value="<%=Encode.forHtml(request.getParameter("lifecycleAttribute"))%>"/>
                 <input type="hidden" name="currentPath" value=""/>
                 <table class="styledLeft" id="#_addTable">
                     <tr><td>

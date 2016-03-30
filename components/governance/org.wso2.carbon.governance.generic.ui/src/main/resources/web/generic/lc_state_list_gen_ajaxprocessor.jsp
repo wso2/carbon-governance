@@ -15,6 +15,7 @@
 ~ specific language governing permissions and limitations
 ~ under the License.
 -->
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 
 <%
@@ -27,7 +28,7 @@
     String statesHtml="<option " +((State == null||State.equals("0"))?"selected":"")+" value=\"0\">Any State</option>";
 
     for (String state:LCStates){
-        statesHtml = statesHtml+ "<option " +((State!=null&&State.equals(state))?"selected":"")+"  value=\""+ state +"\">"+ state +"</option>";
+        statesHtml = statesHtml+ "<option " +((State!=null&&State.equals(state))?"selected":"")+"  value=\""+ Encode.forHtmlContent(state) +"\">"+ Encode.forHtmlContent(state) +"</option>";
     }
     out.write(statesHtml);
 
