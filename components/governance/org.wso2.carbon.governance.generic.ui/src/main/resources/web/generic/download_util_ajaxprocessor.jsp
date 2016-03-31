@@ -16,6 +16,7 @@
  ~ under the License.
  -->
 
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.relations.stub.beans.xsd.DependenciesBean" %>
 <%@ page import="org.wso2.carbon.registry.relations.ui.clients.RelationServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.Utils" %>
@@ -24,7 +25,7 @@
 <%
         String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
         boolean hasDependencies;
-        String _path = request.getParameter("path");
+        String _path = Encode.forJava(request.getParameter("path"));
         try {
             RelationServiceClient relationClient = new RelationServiceClient(cookie,config,session);
             DependenciesBean dependenciesBean = relationClient.getDependencies(request);

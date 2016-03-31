@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="carbon" uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
@@ -169,7 +170,7 @@
     <h2><fmt:message key="generic.artifact.source"/></h2>
     <div id="workArea">
         <form id="generic.artifact.source.form" method="post" action="save_artifact_ajaxprocessor.jsp">
-            <input type="hidden" name="rxtName" id="rxtName" value="<%=rxtName%>"/>
+            <input type="hidden" name="rxtName" id="rxtName" value="<%=Encode.forHtmlContent(rxtName)%>"/>
             <table class="styledLeft" cellspacing="0" cellpadding="0">
                 <thead>
                 <tr>
@@ -190,7 +191,7 @@
                         <%      if (rxtPath == null) { %>
                         <input class="button registryWriteOperation" type="button" onclick="addRXT()" value="<fmt:message key="save"/>"/>
                         <%      } else { %>
-                        <input class="button registryWriteOperation" type="button" onclick="saveRXT('<%=rxtPath%>','<%=rxtName%>')" value="<fmt:message key="save"/>"/>
+                        <input class="button registryWriteOperation" type="button" onclick="saveRXT('<%=Encode.forHtmlContent(rxtPath)%>','<%=Encode.forHtmlContent(rxtName)%>')" value="<fmt:message key="save"/>"/>
                         <%      } %>
                         <input class="button registryNonWriteOperation" type="button" disabled="disabled" value="<fmt:message key="save"/>"/>
                         <input class="button" type="button" value="<fmt:message key="cancel"/>" onclick="javascript: cancelSequence(); return false;"/>

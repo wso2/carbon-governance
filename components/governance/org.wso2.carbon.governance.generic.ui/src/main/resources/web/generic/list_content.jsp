@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.governance.generic.stub.beans.xsd.ContentArtifactsBean" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.governance.lcm.ui.clients.LifeCycleManagementServiceClient" %>
@@ -88,9 +89,10 @@ td.deprecate-warning {
     String mediaType = request.getParameter("mediaType").replace(" ", "+");
     String item = request.getParameter("item");
     String region = request.getParameter("region");
-    String listURL = "list_content.jsp?" + "key=" + key + "&breadcrumb=" + breadcrumb +
-            "&singularLabel=" + singularLabel + "&pluralLabel=" + pluralLabel + "&hasNamespace=" +
-            hasNamespaceStr + "&item=" + item + "&region=" + region + "&mediaType=" + mediaType;
+    String listURL = "list_content.jsp?" + "key=" + Encode.forUriComponent(key) + "&breadcrumb=" + breadcrumb +
+            "&singularLabel=" + Encode.forUriComponent(singularLabel) + "&pluralLabel=" + Encode.forUriComponent(pluralLabel) + "&hasNamespace=" +
+            Encode.forUriComponent(hasNamespaceStr) + "&item=" + Encode.forUriComponent(item) + "&region=" + Encode.forUriComponent(region) + "&mediaType=" + Encode.forUriComponent(mediaType);
+    
     boolean hasNamespace = Boolean.parseBoolean(hasNamespaceStr);
     String filterKey = null;
     boolean filter = request.getParameter("filter") != null;
@@ -256,7 +258,7 @@ td.deprecate-warning {
     %>
     <table width="100%" style="margin: 0px 0px 5px 0px;">
         <tr>
-            <td class="deprecate-warning">From version 5.1.0 onwards, performing governance operations are deprecated from the management console. Please use the store app(<a href='https://<%=hostName%>:<%=port%>/store'>https://<%=hostName%>:<%=port%>/store</a>) instead.</td>
+            <td class="deprecate-warning">From version 5.1.0 onwards, performing governance operations are deprecated from the management console. Please use the publisher app(<a href='https://<%=hostName%>:<%=port%>/store'>https://<%=hostName%>:<%=port%>/store</a>) instead.</td>
         </tr>
     </table>
     <div id="middle">
@@ -270,50 +272,50 @@ td.deprecate-warning {
           Will fill this form and will sent to the advance filter--%>
             <form id="filterByNameForm" action="filter_name_ajaxprocessor.jsp"
                   onsubmit="return submitToNameFilter();" method="post">
-            <input type="hidden" name="singularLabel" value="<%=singularLabel%>"/>
-            <input type="hidden" name="pluralLabel" value="<%=pluralLabel%>"/>
-            <input type="hidden" name="key" value="<%=key%>">
-            <input type="hidden" name="region" value="<%=region%>">
-            <input type="hidden" name="item" value="<%=item%>">
-            <input type="hidden" name="breadcrumb" value="<%=breadcrumb%>">
-            <input type="hidden" name="hasNamespace" value="<%=hasNamespaceStr%>">
-            <input type="hidden" name="mediaType" value="<%=mediaType%>">
+            <input type="hidden" name="singularLabel" value="<%=Encode.forHtmlContent(singularLabel)%>"/>
+            <input type="hidden" name="pluralLabel" value="<%=Encode.forHtmlContent(pluralLabel)%>"/>
+            <input type="hidden" name="key" value="<%=Encode.forHtmlContent(key)%>">
+            <input type="hidden" name="region" value="<%=Encode.forHtmlContent(region)%>">
+            <input type="hidden" name="item" value="<%=Encode.forHtmlContent(item)%>">
+            <input type="hidden" name="breadcrumb" value="<%=Encode.forHtmlContent(breadcrumb)%>">
+            <input type="hidden" name="hasNamespace" value="<%=Encode.forHtmlContent(hasNamespaceStr)%>">
+            <input type="hidden" name="mediaType" value="<%=Encode.forHtmlContent(mediaType)%>">
             <input type="hidden" name="isContent" value="true">
             <input id="searchVal" type="hidden" name="Name" value="">
             <input id="filterBy" type="hidden" name="filterBy" value="<%=filterBy%>">
-            <input id="searchvalule" type="hidden" name="searchvalule" value="<%=searchvalule%>">
+            <input id="searchvalule" type="hidden" name="searchvalule" value="<%=Encode.forHtmlContent(searchvalule)%>">
             </form>
 
                 <%--This is a hidden form that is filled by the scripts when user search by LC. Will fill
        the form and will be sent to the LC filter--%>
             <form id="filterLCForm" action="contentfilter_lc_ajaxprocessor.jsp"
                   onsubmit="return submitToLCFilter();" method="post">
-                <input type="hidden" name="singularLabel" value="<%=singularLabel%>"/>
-                <input type="hidden" name="pluralLabel" value="<%=pluralLabel%>"/>
-                <input type="hidden" name="key" value="<%=key%>">
-                <input type="hidden" name="region" value="<%=region%>">
-                <input type="hidden" name="item" value="<%=item%>">
-                <input type="hidden" name="breadcrumb" value="<%=breadcrumb%>">
-                <input type="hidden" name="hasNamespace" value="<%=hasNamespaceStr%>">
-                <input type="hidden" name="mediaType" value="<%=mediaType%>">
+                <input type="hidden" name="singularLabel" value="<%=Encode.forHtmlContent(singularLabel)%>"/>
+                <input type="hidden" name="pluralLabel" value="<%=Encode.forHtmlContent(pluralLabel)%>"/>
+                <input type="hidden" name="key" value="<%=Encode.forHtmlContent(key)%>">
+                <input type="hidden" name="region" value="<%=Encode.forHtmlContent(region)%>">
+                <input type="hidden" name="item" value="<%=Encode.forHtmlContent(item)%>">
+                <input type="hidden" name="breadcrumb" value="<%=Encode.forHtmlContent(breadcrumb)%>">
+                <input type="hidden" name="hasNamespace" value="<%=Encode.forHtmlContent(hasNamespaceStr)%>">
+                <input type="hidden" name="mediaType" value="<%=Encode.forHtmlContent(mediaType)%>">
                 <input type="hidden" name="isContent" value="true">
-                <input id="searchVal2" type="hidden" name="lc_name" value="<%=lc_name%>">
-                <input id="searchVal3" type="hidden" name="lc_state" value="<%=lc_state%>">
-                <input id="searchVal4" type="hidden" name="lc_in_out" value="<%=lc_in_out%>">
-                <input id="searchVal5" type="hidden" name="lc_state_in_out" value="<%=lc_state_in_out%>">
+                <input id="searchVal2" type="hidden" name="lc_name" value="<%=Encode.forHtmlContent(lc_name)%>">
+                <input id="searchVal3" type="hidden" name="lc_state" value="<%=Encode.forHtmlContent(lc_state)%>">
+                <input id="searchVal4" type="hidden" name="lc_in_out" value="<%=Encode.forHtmlContent(lc_in_out)%>">
+                <input id="searchVal5" type="hidden" name="lc_state_in_out" value="<%=Encode.forHtmlContent(lc_state_in_out)%>">
             </form>
 
 
             <form id="tempFilterForm" onKeydown="Javascript: if (event.keyCode==13) {submitFilterForm(); return false;}"
                   onsubmit="return submitFilterForm();" method="post">
-                <input type="hidden" name="singularLabel" value="<%=singularLabel%>"/>
-                <input type="hidden" name="pluralLabel" value="<%=pluralLabel%>"/>
-                <input type="hidden" name="key" value="<%=key%>">
-                <input type="hidden" name="region" value="<%=region%>">
-                <input type="hidden" name="item" value="<%=item%>">
-                <input type="hidden" name="breadcrumb" value="<%=breadcrumb%>">
-                <input type="hidden" name="hasNamespace" value="<%=hasNamespaceStr%>">
-                <input type="hidden" name="mediaType" value="<%=mediaType%>">
+                <input type="hidden" name="singularLabel" value="<%=Encode.forHtmlContent(singularLabel)%>"/>
+                <input type="hidden" name="pluralLabel" value="<%=Encode.forHtmlContent(pluralLabel)%>"/>
+                <input type="hidden" name="key" value="<%=Encode.forHtmlContent(key)%>">
+                <input type="hidden" name="region" value="<%=Encode.forHtmlContent(region)%>">
+                <input type="hidden" name="item" value="<%=Encode.forHtmlContent(item)%>">
+                <input type="hidden" name="breadcrumb" value="<%=Encode.forHtmlContent(breadcrumb)%>">
+                <input type="hidden" name="hasNamespace" value="<%=Encode.forHtmlContent(hasNamespaceStr)%>">
+                <input type="hidden" name="mediaType" value="<%=Encode.forHtmlContent(mediaType)%>">
                 <input type="hidden" name="isContent" value="true">
                 <table id="#_innerTable" style="width:100%">
                     <tr id="buttonRow">
@@ -346,12 +348,12 @@ td.deprecate-warning {
                                     for (String next:temp) {
                                         if(once){
                                 %>
-                                <option value="<%=next%>" <%= ((request.getParameter("lc_name")==null||((request.getParameter("lc_name").equals(next))||(request.getParameter("lc_name").equals(""))))?" selected ":"") %> > <%=next%></option>
+                                <option value="<%=next%>" <%= ((request.getParameter("lc_name")==null||((request.getParameter("lc_name").equals(next))||(request.getParameter("lc_name").equals(""))))?" selected ":"") %> > <%=Encode.forHtmlContent(next)%></option>
                                 <%
                                     once = false;
                                 }else{
                                 %>
-                                <option <%= ((request.getParameter("lc_name")!=null&&(request.getParameter("lc_name").equals(next)))?" selected ":"") %> value="<%=next%>"><%=next%></option>
+                                <option <%= ((request.getParameter("lc_name")!=null&&(request.getParameter("lc_name").equals(next)))?" selected ":"") %> value="<%=next%>"><%=Encode.forHtmlContent(next)%></option>
 
                                 <%
                                         }
@@ -403,9 +405,9 @@ td.deprecate-warning {
                             if (filter) {
                         %>
                         <th><fmt:message key="no.artifact.matches.filter"><fmt:param
-                            value="<%=singularLabel%>"/></fmt:message></th>
+                            value="<%=Encode.forHtmlContent(singularLabel)%>"/></fmt:message></th>
                         <% } else { %>
-                        <th><fmt:message key="no.artifacts"><fmt:param value="<%=pluralLabel%>"/></fmt:message></th>
+                        <th><fmt:message key="no.artifacts"><fmt:param value="<%=Encode.forHtmlContent(pluralLabel)%>"/></fmt:message></th>
                         <% } %>
                     </tr>
                     </thead>
@@ -498,7 +500,7 @@ td.deprecate-warning {
                                 version = RegistryUtils.getResourceName(RegistryUtils.getParentPath(completePath));
                             }
                             if (isBrowseAuthorized) { %>
-                        <td><a href="../resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=urlCompletePath%>"><%=name%></a></td>
+                        <td><a href="../resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=Encode.forHtmlContent(urlCompletePath)%>"><%=name%></a></td>
                         <% if (hasNamespace) {%>
                         <td><%=namespace%></td>
                         <%}%>
@@ -510,17 +512,17 @@ td.deprecate-warning {
                             <%} else { %>
                             <a class="icon-link registryWriteOperation" style="background-image:url(./images/delete-desable.gif);color:#aaa !important;cursor:default;"><fmt:message key="delete"/></a>
                             <%} %>
-                            <a onclick="downloadDependencies('<%=completePath%>')"  href="#"
+                            <a onclick="downloadDependencies('<%=Encode.forHtmlContent(completePath)%>')"  href="#"
                                class="icon-link registryWriteOperation" style="background-image:url(../resources/images/icon-download.jpg);"><fmt:message key="download"/></a>
                         </td>
                         <td><a title="<fmt:message key="dependency"/>" onclick="showAssociationTree('depends','<%=completePath%>')" href="#" class="icon-link" style="background-image:url(../relations/images/dep-tree.gif);"> <fmt:message key="view.dependency"/></a> </td>
                         <% } else { %>
-                        <td><%=name%></td>
+                        <td><%=Encode.forHtmlContent(name)%></td>
                         <% if (hasNamespace) {%>
-                        <td><%=namespace%></td>
+                        <td><%=Encode.forHtmlContent(namespace)%></td>
                         <%}%>
-                        <td><%=version%></td>
-                        <% if (isLCAvailable) {%><td><%=LCState%></td><%} %>
+                        <td><%=Encode.forHtmlContent(version)%></td>
+                        <% if (isLCAvailable) {%><td><%=Encode.forHtmlContent(LCState)%></td><%} %>
                         <td><% if (isBrowseAuthorized) {%><a title="<fmt:message key="delete"/>" onclick="deleteArtifact('<%=completePath%>','/','<%=listURL%>')" href="#" class="icon-link registryWriteOperation" style="background-image:url(../admin/images/delete.gif);"><fmt:message key="delete"/></a><% }%> </td>
                         <td><a title="<fmt:message key="dependency"/>" onclick="CARBON.showWarningDialog('<fmt:message key="not.sufficient.permissions"/>');" href="#" class="icon-link" style="background-image:url(../relations/images/dep-tree.gif);"> <fmt:message key="view.dependency"/></a> </td>
                         <% } %>
@@ -546,31 +548,32 @@ td.deprecate-warning {
 
         function loadPagedList(page) {
             window.location = '<%="../generic/"+listURL+
-            ((request.getParameter("lc_name")!=null)?"&lc_name=" + request.getParameter("lc_name"):"") +
-            ((request.getParameter("lc_state")!=null)?"&lc_state=" + request.getParameter("lc_state"):"") +
-            ((request.getParameter("lc_in_out")!=null)?"&lc_in_out=" + request.getParameter("lc_in_out"):"") +
-            ((request.getParameter("lc_state_in_out")!=null)?"&lc_state_in_out=" + request.getParameter("lc_state_in_out"):"") +
-            ((request.getParameter("filterBy")!=null)?"&filterBy=" + request.getParameter("filterBy"):"")+
-            ((request.getParameter("searchValue")!=null)?"&searchValue=" + request.getParameter("searchValue"):"")+
-            ((request.getParameter("sortOrder")!=null)?"&sortOrder=" + request.getParameter("sortOrder"):"")+
-            ((request.getParameter("sortBy")!=null)?"&sortBy=" + request.getParameter("sortBy"):"")+
+            ((request.getParameter("lc_name")!=null)?"&lc_name=" + Encode.forJavaScript(request.getParameter("lc_name")):"") +
+            ((request.getParameter("lc_state")!=null)?"&lc_state=" + Encode.forJavaScript(request.getParameter("lc_state")):"") +
+            ((request.getParameter("lc_in_out")!=null)?"&lc_in_out=" + Encode.forJavaScript(request.getParameter("lc_in_out")):"") +
+            ((request.getParameter("lc_state_in_out")!=null)?"&lc_state_in_out=" + Encode.forJavaScript(request.getParameter("lc_state_in_out")):"") +
+            ((request.getParameter("filterBy")!=null)?"&filterBy=" + Encode.forJavaScript(request.getParameter("filterBy")):"")+
+            ((request.getParameter("searchValue")!=null)?"&searchValue=" + Encode.forJavaScript(request.getParameter("searchValue")):"")+
+            ((request.getParameter("sortOrder")!=null)?"&sortOrder=" + Encode.forJavaScript(request.getParameter("sortOrder")):"")+
+            ((request.getParameter("sortBy")!=null)?"&sortBy=" + Encode.forJavaScript(request.getParameter("sortBy")):"")+
             "&page="%>'+page;
         }
+        
         function sortContentList(sortBy, sortOrder) {
-
             window.location = '<%="../generic/list_content.jsp?" + ((request.getParameter("lc_name")!=null)?"lc_name=" +
-        request.getParameter("lc_name"):"") + ((request.getParameter("lc_state")!=null)?"&lc_state=" +
-        request.getParameter("lc_state"):"") + ((request.getParameter("lc_in_out")!=null)?"&lc_in_out=" +
-        request.getParameter("lc_in_out"):"") + ((request.getParameter("lc_state_in_out")!=null)?"&lc_state_in_out=" +
-        request.getParameter("lc_state_in_out"):"") +((request.getParameter("searchValue")!=null)?"&searchValue=" +
-        request.getParameter("searchValue"):"")+ ((request.getParameter("filter")!=null)?"&filter=" +
-        request.getParameter("filter"):"") +((request.getParameter("artby_name")!=null)?"&artby_name=" +
-        request.getParameter("artby_name"):"")+((request.getParameter("filterBy")!=null)?"&filterBy=" +
-        request.getParameter("filterBy"):"") +"&region=" +region +"&item="+item +
-        "&key=" + key+ "&breadcrumb=" + breadcrumb +"&mediaType="+ mediaType+
-        "&singularLabel="+ singularLabel+ "&pluralLabel=" +pluralLabel+ "&hasNamespace=" +hasNamespace%>' +
-        '<%="&sortOrder="%>' + sortOrder + '<%="&sortBy="%>' + sortBy;
+            Encode.forJavaScript(request.getParameter("lc_name")):"") + ((request.getParameter("lc_state")!=null)?"&lc_state=" +
+            Encode.forJavaScript(request.getParameter("lc_state")):"") + ((request.getParameter("lc_in_out")!=null)?"&lc_in_out=" +
+            Encode.forJavaScript(request.getParameter("lc_in_out")):"") + ((request.getParameter("lc_state_in_out")!=null)?"&lc_state_in_out=" +
+            Encode.forJavaScript(request.getParameter("lc_state_in_out")):"") +((request.getParameter("searchValue")!=null)?"&searchValue=" +
+            Encode.forJavaScript(request.getParameter("searchValue")):"")+ ((request.getParameter("filter")!=null)?"&filter=" +
+            Encode.forJavaScript(request.getParameter("filter")):"") +((request.getParameter("artby_name")!=null)?"&artby_name=" +
+            Encode.forJavaScript(request.getParameter("artby_name")):"")+((request.getParameter("filterBy")!=null)?"&filterBy=" +
+            Encode.forJavaScript(request.getParameter("filterBy")):"") +"&region=" +Encode.forJavaScript(region) +"&item="+Encode.forJavaScript(item) +
+            "&key=" + Encode.forJavaScript(key)+ "&breadcrumb=" + Encode.forJavaScript(breadcrumb) +"&mediaType="+ Encode.forJavaScript(mediaType)+
+            "&singularLabel="+ Encode.forJavaScript(singularLabel)+ "&pluralLabel=" + Encode.forJavaScript(pluralLabel) + "&hasNamespace=" + hasNamespace%>' +
+            '<%="&sortOrder="%>' + sortOrder + '<%="&sortBy="%>' + sortBy;
         }
+
     </script>
     <script type="text/javascript">
         // call after page loaded to generate LC state list.

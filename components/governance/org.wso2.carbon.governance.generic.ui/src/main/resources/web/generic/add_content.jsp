@@ -17,6 +17,7 @@
 -->
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.governance.generic.stub.beans.xsd.StoragePathBean" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUtil" %>
@@ -51,11 +52,11 @@ td.deprecate-warning {
             resourceBundle="org.wso2.carbon.governance.generic.ui.i18n.JSResources"
             request="<%=request%>" namespace="org.wso2.carbon.governance.generic.ui"/>
 <%
-    String breadcrumb = request.getParameter("breadcrumb");
-    String singularLabel = request.getParameter("singularLabel");
-    String mediaType = request.getParameter("mediaType").replace(" ", "+");
-    String extension = request.getParameter("extension");
-    String key = request.getParameter("key");
+    String breadcrumb = Encode.forJava(request.getParameter("breadcrumb"));
+    String singularLabel = Encode.forJava(request.getParameter("singularLabel"));
+    String mediaType = Encode.forJava(request.getParameter("mediaType").replace(" ", "+"));
+    String extension = Encode.forJava(request.getParameter("extension"));
+    String key = Encode.forJava(request.getParameter("key"));
     StoragePathBean bean;
     try {
         ManageGenericArtifactServiceClient service = new ManageGenericArtifactServiceClient(config, session);
@@ -79,16 +80,16 @@ td.deprecate-warning {
     if (breadcrumb == null) {
         breadcrumb = "Artifact";
     }
-    String url = "generic/list_content.jsp?region=" + request.getParameter("region") + "&item=" +
-            request.getParameter("item").replace("_add_", "_list_") + "&singularLabel=" +
-            singularLabel + "&pluralLabel=" + request.getParameter("pluralLabel") + "&key=" + key +
+    String url = "generic/list_content.jsp?region=" + Encode.forJava(request.getParameter("region")) + "&item=" +
+            Encode.forJava(request.getParameter("item").replace("_add_", "_list_")) + "&singularLabel=" +
+            singularLabel + "&pluralLabel=" + Encode.forJava(request.getParameter("pluralLabel")) + "&key=" + key +
             "&extension=" + extension + "&mediaType=" + mediaType + "&breadcrumb=" + breadcrumb +
-            "&hasNamespace=" + request.getParameter("hasNamespace");
-    String errorURL = "generic/add_content.jsp?region=" + request.getParameter("region") + "&item=" +
-            request.getParameter("item") + "&singularLabel=" + singularLabel + "&pluralLabel=" +
-            request.getParameter("pluralLabel") + "&key=" + key + "&extension=" + extension +
+            "&hasNamespace=" + Encode.forJava(request.getParameter("hasNamespace"));
+    String errorURL = "generic/add_content.jsp?region=" + Encode.forJava(request.getParameter("region")) + "&item=" +
+            Encode.forJava(request.getParameter("item")) + "&singularLabel=" + singularLabel + "&pluralLabel=" +
+            Encode.forJava(request.getParameter("pluralLabel")) + "&key=" + key + "&extension=" + extension +
             "&mediaType=" + mediaType + "&breadcrumb=" + breadcrumb + "&hasNamespace=" +
-            request.getParameter("hasNamespace") + "&errorUpload=errorUpload";
+            Encode.forJava(request.getParameter("hasNamespace")) + "&errorUpload=errorUpload";
     boolean isUploadError = false;
     if (request.getParameter("errorUpload") != null) {
         isUploadError = true;

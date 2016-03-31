@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="carbon" uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 
@@ -123,19 +124,19 @@
 
 </script>
 <div id="middle">
-    <h2><fmt:message key="configure.artifacts"><fmt:param value="<%=request.getParameter("pluralLabel")%>"/></fmt:message></h2>
+    <h2><fmt:message key="configure.artifacts"><fmt:param value="<%=Encode.forHtml(request.getParameter("pluralLabel"))%>"/></fmt:message></h2>
     <div id="workArea">
         <form id="generic.config.form" method="post" action="configure_rxt.jsp">
-            <input type="hidden" name="add_edit_region" value="<%=request.getParameter("add_edit_region")%>"/>
-                <input type="hidden" name="add_edit_item" value="<%=request.getParameter("add_edit_item")%>"/>
-                <input type="hidden" name="region" value="<%=request.getParameter("region")%>"/>
-                <input type="hidden" name="item" value="<%=request.getParameter("item")%>"/>
-                <input type="hidden" name="key" value="<%=request.getParameter("key")%>"/>
-                <input type="hidden" name="pluralLabel" value="<%=request.getParameter("pluralLabel")%>"/>
-                <input type="hidden" name="singularLabel" value="<%=request.getParameter("singularLabel")%>"/>
-                <input type="hidden" name="lifecycleAttribute" value="<%=request.getParameter("lifecycleAttribute")%>"/>
-                <input type="hidden" name="add_edit_breadcrumb" value="<%=request.getParameter("add_edit_breadcrumb")%>"/>
-                <input type="hidden" name="breadcrumb" value="<%=request.getParameter("breadcrumb")%>"/>
+            <input type="hidden" name="add_edit_region" value="<%=Encode.forHtml(request.getParameter("add_edit_region"))%>"/>
+                <input type="hidden" name="add_edit_item" value="<%=Encode.forHtml(request.getParameter("add_edit_item"))%>"/>
+                <input type="hidden" name="region" value="<%=Encode.forHtml(request.getParameter("region"))%>"/>
+                <input type="hidden" name="item" value="<%=Encode.forHtml(request.getParameter("item"))%>"/>
+                <input type="hidden" name="key" value="<%=Encode.forHtml(request.getParameter("key"))%>"/>
+                <input type="hidden" name="pluralLabel" value="<%=Encode.forHtml(request.getParameter("pluralLabel"))%>"/>
+                <input type="hidden" name="singularLabel" value="<%=Encode.forHtml(request.getParameter("singularLabel"))%>"/>
+                <input type="hidden" name="lifecycleAttribute" value="<%=Encode.forHtml(request.getParameter("lifecycleAttribute"))%>"/>
+                <input type="hidden" name="add_edit_breadcrumb" value="<%=Encode.forHtml(request.getParameter("add_edit_breadcrumb"))%>"/>
+                <input type="hidden" name="breadcrumb" value="<%=Encode.forHtml(request.getParameter("breadcrumb"))%>"/>
             <table class="styledLeft" cellspacing="0" cellpadding="0">
                 <thead>
                 <tr>

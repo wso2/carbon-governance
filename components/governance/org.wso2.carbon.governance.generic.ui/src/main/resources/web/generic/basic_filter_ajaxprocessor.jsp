@@ -16,18 +16,27 @@
  ~ under the License.
  -->
 <%@ page import="org.apache.axiom.om.OMElement" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUIGenerator" %>
 <%
 ManageGenericArtifactServiceClient client = new ManageGenericArtifactServiceClient(config,session);
-String dataName = request.getParameter("dataName");
-String dataNamespace = request.getParameter("dataNamespace");
+String dataName = Encode.forJava(request.getParameter("dataName"));
+String dataNamespace = Encode.forJava(request.getParameter("dataNamespace"));
     GenericUIGenerator uigen = new GenericUIGenerator(dataName, dataNamespace);
 OMElement head = uigen.getUIConfiguration(client.getArtifactUIConfiguration(
-        request.getParameter("key")),request,config,session);
+        Encode.forJava(request.getParameter("key"))),request,config,session);
 OMElement criteria = uigen.getDataFromUIForBasicFilter(head,request);
 session.setAttribute("criteria", criteria.toString());
-String searchValue = request.getParameter("searchvalule");
-String feild = request.getParameter("filterBy");
-response.sendRedirect("../generic/list.jsp?filterBy="+feild+"&searchValue="+searchValue+ "&filter=filter&region=" + request.getParameter("region") + "&item=" + request.getParameter("item") + "&dataName=" + request.getParameter("dataName") + "&singularLabel=" + request.getParameter("singularLabel") + "&pluralLabel=" + request.getParameter("pluralLabel") + "&dataNamespace=" + request.getParameter("dataNamespace") + "&key=" + request.getParameter("key") + "&breadcrumb=" + request.getParameter("breadcrumb"));
+
+String searchValue = Encode.forJava(request.getParameter("searchvalule"));
+String feild = Encode.forJava(request.getParameter("filterBy"));
+String region = Encode.forJava(request.getParameter("region"));
+String item = Encode.forJava(request.getParameter("item"));
+String singularLabel = Encode.forJava(request.getParameter("singularLabel"));
+String pluralLabel = Encode.forJava(request.getParameter("pluralLabel"));
+String key = Encode.forJava(request.getParameter("key"));
+String breadcrumb = Encode.forJava(request.getParameter("breadcrumb"));
+
+response.sendRedirect("../generic/list.jsp?filterBy="+feild+"&searchValue="+searchValue+ "&filter=filter&region=" + region + "&item=" + item + "&dataName=" + dataName + "&singularLabel=" + singularLabel + "&pluralLabel=" + pluralLabel + "&dataNamespace=" + dataNamespace + "&key=" + key + "&breadcrumb=" + breadcrumb);
 %>

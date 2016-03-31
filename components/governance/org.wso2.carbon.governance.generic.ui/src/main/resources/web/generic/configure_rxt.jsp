@@ -16,24 +16,27 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%
     String error = "Wrong Configuration, please re-check the default configuration";
-    String update = request.getParameter("payload");
+    String update = Encode.forJava(request.getParameter("payload"));
     ManageGenericArtifactServiceClient
             client = new ManageGenericArtifactServiceClient(config,session);
-    String defaultPath = "../generic/configure.jsp?region=" + request.getParameter("region") + "&item=" + request.getParameter("item") + "&add_edit_region=" + request.getParameter("add_edit_region") + "&add_edit_item=" + request.getParameter("add_edit_item") + "&key=" + request.getParameter("key") + "&pluralLabel=" + request.getParameter("pluralLabel") + "&singularLabel=" + request.getParameter("singularLabel") + "&lifecycleAttribute=" + request.getParameter("lifecycleAttribute") + "&add_edit_breadcrumb=" + request.getParameter("add_edit_breadcrumb");
+    String defaultPath = "../generic/configure.jsp?region=" + Encode.forJavaScript(request.getParameter("region")) + "&item=" + Encode.forJavaScript(request.getParameter("item")) + "&add_edit_region=" + Encode.forJavaScript(request.getParameter("add_edit_region")) + "&add_edit_item=" + Encode.forJavaScript(request.getParameter("add_edit_item")) + "&key=" + Encode.forJavaScript(request.getParameter("key")) + "&pluralLabel=" + Encode.forJavaScript(request.getParameter("pluralLabel")) + "&singularLabel=" + Encode.forJavaScript(request.getParameter("singularLabel")) + "&lifecycleAttribute=" + Encode.forJavaScript(request.getParameter("lifecycleAttribute")) + "&add_edit_breadcrumb=" + Encode.forJavaScript(request.getParameter("add_edit_breadcrumb"));
+
     if(client.setArtifactUIConfiguration(request.getParameter("key"), update)){
         String path = "";
         if (CarbonUIUtil.isUserAuthorized(request,
                 "/permission/admin/manage/resources/govern/generic/add") &&
                 CarbonUIUtil.isUserAuthorized(request,
                 "/permission/admin/manage/resources/browse")) {
-            path = "../generic/add_edit.jsp?region=" + request.getParameter("add_edit_region") + "&item=" + request.getParameter("add_edit_item") + "&key=" + request.getParameter("key") + "&lifecycleAttribute=" + request.getParameter("lifecycleAttribute") + "&breadcrumb=" + request.getParameter("add_edit_breadcrumb");
-        } else {
-            path = "../generic/configure.jsp?region=" + request.getParameter("region") + "&item=" + request.getParameter("item") + "&add_edit_region=" + request.getParameter("add_edit_region") + "&add_edit_item=" + request.getParameter("add_edit_item") + "&key=" + request.getParameter("key") + "&pluralLabel=" + request.getParameter("pluralLabel") + "&singularLabel=" + request.getParameter("singularLabel") + "&lifecycleAttribute=" + request.getParameter("lifecycleAttribute") + "&add_edit_breadcrumb=" + request.getParameter("add_edit_breadcrumb");
+            path = "../generic/add_edit.jsp?region=" + Encode.forJavaScript(request.getParameter("add_edit_region")) + "&item=" + Encode.forJavaScript(request.getParameter("add_edit_item")) + "&key=" + Encode.forJavaScript(request.getParameter("key")) + "&lifecycleAttribute=" + Encode.forJavaScript(request.getParameter("lifecycleAttribute")) + "&breadcrumb=" + Encode.forJavaScript(request.getParameter("add_edit_breadcrumb"));
+        } 
+        else {
+            path = "../generic/configure.jsp?region=" + Encode.forJavaScript(request.getParameter("region")) + "&item=" + Encode.forJavaScript(request.getParameter("item")) + "&add_edit_region=" + Encode.forJavaScript(request.getParameter("add_edit_region")) + "&add_edit_item=" + Encode.forJavaScript(request.getParameter("add_edit_item")) + "&key=" + Encode.forJavaScript(request.getParameter("key")) + "&pluralLabel=" + Encode.forJavaScript(request.getParameter("pluralLabel")) + "&singularLabel=" + Encode.forJavaScriptrequest.getParameter("singularLabel")) + "&lifecycleAttribute=" + Encode.forJavaScript(request.getParameter("lifecycleAttribute")) + "&add_edit_breadcrumb=" + Encode.forJavaScript(request.getParameter("add_edit_breadcrumb"));
         }
 %>
 <script type="text/javascript">
