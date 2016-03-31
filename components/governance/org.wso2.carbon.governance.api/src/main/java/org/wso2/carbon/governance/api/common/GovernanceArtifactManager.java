@@ -178,6 +178,8 @@ public class GovernanceArtifactManager {
         String namespace = artifact.getQName().getNamespaceURI();
         if (artifactNamespaceAttribute != null && StringUtils.isNotEmpty(namespace)) {
             artifact.setAttributes(artifactNamespaceAttribute, new String[]{namespace});
+        } else if (artifactNamespaceAttribute != null) {
+            namespace = artifact.getAttribute(artifactNamespaceAttribute);
         }
         setQName(artifact, artifactName, namespace);
 
