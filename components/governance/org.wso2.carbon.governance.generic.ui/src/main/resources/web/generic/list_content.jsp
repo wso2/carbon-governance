@@ -508,17 +508,14 @@ td.deprecate-warning {
                         <% if (isLCAvailable) {%><td><%=LCState%></td><%} %>
                         <td>
                             <%if (bean.getCanDelete()[i])  { %>
-                            <a title="<fmt:message key="delete"/>" onclick="deleteArtifact('<%=Encode.forUriComponent(completePath)%>','/','<%=Encode.forUriComponent(listURL)%>')" href="#" class="icon-link registryWriteOperation" style="background-image:url(../admin/images/delete.gif);"><fmt:message key="delete"/></a>
+                            <a title="<fmt:message key="delete"/>" onclick="deleteArtifact('<%=completePath%>','/','<%=listURL%>')" href="#" class="icon-link registryWriteOperation" style="background-image:url(../admin/images/delete.gif);"><fmt:message key="delete"/></a>
                             <%} else { %>
                             <a class="icon-link registryWriteOperation" style="background-image:url(./images/delete-desable.gif);color:#aaa !important;cursor:default;"><fmt:message key="delete"/></a>
                             <%} %>
                             <a onclick="downloadDependencies('<%=Encode.forHtmlContent(completePath)%>')"  href="#"
                                class="icon-link registryWriteOperation" style="background-image:url(../resources/images/icon-download.jpg);"><fmt:message key="download"/></a>
-                            <a  href="../../publisher/pages/impact?path=<%=URLEncoder.encode(completePath, "UTF-8")%>"
-                                class="icon-link" style="background-image:url(../relations/images/dep-tree.gif);"><fmt:message key="impact.analysis"/></a>
-
                         </td>
-                        <td><a title="<fmt:message key="dependency"/>" onclick="showAssociationTree('depends','<%=Encode.forHtmlContent(completePath)%>')" href="#" class="icon-link" style="background-image:url(../relations/images/dep-tree.gif);"> <fmt:message key="view.dependency"/></a> </td>
+                        <td><a title="<fmt:message key="dependency"/>" onclick="showAssociationTree('depends','<%=completePath%>')" href="#" class="icon-link" style="background-image:url(../relations/images/dep-tree.gif);"> <fmt:message key="view.dependency"/></a> </td>
                         <% } else { %>
                         <td><%=Encode.forHtmlContent(name)%></td>
                         <% if (hasNamespace) {%>
@@ -526,7 +523,7 @@ td.deprecate-warning {
                         <%}%>
                         <td><%=Encode.forHtmlContent(version)%></td>
                         <% if (isLCAvailable) {%><td><%=Encode.forHtmlContent(LCState)%></td><%} %>
-                        <td><% if (isBrowseAuthorized) {%><a title="<fmt:message key="delete"/>" onclick="deleteArtifact('<%=Encode.forHtmlContent(completePath)%>','/','<%=Encode.forHtmlContent(listURL)%>')" href="#" class="icon-link registryWriteOperation" style="background-image:url(../admin/images/delete.gif);"><fmt:message key="delete"/></a><% }%> </td>
+                        <td><% if (isBrowseAuthorized) {%><a title="<fmt:message key="delete"/>" onclick="deleteArtifact('<%=completePath%>','/','<%=listURL%>')" href="#" class="icon-link registryWriteOperation" style="background-image:url(../admin/images/delete.gif);"><fmt:message key="delete"/></a><% }%> </td>
                         <td><a title="<fmt:message key="dependency"/>" onclick="CARBON.showWarningDialog('<fmt:message key="not.sufficient.permissions"/>');" href="#" class="icon-link" style="background-image:url(../relations/images/dep-tree.gif);"> <fmt:message key="view.dependency"/></a> </td>
                         <% } %>
                     </tr>
