@@ -27,6 +27,7 @@ import org.wso2.carbon.governance.rest.api.util.Util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -136,12 +137,36 @@ public class GenericArtifactJSONWriter {
         String belongToLink = Util.generateBelongToLink(artifact, baseURI);
         for (String key : artifact.getAttributeKeys()) {
             //TODO value can be something else not a String value
-            String value = artifact.getAttribute(key);
+            // Get all attributes.
+            String[] value = artifact.getAttributes(key);
             if (key.indexOf(OVERVIEW) > -1) {
                 key = key.replace(OVERVIEW, "");
             }
             if (!NAME.equals(key) && value != null) {
-                writer.name(key).value(value);
+                // If the attributes are more than one.
+                if (value.length > 1) {
+                    StringWriter stringWriter = new StringWriter();
+                    JsonWriter jsonWriter = new JsonWriter(stringWriter);
+                    jsonWriter.beginObject();
+                    for (int i = 0; i < value.length; i++) {
+                        // Setting the key and empty string map in JSON for empty values.
+                        if (value[i] == null) {
+                            value[i] = "";
+                        }
+                        jsonWriter.name(Integer.toString(i)).value(value[i]);
+                    }
+                    jsonWriter.endObject();
+                    jsonWriter.flush();
+                    jsonWriter.close();
+                    writer.name(key).value(stringWriter.toString());
+                    stringWriter.flush();
+                    stringWriter.close();
+                    // If only one attribute is received.
+                } else if (value.length == 1) {
+                    writer.name(key).value(value[0]);
+                } else {
+                    writer.name(key).nullValue();
+                }
             }
         }
         String self_link = Util.generateLink(shortName, artifact.getId(), baseURI);
