@@ -43,6 +43,8 @@ public class WSDLComparator implements Comparator<Definition> {
         comparators.add(new WSDLMessagesComparator());
         comparators.add(new WSDLPortTypeComparator());
         comparators.add(new WSDLOperationComparator());
+        comparators.add(new WSDLServicesComparator());
+        comparators.add(new WSDLPortComparator());
     }
 
 

@@ -74,7 +74,7 @@ public class WSDLComparisonUtils {
             serialize(definition, writer);
             String content = writer.toString();
             content = content.substring(content.indexOf(ComparatorConstants.WSDL_DECLARATION_START_ELEMENT));
-            content = content.substring(content.indexOf(">"));
+            content = content.substring(content.indexOf(">") + 2);
             content = content.replace(ComparatorConstants.WSDL_DECLARATION_START, "");
             content = content.replace(ComparatorConstants.WSDL_DECLARATION_END_ELEMENT, "");
             return content;

@@ -32,12 +32,14 @@ import javax.wsdl.Binding;
 import javax.wsdl.Definition;
 import javax.wsdl.WSDLException;
 import javax.xml.namespace.QName;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class WSDLBindingsComparator extends AbstractWSDLComparator {
 
-    private Log log = LogFactory.getLog(WSDLImportsComparator.class);
+    private Log log = LogFactory.getLog(WSDLBindingsComparator.class);
 
     @Override
     public void compareInternal(Definition base, Definition changed, DefaultComparison comparison)
@@ -68,16 +70,13 @@ public class WSDLBindingsComparator extends AbstractWSDLComparator {
         if (section == null && removals.size() > 0) {
             section = comparison.newSection();
         }
-        processRemovals(section, removals, changed);
+        processRemovals(section, removals, base);
 
         Map<QName, MapDifference.ValueDifference<Binding>> changes = mapDiff.entriesDiffering();
-        if (section == null && changes.size() > 0) {
-            section = comparison.newSection();
-        }
-        processChanges(section, additions, changes);
+        section = processChanges(section, comparison, changes, base, changed);
 
         if (section != null) {
-            comparison.addSection(ComparatorConstants.WSDL_IMPORTS, section);
+            comparison.addSection(ComparatorConstants.WSDL_BINDINGS, section);
         }
     }
 
@@ -103,24 +102,31 @@ public class WSDLBindingsComparator extends AbstractWSDLComparator {
         }
     }
 
-    private void processChanges(DefaultComparison.DefaultSection comparison, Map<QName, Binding> section,
-                                Map<QName, MapDifference.ValueDifference<Binding>> changes) {
+    private DefaultComparison.DefaultSection processChanges(DefaultComparison.DefaultSection section, DefaultComparison comparison,
+            Map<QName, MapDifference.ValueDifference<Binding>> changes, Definition base, Definition changed) {
         if (changes.size() > 0) {
-//            section.addSectionSummary(Comparison.SectionType.CONTENT_CHANGE, ComparatorConstants.CHANGED_IMPORTS);
-//            DefaultComparison.DefaultSection.DefaultTextChangeContent content = section.newTextChangeContent();
-//            DefaultComparison.DefaultSection.DefaultTextChange change = section.newTextChange();
-//            Vector<Import> left = new Vector<>();
-//            Vector<Import> right = new Vector<>();
-//            for(MapDifference.ValueDifference<Binding> diff : changes.values()){
-//                left.add(diff.leftValue());
-//                right.add(diff.rightValue().firstElement());
-//            }
-//            change.setOriginal(getBindingsOnly(left));
-//            change.setChanged(getBindingsOnly(right));
-//            content.setContent(change);
-//            section.addContent(Comparison.SectionType.CONTENT_CHANGE, content);
+            List<Binding> left = new ArrayList<>();
+            List<Binding> right = new ArrayList<>();
+            for (MapDifference.ValueDifference<Binding> diff: changes.values()) {
+                if (!diff.leftValue().toString().equals(diff.rightValue().toString())) {
+                    left.add(diff.leftValue());
+                    right.add(diff.rightValue());
+                }
+            }
+            if (left.size() > 0) {
+                if (section == null) {
+                    section = comparison.newSection();
+                }
+                section.addSectionSummary(Comparison.SectionType.CONTENT_CHANGE, ComparatorConstants.CHANGED_BINDING);
+                DefaultComparison.DefaultSection.DefaultTextChangeContent content = section.newTextChangeContent();
+                DefaultComparison.DefaultSection.DefaultTextChange change = section.newTextChange();
+                change.setOriginal(getBindingsOnly(left, base));
+                change.setChanged(getBindingsOnly(right, changed));
+                content.setContent(change);
+                section.addContent(Comparison.SectionType.CONTENT_CHANGE, content);
+            }
         }
-
+        return section;
     }
 
     private String getBindingsOnly(Collection<Binding> bindings, Definition definition) {
@@ -135,6 +141,5 @@ public class WSDLBindingsComparator extends AbstractWSDLComparator {
             log.error(e);
         }
         return null;
-
     }
 }
