@@ -15,6 +15,7 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.apache.axiom.om.OMElement" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUIGenerator" %>
@@ -28,5 +29,5 @@ OMElement head = uigen.getUIConfiguration(client.getArtifactUIConfiguration(
 OMElement criteria = uigen.getDataFromUI(head,request);
 session.setAttribute("criteria", criteria.toString());
 
-response.sendRedirect("../generic/list.jsp?filter=filter&region=" + request.getParameter("region") + "&item=" + request.getParameter("item") + "&dataName=" + request.getParameter("dataName") + "&singularLabel=" + request.getParameter("singularLabel") + "&pluralLabel=" + request.getParameter("pluralLabel") + "&dataNamespace=" + request.getParameter("dataNamespace") + "&key=" + request.getParameter("key") + "&breadcrumb=" + request.getParameter("breadcrumb"));
+response.sendRedirect("../generic/list.jsp?filter=filter&region=" + Encode.forUriComponent(request.getParameter("region")) + "&item=" + Encode.forUriComponent(request.getParameter("item")) + "&dataName=" + Encode.forUriComponent(request.getParameter("dataName")) + "&singularLabel=" + Encode.forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" + Encode.forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" + Encode.forUriComponent(request.getParameter("dataNamespace")) + "&key=" + Encode.forUriComponent(request.getParameter("key")) + "&breadcrumb=" + Encode.forUriComponent(request.getParameter("breadcrumb")));
 %>

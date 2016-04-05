@@ -16,6 +16,7 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.apache.axiom.om.OMElement" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.ManageGenericArtifactUtil" %>
@@ -25,8 +26,8 @@
 <%@ page import="org.wso2.carbon.registry.common.ui.UIException"%>
 <%
     String error1 = "Your modification cause replacement of another resource!";
-    String dataName = request.getParameter("dataName");
-    String dataNamespace = request.getParameter("dataNamespace");
+    String dataName = Encode.forJava(request.getParameter("dataName"));
+    String dataNamespace = Encode.forJava(request.getParameter("dataNamespace"));
     GenericUIGenerator uigen = new GenericUIGenerator(dataName, dataNamespace);
     ManageGenericArtifactServiceClient
             client = new ManageGenericArtifactServiceClient(config,session);
@@ -34,13 +35,13 @@
     //check whether this is adding a new artifact or this is editing the artifact content
     if(request.getAttribute("content") == null){
         head = uigen.getUIConfiguration(client.getArtifactUIConfiguration(
-                request.getParameter("key")),request,config,session);
+                Encode.forJava(request.getParameter("key"))),request,config,session);
     }
     else{
         head = (OMElement)request.getAttribute("content");
     }
     String registryArtifactPath = null;
-    String currentPath = request.getParameter("currentPath");
+    String currentPath = Encode.forJava(request.getParameter("currentPath"));
     try {
         String effectivePath = ManageGenericArtifactUtil.addArtifactContent(
                 head, request, config, session, dataName, dataNamespace, currentPath);
@@ -81,13 +82,9 @@
         error = "An unknown error has occurred, please see the error log";
     }
 
-	%>
+    %>
     <script type="text/javascript">
-       window.location = '../generic/add_edit.jsp?region=<%=request.getParameter("region")%>&item=<%=request.getParameter("item")%>&key=<%=request.getParameter("key")%>&lifecycleAttribute=<%=request.getParameter("lifecycleAttribute")%>&breadcrumb=<%=request.getParameter("breadcrumb")%>&wsdlError=<%=URLEncoder.encode(error, "UTF-8")%>';
+       window.location = '../generic/add_edit.jsp?region=<%=Encode.forJavaScript(request.getParameter("region"))%>&item=<%=Encode.forJavaScript(request.getParameter("item"))%>&key=<%=Encode.forJavaScript(request.getParameter("key"))%>&lifecycleAttribute=<%=Encode.forJavaScript(request.getParameter("lifecycleAttribute"))%>&breadcrumb=<%=Encode.forJavaScript(request.getParameter("breadcrumb"))%>&wsdlError=<%=URLEncoder.encode(error, "UTF-8")%>';
     </script><%
 }
 %>
-
-
-
-    

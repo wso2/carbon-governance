@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.SchemaTreeNodeBuilder" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.utils.TreeNode" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.utils.UIUtil" %>
@@ -51,7 +52,7 @@
     } catch (Exception e) {
 %>
 Custom UI doesn't support some of the constructs in your Schema.
-Click on the <a onclick="viewStandardContentSection('<%=path%>')">Standard view</a> to view, edit, download or <a onclick="visualizeXML('<%=path%>', 'xsd')">visualize</a> the schema.
+Click on the <a onclick="viewStandardContentSection('<%=Encode.forUriComponent(path)%>')">Standard view</a> to view, edit, download or <a onclick="visualizeXML('<%=Encode.forUriComponent(path)%>', 'xsd')">visualize</a> the schema.
 <%
         return;
     }
@@ -67,7 +68,7 @@ Click on the <a onclick="viewStandardContentSection('<%=path%>')">Standard view<
 
             <!-- markup for expand/contract links -->
             <p style="margin: 10px !important;">
-                Click on the <a onclick="viewStandardContentSection('<%=path%>')">Standard view</a> to view, edit, download or <a onclick="visualizeXML('<%=path%>', 'xsd')">visualize</a> the schema.
+                Click on the <a onclick="viewStandardContentSection('<%=Encode.forUriComponent(path)%>')">Standard view</a> to view, edit, download or <a onclick="visualizeXML('<%=Encode.forUriComponent(path)%>', 'xsd')">visualize</a> the schema.
             </p>
             <br/>
             <div id="expandcontractdiv" style="margin-bottom:10px;">
@@ -77,7 +78,7 @@ Click on the <a onclick="viewStandardContentSection('<%=path%>')">Standard view<
 
             <div id="treeDiv1"></div>
             <p style="margin: 10px !important;">
-                Click on the <a onclick="viewStandardContentSection('<%=path%>')">Standard view</a> to view, edit, download or <a onclick="visualizeXML('<%=path%>', 'xsd')">visualize</a> the schema.
+                Click on the <a onclick="viewStandardContentSection('<%=Encode.forUriComponent(path)%>')">Standard view</a> to view, edit, download or <a onclick="visualizeXML('<%=Encode.forUriComponent(path)%>', 'xsd')">visualize</a> the schema.
             </p>
             <br/>
         </div>

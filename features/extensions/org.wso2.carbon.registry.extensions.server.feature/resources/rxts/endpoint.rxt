@@ -38,7 +38,7 @@
             <field type="text" required="true">
                 <name>Version</name>
             </field>
-            <field type="text" required="true">
+            <field type="text" required="true" readonly="true">
                 <name>Address</name>
             </field>
             <field type="text">

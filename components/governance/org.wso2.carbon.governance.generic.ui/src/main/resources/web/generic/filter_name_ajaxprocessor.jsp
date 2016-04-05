@@ -15,6 +15,8 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
+
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.apache.axiom.om.OMElement" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUIGenerator" %>
@@ -23,13 +25,13 @@ String artby_name = request.getParameter("Name");
     String searchValue = request.getParameter("searchvalule");
     String feild = request.getParameter("filterBy");
 response.sendRedirect("../generic/" + (request.getParameter("isContent") != null ?
-        "list_content.jsp" : "list.jsp") + "?artby_name="+artby_name+"&filter="+artby_name+"&region=" +
-        request.getParameter("region") + "&item=" + request.getParameter("item") + "&dataName=" +
-        request.getParameter("dataName") + "&singularLabel=" +
-        request.getParameter("singularLabel") + "&pluralLabel=" +
-        request.getParameter("pluralLabel") + "&dataNamespace=" +
-        request.getParameter("dataNamespace") + "&searchValue="+searchValue+ "&filterBy=" + feild+ "&key="  +request.getParameter("key") +
-        "&breadcrumb=" + request.getParameter("breadcrumb") + "&hasNamespace=" +
-        request.getParameter("hasNamespace") + "&mediaType=" +
-        request.getParameter("mediaType").replace(" ", "+"));
+        "list_content.jsp" : "list.jsp") + "?artby_name="+Encode.forUriComponent(artby_name)+"&filter="+Encode.forUriComponent(artby_name)+"&region=" +
+        Encode.forUriComponent(request.getParameter("region")) + "&item=" + Encode.forUriComponent(request.getParameter("item")) + "&dataName=" +
+        Encode.forUriComponent(request.getParameter("dataName")) + "&singularLabel=" +
+        Encode.forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" +
+        Encode.forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" +
+        Encode.forUriComponent(request.getParameter("dataNamespace")) + "&searchValue="+Encode.forUriComponent(searchValue) + "&filterBy=" + Encode.forUriComponent(feild) + "&key="  +Encode.forUriComponent(request.getParameter("key")) +
+        "&breadcrumb=" + Encode.forUriComponent(request.getParameter("breadcrumb")) + "&hasNamespace=" +
+        Encode.forUriComponent(request.getParameter("hasNamespace")) + "&mediaType=" +
+        Encode.forUriComponent(request.getParameter("mediaType").replace(" ", "+")));
 %>

@@ -32,7 +32,6 @@ import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.common.util.ApproveItemBean;
 import org.wso2.carbon.governance.api.common.util.CheckListItemBean;
-import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.api.endpoints.dataobjects.Endpoint;
 import org.wso2.carbon.governance.api.endpoints.dataobjects.EndpointImpl;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
@@ -66,10 +65,6 @@ import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import java.io.StringReader;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -77,6 +72,24 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utilities used by various Governance API related functionality.
@@ -1808,10 +1821,10 @@ public class GovernanceUtils {
         if (StringUtils.isNotEmpty(criteria)) {
             String[] tempList = criteria.split("&");
             for (int i = 0; i < tempList.length; i++) {
-                if (tempList[i].contains("=")) {
-                    finalTempList.add(tempList[i]);
-                } else {
-                    finalTempList.set(i - 1, finalTempList.get(i - 1) + "&" + tempList[i]);
+                try {
+                    finalTempList.add(URLDecoder.decode(tempList[i], "utf-8"));
+                } catch (UnsupportedEncodingException e) {
+                    throw new GovernanceException("Error occurred while decoding the query params");
                 }
             }
         }
@@ -1840,6 +1853,7 @@ public class GovernanceUtils {
                             fields.put("mediaTypeNegate", "on");
                             break;
                         case "tags":
+                        case "associationType":
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
                             break;

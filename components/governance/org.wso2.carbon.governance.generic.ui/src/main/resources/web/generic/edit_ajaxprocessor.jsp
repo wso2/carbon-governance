@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.apache.axiom.om.OMElement" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.clients.ManageGenericArtifactServiceClient" %>
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUIGenerator" %>
@@ -310,14 +311,14 @@
         <form id="CustomUIForm" action="../generic/add_ajaxprocessor.jsp" method="post">
             <input type="hidden" name="add_edit_operation" value="edit">
             <input type="hidden" name="path" value="<%=path%>">
-                <input type="hidden" name="dataName" value="<%=dataName%>"/>
-                <input type="hidden" name="dataNamespace" value="<%=dataNamespace%>"/>
-                <input type="hidden" name="region" value="<%=request.getParameter("add_edit_region")%>"/>
-                <input type="hidden" name="item" value="<%=request.getParameter("add_edit_item")%>"/>
-                <input type="hidden" name="key" value="<%=request.getParameter("key")%>"/>
-                <input type="hidden" name="breadcrumb" value="<%=request.getParameter("add_edit_breadcrumb")%>"/>
-                <input type="hidden" name="lifecycleAttribute" value="<%=request.getParameter("lifecycleAttribute")%>"/>
-                <input type="hidden" name="currentPath" value="<%=(request.getParameter("path") != null ? request.getParameter("path") : "")%>"/>
+                <input type="hidden" name="dataName" value="<%=Encode.forHtmlContent(dataName)%>"/>
+                <input type="hidden" name="dataNamespace" value="<%=Encode.forHtmlContent(dataNamespace)%>"/>
+                <input type="hidden" name="region" value="<%=Encode.forHtmlContent(request.getParameter("add_edit_region"))%>"/>
+                <input type="hidden" name="item" value="<%=Encode.forHtmlContent(request.getParameter("add_edit_item"))%>"/>
+                <input type="hidden" name="key" value="<%=Encode.forHtmlContent(request.getParameter("key"))%>"/>
+                <input type="hidden" name="breadcrumb" value="<%=Encode.forHtmlContent(request.getParameter("add_edit_breadcrumb"))%>"/>
+                <input type="hidden" name="lifecycleAttribute" value="<%=Encode.forHtmlContent(request.getParameter("lifecycleAttribute"))%>"/>
+                <input type="hidden" name="currentPath" value="<%=(request.getParameter("path") != null ? Encode.forHtmlContent(request.getParameter("path")) : "")%>"/>
             <table class="styledLeft" id="#_addEditTable">
                 <tr><td>
                     <%=table.toString()%>
