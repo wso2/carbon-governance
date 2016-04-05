@@ -47,7 +47,7 @@ public class WSDLServicesComparator extends AbstractWSDLComparator {
         compareServices(base, changed, comparison);
     }
 
-    protected void compareServices (Definition base, Definition changed, DefaultComparison comparison) {
+    protected void compareServices(Definition base, Definition changed, DefaultComparison comparison) {
         DefaultComparison.DefaultSection section = null;
         Map<QName, Service> baseService = base.getAllServices();
         Map<QName, Service> changedService = changed.getAllServices();
@@ -98,8 +98,9 @@ public class WSDLServicesComparator extends AbstractWSDLComparator {
         }
     }
 
-    private DefaultComparison.DefaultSection processChanges(DefaultComparison.DefaultSection section, DefaultComparison comparison,
-            Map<QName, MapDifference.ValueDifference<Service>> changes, Definition base, Definition changed) {
+    private DefaultComparison.DefaultSection processChanges(DefaultComparison.DefaultSection section,
+            DefaultComparison comparison, Map<QName, MapDifference.ValueDifference<Service>> changes, Definition base,
+            Definition changed) {
         if (changes.size() > 0) {
             List<Service> left = new ArrayList<>();
             List<Service> right = new ArrayList<>();
@@ -114,7 +115,8 @@ public class WSDLServicesComparator extends AbstractWSDLComparator {
                     if (section == null) {
                         section = comparison.newSection();
                     }
-                    section.addSectionSummary(Comparison.SectionType.CONTENT_CHANGE, ComparatorConstants.CHANGED_SERVICE);
+                    section.addSectionSummary(Comparison.SectionType.CONTENT_CHANGE,
+                            ComparatorConstants.CHANGED_SERVICE);
                     DefaultComparison.DefaultSection.DefaultTextChangeContent content = section.newTextChangeContent();
                     DefaultComparison.DefaultSection.DefaultTextChange change = section.newTextChange();
                     change.setOriginal(originalServices);

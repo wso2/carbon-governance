@@ -102,12 +102,13 @@ public class WSDLBindingsComparator extends AbstractWSDLComparator {
         }
     }
 
-    private DefaultComparison.DefaultSection processChanges(DefaultComparison.DefaultSection section, DefaultComparison comparison,
-            Map<QName, MapDifference.ValueDifference<Binding>> changes, Definition base, Definition changed) {
+    private DefaultComparison.DefaultSection processChanges(DefaultComparison.DefaultSection section,
+            DefaultComparison comparison, Map<QName, MapDifference.ValueDifference<Binding>> changes, Definition base,
+            Definition changed) {
         if (changes.size() > 0) {
             List<Binding> left = new ArrayList<>();
             List<Binding> right = new ArrayList<>();
-            for (MapDifference.ValueDifference<Binding> diff: changes.values()) {
+            for (MapDifference.ValueDifference<Binding> diff : changes.values()) {
                 if (!diff.leftValue().toString().equals(diff.rightValue().toString())) {
                     left.add(diff.leftValue());
                     right.add(diff.rightValue());

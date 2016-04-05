@@ -51,7 +51,7 @@ public class WSDLPortComparator extends AbstractWSDLComparator {
         comparePorts(base, changed, comparison);
     }
 
-    protected void comparePorts (Definition base, Definition changed, DefaultComparison comparison) {
+    protected void comparePorts(Definition base, Definition changed, DefaultComparison comparison) {
         DefaultComparison.DefaultSection section = null;
         Set<QName> commonKeys = Sets.intersection(base.getAllServices().keySet(), changed.getAllServices().keySet());
         if (commonKeys.size() > 0) {
@@ -104,8 +104,9 @@ public class WSDLPortComparator extends AbstractWSDLComparator {
         }
     }
 
-    private DefaultComparison.DefaultSection processChanges(DefaultComparison.DefaultSection section, DefaultComparison comparison,
-            Map<QName, MapDifference.ValueDifference<Port>> changes, Definition base, Definition changed) {
+    private DefaultComparison.DefaultSection processChanges(DefaultComparison.DefaultSection section,
+            DefaultComparison comparison, Map<QName, MapDifference.ValueDifference<Port>> changes, Definition base,
+            Definition changed) {
         if (changes.size() > 0) {
             List<Port> left = new ArrayList<>();
             List<Port> right = new ArrayList<>();
