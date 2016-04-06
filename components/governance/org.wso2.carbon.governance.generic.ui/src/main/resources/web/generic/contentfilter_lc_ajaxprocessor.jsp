@@ -15,36 +15,45 @@
 ~ specific language governing permissions and limitations
 ~ under the License.
 -->
+
 <%@ page import="org.owasp.encoder.Encode" %>
 
 <%
-    String lc_name = Encode.forJava(request.getParameter("lc_name"));
-    String lc_state = Encode.forJava(request.getParameter("lc_state"));
-    String lc_in_out = Encode.forJava(request.getParameter("lc_in_out"));
-    String lc_state_in_out = Encode.forJava(request.getParameter("lc_state_in_out"));
-    if(lc_state!="0"){
-//response.sendRedirect("../generic/list.jsp?lc_name="+lc_name+"&lc_state="+lc_state+"&lc_in_out="+lc_in_out+"&lc_state_in_out="+lc_state_in_out+"&filter=filter&region=" + request.getParameter("region") + "&item=" + request.getParameter("item") + "&dataName=" + request.getParameter("dataName") + "&singularLabel=" + request.getParameter("singularLabel") + "&pluralLabel=" + request.getParameter("pluralLabel") + "&dataNamespace=" + request.getParameter("dataNamespace") + "&key=" + request.getParameter("key") + "&breadcrumb=" + request.getParameter("breadcrumb"));
-        response.sendRedirect("../generic/" + (request.getParameter("isContent") != null ?
-                                               "list_content.jsp" : "list.jsp") + "?lc_name="+lc_name+"&lc_state="+lc_state+"&lc_in_out="+lc_in_out+"&lc_state_in_out="+lc_state_in_out+"&filter=filter&region=" +
-                              Encode.forJava(request.getParameter("region")) + "&item=" + Encode.forJava(request.getParameter("item")) + "&dataName=" +
-                              Encode.forJava(request.getParameter("dataName")) + "&singularLabel=" +
-                              Encode.forJava(request.getParameter("singularLabel")) + "&pluralLabel=" +
-                              Encode.forJava(request.getParameter("pluralLabel")) + "&dataNamespace=" +
-                              Encode.forJava(request.getParameter("dataNamespace")) + "&key=" + Encode.forJava(request.getParameter("key")) +
-                              "&breadcrumb=" + Encode.forJava(request.getParameter("breadcrumb")) + "&hasNamespace=" +
-                              Encode.forJava(request.getParameter("hasNamespace")) + "&mediaType=" +
-                              Encode.forJava(request.getParameter("mediaType").replace(" ", "+")));
-    } else{
-//        response.sendRedirect("../generic/list.jsp?lc_name="+lc_name+"&lc_in_out="+lc_in_out+"&lc_state_in_out="+lc_state_in_out+"&filter=filter&region=" + request.getParameter("region") + "&item=" + request.getParameter("item") + "&dataName=" + request.getParameter("dataName") + "&singularLabel=" + request.getParameter("singularLabel") + "&pluralLabel=" + request.getParameter("pluralLabel") + "&dataNamespace=" + request.getParameter("dataNamespace") + "&key=" + request.getParameter("key") + "&breadcrumb=" + request.getParameter("breadcrumb"));
-        response.sendRedirect("../generic/" + (request.getParameter("isContent") != null ?
-                                               "list_content.jsp" : "list.jsp") + "?lc_name="+lc_name+"&lc_in_out="+lc_in_out+"&lc_state_in_out="+lc_state_in_out+"&filter=filter&region=" +
-                              Encode.forJava(request.getParameter("region")) + "&item=" + Encode.forJava(request.getParameter("item")) + "&dataName=" +
-                              Encode.forJava(request.getParameter("dataName")) + "&singularLabel=" +
-                              Encode.forJava(request.getParameter("singularLabel")) + "&pluralLabel=" +
-                              Encode.forJava(request.getParameter("pluralLabel")) + "&dataNamespace=" +
-                              Encode.forJava(request.getParameter("dataNamespace")) + "&key=" + Encode.forJava(request.getParameter("key")) +
-                              "&breadcrumb=" + Encode.forJava(request.getParameter("breadcrumb")) + "&hasNamespace=" +
-                              Encode.forJava(request.getParameter("hasNamespace")) + "&mediaType=" +
-                              Encode.forJava(request.getParameter("mediaType").replace(" ", "+")));
+    String lc_name = request.getParameter("lc_name");
+    String lc_state = request.getParameter("lc_state");
+    String lc_in_out = request.getParameter("lc_in_out");
+    String lc_state_in_out = request.getParameter("lc_state_in_out");
+    if (lc_state != "0") {
+        response.sendRedirect(
+                "../generic/" + (request.getParameter("isContent") != null ? "list_content.jsp" : "list.jsp")
+                        + "?lc_name=" + Encode.forUriComponent(lc_name) + "&lc_state=" + Encode
+                        .forUriComponent(lc_state) + "&lc_in_out=" + Encode.forUriComponent(lc_in_out)
+                        + "&lc_state_in_out=" + Encode.forUriComponent(lc_state_in_out) + "&filter=filter&region=" +
+                        Encode.forUriComponent(request.getParameter("region")) + "&item=" + Encode
+                        .forUriComponent(request.getParameter("item")) + "&dataName=" +
+                        Encode.forUriComponent(request.getParameter("dataName")) + "&singularLabel=" +
+                        Encode.forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" +
+                        Encode.forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" +
+                        Encode.forUriComponent(request.getParameter("dataNamespace")) + "&key=" + Encode
+                        .forUriComponent(request.getParameter("key")) +
+                        "&breadcrumb=" + Encode.forUriComponent(request.getParameter("breadcrumb")) + "&hasNamespace=" +
+                        Encode.forUriComponent(request.getParameter("hasNamespace")) + "&mediaType=" +
+                        Encode.forUriComponent(request.getParameter("mediaType").replace(" ", "+")));
+    } else {
+        response.sendRedirect(
+                "../generic/" + (request.getParameter("isContent") != null ? "list_content.jsp" : "list.jsp")
+                        + "?lc_name=" + Encode.forUriComponent(lc_name) + "&lc_in_out=" + Encode
+                        .forUriComponent(lc_in_out) + "&lc_state_in_out=" + Encode.forUriComponent(lc_state_in_out)
+                        + "&filter=filter&region=" +
+                        Encode.forUriComponent(request.getParameter("region")) + "&item=" + Encode
+                        .forUriComponent(request.getParameter("item")) + "&dataName=" +
+                        Encode.forUriComponent(request.getParameter("dataName")) + "&singularLabel=" +
+                        Encode.forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" +
+                        Encode.forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" +
+                        Encode.forUriComponent(request.getParameter("dataNamespace")) + "&key=" + Encode
+                        .forUriComponent(request.getParameter("key")) +
+                        "&breadcrumb=" + Encode.forUriComponent(request.getParameter("breadcrumb")) + "&hasNamespace=" +
+                        Encode.forUriComponent(request.getParameter("hasNamespace")) + "&mediaType=" +
+                        Encode.forUriComponent(request.getParameter("mediaType").replace(" ", "+")));
     }
 %>
