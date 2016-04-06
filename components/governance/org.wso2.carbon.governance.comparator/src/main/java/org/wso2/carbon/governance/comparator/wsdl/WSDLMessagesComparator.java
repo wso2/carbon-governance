@@ -88,7 +88,7 @@ public class WSDLMessagesComparator extends AbstractWSDLComparator {
             for (QName key : commonKeys) {
                 Message left = baseMessages.get(key);
                 Message right = changedMessages.get(key);
-                if (isDiffrent(left, right)) {
+                if (isDifferent(left, right)) {
                     leftMessages.add(left);
                     rightMessages.add(right);
                 }
@@ -162,7 +162,7 @@ public class WSDLMessagesComparator extends AbstractWSDLComparator {
         return null;
     }
 
-    private boolean isDiffrent(Message left, Message right) {
+    private boolean isDifferent(Message left, Message right) {
         return WSDLComparisonUtils.isDiffrentMessages(left, right);
     }
 

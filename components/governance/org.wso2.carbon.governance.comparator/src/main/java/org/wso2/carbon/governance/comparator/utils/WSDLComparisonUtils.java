@@ -80,8 +80,8 @@ public class WSDLComparisonUtils {
             return content;
         } catch (WSDLException e) {
             log.error(e);
+            return "";
         }
-        return null;
     }
 
     public static void serialize(Definition definition, OutputStream stream) throws WSDLException {

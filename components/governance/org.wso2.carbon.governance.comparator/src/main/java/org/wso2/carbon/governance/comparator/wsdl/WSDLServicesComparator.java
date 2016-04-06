@@ -139,7 +139,7 @@ public class WSDLServicesComparator extends AbstractWSDLComparator {
             return WSDLComparisonUtils.getWSDLWithoutDeclaration(tempDefinition);
         } catch (WSDLException e) {
             log.error(e);
+            return "";
         }
-        return null;
     }
 }

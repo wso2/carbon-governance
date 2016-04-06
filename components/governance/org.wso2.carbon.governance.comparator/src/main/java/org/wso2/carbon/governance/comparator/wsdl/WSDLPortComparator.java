@@ -149,7 +149,7 @@ public class WSDLPortComparator extends AbstractWSDLComparator {
             return content.replace("</wsdl:service>", "");
         } catch (WSDLException e) {
             log.error(e);
+            return "";
         }
-        return null;
     }
 }
