@@ -22,6 +22,7 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistryExtensionsDataHolder;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
@@ -36,14 +37,21 @@ import java.util.Map;
 public class StatWriter {
 
     private static final Log log = LogFactory.getLog(StatWriter.class);
-    private static final String LOG_DEFAULT_PATH = "/_system/governance/repository/components/org.wso2.carbon.governance/lifecycles/history";
+    private static final String LOG_DEFAULT_PATH = "/repository/components/org.wso2.carbon.governance/lifecycles/history";
     private static final String REGISTRY_LIFECYCLE_HISTORY_ORDER = "registry.lifecycle_history.order";
     private static OMFactory factory = OMAbstractFactory.getOMFactory();
 
     public static void writeHistory(StatCollection currentCollection) {
 
         try {
-            Registry systemRegistry = currentCollection.getRegistry();
+            Registry systemRegistry;
+            if (GovernanceRegistryExtensionsDataHolder.getInstance() != null) {
+                systemRegistry = GovernanceRegistryExtensionsDataHolder.getInstance().
+                        getRegistryService().getGovernanceSystemRegistry();
+            } else {
+                systemRegistry = currentCollection.getRegistry();
+            }
+
             String resourcePath = currentCollection.getResourcePath();
             Resource statResource;
 
