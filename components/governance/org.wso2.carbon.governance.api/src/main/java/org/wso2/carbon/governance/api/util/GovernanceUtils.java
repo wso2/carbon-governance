@@ -1866,7 +1866,13 @@ public class GovernanceUtils {
                 } else {
                     if(subParts[0].contains(":")) {
                         String value = subParts[1].toLowerCase();
-                        if(value.contains(" ")) {
+                        if(value.contains(" or ")){
+                            String[] values = value.split(" or ");
+                            for(int i=0; i<values.length; i++){
+                                values[i] = values[i].trim().replace(" ", "\\ ");
+                            }
+                            value = StringUtils.join(values, " OR ");
+                        } else if(value.contains(" ")) {
                             value = value.replace(" ", "\\ ");
                         }
                         String[] tableParts = subParts[0].split(":");
@@ -1876,7 +1882,14 @@ public class GovernanceUtils {
                         fields.put(subParts[0].replace(":", "_"), value);
                     } else {
                         String value = subParts[1];
-                        if(value.contains(" ")) {
+
+                        if(value.contains(" OR ")){
+                            String[] values = value.split(" OR ");
+                            for(int i=0; i<values.length; i++){
+                                values[i] = values[i].trim().replace(" ", "\\ ");
+                            }
+                            value = StringUtils.join(values, " OR ");
+                        } else if(value.contains(" ")) {
                             value = value.replace(" ", "\\ ");
                         }
                         if(!subParts[0].equals("name")) {
