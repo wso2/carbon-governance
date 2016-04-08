@@ -1881,10 +1881,10 @@ public class GovernanceUtils {
                         }
                         fields.put(subParts[0].replace(":", "_"), value);
                     } else {
-                        String value = subParts[1];
+                        String value = subParts[1].toLowerCase();
 
-                        if(value.contains(" OR ")){
-                            String[] values = value.split(" OR ");
+                        if(value.contains(" or ")){
+                            String[] values = value.split(" or ");
                             for(int i=0; i<values.length; i++){
                                 values[i] = values[i].trim().replace(" ", "\\ ");
                             }
