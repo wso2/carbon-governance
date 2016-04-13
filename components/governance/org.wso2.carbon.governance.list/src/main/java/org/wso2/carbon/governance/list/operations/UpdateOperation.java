@@ -70,11 +70,17 @@ public class UpdateOperation extends AbstractOperation{
 
     public MessageContext process(MessageContext requestMessageContext) throws AxisFault {
         OMElement content = null;
+        String artifactId = null;
         try {
             OMElement info;
             if((info = requestMessageContext.getEnvelope().getBody().
                     getFirstElement().getFirstChildWithName(new QName(namespace, "updatedInfo"))) != null){
                 content = AXIOMUtil.stringToOM(info.getText());
+            }
+            OMElement artifactIdOM;
+            if((artifactIdOM = requestMessageContext.getEnvelope().getBody().
+                    getFirstElement().getFirstChildWithName(new QName(namespace, "artifactId"))) != null){
+                artifactId = artifactIdOM.getText();
             }
             if(content == null){
                 String msg = "Content of the resource should be in correct format";
@@ -82,7 +88,7 @@ public class UpdateOperation extends AbstractOperation{
                 OperationUtil.handleException(msg);
             }
         } catch (XMLStreamException e) {
-            String msg = "Error occured while reading the content of the SOAP message";
+            String msg = "Error occurred while reading the content of the SOAP message";
             log.error(msg);
             OperationUtil.handleException(msg, e);
         }
@@ -90,6 +96,9 @@ public class UpdateOperation extends AbstractOperation{
         try {
             GenericArtifactManager artifactManager = new GenericArtifactManager(governanceSystemRegistry, rxtKey);
             GenericArtifact artifact = artifactManager.newGovernanceArtifact(content);
+            if(!artifactId.isEmpty()){
+                artifact.setId(artifactId);
+            }
             artifactManager.updateGenericArtifact(artifact);
         } catch (RegistryException e) {
             String msg = e.getMessage();
