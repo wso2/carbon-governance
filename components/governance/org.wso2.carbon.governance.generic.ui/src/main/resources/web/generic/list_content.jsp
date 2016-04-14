@@ -532,11 +532,9 @@
                             if (isLCAvailable && bean.getLCName()[i] != null && !bean.getLCName()[i].equals("")) {
                                 LCState = bean.getLCName()[i] + " / " + bean.getLCState()[i];
                             }
-                            String version = "";
-                            if (RegistryUtils.getResourceName(RegistryUtils.getParentPath(completePath))
-                                    .replace("-SNAPSHOT", "").matches(CommonConstants.SERVICE_VERSION_REGEX)) {
-                                version = RegistryUtils.getResourceName(RegistryUtils.getParentPath(completePath));
-                            }
+
+                            String version = RegistryUtils.getResourceName(RegistryUtils.getParentPath(completePath));
+                            
                             if (isBrowseAuthorized) { %>
                         <td>
                             <a href="../resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=urlCompletePath%>"><%=name%>
