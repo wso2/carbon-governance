@@ -52,7 +52,7 @@
             <artifactId>wsdl-validator</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.wadl.core.wso2</groupId>
+            <groupId>org.wso2.orbit.wadl.core</groupId>
             <artifactId>wadl-core</artifactId>
         </dependency>
         <dependency>
@@ -121,7 +121,7 @@
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.wsdl.validator.wso2:wsdl-validator</importBundleDef>
-                                <importBundleDef>org.wso2.wadl.core.wso2:wadl-core:1.1.3.wso2v2</importBundleDef>
+                                <importBundleDef>org.wso2.orbit.wadl.core:wadl-core:1.1.6.wso2v1</importBundleDef>
                                 <importBundleDef>org.apache.maven.scm.wso2:maven-scm</importBundleDef>
                                 <importBundleDef>commons-scxml.wso2:commons-scxml</importBundleDef>
                             </importBundles>
