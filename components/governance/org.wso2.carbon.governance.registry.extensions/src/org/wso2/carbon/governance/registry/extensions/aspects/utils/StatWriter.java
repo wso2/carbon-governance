@@ -26,6 +26,8 @@ import org.wso2.carbon.governance.registry.extensions.internal.GovernanceRegistr
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 
 import javax.xml.namespace.QName;
@@ -45,10 +47,10 @@ public class StatWriter {
 
         try {
             Registry systemRegistry;
-            if (GovernanceRegistryExtensionsDataHolder.getInstance() != null) {
-                systemRegistry = GovernanceRegistryExtensionsDataHolder.getInstance().
-                        getRegistryService().getGovernanceSystemRegistry();
-            } else {
+            try {
+                systemRegistry = currentCollection.getRegistry().getRegistryContext().getEmbeddedRegistryService()
+                        .getGovernanceSystemRegistry(CurrentSession.getTenantId());
+            } catch (RegistryException ex) {
                 systemRegistry = currentCollection.getRegistry();
             }
 
