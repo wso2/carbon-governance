@@ -44,9 +44,6 @@ public class TaxonomyTreeAPI {
     public static final String CHILDREN = "children";
     private static final Log log = LogFactory.getLog(TaxonomyTreeAPI.class);
 
-    public TaxonomyTreeAPI() {
-    }
-
     public static JSONArray getNodes(String query, int startNode, int endNode)
             throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, JSONException,
             RegistryException {
@@ -65,7 +62,7 @@ public class TaxonomyTreeAPI {
         }
 
         XPath xPathInstance = XPathFactory.newInstance().newXPath();
-        XPathExpression exp = xPathInstance.compile(query);
+        XPathExpression exp = xPathInstance.compile(query.replace("children","*"));
         NodeList nodeList = (NodeList) exp.evaluate(doc, XPathConstants.NODESET);
         new JSONObject();
         new JSONObject();
