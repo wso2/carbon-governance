@@ -56,7 +56,7 @@ public class TaxonomyCategoryParser {
         StringBuilder path = new StringBuilder();
         String leafNodeDisplayName = null;
         for (HashMap<String, String> ele2 : elementStack) {
-            if (path.length()>0) {
+            if (path.length() > 0) {
                 path.append("/");
             }
             for (Map.Entry<String, String> entry : ele2.entrySet()) {
