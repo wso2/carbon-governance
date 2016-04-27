@@ -1815,7 +1815,7 @@ public class GovernanceUtils {
             throw new GovernanceException(e);
         }
         List<String> possibleKeys = Arrays.asList("createdAfter", "createdBefore", "updatedAfter", "updatedBefore", "author", "author!", "associationType", "associationDest",
-                "updater", "updater!", "tags", "content", "mediaType", "mediaType!", "lcName", "lcState");
+                "updater", "updater!", "tags","taxonomy", "content", "mediaType", "mediaType!", "lcName", "lcState");
 
         List<String> finalTempList = new ArrayList<>();
         if (StringUtils.isNotEmpty(criteria)) {
@@ -1854,6 +1854,7 @@ public class GovernanceUtils {
                             break;
                         case "tags":
                         case "associationType":
+                        case "taxonomy":
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
                             break;
@@ -1866,7 +1867,13 @@ public class GovernanceUtils {
                 } else {
                     if(subParts[0].contains(":")) {
                         String value = subParts[1].toLowerCase();
-                        if(value.contains(" ")) {
+                        if(value.contains(" or ")){
+                            String[] values = value.split(" or ");
+                            for(int i=0; i<values.length; i++){
+                                values[i] = values[i].trim().replace(" ", "\\ ");
+                            }
+                            value = StringUtils.join(values, " OR ");
+                        } else if(value.contains(" ")) {
                             value = value.replace(" ", "\\ ");
                         }
                         String[] tableParts = subParts[0].split(":");
@@ -1875,8 +1882,15 @@ public class GovernanceUtils {
                         }
                         fields.put(subParts[0].replace(":", "_"), value);
                     } else {
-                        String value = subParts[1];
-                        if(value.contains(" ")) {
+                        String value = subParts[1].toLowerCase();
+
+                        if(value.contains(" or ")){
+                            String[] values = value.split(" or ");
+                            for(int i=0; i<values.length; i++){
+                                values[i] = values[i].trim().replace(" ", "\\ ");
+                            }
+                            value = StringUtils.join(values, " OR ");
+                        } else if(value.contains(" ")) {
                             value = value.replace(" ", "\\ ");
                         }
                         if(!subParts[0].equals("name")) {
