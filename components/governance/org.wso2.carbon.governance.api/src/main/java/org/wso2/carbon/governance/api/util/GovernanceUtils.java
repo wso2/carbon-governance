@@ -1815,7 +1815,7 @@ public class GovernanceUtils {
             throw new GovernanceException(e);
         }
         List<String> possibleKeys = Arrays.asList("createdAfter", "createdBefore", "updatedAfter", "updatedBefore", "author", "author!", "associationType", "associationDest",
-                "updater", "updater!", "tags", "taxonomy" , "content", "mediaType", "mediaType!", "lcName", "lcState");
+                "updater", "updater!", "tags", "taxonomy", "content", "mediaType", "mediaType!", "lcName", "lcState");
 
         List<String> finalTempList = new ArrayList<>();
         if (StringUtils.isNotEmpty(criteria)) {
