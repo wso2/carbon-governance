@@ -48,6 +48,7 @@
         <module>features/notifications-configuration</module>
         <module>features/governance-gadgets</module>
         <module>features/ws-discovery-proxy</module>
+        <module>features/taxonomy-management</module>
     </modules>
     <build>
         <pluginManagement>
@@ -776,6 +777,13 @@
                 <artifactId>org.wso2.carbon.governance.lcm</artifactId>
                 <version>${carbon.governance.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.governance</groupId>
+                <artifactId>org.wso2.carbon.governance.taxonomy</artifactId>
+                <version>${carbon.governance.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.lcm.ui</artifactId>

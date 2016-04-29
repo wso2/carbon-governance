@@ -55,6 +55,7 @@
         <xs:attribute name="url" type="xs:boolean"/>
         <xs:attribute name="path" type="xs:boolean"/>
         <xs:attribute name="required" type="xs:boolean"/>
+        <xs:attribute name="categorization" type="xs:boolean"/>
         <xs:attribute name="type" use="required">
             <xs:simpleType>
                 <xs:restriction base="xs:string">
