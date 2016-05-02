@@ -20,6 +20,7 @@ package org.wso2.carbon.governance.taxonomy.services;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -29,10 +30,10 @@ import javax.xml.xpath.XPathExpressionException;
 public interface TaxonomyService {
     public JSONArray getNodes(String query, int startNode, int endNode)
             throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, JSONException,
-            RegistryException;
+            RegistryException, UserStoreException;
 
-    public Boolean getTaxonomyAvailability() throws RegistryException;
+    public Boolean getTaxonomyAvailability() throws RegistryException, UserStoreException;
 
-    public String getLastModifiedTime() throws RegistryException;
+    public String getLastModifiedTime() throws RegistryException, UserStoreException;
 
 }

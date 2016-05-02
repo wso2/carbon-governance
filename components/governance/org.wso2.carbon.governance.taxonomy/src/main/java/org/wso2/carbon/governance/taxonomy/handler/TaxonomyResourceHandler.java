@@ -20,11 +20,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.governance.taxonomy.util.TaxonomyStorageService;
-import org.wso2.carbon.governance.taxonomy.util.Utils;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
-
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -48,11 +46,9 @@ public class TaxonomyResourceHandler extends Handler {
         try {
             if (requestContext.getResourcePath().toString().equals(TAXONOMY_XML)) {
 
-                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                        .parse(requestContext.getResource().getContentStream());
-                TaxonomyStorageService ins = new TaxonomyStorageService();
-                ins.addParseDocument(doc);
-                Utils.setTaxonomyService(ins);
+                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(requestContext.
+                        getResource().getContentStream());
+                TaxonomyStorageService.addParseDocument(doc);
             }
         } catch (SAXException e) {
             log.error("SAX Exception occurred while parsing taxonomy.xml doc", e);

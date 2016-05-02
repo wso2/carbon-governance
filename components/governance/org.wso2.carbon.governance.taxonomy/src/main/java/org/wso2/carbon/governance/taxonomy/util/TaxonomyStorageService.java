@@ -34,7 +34,7 @@ public class TaxonomyStorageService {
      * This method will retrieve the already parsed document related to specific tenant
      * @return xml parsed document
      */
-    public Document getParsedDocument() {
+    public static Document getParsedDocument() {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         return tenantMap.get(tenantId);
     }
@@ -43,7 +43,7 @@ public class TaxonomyStorageService {
      * This method will store parsed  xml document inside tenant specific map.
      * @param doc
      */
-    public void addParseDocument(Document doc) {
+    public static void addParseDocument(Document doc) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         tenantMap.put(tenantId, doc);
     }
