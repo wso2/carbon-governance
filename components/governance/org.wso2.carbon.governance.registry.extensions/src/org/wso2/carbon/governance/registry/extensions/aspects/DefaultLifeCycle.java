@@ -74,11 +74,11 @@ public class DefaultLifeCycle extends Aspect {
 
     private String lifecycleProperty = "registry.LC.name";
     private String stateProperty = "registry.lifecycle.SoftwareProjectLifecycle.state";
-    private String stateVoteProperty = "registry.LC.currentVotes";
+//    private String stateVoteProperty = "registry.LC.currentVotes";
     private String ASSOCIATION = "association";
 
 //    Variables to keep track of lifecycle information
-    private List<String> states;
+    private Set<String> states;
     private Map<String, List<CheckItemBean>> checkListItems;
     private Map<String, List<CustomCodeBean>> transitionValidations;
     private Map<String, List<CustomCodeBean>> transitionExecution;
@@ -108,7 +108,7 @@ public class DefaultLifeCycle extends Aspect {
         aspectName = currentAspectName;
         currentAspectName = currentAspectName.replaceAll("\\s", "");
         stateProperty = LifecycleConstants.REGISTRY_LIFECYCLE + currentAspectName + ".state";
-        lifecycleProperty = lifecycleProperty + "." + currentAspectName ;
+        lifecycleProperty = lifecycleProperty + '.' + currentAspectName ;
 
         Iterator configChildElements = config.getChildElements();
         while (configChildElements.hasNext()) {
@@ -116,13 +116,13 @@ public class DefaultLifeCycle extends Aspect {
 
             if (configChildEl.getAttribute(new QName(LifecycleConstants.TYPE)) != null) {
                 String type = configChildEl.getAttributeValue(new QName(LifecycleConstants.TYPE));
-                if (type.equalsIgnoreCase("resource")) {
+                if ("resource".equalsIgnoreCase(type)) {
                     isConfigurationFromResource = true;
                     configurationResourcePath = RegistryUtils.getAbsolutePath(
                             RegistryContext.getBaseInstance(), configChildEl.getText());
                     clearAll();
                     break;
-                } else if (type.equalsIgnoreCase("literal")) {
+                } else if ("literal".equalsIgnoreCase(type)) {
                     isConfigurationFromResource = false;
                     configurationElement = configChildEl.getFirstElement();
                     clearAll();
@@ -143,7 +143,7 @@ public class DefaultLifeCycle extends Aspect {
     }
 
     private void initialize() {
-        states = new ArrayList<String>();
+        states = new HashSet<String>();
         checkListItems = new HashMap<String, List<CheckItemBean>>();
         transitionValidations = new HashMap<String, List<CustomCodeBean>>();
         transitionExecution = new HashMap<String, List<CustomCodeBean>>();
@@ -156,8 +156,7 @@ public class DefaultLifeCycle extends Aspect {
         isAuditEnabled = true;
     }
 
-    private void setSCXMLConfiguration(Registry registry) throws RegistryException, XMLStreamException, IOException,
-            SAXException, ModelException {
+    private void setSCXMLConfiguration(Registry registry) throws RegistryException{
         String xmlContent;
         if (isConfigurationFromResource) {
             if (registry.resourceExists(configurationResourcePath)) {
@@ -165,17 +164,20 @@ public class DefaultLifeCycle extends Aspect {
                     Resource configurationResource = registry.get(configurationResourcePath);
                     xmlContent = RegistryUtils.decodeBytes((byte[]) configurationResource.getContent());
                     configurationElement = AXIOMUtil.stringToOM(xmlContent);
-					// to validate XML
-					configurationElement.toString();
-                } catch (Exception e) {
+                    // to validate XML
+                    // TODO: not sure why this is needed
+//                    configurationElement.toString();
+                }catch (RegistryException e){
+                    String msg = "Unable to locate the lifecycle configuration from " + configurationResourcePath;
+                    throw new RegistryException(msg, e);
+                } catch (XMLStreamException e) {
                     String msg = "Invalid lifecycle configuration found at " + configurationResourcePath;
-                    log.error(msg);
-                    throw new RegistryException(msg);
+                    throw new RegistryException(msg, e);
                 }
             }else{
                 String msg = "Unable to find the lifecycle configuration from the given path: "
                         + configurationResourcePath;
-                log.error(msg);
+//                log.error(msg);
                 throw new RegistryException(msg);
             }
         }
@@ -191,10 +193,18 @@ public class DefaultLifeCycle extends Aspect {
             OMElement scxmlElement = configurationElement.getFirstElement();
             scxml = SCXMLParser.parse(new InputSource(
                     new CharArrayReader((scxmlElement.toString()).toCharArray())), null);
-        } catch (Exception e) {
+        } catch (SAXException e) {
+            String msg = "Unable to parse the SCXML configuration";
+//            log.error(msg, e);
+            throw new RegistryException(msg, e);
+        } catch (ModelException e) {
             String msg = "Invalid SCXML configuration found";
-            log.error(msg);
-            throw new RegistryException(msg);
+//            log.error(msg,e);
+            throw new RegistryException(msg, e);
+        } catch (IOException e) {
+            String msg = "Unable to read the SCXML configuration";
+//            log.error(msg,e);
+            throw new RegistryException(msg, e);
         }
     }
 
@@ -216,8 +226,7 @@ public class DefaultLifeCycle extends Aspect {
             if (propertyValues != null && propertyValues.size() > 0) {
                 return;
             }
-
-            if (states.size() == 0) {
+            if (states.isEmpty()) {
                 populateItems();
             }
 
@@ -230,12 +239,12 @@ public class DefaultLifeCycle extends Aspect {
             addTransitionUI(resource,transitionUIs.get(initialState), aspectName);
 
         } catch (Exception e) {
-            String message = "Resource does not contain a valid XML configuration: " + e.toString();
-            log.error(message);
+            String message = "Resource does not contain a valid XML configuration ";
+            log.error(message, e);
             return;
         }
 
-        resource.setProperty(stateProperty, scxml.getInitial().replace(".", " "));
+        resource.setProperty(stateProperty, scxml.getInitial().replace('.', ' '));
 
         resource.setProperty(lifecycleProperty, aspectName);
 
@@ -270,7 +279,7 @@ public class DefaultLifeCycle extends Aspect {
         if (resource.getProperty(stateProperty) == null) {
             return new String[0];
         }
-        currentState = resource.getProperty(stateProperty).replace(" ", ".");
+        currentState = resource.getProperty(stateProperty).replace(' ', '.');
 
         initializeAspect(context, currentState);
 
@@ -280,8 +289,6 @@ public class DefaultLifeCycle extends Aspect {
 
         State currentExecutionState = (State) (scxml.getChildren()).get(currentState);
         List currentTransitions = currentExecutionState.getTransitionsList();
-        
-        
 
         try {
             List<PermissionsBean> permissionsBeans = transitionPermission.get(currentState);
@@ -311,15 +318,18 @@ public class DefaultLifeCycle extends Aspect {
 
     private void initializeAspect(RequestContext context, String currentState) {
         try {
-            if (states.size() == 0 || !states.contains(currentState)) {
+            if (states.isEmpty() || !states.contains(currentState)) {
                 clearAll();
                 Registry registry = context.getRegistry();
                 setSCXMLConfiguration(registry);
                 populateItems();
             }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Resource does not contain a valid XML configuration: " + e.toString());
+        } catch (RegistryException e) {
+            // We do not have any option than to throw a runtime exception because the interface does not support
+            // throwing exceptions
+            String message = "Resource does not contain a valid XML configuration: ";
+            log.error(message, e);
+            throw new RuntimeException(message, e);
         }
     }
 
@@ -334,155 +344,152 @@ public class DefaultLifeCycle extends Aspect {
         boolean preserveOldResource = !Boolean.toString(false).equals(parameterMap.remove(
                 "preserveOriginal"));
         Resource resource = requestContext.getResource();
-        String currentState = resource.getProperty(stateProperty).replace(" ", ".");
+        String currentState = resource.getProperty(stateProperty).replace(' ', '.');
         String resourcePath = requestContext.getResourcePath().getPath();
-        
-//        Checking whether the lifecycles variables are properly initialized. If not, we initialize them again.
-	        initializeAspect(requestContext, currentState);
-	
-	        
-	        String newResourcePath;
-	        String nextState=currentState;
 
-        if (nextState == null || "".equals(nextState)) {
-            throw new GovernanceException("Next state is not defined ");
+//        Checking whether the lifecycles variables are properly initialized. If not, we initialize them again.
+        initializeAspect(requestContext, currentState);
+
+        String newResourcePath;
+        String nextState = currentState;
+
+        if ("".equals(nextState)) {
+            log.warn("Next state is not defined ");
+            return;
         }
 
         String user;
-	        String[] roles;
-	        try {
-	            user = CurrentSession.getUser();
-	            roles = CurrentSession.getUserRealm().getUserStoreManager().getRoleListOfUser(user);
-	        } catch (UserStoreException e) {
-	            String message = "Unable to get user information";
-	            log.error(message);
-	            throw new RegistryException(message,e);
-	        }
-	        
-	        lifeCycleActionValidation(resource, requestContext, currentState, action);  
-	        
-	        State currentExecutionState = (State) scxml.getChildren().get(currentState);
-	
-	//        Stat collection object
-	        StatCollection statCollection = new StatCollection();
-	        requestContext.setProperty(LifecycleConstants.STAT_COLLECTION, statCollection);
-	
-	        statCollection.setAction(action);
-	        statCollection.setRegistry(requestContext.getSystemRegistry());
-	        statCollection.setTimeMillis(System.currentTimeMillis());
-	        statCollection.setState(currentState);
-	        statCollection.setResourcePath(resourcePath);
-	        statCollection.setUserName(user);
-	        statCollection.setOriginalPath(resourcePath);
-            statCollection.setAspectName(aspectName);
-	
-	//        Here we are doing the checkitem related operations.
-	        if("voteClick".equals(action)){
-	        	handleApprovalClick(resource,currentState,extractVotesValues(parameterMap),user,roles,requestContext);
-	        }else{
-	        	handleItemClick(resource,currentState,extractCheckItemValues(parameterMap),roles,requestContext);
-	        }	       
-	        
-	
-	//        Modify here for the checkitem and other validations.
-	        List transitions = currentExecutionState.getTransitionsList();
-	        try {
-	            List<String> possibleEvents = getPossibleActions(resource, currentState);
-	            if (possibleEvents.size() > 0) {
-	                for (Object o : transitions) {
-	                    String eventName = ((Transition) o).getEvent();
-	                    if (possibleEvents.contains(eventName) && eventName.equals(action)) {
-	//                           transition validations go here
-	//                           There is need to check the transition permissions again as well to avoid fraud
-	                        if (isTransitionAllowed(roles, transitionPermission.get(currentState), eventName)) {
-	                            if (doAllCustomValidations(requestContext, currentState,eventName)) {
-	//                              adding log
-	                                statCollection.setActionType(LifecycleConstants.TRANSITION);
-	                                if (resource.getProperty(
-	                                        LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName) != null) {
-	                                    statCollection.setOriginalPath(resource.getProperty(
-	                                                    LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName));
-	                                }
-	//                              The transition happens here.
-	                                nextState = ((Transition) o).getNext();
-	//                              We have identified the next state here
-	//                              We are going to run the custom executors now
-	                                runCustomExecutorsCode(action, requestContext, transitionExecution.get(currentState)
-	                                        , currentState, nextState);
-	//                              Doing the JS execution
-	                                List<ScriptBean> scriptElement = scriptElements.get(currentState);
-	                                try {
-	                                    if (scriptElement != null) {
-	                                        for (ScriptBean scriptBean : scriptElement) {
-	                                            if (scriptBean.getEventName().equals(eventName) && !scriptBean.isConsole()) {
-	                                                executeJS(AXIOMUtil.stringToOM(scriptBean.getScript()).getText()
-	                                                        + "\n" + scriptBean.getFunctionName() + "()");
-	                                            }
-	                                        }
-	                                    }
-	                                } catch (Exception e) {
-	                                    String msg = "JavaScript execution failed.";
-	                                    log.error(msg);
-	                                    throw new RegistryException(msg);
-	                                }
-	                                break;
-	                            } else {
-	                                String msg = "Transition validations failed.";
-	                                log.info(msg);
-	                                throw new RegistryException(msg);
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }catch (RegistryException e){
-	            log.error(e);
-	            throw new RegistryException(e.getMessage());
-	        }
-	//        We are getting the resource again because the users can change its properties from the executors
-	        if(requestContext.getResource() == null){
-	            requestContext.setResource(resource);
-	            requestContext.setProcessingComplete(true);
-	            return;
-	        }
-	//        Persisting the old resource
-	        if(!requestContext.getResourcePath().getPath().equals(resourcePath)
-	               && !requestContext.getResource().equals(resource))
-	            requestContext.getRegistry().put(resourcePath,resource);
-	
-	        resource = requestContext.getResource();
-	        newResourcePath = requestContext.getResourcePath().getPath();
-	        
-	        if (!currentState.equals(nextState)) {
-	            State state = (State) scxml.getChildren().get(nextState);
-	            resource.setProperty(stateProperty, state.getId().replace(".", " "));
+        String[] roles;
+        try {
+            user = CurrentSession.getUser();
+            roles = CurrentSession.getUserRealm().getUserStoreManager().getRoleListOfUser(user);
+        } catch (UserStoreException e) {
+            String message = "Unable to get user information";
+            log.error(message, e);
+            throw new RegistryException(message, e);
+        }
 
-                resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
-	            clearCheckItems(resource, aspectName);
-	            clearTransitionApprovals(resource, aspectName);
-	            addCheckItems(resource, checkListItems.get(state.getId()), state.getId(), aspectName);
-	            addTransitionApprovalItems(resource, transitionApproval.get(state.getId()), state.getId(), aspectName);
-	            addScripts(state.getId(), resource,scriptElements.get(state.getId()), aspectName);
-	            addTransitionUI(resource, transitionUIs.get(state.getId()), aspectName);
-	
-	//            For auditing purposes
-	            statCollection.setTargetState(nextState);
-	        }
-	        if (!preserveOldResource) {
-	            requestContext.getRegistry().delete(resourcePath);
-	        }
-    //            Persisting the new resource
-	        requestContext.getRegistry().put(newResourcePath, resource);
-	        
-	//        adding the logs to the registry
-	        if (isAuditEnabled) {
-	            StatWriter.writeHistory(statCollection);
-	        }
+        lifeCycleActionValidation(resource, requestContext, currentState, action);
+
+        State currentExecutionState = (State) scxml.getChildren().get(currentState);
+        // Stat collection object
+        StatCollection statCollection = new StatCollection();
+        requestContext.setProperty(LifecycleConstants.STAT_COLLECTION, statCollection);
+
+        statCollection.setAction(action);
+        statCollection.setRegistry(requestContext.getSystemRegistry());
+        statCollection.setTimeMillis(System.currentTimeMillis());
+        statCollection.setState(currentState);
+        statCollection.setResourcePath(resourcePath);
+        statCollection.setUserName(user);
+        statCollection.setOriginalPath(resourcePath);
+        statCollection.setAspectName(aspectName);
+
+        // Here we are doing the checkitem related operations.
+        if ("voteClick".equals(action)) {
+            handleApprovalClick(resource, extractVotesValues(parameterMap), user, requestContext);
+        } else {
+            handleItemClick(resource, currentState, extractCheckItemValues(parameterMap), roles, requestContext);
+        }
+
+
+        // Modify here for the checkitem and other validations.
+        List transitions = currentExecutionState.getTransitionsList();
+        List<String> possibleEvents = getPossibleActions(resource, currentState);
+        if (possibleEvents.size() > 0) {
+            for (Object transitionObject : transitions) {
+                String eventName = ((Transition) transitionObject).getEvent();
+                if (possibleEvents.contains(eventName) && eventName.equals(action)) {
+                    // transition validations go here
+                    // There is need to check the transition permissions again as well to
+                    // avoid fraud
+                    if (isTransitionAllowed(roles, transitionPermission.get(currentState), eventName)) {
+                        if (doAllCustomValidations(requestContext, currentState, eventName)) {
+                            // adding log
+                            statCollection.setActionType(LifecycleConstants.TRANSITION);
+                            if (resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH +
+                                                     aspectName) != null) {
+                                statCollection.setOriginalPath(
+                                        resource.getProperty(
+                                                LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName));
+                            }
+                            // The transition happens here.
+                            nextState = ((Transition) transitionObject).getNext();
+                            // We have identified the next state here
+                            // We are going to run the custom executors now
+                            runCustomExecutorsCode(action, requestContext, transitionExecution.get(currentState),
+                                                   currentState, nextState);
+                            // Doing the JS execution
+                            List<ScriptBean> scriptElement = scriptElements.get(currentState);
+                            if (scriptElement != null) {
+                                for (ScriptBean scriptBean : scriptElement) {
+                                    if (scriptBean.getEventName().equals(eventName) && !scriptBean.isConsole()) {
+                                        String script;
+                                        try {
+                                            script = AXIOMUtil.stringToOM(scriptBean.getScript()).getText() +
+                                                     '\n' + scriptBean.getFunctionName() + "()";
+                                        } catch (XMLStreamException e) {
+                                            String msg = "JavaScript execution failed. Unable to parse the script text";
+                                            log.error(msg, e);
+                                            throw new RegistryException(msg, e);
+                                        }
+                                        executeJS(script);
+                                    }
+                                }
+                            }
+                            break;
+                        } else {
+                            String msg = "Transition validations failed.";
+                            log.warn(msg);
+                            throw new RegistryException(msg);
+                        }
+                    }
+                }
+            }
+        }
+        // We are getting the resource again because the users can change its properties from the executors
+        if (requestContext.getResource() == null) {
+            requestContext.setResource(resource);
+            requestContext.setProcessingComplete(true);
+            return;
+        }
+        // Persisting the old resource
+        if (!requestContext.getResourcePath().getPath().equals(resourcePath) && !requestContext.getResource().equals(resource)) {
+            requestContext.getRegistry().put(resourcePath, resource);
+        }
+
+        resource = requestContext.getResource();
+        newResourcePath = requestContext.getResourcePath().getPath();
+
+        if (!currentState.equals(nextState)) {
+            State state = (State) scxml.getChildren().get(nextState);
+            resource.setProperty(stateProperty, state.getId().replace('.', ' '));
+
+            resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
+            clearCheckItems(resource, aspectName);
+            clearTransitionApprovals(resource, aspectName);
+            addCheckItems(resource, checkListItems.get(state.getId()), state.getId(), aspectName);
+            addTransitionApprovalItems(resource, transitionApproval.get(state.getId()), state.getId(), aspectName);
+            addScripts(state.getId(), resource, scriptElements.get(state.getId()), aspectName);
+            addTransitionUI(resource, transitionUIs.get(state.getId()), aspectName);
+
+            // For auditing purposes
+            statCollection.setTargetState(nextState);
+        }
+        if (!preserveOldResource) {
+            requestContext.getRegistry().delete(resourcePath);
+        }
+        // Persisting the new resource
+        requestContext.getRegistry().put(newResourcePath, resource);
+
+        // adding the logs to the registry
+        if (isAuditEnabled) {
+            StatWriter.writeHistory(statCollection);
+        }
     }
 
     @Override
     public void dissociate(RequestContext requestContext) {
-
         Resource resource = requestContext.getResource();
 
         if (resource != null) {
@@ -491,10 +498,10 @@ public class DefaultLifeCycle extends Aspect {
         }
     }
 
-    private void populateItems() throws Exception {
-        Map stateList = scxml.getChildren();
+    private void populateItems() throws RegistryException {
+        Map stateMap = scxml.getChildren();
 
-        for (Object stateObject : stateList.entrySet()) {
+        for (Object stateObject : stateMap.entrySet()) {
 
             Map.Entry state = (Map.Entry) stateObject;
 
@@ -507,7 +514,14 @@ public class DefaultLifeCycle extends Aspect {
                 List dataList = model.getData();
                 for (Object dataObject : dataList) {
                     Data data = (Data) dataObject;
-                    OMElement node = XMLUtils.toOM((Element) data.getNode());
+                    OMElement node = null;
+                    try {
+                        node = XMLUtils.toOM((Element) data.getNode());
+                    } catch (Exception e) {
+                        // We have no choice here but to capture generic Exceptions
+                        String msg = "Unable to parse the SCXML data model";
+                        throw new RegistryException(msg, e);
+                    }
                     /*
                     * when associating we will map the custom data model to a set of beans.
                     * These will be used for further actions.
@@ -548,7 +562,7 @@ public class DefaultLifeCycle extends Aspect {
                     for (String propValue : propValues)
                         if (propValue.startsWith("name:"))
                             for (CheckItemBean checkItem : checkItems)
-                                if ((checkItem.getName().equals(propValue.substring(propValue.indexOf(":") + 1))) &&
+                                if ((checkItem.getName().equals(propValue.substring(propValue.indexOf(':') + 1))) &&
                                         (checkItem.getEvents() != null) && propValues.contains("value:false")) {
                                     events.removeAll(checkItem.getEvents());
                                 }
@@ -559,7 +573,7 @@ public class DefaultLifeCycle extends Aspect {
         return events;
     }
 
-    private void executeJS(String script) throws Exception{
+    private void executeJS(String script) throws RegistryException{
         Context cx = Context.enter();
         try {
             ConfigurationContext configurationContext =
@@ -573,21 +587,21 @@ public class DefaultLifeCycle extends Aspect {
             ScriptableObject.defineClass(scope, CollectionHostObject.class);
             ScriptableObject.defineClass(scope, RegistryHostObject.class);
             Object result = cx.evaluateString(scope, script, "<cmd>", 1, null);
-            if (result != null && log.isInfoEnabled()) {
-                log.info("JavaScript Result: " + Context.toString(result));
+            if (result != null && log.isDebugEnabled()) {
+                log.debug("JavaScript Result: " + Context.toString(result));
             }
         } catch (IllegalAccessException e) {
             String msg = "Unable to defining registry host objects.";
-            throw new Exception(msg,e);
+            throw new RegistryException(msg,e);
         } catch (InstantiationException e) {
             String msg = "Unable to instantiate the given registry host object.";
-            throw new Exception(msg,e);
+            throw new RegistryException(msg,e);
         } catch (InvocationTargetException e) {
             String msg = "An exception occurred while creating registry host objects.";
-            throw new Exception(msg,e);
+            throw new RegistryException(msg,e);
         } catch (AxisFault e) {
             String msg = "Failed to set user name parameter.";
-            throw new Exception(msg,e);
+            throw new RegistryException(msg,e);
         } catch (SecurityException ignored) {
             // If there is a security issue, simply live with that. This portion of the sample is
             // not intended to work on a system with security restrictions.
@@ -605,8 +619,8 @@ public class DefaultLifeCycle extends Aspect {
                 try {
                     runCustomValidationsCode(context, currentStateCheckItem.getValidationBeans(),action);
                 } catch (RegistryException registryException) {
-                    throw new RegistryException("Validation failed for check item : "
-                            + currentStateCheckItem.getName());
+                    String message = "Validation failed for check item : " + currentStateCheckItem.getName();
+                    throw new RegistryException(message, registryException);
                 }
             }
         }
@@ -614,8 +628,8 @@ public class DefaultLifeCycle extends Aspect {
         try {
             return runCustomValidationsCode(context, transitionValidations.get(currentState),action);
         } catch (RegistryException e) {
-            throw new RegistryException("Validation failed for check item : "
-                    + action);
+            String message = "Validation failed for check item : " + action;
+            throw new RegistryException(message, e);
         }
     }
 
@@ -689,7 +703,7 @@ public class DefaultLifeCycle extends Aspect {
             throws RegistryException{
         for (Map.Entry<String, String> entry : itemParameterMap.entrySet()) {
             List<String> propertyValues = resource.getPropertyValues(
-                    LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "." + entry.getKey());
+                    LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + '.' + entry.getKey());
             if (propertyValues != null) {
                 String name = null;
 
@@ -723,15 +737,15 @@ public class DefaultLifeCycle extends Aspect {
                             }
                         }
 
-                        String replace = propertyValue.replace(Boolean.toString(!Boolean.valueOf(entry.getValue()))
+                        String replace = propertyValue.replace(Boolean.toString(!Boolean.parseBoolean(entry.getValue()))
                                 , entry.getValue());
                         newProps.add(replace);
-                        resource.removeProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "."
-                                + entry.getKey());
-                        resource.setProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION + aspectName + "."
-                                + entry.getKey(),newProps);
+                        resource.removeProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION +
+                                                aspectName + '.' + entry.getKey());
+                        resource.setProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_OPTION +
+                                             aspectName + '.' + entry.getKey(),newProps);
 
-                        //                    logging
+                        // logging
                         StatCollection statCollection = (StatCollection) context.getProperty(LifecycleConstants.STAT_COLLECTION);
                         statCollection.setAction(getCheckItemName(propertyValues));
                         statCollection.setActionType(LifecycleConstants.ITEM_CLICK);
@@ -746,64 +760,70 @@ public class DefaultLifeCycle extends Aspect {
             }
         }
     }
-    
-    private void handleApprovalClick(Resource resource, String currentState, Map<String, String> itemParameterMap,String user, String[] roles,
-			RequestContext requestContext) {
-    	for (Map.Entry<String, String> entry : itemParameterMap.entrySet()) {
-            List<String> propertyValues = resource.getPropertyValues(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "." + entry.getKey());
-            
-            String userPropertyValue = "";
-            boolean userVoted = false;
-            List<String> userList = new ArrayList<String>();
+
+    private void handleApprovalClick(Resource resource, Map<String, String> itemParameterMap, String user,
+                                     RequestContext requestContext) {
+
+        String userPropertyValue = "";
+        boolean userVoted = false;
+        List<String> userList = new ArrayList<String>();
+
+        for (Map.Entry<String, String> entry : itemParameterMap.entrySet()) {
+            List<String> propertyValues =
+                    resource.getPropertyValues(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION +
+                                               aspectName + '.' + entry.getKey());
+
             for (String propertyValue : propertyValues) {
                 if (propertyValue.startsWith("users:")) {
                 	userPropertyValue = propertyValue;
                 	String users = propertyValue.replace("users:", "");
                 	String[] votedUsers = users.split(",");
                 	userList = Arrays.asList(votedUsers);
-                	if (userList != null && !userList.isEmpty()) {
-                		userVoted = Arrays.asList(votedUsers).contains(user); 
-                	} else if (userList == null ) {
-                		userList = new ArrayList<String>();
+                	if (!userList.isEmpty()) {
+                		userVoted = Arrays.asList(votedUsers).contains(user);
                 	}
                 	break;
                 }
             }
-            
-            if ((userVoted == true ) || (userVoted == false && Boolean.valueOf(entry.getValue())) ) {            	
+
+            // TODO: this if condition seems wrong
+            boolean entryValueBoolean = Boolean.parseBoolean(entry.getValue());
+            if ((userVoted == true ) || (userVoted == false && entryValueBoolean) ) {
             	for (String propertyValue : propertyValues) {
                 	if(propertyValue.startsWith("current:") && !propertyValue.contains(entry.getValue())){
                         List<String> newProps = new ArrayList<String>(propertyValues);
                         String approvals = newProps.get(newProps.indexOf(propertyValue));
                         approvals = approvals.replace("current:", "");
                         int approvalCount  = Integer.parseInt(approvals);
-                        
+
                         // Add new users in to voted user list
                         List<String> list = new ArrayList<String>(userList);
-                        if(Boolean.valueOf(entry.getValue()) && userVoted == false){
+                        if(entryValueBoolean && userVoted == false){
                         	approvalCount++;
                         	list.add(user);
-                        }else if (!Boolean.valueOf(entry.getValue()) && userVoted == true){
+                        }else if (!entryValueBoolean && userVoted == true){
                         	approvalCount--;
                         	list.remove(user);
                         }
                         newProps.remove(propertyValue);
-                        newProps.add("current:"+approvalCount);
-                        
+                        newProps.add("current:" + approvalCount);
+
                         StringBuilder sb = new StringBuilder();
-                        for (String n : list) { 
-                            if (sb.length() > 0) sb.append(',');
+                        for (String n : list) {
+                            if (sb.length() > 0) {
+                                sb.append(',');
+                            }
                             sb.append(n);
                         }
                         newProps.remove(userPropertyValue);
-                        newProps.add("users:"+sb.toString());
-                        
-                        resource.removeProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "."
-                                + entry.getKey());
-                        resource.setProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName + "."
-                                + entry.getKey(),newProps);                        
+                        newProps.add("users:" + sb.toString());
+
+                        resource.removeProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION +
+                                                aspectName + '.' + entry.getKey());
+                        resource.setProperty(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION + aspectName +
+                                             '.' + entry.getKey(),newProps);
                         //resource.setProperty(userSpecificVote,Boolean.toString(Boolean.valueOf(entry.getValue())));
-                        
+
                         // logging
                         StatCollection statCollection = (StatCollection) requestContext.getProperty(LifecycleConstants.STAT_COLLECTION);
                         statCollection.setAction(getCheckItemName(propertyValues));
@@ -814,41 +834,45 @@ public class DefaultLifeCycle extends Aspect {
                             statCollection.setOriginalPath(resource.getProperty(LifecycleConstants.REGISTRY_LIFECYCLE_HISTORY_ORIGINAL_PATH + aspectName));
                         }
                         break;
-                	}                	
-                }            	
-            } 
+                	}
+                }
+            }
     	}
 	}
-    
-    private void lifeCycleActionValidation(Resource resource, RequestContext requestContext, String currentState, String action) throws RegistryException{
-    	// other actions(except vote or item click) vote may required
-        if ((!action.equals("voteClick") && !action.equals("itemClick")) && transitionApproval.get(currentState) != null) {
-        	int order = 0;
+
+    private void lifeCycleActionValidation(Resource resource, RequestContext requestContext, String currentState,
+                                           String action) throws RegistryException {
+        // other actions(except vote or item click) vote may required
+        if ((!"voteClick".equals(action) && !"itemClick".equals(action)) && transitionApproval.get(currentState) !=
+                                                                            null) {
+            int order = 0;
             for (ApprovalBean approvalBean : transitionApproval.get(currentState)) {
-            	if (action.equals(approvalBean.getForEvent())) {
-            		String resourcePropertyNameForItem = LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION 
-            				+ aspectName + "." + order + LifecycleConstants.VOTE;
-            		List<String> list = resource.getPropertyValues(resourcePropertyNameForItem);
-            		for (String value : list) {
-            			if (value.startsWith("current:")) {
-            				value = value.replace("current:", "");
-                            int currentVotes  = Integer.parseInt(value);
+                if (action.equals(approvalBean.getForEvent())) {
+                    String resourcePropertyNameForItem = LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_VOTES_OPTION +
+                                                         aspectName + '.' + order + LifecycleConstants.VOTE;
+                    List<String> list = resource.getPropertyValues(resourcePropertyNameForItem);
+                    for (String value : list) {
+                        if (value.startsWith("current:")) {
+                            value = value.replace("current:", "");
+                            int currentVotes = Integer.parseInt(value);
                             if (currentVotes < approvalBean.getVotes()) {
-                            	String message = "Unable to "+action+" the lifecycle with available Approvals. Required Votes: "+ approvalBean.getVotes() +", Current Votes: "+currentVotes;
-                	            log.error(message);
-                	            throw new RegistryException(message);
-                            }	                           
-            			}							
-					}
-            	}
-            	order++;
+                                String message = "Unable to " + action + " the lifecycle with available Approvals. " +
+                                                 "Required Votes: " + approvalBean.getVotes() + ", Current Votes: " +
+                                                 currentVotes;
+                                log.error(message);
+                                throw new RegistryException(message);
+                            }
+                        }
+                    }
+                }
+                order++;
             }
         }
-        
+
         String[] vailableActions = getAvailableActions(requestContext);
         List actionsList = Arrays.asList(vailableActions);
-        if(!action.equals("voteClick") && !action.equals("itemClick") &&  !actionsList.contains(action)) {
-        	String message = "Preprequest action must be completed before " + action + "";
+        if (!"voteClick".equals(action) && !"itemClick".equals(action) && !actionsList.contains(action)) {
+            String message = "Preprequest action must be completed before " + action;
             log.error(message);
             throw new RegistryException(message);
         }

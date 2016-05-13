@@ -92,7 +92,7 @@ public class StatWriter {
             newOrder = Integer.parseInt(property) + 1;
         }
 
-        resource.setProperty(REGISTRY_LIFECYCLE_HISTORY_ORDER, "" + newOrder);
+        resource.setProperty(REGISTRY_LIFECYCLE_HISTORY_ORDER, String.valueOf(newOrder));
 
         if (resource.getContent() != null) {
             if (resource.getContent() instanceof String) {
@@ -123,7 +123,7 @@ public class StatWriter {
 
 //        Adding attributes
 //        Adding the order attribute
-        itemChildElement.addAttribute("order", "" + order, null);
+        itemChildElement.addAttribute("order", String.valueOf(order), null);
 
 //        Adding the user attribute
         itemChildElement.addAttribute("user", currentCollection.getUserName(), null);
@@ -204,8 +204,6 @@ public class StatWriter {
     }
 
     private static OMElement buildInitialOMElement() {
-        OMElement initialOMElement;
-        initialOMElement = factory.createOMElement(new QName("lifecycleHistory"));
-        return initialOMElement;
+        return factory.createOMElement(new QName("lifecycleHistory"));
     }
 }
