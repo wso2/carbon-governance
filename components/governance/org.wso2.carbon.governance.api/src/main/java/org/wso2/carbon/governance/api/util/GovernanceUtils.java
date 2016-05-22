@@ -1910,10 +1910,10 @@ public class GovernanceUtils {
         }
 
         List<GovernanceArtifact> attributeSearchResults = performAttributeSearch(fields, registry);
-        int paginationSizeAtts = PaginationContext.getInstance().getLength();
 
         // Following check is done since Attribute Search service only has a way to search one property at a time
         if(possibleProperties.size() == 1) {
+            int paginationSizeAtts = PaginationContext.getInstance().getLength();
             for(Map.Entry<String, String> entry : possibleProperties.entrySet()) {
                 String propertyName = entry.getKey();
                 fields.remove("overview_" + propertyName);
