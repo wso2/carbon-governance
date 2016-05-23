@@ -52,6 +52,7 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.secure.AuthorizationFailedException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -1912,6 +1913,7 @@ public class GovernanceUtils {
 
         // Following check is done since Attribute Search service only has a way to search one property at a time
         if(possibleProperties.size() == 1) {
+            int paginationSizeAtts = PaginationContext.getInstance().getLength();
             for(Map.Entry<String, String> entry : possibleProperties.entrySet()) {
                 String propertyName = entry.getKey();
                 fields.remove("overview_" + propertyName);
@@ -1934,7 +1936,9 @@ public class GovernanceUtils {
 
             List<GovernanceArtifact> mergeListWithoutDuplicates = new ArrayList<>();
             mergeListWithoutDuplicates.addAll(set);
+            int paginationSizePros = PaginationContext.getInstance().getLength();
 
+            PaginationContext.getInstance().setLength(paginationSizeAtts +paginationSizePros);
             return mergeListWithoutDuplicates;
         }
 

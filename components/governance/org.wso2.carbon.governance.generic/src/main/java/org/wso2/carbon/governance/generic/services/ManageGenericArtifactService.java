@@ -672,6 +672,7 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
 
     public String getArtifactUIConfiguration(String key) throws RegistryException {
         try {
+            key = key.replaceAll("\\s+","");
             Registry registry = getConfigSystemRegistry();
             return RegistryUtils.decodeBytes((byte[]) registry.get(GOVERNANCE_ARTIFACT_CONFIGURATION_PATH + key)
                     .getContent());
