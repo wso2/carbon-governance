@@ -24,11 +24,12 @@ import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.taxonomy.internal.ServiceHolder;
 import org.wso2.carbon.governance.taxonomy.util.TaxonomyStorageService;
-import org.wso2.carbon.governance.taxonomy.util.Utils;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ import javax.xml.xpath.*;
  * This class is use to populate taxonomy json response related to REST API calls
  */
 public class TaxonomyTreeAPI implements TaxonomyService {
-    public static final String INPUT_XML = "/taxonomy/taxonomy.xml";
+    public static final String INPUT_XML = "/_system/governance/taxonomy/taxonomy.xml";
     public static final String ELEMENT_NAME = "elementName";
     public static final String DISPLAY_NAME = "displayName";
     public static final String TEXT = "text";
@@ -64,19 +65,22 @@ public class TaxonomyTreeAPI implements TaxonomyService {
     @Override
     public JSONArray getNodes(String query, int startNode, int endNode)
             throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, JSONException,
-            RegistryException {
-        Registry registry = ServiceHolder.getRegistryService().getGovernanceSystemRegistry();
+            RegistryException, UserStoreException {
         Document doc = null;
+
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        String adminName = ServiceHolder.getRealmService().getTenantUserRealm(tenantId).getRealmConfiguration()
+                .getAdminUserName();
+        Registry registry = ServiceHolder.getRegistryService().getRegistry(adminName, tenantId);
+
         // First time execute , this will parse taxonomy.xml file and store inside a map which is tenant specific
-        if (Utils.getTaxonomyService() == null) {
-            doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                    .parse(registry.get(INPUT_XML).getContentStream());
-            TaxonomyStorageService xPath = new TaxonomyStorageService();
-            xPath.addParseDocument(doc);
-            Utils.setTaxonomyService(xPath);
+        if (TaxonomyStorageService.getParsedDocument() == null) {
+            doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(registry.get(INPUT_XML).
+                    getContentStream());
+            TaxonomyStorageService.addParseDocument(doc);
         } else {
             // If this is not first time, then read the tenant specific map and retrieve from there
-            doc = Utils.getTaxonomyService().getParsedDocument();
+            doc = TaxonomyStorageService.getParsedDocument();
         }
 
         XPath xPathInstance = XPathFactory.newInstance().newXPath();
@@ -154,13 +158,17 @@ public class TaxonomyTreeAPI implements TaxonomyService {
      * @throws RegistryException
      */
     @Override
-    public Boolean getTaxonomyAvailability() throws RegistryException {
-        Registry registry = ServiceHolder.getRegistryService().getGovernanceSystemRegistry();
+    public Boolean getTaxonomyAvailability() throws RegistryException, UserStoreException {
+
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        String adminName = ServiceHolder.getRealmService().getTenantUserRealm(tenantId).getRealmConfiguration()
+                .getAdminUserName();
+        Registry registry = ServiceHolder.getRegistryService().getRegistry(adminName, tenantId);
 
         if (registry.resourceExists(INPUT_XML)) {
-            return  true;
+            return true;
         } else {
-            return  false;
+            return false;
         }
     }
 
@@ -171,8 +179,11 @@ public class TaxonomyTreeAPI implements TaxonomyService {
      * @throws RegistryException
      */
     @Override
-    public String getLastModifiedTime() throws RegistryException {
-        Registry registry = ServiceHolder.getRegistryService().getGovernanceSystemRegistry();
+    public String getLastModifiedTime() throws RegistryException, UserStoreException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        String adminName = ServiceHolder.getRealmService().getTenantUserRealm(tenantId).getRealmConfiguration()
+                .getAdminUserName();
+        Registry registry = ServiceHolder.getRegistryService().getRegistry(adminName, tenantId);
         return registry.get(INPUT_XML).getLastModified().toString();
     }
 }

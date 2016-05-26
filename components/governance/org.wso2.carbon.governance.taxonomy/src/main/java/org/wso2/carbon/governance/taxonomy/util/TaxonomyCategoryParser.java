@@ -123,15 +123,13 @@ public class TaxonomyCategoryParser {
         try {
             DocumentBuilderFactory factory = getSecuredDocumentBuilder();
             Document doc = null;
-            if (Utils.getTaxonomyService() == null) {
+            if (TaxonomyStorageService.getParsedDocument() == null) {
                 doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(registry.get(INPUT_XML).
                         getContentStream());
-
-                TaxonomyStorageService ins = new TaxonomyStorageService();
-                ins.addParseDocument(doc);
-                Utils.setTaxonomyService(ins);
+                TaxonomyStorageService.addParseDocument(doc);
             } else {
-                doc = Utils.getTaxonomyService().getParsedDocument();
+                // If this is not first time, then read the tenant specific map and retrieve from there
+                doc = TaxonomyStorageService.getParsedDocument();
             }
 
             NodeList childNodes = doc.getChildNodes();
