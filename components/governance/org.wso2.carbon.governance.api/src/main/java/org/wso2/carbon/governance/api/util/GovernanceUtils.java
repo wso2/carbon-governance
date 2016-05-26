@@ -1913,7 +1913,12 @@ public class GovernanceUtils {
 
         // Following check is done since Attribute Search service only has a way to search one property at a time
         if(possibleProperties.size() == 1) {
-            int paginationSizeAtts = PaginationContext.getInstance().getLength();
+
+            int paginationSizeAtt = 0;
+            if (PaginationContext.getInstance() !=  null) {
+                paginationSizeAtt = PaginationContext.getInstance().getLength();
+            }
+
             for(Map.Entry<String, String> entry : possibleProperties.entrySet()) {
                 String propertyName = entry.getKey();
                 fields.remove("overview_" + propertyName);
@@ -1936,9 +1941,11 @@ public class GovernanceUtils {
 
             List<GovernanceArtifact> mergeListWithoutDuplicates = new ArrayList<>();
             mergeListWithoutDuplicates.addAll(set);
-            int paginationSizePros = PaginationContext.getInstance().getLength();
 
-            PaginationContext.getInstance().setLength(paginationSizeAtts +paginationSizePros);
+            if (paginationSizeAtt != 0 && PaginationContext.getInstance() != null){
+                int paginationSizePros = PaginationContext.getInstance().getLength();
+                PaginationContext.getInstance().setLength(paginationSizeAtt +paginationSizePros);
+            }
             return mergeListWithoutDuplicates;
         }
 
