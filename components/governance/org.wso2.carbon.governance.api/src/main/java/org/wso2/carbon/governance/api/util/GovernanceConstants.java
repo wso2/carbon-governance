@@ -306,4 +306,9 @@ public class GovernanceConstants {
      */
     public static final String VERSION_ATTRIBUTE = "overview_version";
 
+    //lifecycle history path relative to governace registyr
+    // Ex:repository/components/org.wso2.carbon.governance/lifecycles/history
+    public static final String LIFECYCLE_HISTORY_PATH = RegistryConstants.GOVERNANCE_COMPONENT_PATH
+                                                        + RegistryConstants.PATH_SEPARATOR + "lifecycles/history/";
+
 }

@@ -27,7 +27,11 @@ import org.wso2.carbon.base.CarbonContextHolderBase;
 import org.wso2.carbon.base.UnloadTenantTask;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.governance.api.cache.*;
+import org.wso2.carbon.governance.api.cache.ArtifactCache;
+import org.wso2.carbon.governance.api.cache.ArtifactCacheManager;
+import org.wso2.carbon.governance.api.cache.RXTConfigCacheEntryCreatedListener;
+import org.wso2.carbon.governance.api.cache.RXTConfigCacheEntryRemovedListener;
+import org.wso2.carbon.governance.api.cache.RXTConfigCacheEntryUpdatedListener;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.common.util.ApproveItemBean;
@@ -66,13 +70,6 @@ import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import javax.cache.Cache;
-import javax.cache.CacheManager;
-import javax.cache.Caching;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -91,6 +88,13 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.cache.Cache;
+import javax.cache.CacheManager;
+import javax.cache.Caching;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * Utilities used by various Governance API related functionality.
@@ -701,6 +705,7 @@ public class GovernanceUtils {
         try {
             String path = getArtifactPath(registry, artifactId);
             if (registry.resourceExists(path)) {
+                deleteLifecycleHistoryFile(path, registry);
                 registry.delete(path);
             }
             ArtifactCache artifactCache =
@@ -2407,6 +2412,7 @@ public class GovernanceUtils {
             throws GovernanceException {
         try {
             if (registry.resourceExists(path)) {
+                deleteLifecycleHistoryFile(path, registry);
                 registry.delete(path);
             }
             ArtifactCache artifactCache =
@@ -2498,6 +2504,26 @@ public class GovernanceUtils {
                                                   "Please provide a value for this parameter.");
                 }
             }
+        }
+    }
+
+    /**
+     * This method deletes the lifecycle history file of a given artifact
+     * @param artifactPath The resource path relative to governance registry
+     * @param registry governace registry instance
+     * @throws GovernanceException
+     */
+    public static void deleteLifecycleHistoryFile(String artifactPath, Registry registry) throws GovernanceException {
+        String artifactRootPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + artifactPath;
+        String historyResourcePath = GovernanceConstants.LIFECYCLE_HISTORY_PATH
+                                     + artifactRootPath.replaceAll("/", "_");
+        try {
+            if (registry.resourceExists(historyResourcePath)) {
+                registry.delete(historyResourcePath);
+            }
+        } catch (RegistryException e) {
+            String msg = "Error in deleting the the lifecycle history file at: " + historyResourcePath + ".";
+            throw new GovernanceException(msg, e);
         }
     }
 }
