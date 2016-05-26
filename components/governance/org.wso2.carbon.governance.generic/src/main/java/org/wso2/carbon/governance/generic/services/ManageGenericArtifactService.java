@@ -38,11 +38,19 @@ import org.wso2.carbon.governance.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.admin.api.governance.IManageGenericArtifactService;
 import org.wso2.carbon.registry.common.CommonConstants;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
-import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.ActionConstants;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourcePath;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
+import org.wso2.carbon.registry.indexing.RxtDataManager;
+import org.wso2.carbon.registry.indexing.RxtUnboundedEntry;
+import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
+import org.wso2.carbon.registry.indexing.utils.RxtDataLoadUtils;
 import org.wso2.carbon.user.core.UserStoreException;
 
 import javax.xml.namespace.QName;
@@ -50,7 +58,14 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings({"unused", "NonJaxWsWebServices", "ValidExternallyBoundObject"})
 public class ManageGenericArtifactService extends RegistryAbstractAdmin implements IManageGenericArtifactService {
@@ -814,7 +829,8 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
          boolean result  = GenericArtifactUtil.addRXTResource(path,rxtConfig, getGovernanceUserRegistry());
             setArtifactUIConfiguration(GenericArtifactUtil.getRXTKeyFromContent(rxtConfig),
                     GenericArtifactUtil.getArtifactUIContentFromConfig(rxtConfig));
-
+        // Update unbounded table rxt fields.
+        updateUnboundedTableEntriesInMemory(rxtConfig);
         return result;
     }
 
@@ -849,5 +865,23 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
         return LifeCycleStates;
     }
 
+    /**
+     * This method is used to update rxt unbounded table filed values when rxt in memory when rxt is updated.
+     *
+     * @param rxtConfig rxt configuration.
+     */
+    private void updateUnboundedTableEntriesInMemory(String rxtConfig) {
+        RxtUnboundedEntryBean rxtUnboundedEntry;
+        try {
+            rxtUnboundedEntry = RxtDataLoadUtils.getRxtUnboundedEntries(rxtConfig);
+            HashMap<String, List<String>> rxtUnboundedEntries = RxtDataManager.getInstance().getRxtDetails();
+            List<String> existingUnboundedTableEntry = rxtUnboundedEntry.getFields();
+            List<String> newUnboundedTableEntry = rxtUnboundedEntries.get(rxtUnboundedEntry.getMediaType());
+            rxtUnboundedEntries.put(rxtUnboundedEntry.getMediaType(), rxtUnboundedEntry.getFields());
+            RxtDataManager.getInstance().setRxtDetails(rxtUnboundedEntries);
+        } catch (RegistryException e) {
+            log.error("Unable to update rxt unbounded table entries in memory");
+        }
+    }
 
 }
