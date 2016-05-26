@@ -48,7 +48,6 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.RxtDataManager;
-import org.wso2.carbon.registry.indexing.RxtUnboundedEntry;
 import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
 import org.wso2.carbon.registry.indexing.utils.RxtDataLoadUtils;
 import org.wso2.carbon.user.core.UserStoreException;
