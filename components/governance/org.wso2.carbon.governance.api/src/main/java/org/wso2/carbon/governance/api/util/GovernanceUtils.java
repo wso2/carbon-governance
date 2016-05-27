@@ -2520,7 +2520,7 @@ public class GovernanceUtils {
      * @param registry governace registry instance
      * @throws GovernanceException
      */
-    public static void deleteLifecycleHistoryFile(String artifactPath, Registry registry) throws GovernanceException {
+    private static void deleteLifecycleHistoryFile(String artifactPath, Registry registry) throws GovernanceException {
         String artifactRootPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + artifactPath;
         String historyResourcePath = GovernanceConstants.LIFECYCLE_HISTORY_PATH
                                      + artifactRootPath.replaceAll("/", "_");
