@@ -224,6 +224,40 @@ public class Utils {
         }
     }
 
+    public static void addTransitionInputs(String state, Resource resource,List<InputBean> transitionUI, String aspectName){
+        if (transitionUI != null) {
+            List<String> tobeRemoved = new ArrayList<String>();
+            Properties properties = resource.getProperties();
+            for (Object key : properties.keySet()) {
+                if(key.toString().startsWith(LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_INPUTS + aspectName + "." + state)){
+                    tobeRemoved.add(key.toString());
+                }
+            }
+            for (String key : tobeRemoved) {
+                resource.removeProperty(key);
+            }
+            int count = 0;
+            for (InputBean inputBean : transitionUI) {
+                List<String> items = new ArrayList<String>();
+                items.add(inputBean.getForEvent());
+                items.add(inputBean.getName());
+                items.add(String.valueOf(inputBean.isRequired()));
+                items.add(inputBean.getLabel());
+                items.add(inputBean.getPlaceHolder());
+                items.add(inputBean.getTooltip());
+                items.add(inputBean.getRegex());
+
+                String resourcePropertyNameForInput = LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_INPUTS + aspectName + "." + state + "." + count + "." + inputBean.getName();
+                resource.setProperty(resourcePropertyNameForInput, items);
+
+                if (inputBean.getValues() != null){
+                    String resourcePropertyNameForValue = LifecycleConstants.REGISTRY_CUSTOM_LIFECYCLE_INPUTS + aspectName + "." + state + "." + count + "." + inputBean.getName()+".value";
+                    resource.setProperty(resourcePropertyNameForValue, inputBean.getValues());
+                }
+            }
+        }
+    }
+
     public static boolean isTransitionAllowed(String[] roles, List<PermissionsBean> permissionsBeans, String eventName) {
         Set<String> permissionSet = new HashSet<String>(Arrays.asList(roles));
         if (permissionsBeans != null) {
@@ -335,6 +369,32 @@ public class Utils {
                 }
             }
             scriptElements.put(currentStateName, scriptBeans);
+        }
+    }
+
+    public static void populateTransitionInputs(String currentStateName, OMElement node,
+                                                Map<String, List<InputBean>> inputElements) {
+        //                  Adding the script elements
+        if (!inputElements.containsKey(currentStateName) && (node.getAttributeValue(new QName(LifecycleConstants.NAME)).equals("transitionInput"))) {
+            Iterator scriptIterator = node.getChildElements();
+            List<InputBean> inputBeans = new ArrayList<InputBean>();
+            while (scriptIterator.hasNext()) {
+                OMElement input = (OMElement) scriptIterator.next();
+                Iterator scriptChildIterator = input.getChildElements();
+                while (scriptChildIterator.hasNext()) {
+                    OMElement scriptChild = (OMElement) scriptChildIterator.next();
+                    InputBean inputBean = new InputBean(scriptChild.getAttributeValue(new QName("name")),
+                            Boolean.parseBoolean(scriptChild.getAttributeValue(new QName("required"))),
+                            scriptChild.getAttributeValue(new QName("label")),
+                            scriptChild.getAttributeValue(new QName("placeHolder")),
+                            scriptChild.getAttributeValue(new QName("tooltip")),
+                            scriptChild.getAttributeValue(new QName("regex")),
+                            scriptChild.getAttributeValue(new QName("values")),
+                            input.getAttributeValue(new QName(LifecycleConstants.FOR_EVENT)));
+                    inputBeans.add(inputBean);
+                }
+            }
+            inputElements.put(currentStateName, inputBeans);
         }
     }
 

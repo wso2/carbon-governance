@@ -18,6 +18,7 @@
 package org.wso2.carbon.governance.lcm.beans;
 
 import java.util.List;
+import java.util.Map;
 
 public class LCStateBean {
 
@@ -30,6 +31,8 @@ public class LCStateBean {
     private List<LifeCycleCheckListItemBean> lifeCycleCheckListItemBeans;
 
     private LifeCycleActionsBean lifeCycleActionsBean;
+
+    private Map<String, List<LifeCycleInputBean>> lifeCycleInputBeanMap;
 
     public List<LifeCycleApprovalBean> getLifeCycleApprovalBeanList() {
         return lifeCycleApprovalBeanList;
@@ -69,5 +72,13 @@ public class LCStateBean {
 
     public void setLifeCycleState(String lifeCycleState) {
         this.lifeCycleState = lifeCycleState;
+    }
+
+    public Map<String, List<LifeCycleInputBean>> getLifeCycleInputBeanMap() {
+        return lifeCycleInputBeanMap;
+    }
+
+    public void setLifeCycleInputBeanMap(Map<String, List<LifeCycleInputBean>> lifeCycleInputBeanMap) {
+        this.lifeCycleInputBeanMap = lifeCycleInputBeanMap;
     }
 }

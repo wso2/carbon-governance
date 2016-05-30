@@ -35,11 +35,7 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.StatCollection;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.StatWriter;
-import org.wso2.carbon.governance.registry.extensions.beans.ApprovalBean;
-import org.wso2.carbon.governance.registry.extensions.beans.CheckItemBean;
-import org.wso2.carbon.governance.registry.extensions.beans.CustomCodeBean;
-import org.wso2.carbon.governance.registry.extensions.beans.PermissionsBean;
-import org.wso2.carbon.governance.registry.extensions.beans.ScriptBean;
+import org.wso2.carbon.governance.registry.extensions.beans.*;
 import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants;
 import org.wso2.carbon.governance.registry.extensions.interfaces.CustomValidations;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
@@ -86,6 +82,7 @@ public class DefaultLifeCycle extends Aspect {
     private Map<String, List<String>> stateEvents;
     private Map<String, List<ScriptBean>> scriptElements;
     private Map<String, Map<String,String>> transitionUIs;
+    private Map<String, List<InputBean>> transitionInputs;
     private Map<String, List<ApprovalBean>> transitionApproval;
 
 
@@ -140,6 +137,7 @@ public class DefaultLifeCycle extends Aspect {
         transitionExecution.clear();
         transitionUIs.clear();
         transitionApproval.clear();
+        transitionInputs.clear();
     }
 
     private void initialize() {
@@ -151,6 +149,7 @@ public class DefaultLifeCycle extends Aspect {
         stateEvents = new HashMap<String, List<String>>();
         scriptElements = new HashMap<String, List<ScriptBean>>();
         transitionUIs = new HashMap<String, Map<String, String>>();
+        transitionInputs = new HashMap<String, List<InputBean>>();
         transitionApproval = new HashMap<String, List<ApprovalBean>>();
 //        By default we enable auditing
         isAuditEnabled = true;
@@ -228,6 +227,7 @@ public class DefaultLifeCycle extends Aspect {
             addTransitionApprovalItems(resource, transitionApproval.get(initialState), initialState, aspectName);
             addScripts(initialState, resource,scriptElements.get(initialState), aspectName);
             addTransitionUI(resource,transitionUIs.get(initialState), aspectName);
+            addTransitionInputs(initialState,resource,transitionInputs.get(initialState), aspectName);
 
         } catch (Exception e) {
             String message = "Resource does not contain a valid XML configuration: " + e.toString();
@@ -464,6 +464,7 @@ public class DefaultLifeCycle extends Aspect {
 	            addTransitionApprovalItems(resource, transitionApproval.get(state.getId()), state.getId(), aspectName);
 	            addScripts(state.getId(), resource,scriptElements.get(state.getId()), aspectName);
 	            addTransitionUI(resource, transitionUIs.get(state.getId()), aspectName);
+                addTransitionInputs(state.getId(),resource, transitionInputs.get(state.getId()), aspectName);
 	
 	//            For auditing purposes
 	            statCollection.setTargetState(nextState);
@@ -519,6 +520,7 @@ public class DefaultLifeCycle extends Aspect {
                     populateTransitionUIs(currentStateName, node,transitionUIs);
                     populateTransitionExecutors(currentStateName, node,transitionExecution);
                     populateTransitionApprovals(currentStateName,node,transitionApproval);
+                    populateTransitionInputs(currentStateName,node,transitionInputs);
                 }
             }
 
