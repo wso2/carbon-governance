@@ -33,6 +33,12 @@ public class LifecycleConstants {
             "registry.custom_lifecycle.checklist.js.script.console.";
 
     /**
+     * Defines the prefix of the property name that is used to add input elements
+     */
+    public static final String REGISTRY_CUSTOM_LIFECYCLE_INPUTS =
+            "registry.custom_lifecycle.inputs.";
+
+    /**
      * Defines the prefix of the property name that is used to add the transition UIs
      */
     public static final String REGISTRY_CUSTOM_LIFECYCLE_CHECKLIST_TRANSITION_UI =
