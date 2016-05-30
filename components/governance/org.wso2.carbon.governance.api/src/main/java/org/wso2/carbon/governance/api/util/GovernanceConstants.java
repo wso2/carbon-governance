@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2008-2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -305,5 +305,10 @@ public class GovernanceConstants {
      * The version attribute.
      */
     public static final String VERSION_ATTRIBUTE = "overview_version";
+
+    //lifecycle history path relative to governace registyr
+    // Ex:repository/components/org.wso2.carbon.governance/lifecycles/history
+    public static final String LIFECYCLE_HISTORY_PATH = RegistryConstants.GOVERNANCE_COMPONENT_PATH
+                                                        + RegistryConstants.PATH_SEPARATOR + "lifecycles/history/";
 
 }
