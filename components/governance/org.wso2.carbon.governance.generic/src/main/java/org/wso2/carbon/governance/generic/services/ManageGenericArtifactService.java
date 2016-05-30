@@ -829,7 +829,11 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
             setArtifactUIConfiguration(GenericArtifactUtil.getRXTKeyFromContent(rxtConfig),
                     GenericArtifactUtil.getArtifactUIContentFromConfig(rxtConfig));
         // Update unbounded table rxt fields.
-        updateUnboundedTableEntriesInMemory(rxtConfig);
+        try {
+            RxtDataManager.getInstance().setActiveTenantsUnboundedFields(rxtConfig);
+        } catch (RegistryException e) {
+            log.error("Unable to update rxt unbounded table entries in memory");
+        }
         return result;
     }
 
@@ -863,24 +867,4 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
         }
         return LifeCycleStates;
     }
-
-    /**
-     * This method is used to update rxt unbounded table filed values when rxt in memory when rxt is updated.
-     *
-     * @param rxtConfig rxt configuration.
-     */
-    private void updateUnboundedTableEntriesInMemory(String rxtConfig) {
-        RxtUnboundedEntryBean rxtUnboundedEntry;
-        try {
-            rxtUnboundedEntry = RxtDataLoadUtils.getRxtUnboundedEntries(rxtConfig);
-            HashMap<String, List<String>> rxtUnboundedEntries = RxtDataManager.getInstance().getRxtDetails();
-            List<String> existingUnboundedTableEntry = rxtUnboundedEntry.getFields();
-            List<String> newUnboundedTableEntry = rxtUnboundedEntries.get(rxtUnboundedEntry.getMediaType());
-            rxtUnboundedEntries.put(rxtUnboundedEntry.getMediaType(), rxtUnboundedEntry.getFields());
-            RxtDataManager.getInstance().setRxtDetails(rxtUnboundedEntries);
-        } catch (RegistryException e) {
-            log.error("Unable to update rxt unbounded table entries in memory");
-        }
-    }
-
 }
