@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
@@ -41,7 +42,10 @@ import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @scr.component name="org.wso2.carbon.governance.list"
@@ -60,6 +64,7 @@ public class GovernanceMgtUIListMetadataServiceComponent {
 
     private static Log log = LogFactory.getLog(GovernanceMgtUIListMetadataServiceComponent.class);
     private ServiceRegistration serviceRegistration;
+    private static Map<Integer, List<String>> tenantList = new HashMap<>();
 
     protected void activate(ComponentContext context) {
         final RegistryService registryService = CommonUtil.getRegistryService();
@@ -74,6 +79,7 @@ public class GovernanceMgtUIListMetadataServiceComponent {
                         new MediaTypeMatcher(
                                 GovernanceConstants.GOVERNANCE_ARTIFACT_CONFIGURATION_MEDIA_TYPE),
                         new Handler() {
+
                             public void put(RequestContext requestContext)
                                     throws RegistryException {
                                 if (!org.wso2.carbon.registry.extensions.utils.CommonUtil
@@ -99,9 +105,7 @@ public class GovernanceMgtUIListMetadataServiceComponent {
                                         throw new RegistryException("Violation of RXT definition in" +
                                                 " configuration file, follow the schema correctly..!!");
                                     }
-	                                GovernanceArtifactConfiguration artifactConfiguration =
-			                                GovernanceUtils.getGovernanceArtifactConfiguration(rxtContent);
-	                                CommonUtil.addStoragePath(artifactConfiguration.getMediaType(),artifactConfiguration.getPathExpression());
+                                    populateRXTPaths(rxtContent);
 
                                     Registry userRegistry = requestContext.getRegistry();
                                     userRegistry.put(
@@ -115,6 +119,39 @@ public class GovernanceMgtUIListMetadataServiceComponent {
                                     org.wso2.carbon.registry.extensions.utils.CommonUtil
                                             .releaseUpdateLock();
                                 }
+                            }
+
+                            public Resource get(RequestContext requestContext)
+                                    throws RegistryException {
+                                Resource resource = requestContext.getRepository().get(requestContext.getResourcePath().getPath());
+                                requestContext.setProcessingComplete(true);
+                                Object content = resource.getContent();
+                                String path = resource.getPath();
+                                String elementString;
+                                if (content instanceof String) {
+                                    elementString = (String) content;
+                                } else {
+                                    elementString = RegistryUtils.decodeBytes((byte[]) content);
+                                }
+                                int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+                                if (tenantList.get(tenantId) != null && !tenantList.get(tenantId).contains(path)) {
+                                    List<String> rxtPaths = tenantList.get(tenantId);
+                                    rxtPaths.add(path);
+                                    populateRXTPaths(elementString);
+                                    tenantList.put(tenantId, rxtPaths);
+                                } else if (tenantList.get(tenantId) == null) {
+                                    List<String> rxtPaths = new ArrayList<String>();
+                                    rxtPaths.add(path);
+                                    populateRXTPaths(elementString);
+                                    tenantList.put(tenantId, rxtPaths);
+                                }
+
+                                return resource;
+                            }
+
+                            private void populateRXTPaths(String elementString){
+                                GovernanceArtifactConfiguration artifactConfiguration = GovernanceUtils.getGovernanceArtifactConfiguration(elementString);
+                                CommonUtil.addStoragePath(artifactConfiguration.getMediaType(),artifactConfiguration.getPathExpression());
                             }
 
                             public void delete(RequestContext requestContext) throws RegistryException {
