@@ -23,9 +23,15 @@ import org.wso2.carbon.governance.api.cache.ArtifactCache;
 import org.wso2.carbon.governance.api.cache.ArtifactCacheFactory;
 import org.wso2.carbon.governance.api.cache.ArtifactCacheManager;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.config.RegistryConfiguration;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
+import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
+import org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService;
 import org.wso2.carbon.registry.core.jdbc.InMemoryEmbeddedRegistryService;
+import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
+import org.wso2.carbon.registry.extensions.aspects.DefaultLifecycle;
+import org.wso2.carbon.user.core.service.RealmService;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,39 +53,37 @@ public class BaseTestCase extends TestCase {
                 System.setProperty("carbon.home", file.getAbsolutePath());
             }
         }
-
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
         // The line below is responsible for initializing the cache.
         CarbonContext.getThreadLocalCarbonContext();
 
+        String carbonHome = System.getProperty("carbon.home");
+        System.out.println("carbon home " + carbonHome);
+        String carbonXMLPath = carbonHome + File.separator + "repository"
+                + File.separator + "conf" + File.separator + "carbon.xml";
+        RegistryConfiguration regConfig = new RegistryConfiguration(carbonXMLPath);
+        RegistryCoreServiceComponent.setRegistryConfig(regConfig);
+
+        RealmService realmService = new InMemoryRealmService();
+        RegistryDataHolder.getInstance().setRealmService(realmService);
         InputStream is;
+
         try {
-            is = new FileInputStream("src/test/resources/registry.xml");
-            /*is = new FileInputStream("/home/lahiru/trunk/carbon-platform/products/greg/modules/distribution/target/wso2greg-3.5.0-SNAPSHOT/repository/conf/registry.xml");*/
+            is = this.getClass().getClassLoader().getResourceAsStream(
+                    "registry.xml");
         } catch (Exception e) {
             is = null;
         }
-        /*
-        RealmService realmService = new InMemoryRealmService();
-        RegistryContext registryContext  = RegistryContext.getBaseInstance(is, realmService);
-        registryContext.setSetup(true);
-        registryContext.selectDBConfig("h2-db");
+        ctx = RegistryContext.getBaseInstance(is, realmService);
+        //RegistryConfigurationProcessor.populateRegistryConfig(is, ctx);
+        ctx.setSetup(true);
+        ctx.selectDBConfig("h2-db");
+        ctx.addAspect("DefaultLifecycle", new DefaultLifecycle(), MultitenantConstants.SUPER_TENANT_ID);
+        EmbeddedRegistryService embeddedRegistry = ctx.getEmbeddedRegistryService();
+        new RegistryCoreServiceComponent().registerBuiltInHandlers(embeddedRegistry);
+        registry = embeddedRegistry.getGovernanceUserRegistry("admin", "admin");
 
-        Code to use to test Remote Registry
-        System.setProperty("javax.net.ssl.trustStore", "/home/lahiru/trunk/carbon-platform/products/greg/modules/distribution/target/wso2greg-3.5.0-SNAPSHOT/resources/security/client-truststore.jks");
-         System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
-         System.setProperty("javax.net.ssl.trustStoreType","JKS");
-         registryService = new RemoteRegistryService("http://localhost:9763/registry", "admin", "admin");
-         registry = registryService.getGovernanceUserRegistry("admin","admin");*/
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-        registryService = new InMemoryEmbeddedRegistryService(is);
-        registry = registryService.getGovernanceUserRegistry("admin", MultitenantConstants.SUPER_TENANT_ID);
-        RegistryCoreServiceComponent component = new RegistryCoreServiceComponent() {
-            {
-                setRealmService(registryService.getRealmService());
-            }
-        };
-        component.registerBuiltInHandlers(registryService);
         ArtifactCache cache = ArtifactCacheFactory.createArtifactCache();
         ArtifactCacheManager.getCacheManager().addTenantArtifactCache(cache, MultitenantConstants.SUPER_TENANT_ID);
     }
