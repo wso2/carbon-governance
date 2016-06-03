@@ -47,9 +47,6 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
-import org.wso2.carbon.registry.indexing.RxtDataManager;
-import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
-import org.wso2.carbon.registry.indexing.utils.RxtDataLoadUtils;
 import org.wso2.carbon.user.core.UserStoreException;
 
 import javax.xml.namespace.QName;
@@ -828,12 +825,6 @@ public class ManageGenericArtifactService extends RegistryAbstractAdmin implemen
          boolean result  = GenericArtifactUtil.addRXTResource(path,rxtConfig, getGovernanceUserRegistry());
             setArtifactUIConfiguration(GenericArtifactUtil.getRXTKeyFromContent(rxtConfig),
                     GenericArtifactUtil.getArtifactUIContentFromConfig(rxtConfig));
-        // Update unbounded table rxt fields.
-        try {
-            RxtDataManager.getInstance().setActiveTenantsUnboundedFields(rxtConfig);
-        } catch (RegistryException e) {
-            log.error("Unable to update rxt unbounded table entries in memory");
-        }
         return result;
     }
 

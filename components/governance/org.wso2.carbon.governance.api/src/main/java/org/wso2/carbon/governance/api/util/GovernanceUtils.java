@@ -65,7 +65,10 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
+import org.wso2.carbon.registry.indexing.RxtUnboundedFiledManager;
+import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
+import org.wso2.carbon.registry.indexing.utils.RxtUnboundedDataLoadUtils;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -526,8 +529,11 @@ public class GovernanceUtils {
                             new ManagementPermission[managementPermissions.size()]));
                 }
             }
-        } catch (XMLStreamException ignored) {
-        } catch (NumberFormatException ignored) {
+            updateTenantsUnboundedFieldMap(elementString);
+        } catch (XMLStreamException | NumberFormatException ignored) {
+            log.info("Error occurred while updating tenant specific unbounded field map");
+        } catch (RegistryException e) {
+            log.info("Error occurred while updating tenant specific unbounded field map");
         }
         return configuration;
     }
@@ -2531,6 +2537,29 @@ public class GovernanceUtils {
         } catch (RegistryException e) {
             String msg = "Error in deleting the the lifecycle history file at: " + historyResourcePath + ".";
             throw new GovernanceException(msg, e);
+        }
+    }
+
+    /**
+     * This method is used to update rxt unbounded fields map.
+     *
+     * @param elementString     rxt configuration.
+     * @throws RegistryException
+     */
+    private static void updateTenantsUnboundedFieldMap(String elementString) throws
+            RegistryException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        RxtUnboundedEntryBean rxtUnboundedFields = RxtUnboundedDataLoadUtils.getRxtUnboundedEntries(
+                elementString);
+        if (rxtUnboundedFields != null) {
+            HashMap<String, List<String>> currentTenantUnboundedFields = RxtUnboundedFiledManager.getInstance()
+                    .getTenantsUnboundedFileds().get(tenantId);
+            if (currentTenantUnboundedFields == null) {
+                currentTenantUnboundedFields = new HashMap<>();
+            }
+            currentTenantUnboundedFields.put(rxtUnboundedFields.getMediaType(),
+                    rxtUnboundedFields.getFields());
+            RxtUnboundedFiledManager.getInstance().setTenantsUnboundedFields(tenantId, currentTenantUnboundedFields);
         }
     }
 }
