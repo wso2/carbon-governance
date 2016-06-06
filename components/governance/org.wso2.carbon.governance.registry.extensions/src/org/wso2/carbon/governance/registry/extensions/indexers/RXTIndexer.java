@@ -22,6 +22,7 @@ import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.common.SolrException;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
@@ -32,15 +33,19 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.AsyncIndexer;
 import org.wso2.carbon.registry.indexing.IndexingManager;
+import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
 import org.wso2.carbon.registry.indexing.indexer.Indexer;
 import org.wso2.carbon.registry.indexing.indexer.XMLIndexer;
+import org.wso2.carbon.registry.indexing.service.RxtUnboundedFieldManagerService;
 import org.wso2.carbon.registry.indexing.solr.IndexDocument;
+import org.wso2.carbon.registry.indexing.utils.RxtUnboundedDataLoadUtils;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RXTIndexer extends XMLIndexer implements Indexer {
 
@@ -70,6 +75,7 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
             } else {
                 fields.put("overview_name", Arrays.asList(RegistryUtils.getResourceName(fileData.path).toLowerCase()));
             }
+            updateTenantsUnboundedFieldMap(configuration.getContentDefinition().getParent().toString());
             indexedDocument.setFields(fields);
             if (log.isDebugEnabled()) {
                 log.debug("Registry RXT Indexer is running");
@@ -110,6 +116,29 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
 
         public Map<String, List<String>> getAttributes() {
             return attributes;
+        }
+    }
+
+    /**
+     * This method is used to update rxt unbounded fields map.
+     *
+     * @param elementString     rxt configuration.
+     * @throws RegistryException
+     */
+    private static void updateTenantsUnboundedFieldMap(String elementString) throws
+            RegistryException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        RxtUnboundedEntryBean rxtUnboundedFields = RxtUnboundedDataLoadUtils.getRxtUnboundedEntries(
+                elementString);
+        if (rxtUnboundedFields != null) {
+            Map<String, List<String>> currentTenantUnboundedFields = RxtUnboundedFieldManagerService.getInstance()
+                    .getTenantsUnboundedFields().get(tenantId);
+            if (currentTenantUnboundedFields == null) {
+                currentTenantUnboundedFields = new ConcurrentHashMap<>();
+            }
+            currentTenantUnboundedFields.put(rxtUnboundedFields.getMediaType(),
+                    rxtUnboundedFields.getFields());
+            RxtUnboundedFieldManagerService.getInstance().setTenantsUnboundedFields(tenantId, currentTenantUnboundedFields);
         }
     }
 }
