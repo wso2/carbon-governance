@@ -1934,10 +1934,24 @@ public class GovernanceUtils {
 
             List<GovernanceArtifact> propertySearchResults = performAttributeSearch(fields, registry);
 
-            Set<GovernanceArtifact> set  = new TreeSet<>(new Comparator<GovernanceArtifact>() {
-                public int compare(GovernanceArtifact artifact1, GovernanceArtifact artifact2)
-                {
-                    return artifact1.getId().compareTo(artifact2.getId()) ;
+            Set<GovernanceArtifact> set = new TreeSet<>(new Comparator<GovernanceArtifact>() {
+                public int compare(GovernanceArtifact artifact1, GovernanceArtifact artifact2) {
+                    PaginationContext paginationContext = PaginationContext.getInstance();
+                    String sortBy = paginationContext.getSortBy();
+                    try {
+                        switch (paginationContext.getSortOrder()) {
+                            case "ASC":
+                                return artifact1.getAttribute(sortBy).compareTo(artifact2.getAttribute(sortBy));
+                            case "DESC":
+                                return artifact2.getAttribute(sortBy).compareTo(artifact1.getAttribute(sortBy));
+                            default:
+                                return artifact1.getId().compareTo(artifact2.getId());
+                        }
+                    } catch (GovernanceException e) {
+                        log.error("Error when trying to compare the sortBy attributes of the returned artifacts.", e);
+                    }
+
+                    return artifact1.getId().compareTo(artifact2.getId());
                 }
             });
 
