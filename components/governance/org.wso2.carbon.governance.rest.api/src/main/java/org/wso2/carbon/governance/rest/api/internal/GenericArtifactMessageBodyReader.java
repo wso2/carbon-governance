@@ -38,18 +38,21 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
         implements MessageBodyReader<GovernanceArtifact> {
 
     private final Log log = LogFactory.getLog(GenericArtifactMessageBodyReader.class);
 
-    public static final String OVERVIEW_PREFIX = "overview_";
-    public static final String RXT_SEPARATOR = "_";
-    public static final String ATTR_NAME = "name";
-    public static final String ATTR_TYPE = "type";
-    public static final String UTF_8 = "UTF-8";
+    private static final String OVERVIEW_PREFIX = "overview_";
+    private static final String UNBOUNDED_SUFFIX = "unbounded";
+    private static final String RXT_SEPARATOR = "_";
+    private static final String ATTR_NAME = "name";
+    private static final String ATTR_TYPE = "type";
+    private static final String UTF_8 = "UTF-8";
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -85,10 +88,35 @@ public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
             GovernanceArtifact artifact = GenericArtifactManager.newDetachedGovernanceArtifact(new QName(name), type);
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String key = entry.getKey();
-                if (key.indexOf(RXT_SEPARATOR) == -1) {
+                if (key.endsWith(UNBOUNDED_SUFFIX)) {
+                    key = key.substring(0, key.indexOf(UNBOUNDED_SUFFIX));
+                }
+                if (!key.contains(RXT_SEPARATOR)) {
                     key = OVERVIEW_PREFIX.concat(key);
                 }
-                artifact.addAttribute(key, String.valueOf(entry.getValue()));
+
+                /*
+                 * Fix for REGISTRY-3613
+                 * Enabling multiple values with the same key to be added as attributes in order to save
+                 * unbounded elements such as endpoints.
+                 */
+                Object value = entry.getValue();
+
+                if (value instanceof String) {
+                    artifact.addAttribute(key, String.valueOf(value));
+                } else if (value instanceof Map) {
+                    //if value is a json array with multiple values
+                    Map<?,?> arrayMap = (Map) value;
+                    for (Map.Entry arrayEntry : arrayMap.entrySet()) {
+                        String tempKey = key.concat((String) arrayEntry.getKey());
+                        List arrayValues = (List) arrayEntry.getValue();
+
+                        for (Object val : arrayValues) {
+                            artifact.addAttribute(tempKey, String.valueOf(val));
+                        }
+                    }
+                }
+
             }
             return artifact;
         }

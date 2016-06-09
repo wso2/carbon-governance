@@ -40,7 +40,9 @@ public class DetachedGenericArtifactImpl extends GenericArtifactImpl implements 
             throws GovernanceException {
         GenericArtifact newArtifact = artifactManager.newGovernanceArtifact(getQName());
         for (String key : getAttributeKeys()) {
-            newArtifact.addAttribute(key, getAttribute(key));
+            for (String attribute : getAttributes(key)) {
+                newArtifact.addAttribute(key, attribute);
+            }
         }
         return newArtifact;
     }
