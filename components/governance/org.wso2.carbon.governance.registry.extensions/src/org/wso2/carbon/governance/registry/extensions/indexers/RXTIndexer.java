@@ -72,10 +72,10 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
             if (fileData.mediaType.matches("application/vnd.(.)+\\+xml") && attributes.size() > 0) {
                 setAttributesToLowerCase(attributes);
                 fields.putAll(attributes);
+                updateTenantsUnboundedFieldMap(configuration.getContentDefinition().getParent().toString());
             } else {
                 fields.put("overview_name", Arrays.asList(RegistryUtils.getResourceName(fileData.path).toLowerCase()));
             }
-            updateTenantsUnboundedFieldMap(configuration.getContentDefinition().getParent().toString());
             indexedDocument.setFields(fields);
             if (log.isDebugEnabled()) {
                 log.debug("Registry RXT Indexer is running");
@@ -125,8 +125,7 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
      * @param elementString     rxt configuration.
      * @throws RegistryException
      */
-    private static void updateTenantsUnboundedFieldMap(String elementString) throws
-            RegistryException {
+    private static void updateTenantsUnboundedFieldMap(String elementString) throws RegistryException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         RxtUnboundedEntryBean rxtUnboundedFields = RxtUnboundedDataLoadUtils.getRxtUnboundedEntries(
                 elementString);
@@ -138,7 +137,8 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
             }
             currentTenantUnboundedFields.put(rxtUnboundedFields.getMediaType(),
                     rxtUnboundedFields.getFields());
-            RxtUnboundedFieldManagerService.getInstance().setTenantsUnboundedFields(tenantId, currentTenantUnboundedFields);
+            RxtUnboundedFieldManagerService.getInstance().setTenantsUnboundedFields(tenantId,
+                    currentTenantUnboundedFields);
         }
     }
 }
