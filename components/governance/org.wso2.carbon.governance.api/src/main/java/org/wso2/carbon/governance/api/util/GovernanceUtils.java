@@ -1939,9 +1939,10 @@ public class GovernanceUtils {
                     PaginationContext paginationContext = PaginationContext.getInstance();
                     if (paginationContext != null) {
                         String sortBy = paginationContext.getSortBy();
+                        String sortOrder = paginationContext.getSortOrder();
                         try {
-                            if (StringUtils.isNotBlank(sortBy)) {
-                                switch (paginationContext.getSortOrder()) {
+                            if (StringUtils.isNotBlank(sortBy) && StringUtils.isNotBlank(sortOrder)) {
+                                switch (sortOrder) {
                                     case "ASC":
                                         return comparison(artifact1.getAttribute(sortBy),
                                                 artifact2.getAttribute(sortBy), sortBy);
