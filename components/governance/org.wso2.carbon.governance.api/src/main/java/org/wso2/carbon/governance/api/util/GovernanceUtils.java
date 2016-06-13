@@ -1937,24 +1937,38 @@ public class GovernanceUtils {
             Set<GovernanceArtifact> set = new TreeSet<>(new Comparator<GovernanceArtifact>() {
                 public int compare(GovernanceArtifact artifact1, GovernanceArtifact artifact2) {
                     PaginationContext paginationContext = PaginationContext.getInstance();
-                    if(paginationContext != null) {
+                    if (paginationContext != null) {
                         String sortBy = paginationContext.getSortBy();
+                        String sortOrder = paginationContext.getSortOrder();
                         try {
-                            switch (paginationContext.getSortOrder()) {
-                                case "ASC":
-                                    return artifact1.getAttribute(sortBy).compareTo(artifact2.getAttribute(sortBy));
-                                case "DES":
-                                case "DESC":
-                                    return artifact2.getAttribute(sortBy).compareTo(artifact1.getAttribute(sortBy));
-                                default:
-                                    return artifact1.getId().compareTo(artifact2.getId());
+                            if (StringUtils.isNotBlank(sortBy) && StringUtils.isNotBlank(sortOrder)) {
+                                switch (sortOrder) {
+                                    case "ASC":
+                                        return comparison(artifact1.getAttribute(sortBy),
+                                                artifact2.getAttribute(sortBy), sortBy);
+                                    case "DES":
+                                    case "DESC":
+                                        return comparison(artifact2.getAttribute(sortBy),
+                                                artifact1.getAttribute(sortBy), sortBy);
+                                    default:
+                                        return artifact1.getId().compareTo(artifact2.getId());
+                                }
                             }
                         } catch (GovernanceException e) {
-                            log.error("Error when trying to compare the sortBy attributes of the returned artifacts.", e);
+                            log.error("Error when trying to compare the sortBy attributes of the returned artifacts.",
+                                    e);
                         }
                     }
 
                     return artifact1.getId().compareTo(artifact2.getId());
+                }
+
+                private int comparison(String value1, String value2, String sortBy) throws GovernanceException {
+                    if (value1 == null) {
+                        throw new GovernanceException("Artifact does not contain the attribute " + sortBy);
+                    }
+
+                    return value1.compareTo(value2);
                 }
             });
 
