@@ -1964,6 +1964,11 @@ public class GovernanceUtils {
                 }
 
                 private int comparison(String value1, String value2, String sortBy) throws GovernanceException {
+                    //If sortBy is equal to a date/time attribute, preserve the order returned from the solr client.
+                    if(sortBy.equals("createdDate") || sortBy.equals("lastUpdatedDate")) {
+                        return 1;
+                    }
+                    //Else if sortBy an attribute
                     if (value1 == null) {
                         throw new GovernanceException("Artifact does not contain the attribute " + sortBy);
                     }
