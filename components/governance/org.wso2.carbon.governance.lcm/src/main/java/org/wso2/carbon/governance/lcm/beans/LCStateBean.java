@@ -34,6 +34,29 @@ public class LCStateBean {
 
     private Map<String, List<LifeCycleInputBean>> lifeCycleInputBeanMap;
 
+    // This variable holds lifecycle's current state duration.
+    private String lifeCycleCurrentStateDuration;
+
+    // This variable holds lifecycle's current state duration colour.
+    private String lifeCycleCurrentStateDurationColur;
+
+    public String getLifeCycleCurrentStateDuration() {
+        return lifeCycleCurrentStateDuration;
+    }
+
+    public void setLifeCycleCurrentStateDuration(String lifeCycleCurrentStateDuration) {
+        this.lifeCycleCurrentStateDuration = lifeCycleCurrentStateDuration;
+    }
+
+    public String getLifeCycleCurrentStateDurationColur() {
+        return lifeCycleCurrentStateDurationColur;
+    }
+
+    public void setLifeCycleCurrentStateDurationColur(String lifeCycleCurrentStateDurationColur) {
+        this.lifeCycleCurrentStateDurationColur = lifeCycleCurrentStateDurationColur;
+    }
+
+
     public List<LifeCycleApprovalBean> getLifeCycleApprovalBeanList() {
         return lifeCycleApprovalBeanList;
     }

@@ -19,6 +19,8 @@ package org.wso2.carbon.governance.lcm.internal;
 
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
+import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
+import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.governance.lcm.beans.*;
@@ -133,6 +135,15 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                     for (String aspect : aspects) {
                         LCStateBean lifeCycleStateBean =
                                 getCheckListItems(resource, aspect, rolesList, registry);
+
+                        GovernanceArtifact governanceArtifact =
+                                GovernanceUtils.retrieveGovernanceArtifactByPath(registry, resource.getPath());
+                        lifeCycleStateBean.setLifeCycleCurrentStateDuration(governanceArtifact.getCurrentStateDuration
+                                (resource.getPath(), aspect).get("currentStateDuration"));
+                        lifeCycleStateBean.setLifeCycleCurrentStateDurationColur(
+                                governanceArtifact.getCurrentStateDuration(resource.getPath(), aspect)
+                                        .get("durationColour"));
+
                         lifeCycleStateBeans.add(lifeCycleStateBean);
                     }
                 }
