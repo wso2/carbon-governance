@@ -49,7 +49,12 @@
         <operation name="canChange">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/login</parameter>
         </operation>
-
+        <operation name="addRXTResource">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/governance/manage-rxt</parameter>
+        </operation>
+        <operation name="getRxtAbsPathFromRxtName">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/governance/manage-rxt</parameter>
+        </operation>
     </service>
 
     <parameter name="adminService" locked="true">true</parameter>
