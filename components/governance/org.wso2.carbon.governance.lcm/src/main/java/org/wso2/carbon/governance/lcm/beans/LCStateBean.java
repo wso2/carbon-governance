@@ -38,7 +38,7 @@ public class LCStateBean {
     private String lifeCycleCurrentStateDuration;
 
     // This variable holds lifecycle's current state duration colour.
-    private String lifeCycleCurrentStateDurationColur;
+    private String lifeCycleCurrentStateDurationColour;
 
     public String getLifeCycleCurrentStateDuration() {
         return lifeCycleCurrentStateDuration;
@@ -48,12 +48,12 @@ public class LCStateBean {
         this.lifeCycleCurrentStateDuration = lifeCycleCurrentStateDuration;
     }
 
-    public String getLifeCycleCurrentStateDurationColur() {
-        return lifeCycleCurrentStateDurationColur;
+    public String getLifeCycleCurrentStateDurationColour() {
+        return lifeCycleCurrentStateDurationColour;
     }
 
-    public void setLifeCycleCurrentStateDurationColur(String lifeCycleCurrentStateDurationColur) {
-        this.lifeCycleCurrentStateDurationColur = lifeCycleCurrentStateDurationColur;
+    public void setLifeCycleCurrentStateDurationColour(String lifeCycleCurrentStateDurationColour) {
+        this.lifeCycleCurrentStateDurationColour = lifeCycleCurrentStateDurationColour;
     }
 
 

@@ -20,7 +20,6 @@ package org.wso2.carbon.governance.lcm.internal;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
-import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.governance.lcm.beans.*;
@@ -28,7 +27,6 @@ import org.wso2.carbon.governance.lcm.exception.LifeCycleException;
 import org.wso2.carbon.governance.lcm.services.LifeCycleService;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.governance.lcm.util.LifecycleStateDurationUtils;
-import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
 import org.wso2.carbon.registry.api.GhostResource;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -109,7 +107,16 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             if (path != null) {
                 removeCache(registry, path);
                 Resource resource = registry.get(path);
-                return getCheckListItems(resource, artifactLC, roleNames, registry);
+                LCStateBean lifeCycleStateBean = getCheckListItems(resource, artifactLC, roleNames, registry);
+
+                GovernanceArtifact governanceArtifact =
+                        GovernanceUtils.retrieveGovernanceArtifactByPath(registry, resource.getPath());
+                lifeCycleStateBean.setLifeCycleCurrentStateDuration(governanceArtifact.getCurrentStateDuration
+                        (resource.getPath(), artifactLC).get("currentStateDuration"));
+                lifeCycleStateBean.setLifeCycleCurrentStateDurationColour(
+                        governanceArtifact.getCurrentStateDuration(resource.getPath(), artifactLC)
+                                .get("durationColour"));
+                return lifeCycleStateBean;
             } else {
                 throw new LifeCycleException("Unable to find the artifact " + artifactId);
             }
@@ -140,7 +147,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                                 GovernanceUtils.retrieveGovernanceArtifactByPath(registry, resource.getPath());
                         lifeCycleStateBean.setLifeCycleCurrentStateDuration(governanceArtifact.getCurrentStateDuration
                                 (resource.getPath(), aspect).get("currentStateDuration"));
-                        lifeCycleStateBean.setLifeCycleCurrentStateDurationColur(
+                        lifeCycleStateBean.setLifeCycleCurrentStateDurationColour(
                                 governanceArtifact.getCurrentStateDuration(resource.getPath(), aspect)
                                         .get("durationColour"));
 
