@@ -21,6 +21,7 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.governance.lcm.ui.clients.LifeCycleManagementServiceClient" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <link type="text/css" rel="stylesheet" href="css/menu.css"/>
 <link type="text/css" rel="stylesheet" href="css/style.css"/>
@@ -211,11 +212,11 @@
                 <tr>
                     <td class="buttonRow">
                         <% if (!viewMode) { %>
-                        <input class="button registryWriteOperation" type="button" onclick="saveLC('<%=request.getParameter("lifecycleName")%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
+                        <input class="button registryWriteOperation" type="button" onclick="saveLC('<%=Encode.forHtmlContent(request.getParameter("lifecycleName"))%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
                         <input class="button registryNonWriteOperation" type="button" disabled="disabled" value="<fmt:message key="save"/>"/>
                         <input class="button" type="button" value="<fmt:message key="cancel"/>" onclick="javascript: cancelSequence(); return false;"/>
                         <% } else { %>
-                        <input class="button registryWriteOperation" type="button" onclick="saveLC('<%=request.getParameter("lifecycleName")%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
+                        <input class="button registryWriteOperation" type="button" onclick="saveLC('<%=Encode.forHtmlContent(request.getParameter("lifecycleName"))%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
                         <input class="button registryNonWriteOperation" type="button" disabled="disabled" value="<fmt:message key="save"/>"/>
                         <input class="button" type="button" value="<fmt:message key="cancel"/>" onclick="javascript: cancelSequence(); return false;"/>
                         <% } %>

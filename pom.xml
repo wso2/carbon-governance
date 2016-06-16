@@ -1269,6 +1269,11 @@
                 <artifactId>asm4-all</artifactId>
                 <version>${orbit.version.asm}</version>
             </dependency>
+            <dependency>
+                <groupId>org.owasp.encoder</groupId>
+                <artifactId>encoder</artifactId>
+                <version>${owasp.encoder.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1386,6 +1391,7 @@
         <orbit.version.predic8>1.5.0.wso2v2</orbit.version.predic8>
         <orbit.version.asm>4.0.0.wso2v1</orbit.version.asm>
         <project.scm.id>my-scm-server</project.scm.id>
+        <owasp.encoder.version>1.1</owasp.encoder.version>
 
     </properties>
 </project>
