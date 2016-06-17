@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 - 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package org.wso2.carbon.governance.api.common.dataobjects;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.util.ApproveItemBean;
@@ -32,17 +31,13 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import javax.xml.namespace.QName;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Governance Artifact abstract class, This is overwritten by Endpoint, Policy, Schema, Service,
@@ -62,37 +57,6 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     private String artifactPath;
     private List<String> uniqueAttributes;
 
-
-    /**
-     * Duration seconds format.
-     * This will produce a two digit number for seconds followed with character 's'.
-     * Example 08s.
-     */
-    private final String durationSecondsFormat = "%02ds";
-
-    /**
-     * Duration minutes and seconds format.
-     * This will provide a two digit number for minutes followed by character 'm' and a two digit number for seconds
-     * followed with character 's'.
-     * Example: 01m:23s.
-     */
-    private final String durationMinutesSecondsFormat = "%02dm:%02ds";
-
-    /**
-     * Duration hours, minutes and seconds format. This will provide a two digit number for hours followed by
-     * character 'h', a two digit number for minutes followed with character 'm' and a two digit number for seconds
-     * followed with character 's'.
-     * Example 07h:12m:09s.
-     */
-    private final String durationHoursMinutesSecondsFormat = "%02dh:%02dm:%02ds";
-
-    /**
-     * Duration days, hours, minutes and seconds format.
-     * This will produce a number for days followed with character 'd', a two digit number for hours followed by
-     * character 'h', a two digit number for minutes followed with character 'm' and a two digit number for seconds
-     * followed with character 's'.
-     */
-    private final String durationDaysHoursMinutesSecondsFormat = "%dd:%02dh:%02dm:%02ds";
 
     public List<String> getUniqueAttributes() {
         return uniqueAttributes;
@@ -1407,164 +1371,5 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             }
         }
         return false;
-    }
-
-    /**
-     * This method is used to get a lifecycle's current state duration information.
-     *
-     * @param artifactPath          lifecycle associated artifacts resource path.
-     * @param lcName                lifecycle name.
-     * @return                      a map of current lifecycle state duration colour and duration.
-     * @throws GovernanceException
-     */
-    @Override
-    public Map<String, String> getCurrentStateDuration(String artifactPath, String lcName) throws
-            GovernanceException {
-
-        String durationColour = null;
-        String currentStateDuration = null;
-        String lifecycleName;
-        Map<String, String> currentLCStateDurationInfo = new HashMap<>();
-
-        if (lcName.isEmpty()) {
-            lcName = getLifecycleName();
-        }
-        try {
-            if (registry.resourceExists(artifactPath)) {
-                Resource resource = registry.get(artifactPath);
-                List<String> checkpoints = resource.getPropertyValues("registry.lifecycle." + lcName + ".checkpoint");
-
-                if (checkpoints != null) {
-
-                    for (String checkpoint : checkpoints) {
-                        List<String> checkpointValues = resource.getPropertyValues("registry.lifecycle." + lcName +
-                                ".checkpoint." + checkpoint);
-                        if (checkpointValues != null) {
-                            String checkpointName = checkpointValues.get(0);
-                            String checkpointMin = checkpointValues.get(1);
-                            String checkpointMax = checkpointValues.get(2);
-                            String checkpointLastUpdatedTime = checkpointValues.get(3);
-                            String checkpointColour = checkpointValues.get(4);
-
-                            long duration = calculateTimeDifference(getCurrentTime(), checkpointLastUpdatedTime);
-                            if (isDurationBetweenTimestamps(duration, checkpointMin, checkpointMax)) {
-                                currentLCStateDurationInfo.put("durationColour", checkpointColour);
-                                currentLCStateDurationInfo.put("currentStateDuration", formatTimeDuration(duration));
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    long duration = calculateTimeDifference(getCurrentTime(),
-                            resource.getProperty("registry.lifecycle." + lcName + ".lastStateUpdatedTime"));
-                    currentLCStateDurationInfo.put("durationColour", null);
-                    currentLCStateDurationInfo.put("currentStateDuration", formatTimeDuration(duration));
-                }
-            }
-        } catch (RegistryException e) {
-            throw new GovernanceException(e);
-        }
-
-        return currentLCStateDurationInfo;
-    }
-
-
-    /**
-     * This method used to check whether a duration is between a specific boundary.
-     *
-     * @param duration  lifecycle current state duration timestamp.
-     * @param minTime   boundary lower value.
-     * @param maxTime   boundary upper value.
-     * @return          true when duration is between the boundary.
-     */
-    private static boolean isDurationBetweenTimestamps(long duration, String minTime, String maxTime) {
-        boolean result = false;
-        // Current duration in milly seconds
-        long durationInMillySeconds = TimeUnit.MILLISECONDS.convert(duration, TimeUnit.MILLISECONDS);
-        // Get checkpoint boundary values in milly seconds
-        long minBoundaryInMillySeconds = getMillySecondsByDuration(minTime);
-        // Get checkpoint boundary values in milly seconds
-        long maxBoundaryInMillySeconds = getMillySecondsByDuration(maxTime);
-        // Check the duration is between the boundaries
-        if (minBoundaryInMillySeconds < durationInMillySeconds && durationInMillySeconds < maxBoundaryInMillySeconds) {
-            result = true;
-        }
-        return result;
-    }
-
-    /**
-     * This method is used to get duration in milly seconds by passing the duration as a String.
-     * @param duration  duration as a String.
-     * @return          duration in milly seconds.
-     */
-    private static long getMillySecondsByDuration(String duration) {
-        if (StringUtils.isEmpty(duration)) {
-            throw new IllegalArgumentException("Invalid arguments supplied as duration: " + duration);
-        }
-
-        String formattedDuration = duration.replaceAll("d", "").replaceAll("h", "").replaceAll("m", "")
-                .replaceAll("s", "");
-
-        String[] tokens = formattedDuration.split(":");
-        long secondsToMillySeconds = Long.parseLong(tokens[3]) * 1000;
-        long minutesToMillySeconds = Long.parseLong(tokens[2]) * 60 * 1000;
-        long hoursToMillySeconds = Long.parseLong(tokens[1]) * 60 * 60 * 1000;
-        long daysToMillySeconds = Long.parseLong(tokens[0]) * 24 * 60 * 60 * 1000;
-        return daysToMillySeconds + secondsToMillySeconds + minutesToMillySeconds + hoursToMillySeconds;
-    }
-
-    /**
-     * This method used to calculate time difference of two timestamps.
-     *
-     * @param timeStampOne              latest timestamp.
-     * @param timeStampTwo              earlier timestamp.
-     * @return timeDurationTimestamp    timestamp difference from current time to current lifecycle last state changed
-     *                                  time.
-     */
-    private static long calculateTimeDifference(String timeStampOne, String timeStampTwo) {
-        if (StringUtils.isEmpty(timeStampOne) && StringUtils.isEmpty(timeStampTwo)) {
-            throw new IllegalArgumentException("Invalid arguments supplied as timestamp one: '" + timeStampOne + "' or"
-                    + " " + "timestamp two: '" + timeStampTwo + "' is not set");
-        }
-        return Timestamp.valueOf(timeStampOne).getTime() - Timestamp.valueOf(timeStampTwo).getTime();
-    }
-
-    /**
-     * This method is used to current time
-     *
-     * @return String  current time in  yyyy-MM-dd HH:mm:ss.SSS format.
-     */
-    private static String getCurrentTime() {
-        Date currentTimeStamp = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        return dateFormat.format(currentTimeStamp);
-    }
-
-    /**
-     * This method is used to format a timestamp to 'dd:hh:mm:ss'.
-     *
-     * @param duration  timestamp duration.
-     * @return          formatted time duration to 'dd:hh:mm:ss'.
-     */
-    private String formatTimeDuration(long duration) {
-        String timeDuration;
-        long days = TimeUnit.MILLISECONDS.toDays(duration);
-        long hours = TimeUnit.MILLISECONDS.toHours(duration) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS
-                .toDays(duration));
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
-                .toHours(duration));
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
-                .toMinutes(duration));
-        // Setting the duration to a readable format.
-        if (days == 0 && hours == 0 && minutes == 0) {
-            timeDuration = String.format(durationSecondsFormat, seconds);
-        } else if (days == 0 && hours == 0) {
-            timeDuration = String.format(durationMinutesSecondsFormat, minutes, seconds);
-        } else if (days == 0) {
-            timeDuration = String.format(durationHoursMinutesSecondsFormat, hours, minutes, seconds);
-        } else {
-            timeDuration = String.format(durationDaysHoursMinutesSecondsFormat, days, hours, minutes, seconds);
-        }
-        return timeDuration;
     }
 }
