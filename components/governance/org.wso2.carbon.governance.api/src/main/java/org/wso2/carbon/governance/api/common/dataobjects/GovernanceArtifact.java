@@ -369,11 +369,11 @@ public interface GovernanceArtifact {
     /**
      * This method is used to get a lifecycle's current state duration information.
      *
-     * @param artifactPath          lifecycle associated artifacts resource path.
+     * @param artifactID          lifecycle associated artifacts ID.
      * @param lcName                lifecycle name.
      * @return                      a map of current lifecycle state duration colour and duration.
      * @throws GovernanceException
      */
-    public Map<String, String> getCurrentStateDuration(String artifactPath,  String lcName) throws GovernanceException;
+    public Map<String, String> getCurrentStateDuration(String artifactID,  String lcName) throws GovernanceException;
 
 }

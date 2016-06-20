@@ -110,12 +110,19 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 LCStateBean lifeCycleStateBean = getCheckListItems(resource, artifactLC, roleNames, registry);
 
                 GovernanceArtifact governanceArtifact =
-                        GovernanceUtils.retrieveGovernanceArtifactByPath(registry, resource.getPath());
-                lifeCycleStateBean.setLifeCycleCurrentStateDuration(governanceArtifact.getCurrentStateDuration
-                        (resource.getPath(), artifactLC).get("currentStateDuration"));
-                lifeCycleStateBean.setLifeCycleCurrentStateDurationColour(
-                        governanceArtifact.getCurrentStateDuration(resource.getPath(), artifactLC)
-                                .get("durationColour"));
+                        GovernanceUtils.retrieveGovernanceArtifactById(registry, artifactId);
+
+                Map<String, String> currentStateDurationData = governanceArtifact
+                        .getCurrentStateDuration(artifactId, artifactLC);
+
+                if (!currentStateDurationData.isEmpty()) {
+                    lifeCycleStateBean
+                            .setLifeCycleCurrentStateDuration(currentStateDurationData.get("currentStateDuration"));
+                    lifeCycleStateBean
+                            .setLifeCycleCurrentStateDurationColour(currentStateDurationData.get("durationColour"));
+
+                }
+
                 return lifeCycleStateBean;
             } else {
                 throw new LifeCycleException("Unable to find the artifact " + artifactId);

@@ -40,6 +40,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Element;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleCheckpointUtils;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.StatCollection;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.StatWriter;
@@ -910,40 +911,44 @@ public class DefaultLifeCycle extends Aspect {
      * @param nextState     next lifecycle state.
      * @throws RegistryException
      */
-    private void addCheckPointProperties(Resource resource, Registry registry, String nextState) throws RegistryException {
+    private void addCheckPointProperties(Resource resource, Registry registry, String nextState)
+            throws RegistryException {
 
-        String xpathString;
         if (nextState == null) {
-            nextState = getLCInitialStateId();
+            nextState = LifecycleCheckpointUtils.getLCInitialStateId(configurationElement);
         }
 
-        xpathString = LifecycleConstants.XPATH_STATE_WITH_ID + nextState + "']" + LifecycleConstants.XPATH_CHECKPOINT;
-        List checkpoints = evaluateXpath(configurationElement, xpathString, null);
+        if (nextState != null) {
+            String xpathString =
+                    LifecycleConstants.XPATH_STATE_WITH_ID + nextState + "']" + LifecycleConstants.XPATH_CHECKPOINT;
+            List checkpoints = LifecycleCheckpointUtils.evaluateXpath(configurationElement, xpathString, null);
 
-        if (!checkpoints.isEmpty()) {
-            for (Object checkpoint : checkpoints) {
-                OMElement checkpointOMElement = (OMElement) checkpoint;
-                String checkpointId = checkpointOMElement.getAttributeValue(new QName("id"));
-                String checkpointDurationColour = checkpointOMElement.getAttributeValue(new QName("durationColour"));
-                String checkpointDurationMinBoundary = checkpointOMElement.getFirstElement()
-                        .getAttributeValue(new QName("min"));
-                String checkpointDurationMaxBoundary = checkpointOMElement.getFirstElement()
-                        .getAttributeValue(new QName("max"));
+            if (!checkpoints.isEmpty()) {
+                for (Object checkpoint : checkpoints) {
+                    OMElement checkpointOMElement = (OMElement) checkpoint;
+                    String checkpointId = checkpointOMElement.getAttributeValue(new QName("id"));
+                    String checkpointDurationColour = checkpointOMElement
+                            .getAttributeValue(new QName("durationColour"));
+                    String checkpointDurationMinBoundary = checkpointOMElement.getFirstElement()
+                            .getAttributeValue(new QName("min"));
+                    String checkpointDurationMaxBoundary = checkpointOMElement.getFirstElement()
+                            .getAttributeValue(new QName("max"));
 
-                resource.addProperty("registry.lifecycle." + aspectName + ".checkpoint", checkpointId);
-                List<String> lcCheckpointProperties1 = new ArrayList<>();
-                lcCheckpointProperties1.add(0, checkpointId);
-                lcCheckpointProperties1.add(1, checkpointDurationMinBoundary);
-                lcCheckpointProperties1.add(2, checkpointDurationMaxBoundary);
-                lcCheckpointProperties1.add(3, getCurrentTime());
-                lcCheckpointProperties1.add(4, checkpointDurationColour);
-                resource.removeProperty("registry.lifecycle." + aspectName + ".checkpoint." + checkpointId);
-                resource.setProperty("registry.lifecycle." + aspectName + ".checkpoint." + checkpointId,
-                        lcCheckpointProperties1);
+                    resource.addProperty("registry.lifecycle." + aspectName + ".checkpoint", checkpointId);
+                    List<String> lcCheckpointProperties1 = new ArrayList<>();
+                    lcCheckpointProperties1.add(0, checkpointId);
+                    lcCheckpointProperties1.add(1, checkpointDurationMinBoundary);
+                    lcCheckpointProperties1.add(2, checkpointDurationMaxBoundary);
+                    lcCheckpointProperties1.add(3, LifecycleCheckpointUtils.getCurrentTime());
+                    lcCheckpointProperties1.add(4, checkpointDurationColour);
+                    resource.removeProperty("registry.lifecycle." + aspectName + ".checkpoint." + checkpointId);
+                    resource.setProperty("registry.lifecycle." + aspectName + ".checkpoint." + checkpointId,
+                            lcCheckpointProperties1);
+                }
             }
         }
-        resource.addProperty("registry.lifecycle." + aspectName + ".lastStateUpdatedTime", getCurrentTime());
-        registry.put(resource.getPath(), resource);
+        resource.setProperty("registry.lifecycle." + aspectName + ".lastStateUpdatedTime",
+                LifecycleCheckpointUtils.getCurrentTime());
     }
 
     /**
@@ -956,69 +961,15 @@ public class DefaultLifeCycle extends Aspect {
      */
     private void updateCheckpointProperties(Resource resource, RequestContext requestContext, String nextState)
             throws RegistryException {
-        resource.removeProperty("registry.lifecycle." + aspectName + ".checkpoint");
+
+        String checkpointProperty = "registry.lifecycle." + aspectName + ".checkpoint";
+        List<String> checkpoints = resource.getPropertyValues(checkpointProperty);
+        if (checkpoints != null && !checkpoints.isEmpty()) {
+            for (String checkpoint : checkpoints) {
+                resource.removeProperty(checkpointProperty + "." + checkpoint);
+            }
+        }
+        resource.removeProperty(checkpointProperty);
         addCheckPointProperties(resource, requestContext.getRegistry(), nextState);
     }
-
-    /**
-     * This method is used to evaluate an xpath.
-     *
-     * @param contentElement OM element that the xpath is bean evaluated.
-     * @param xpathString    xPath
-     * @param nsPrefix       namespace prefix
-     * @return
-     */
-    public static List evaluateXpath(OMElement contentElement, String xpathString, String nsPrefix) {
-        List resultsList = new ArrayList();
-        try {
-            AXIOMXPath xpath = new AXIOMXPath(xpathString);
-
-            Iterator nsIterator = contentElement.getAllDeclaredNamespaces();
-            if (nsIterator.hasNext()) {
-                while (nsIterator.hasNext()) {
-                    OMNamespace next = (OMNamespace) nsIterator.next();
-                    xpath.addNamespace(nsPrefix, next.getNamespaceURI());
-                    resultsList.addAll(xpath.selectNodes(contentElement));
-                }
-            } else if (contentElement.getDefaultNamespace() != null) {
-                xpath.addNamespace(nsPrefix, contentElement.getDefaultNamespace().getNamespaceURI());
-                resultsList.addAll(xpath.selectNodes(contentElement));
-            } else if (nsPrefix != null) {
-                xpathString = xpathString.replace(nsPrefix + ":", "");
-                xpath = new AXIOMXPath(xpathString);
-                resultsList.addAll(xpath.selectNodes(contentElement));
-            } else {
-                xpath = new AXIOMXPath(xpathString);
-                resultsList.addAll(xpath.selectNodes(contentElement));
-            }
-            return resultsList;
-        } catch (JaxenException e) {
-            log.error("Error while evaluating xPath: '" + xpathString + "'.", e);
-        }
-        return null;
-    }
-
-    /**
-     * This method is used to get lifecycle initial state name.
-     *
-     * @return
-     */
-    private String getLCInitialStateId() {
-        String xpathString = LifecycleConstants.XPATH_STATE_ID;
-        List checkpoints = evaluateXpath(configurationElement, xpathString, null);
-        OMElement initialStateElement = (OMElement) checkpoints.get(0);
-        return initialStateElement.getAttributeValue(new QName("id"));
-    }
-
-    /**
-     * This method is used to current time
-     *
-     * @return String  current time in  yyyy-MM-dd HH:mm:ss.SSS format.
-     */
-    private static String getCurrentTime() {
-        Date currentTimeStamp = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(LifecycleConstants.HISTORY_ITEM_TIME_STAMP_FORMAT);
-        return dateFormat.format(currentTimeStamp);
-    }
-
 }
