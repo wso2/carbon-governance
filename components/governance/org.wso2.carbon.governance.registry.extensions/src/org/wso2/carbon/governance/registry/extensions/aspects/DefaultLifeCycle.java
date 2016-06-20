@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2006 - 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package org.wso2.carbon.governance.registry.extensions.aspects;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
@@ -26,7 +28,13 @@ import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.scxml.io.SCXMLParser;
-import org.apache.commons.scxml.model.*;
+import org.apache.commons.scxml.model.Data;
+import org.apache.commons.scxml.model.Datamodel;
+import org.apache.commons.scxml.model.ModelException;
+import org.apache.commons.scxml.model.SCXML;
+import org.apache.commons.scxml.model.State;
+import org.apache.commons.scxml.model.Transition;
+import org.jaxen.JaxenException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -35,7 +43,12 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.StatCollection;
 import org.wso2.carbon.governance.registry.extensions.aspects.utils.StatWriter;
-import org.wso2.carbon.governance.registry.extensions.beans.*;
+import org.wso2.carbon.governance.registry.extensions.beans.ApprovalBean;
+import org.wso2.carbon.governance.registry.extensions.beans.CheckItemBean;
+import org.wso2.carbon.governance.registry.extensions.beans.CustomCodeBean;
+import org.wso2.carbon.governance.registry.extensions.beans.InputBean;
+import org.wso2.carbon.governance.registry.extensions.beans.PermissionsBean;
+import org.wso2.carbon.governance.registry.extensions.beans.ScriptBean;
 import org.wso2.carbon.governance.registry.extensions.executors.utils.ExecutorConstants;
 import org.wso2.carbon.governance.registry.extensions.interfaces.CustomValidations;
 import org.wso2.carbon.governance.registry.extensions.interfaces.Execution;
@@ -60,9 +73,38 @@ import javax.xml.stream.XMLStreamException;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.*;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.addCheckItems;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.addScripts;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.addTransitionApprovalItems;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.addTransitionInputs;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.addTransitionUI;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.clearCheckItems;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.clearTransitionApprovals;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.extractCheckItemValues;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.extractVotesValues;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.getCheckItemName;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.getHistoryInfoElement;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.isCheckItemClickAllowed;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.isTransitionAllowed;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.populateCheckItems;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.populateTransitionApprovals;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.populateTransitionExecutors;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.populateTransitionInputs;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.populateTransitionPermissions;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.populateTransitionScripts;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.populateTransitionUIs;
+import static org.wso2.carbon.governance.registry.extensions.aspects.utils.Utils.populateTransitionValidations;
 
 
 public class DefaultLifeCycle extends Aspect {
@@ -211,6 +253,8 @@ public class DefaultLifeCycle extends Aspect {
 
             resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
             List<String> propertyValues = resource.getPropertyValues(lifecycleProperty);
+            // Add current lifecycle's checkpoint related properties.
+            addCheckPointProperties(resource, registry, null);
 
             if (propertyValues != null && propertyValues.size() > 0) {
                 return;
@@ -409,6 +453,8 @@ public class DefaultLifeCycle extends Aspect {
 	//                              We are going to run the custom executors now
 	                                runCustomExecutorsCode(action, requestContext, transitionExecution.get(currentState)
 	                                        , currentState, nextState);
+                                    // Update current lifecycle state duration properties.
+                                    updateCheckpointProperties(resource, requestContext, nextState);
 	//                              Doing the JS execution
 	                                List<ScriptBean> scriptElement = scriptElements.get(currentState);
 	                                try {
@@ -854,6 +900,125 @@ public class DefaultLifeCycle extends Aspect {
             log.error(message);
             throw new RegistryException(message);
         }
+    }
+
+    /**
+     * This method is used to add current lifecycle's checkpoint properties.
+     *
+     * @param resource      registry resource.
+     * @param registry      registry object.
+     * @param nextState     next lifecycle state.
+     * @throws RegistryException
+     */
+    private void addCheckPointProperties(Resource resource, Registry registry, String nextState) throws RegistryException {
+
+        String xpathString;
+        if (nextState == null) {
+            nextState = getLCInitialStateId();
+        }
+
+        xpathString = LifecycleConstants.XPATH_STATE_WITH_ID + nextState + "']" + LifecycleConstants.XPATH_CHECKPOINT;
+        List checkpoints = evaluateXpath(configurationElement, xpathString, null);
+
+        if (!checkpoints.isEmpty()) {
+            for (Object checkpoint : checkpoints) {
+                OMElement checkpointOMElement = (OMElement) checkpoint;
+                String checkpointId = checkpointOMElement.getAttributeValue(new QName("id"));
+                String checkpointDurationColour = checkpointOMElement.getAttributeValue(new QName("durationColour"));
+                String checkpointDurationMinBoundary = checkpointOMElement.getFirstElement()
+                        .getAttributeValue(new QName("min"));
+                String checkpointDurationMaxBoundary = checkpointOMElement.getFirstElement()
+                        .getAttributeValue(new QName("max"));
+
+                resource.addProperty("registry.lifecycle." + aspectName + ".checkpoint", checkpointId);
+                List<String> lcCheckpointProperties1 = new ArrayList<>();
+                lcCheckpointProperties1.add(0, checkpointId);
+                lcCheckpointProperties1.add(1, checkpointDurationMinBoundary);
+                lcCheckpointProperties1.add(2, checkpointDurationMaxBoundary);
+                lcCheckpointProperties1.add(3, getCurrentTime());
+                lcCheckpointProperties1.add(4, checkpointDurationColour);
+                resource.removeProperty("registry.lifecycle." + aspectName + ".checkpoint." + checkpointId);
+                resource.setProperty("registry.lifecycle." + aspectName + ".checkpoint." + checkpointId,
+                        lcCheckpointProperties1);
+            }
+        }
+        resource.addProperty("registry.lifecycle." + aspectName + ".lastStateUpdatedTime", getCurrentTime());
+        registry.put(resource.getPath(), resource);
+    }
+
+    /**
+     * This method is used to update checkpoint current state duration information.
+     *
+     * @param resource       registry resource.
+     * @param requestContext resource context.
+     * @param nextState      next lifecycle state.
+     * @throws RegistryException
+     */
+    private void updateCheckpointProperties(Resource resource, RequestContext requestContext, String nextState)
+            throws RegistryException {
+        resource.removeProperty("registry.lifecycle." + aspectName + ".checkpoint");
+        addCheckPointProperties(resource, requestContext.getRegistry(), nextState);
+    }
+
+    /**
+     * This method is used to evaluate an xpath.
+     *
+     * @param contentElement OM element that the xpath is bean evaluated.
+     * @param xpathString    xPath
+     * @param nsPrefix       namespace prefix
+     * @return
+     */
+    public static List evaluateXpath(OMElement contentElement, String xpathString, String nsPrefix) {
+        List resultsList = new ArrayList();
+        try {
+            AXIOMXPath xpath = new AXIOMXPath(xpathString);
+
+            Iterator nsIterator = contentElement.getAllDeclaredNamespaces();
+            if (nsIterator.hasNext()) {
+                while (nsIterator.hasNext()) {
+                    OMNamespace next = (OMNamespace) nsIterator.next();
+                    xpath.addNamespace(nsPrefix, next.getNamespaceURI());
+                    resultsList.addAll(xpath.selectNodes(contentElement));
+                }
+            } else if (contentElement.getDefaultNamespace() != null) {
+                xpath.addNamespace(nsPrefix, contentElement.getDefaultNamespace().getNamespaceURI());
+                resultsList.addAll(xpath.selectNodes(contentElement));
+            } else if (nsPrefix != null) {
+                xpathString = xpathString.replace(nsPrefix + ":", "");
+                xpath = new AXIOMXPath(xpathString);
+                resultsList.addAll(xpath.selectNodes(contentElement));
+            } else {
+                xpath = new AXIOMXPath(xpathString);
+                resultsList.addAll(xpath.selectNodes(contentElement));
+            }
+            return resultsList;
+        } catch (JaxenException e) {
+            log.error("Error while evaluating xPath: '" + xpathString + "'.", e);
+        }
+        return null;
+    }
+
+    /**
+     * This method is used to get lifecycle initial state name.
+     *
+     * @return
+     */
+    private String getLCInitialStateId() {
+        String xpathString = LifecycleConstants.XPATH_STATE_ID;
+        List checkpoints = evaluateXpath(configurationElement, xpathString, null);
+        OMElement initialStateElement = (OMElement) checkpoints.get(0);
+        return initialStateElement.getAttributeValue(new QName("id"));
+    }
+
+    /**
+     * This method is used to current time
+     *
+     * @return String  current time in  yyyy-MM-dd HH:mm:ss.SSS format.
+     */
+    private static String getCurrentTime() {
+        Date currentTimeStamp = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat(LifecycleConstants.HISTORY_ITEM_TIME_STAMP_FORMAT);
+        return dateFormat.format(currentTimeStamp);
     }
 
 }
