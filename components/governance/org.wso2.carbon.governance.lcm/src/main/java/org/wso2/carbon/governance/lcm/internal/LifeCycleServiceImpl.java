@@ -22,7 +22,12 @@ import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
-import org.wso2.carbon.governance.lcm.beans.*;
+import org.wso2.carbon.governance.lcm.beans.DurationBean;
+import org.wso2.carbon.governance.lcm.beans.LCStateBean;
+import org.wso2.carbon.governance.lcm.beans.LifeCycleActionsBean;
+import org.wso2.carbon.governance.lcm.beans.LifeCycleApprovalBean;
+import org.wso2.carbon.governance.lcm.beans.LifeCycleCheckListItemBean;
+import org.wso2.carbon.governance.lcm.beans.LifeCycleInputBean;
 import org.wso2.carbon.governance.lcm.exception.LifeCycleException;
 import org.wso2.carbon.governance.lcm.services.LifeCycleService;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
@@ -41,8 +46,13 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
 
-import java.util.*;
 import javax.cache.Cache;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * API implementation of the LifeCycleService(Used to fetch lifecycle information) .
