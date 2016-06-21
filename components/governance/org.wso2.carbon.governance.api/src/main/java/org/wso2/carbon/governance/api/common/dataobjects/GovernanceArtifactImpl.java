@@ -1375,6 +1375,9 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     }
 
     /**
+     * TODO :Move this implementation to a solr based implementation in C5.
+     */
+    /**
      * This method is used to get a lifecycle's current state duration information.
      *
      * @param artifactID lifecycle associated artifacts id.
