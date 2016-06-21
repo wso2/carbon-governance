@@ -17,9 +17,7 @@
 package org.wso2.carbon.governance.registry.extensions.aspects;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.util.AXIOMUtil;
-import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
@@ -34,7 +32,6 @@ import org.apache.commons.scxml.model.ModelException;
 import org.apache.commons.scxml.model.SCXML;
 import org.apache.commons.scxml.model.State;
 import org.apache.commons.scxml.model.Transition;
-import org.jaxen.JaxenException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -74,11 +71,9 @@ import javax.xml.stream.XMLStreamException;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -255,7 +250,7 @@ public class DefaultLifeCycle extends Aspect {
             resource.setProperty(ExecutorConstants.REGISTRY_LC_NAME, aspectName);
             List<String> propertyValues = resource.getPropertyValues(lifecycleProperty);
             // Add current lifecycle's checkpoint related properties.
-            addCheckPointProperties(resource, registry, null);
+            addCheckPointProperties(resource, null);
 
             if (propertyValues != null && propertyValues.size() > 0) {
                 return;
@@ -455,7 +450,7 @@ public class DefaultLifeCycle extends Aspect {
 	                                runCustomExecutorsCode(action, requestContext, transitionExecution.get(currentState)
 	                                        , currentState, nextState);
                                     // Update current lifecycle state duration properties.
-                                    updateCheckpointProperties(resource, requestContext, nextState);
+                                    updateCheckpointProperties(resource, nextState);
 	//                              Doing the JS execution
 	                                List<ScriptBean> scriptElement = scriptElements.get(currentState);
 	                                try {
@@ -907,12 +902,10 @@ public class DefaultLifeCycle extends Aspect {
      * This method is used to add current lifecycle's checkpoint properties.
      *
      * @param resource      registry resource.
-     * @param registry      registry object.
      * @param nextState     next lifecycle state.
      * @throws RegistryException
      */
-    private void addCheckPointProperties(Resource resource, Registry registry, String nextState)
-            throws RegistryException {
+    private void addCheckPointProperties(Resource resource, String nextState) throws RegistryException {
 
         if (nextState == null) {
             nextState = LifecycleCheckpointUtils.getLCInitialStateId(configurationElement);
@@ -926,28 +919,33 @@ public class DefaultLifeCycle extends Aspect {
             if (!checkpoints.isEmpty()) {
                 for (Object checkpoint : checkpoints) {
                     OMElement checkpointOMElement = (OMElement) checkpoint;
-                    String checkpointId = checkpointOMElement.getAttributeValue(new QName("id"));
+                    String checkpointId = checkpointOMElement
+                            .getAttributeValue(new QName(LifecycleConstants.LIFECYCLE_CHECKPOINT_NAME));
                     String checkpointDurationColour = checkpointOMElement
-                            .getAttributeValue(new QName("durationColour"));
+                            .getAttributeValue(new QName(LifecycleConstants.LIFECYCLE_DURATION_COLOUR));
                     String checkpointDurationMinBoundary = checkpointOMElement.getFirstElement()
-                            .getAttributeValue(new QName("min"));
+                            .getAttributeValue(new QName(LifecycleConstants.LIFECYCLE_LOWER_BOUNDARY));
                     String checkpointDurationMaxBoundary = checkpointOMElement.getFirstElement()
-                            .getAttributeValue(new QName("max"));
+                            .getAttributeValue(new QName(LifecycleConstants.LIFECYCLE_UPPER_BOUNDARY));
 
-                    resource.addProperty("registry.lifecycle." + aspectName + ".checkpoint", checkpointId);
+                    resource.addProperty(
+                            LifecycleConstants.REGISTRY_LIFECYCLE + aspectName + LifecycleConstants.CHECKPOINT,
+                            checkpointId);
                     List<String> lcCheckpointProperties1 = new ArrayList<>();
                     lcCheckpointProperties1.add(0, checkpointId);
                     lcCheckpointProperties1.add(1, checkpointDurationMinBoundary);
                     lcCheckpointProperties1.add(2, checkpointDurationMaxBoundary);
                     lcCheckpointProperties1.add(3, LifecycleCheckpointUtils.getCurrentTime());
                     lcCheckpointProperties1.add(4, checkpointDurationColour);
-                    resource.removeProperty("registry.lifecycle." + aspectName + ".checkpoint." + checkpointId);
-                    resource.setProperty("registry.lifecycle." + aspectName + ".checkpoint." + checkpointId,
-                            lcCheckpointProperties1);
+
+                    String checkpointPropertyKey = LifecycleConstants.REGISTRY_LIFECYCLE + aspectName +
+                            LifecycleConstants.CHECKPOINT + LifecycleConstants.DOT + checkpointId;
+                    resource.removeProperty(checkpointPropertyKey);
+                    resource.setProperty(checkpointPropertyKey, lcCheckpointProperties1);
                 }
             }
         }
-        resource.setProperty("registry.lifecycle." + aspectName + ".lastStateUpdatedTime",
+        resource.setProperty(LifecycleConstants.REGISTRY_LIFECYCLE + aspectName + LifecycleConstants.LAST_UPDATED_TIME,
                 LifecycleCheckpointUtils.getCurrentTime());
     }
 
@@ -955,21 +953,20 @@ public class DefaultLifeCycle extends Aspect {
      * This method is used to update checkpoint current state duration information.
      *
      * @param resource       registry resource.
-     * @param requestContext resource context.
      * @param nextState      next lifecycle state.
      * @throws RegistryException
      */
-    private void updateCheckpointProperties(Resource resource, RequestContext requestContext, String nextState)
+    private void updateCheckpointProperties(Resource resource, String nextState)
             throws RegistryException {
 
-        String checkpointProperty = "registry.lifecycle." + aspectName + ".checkpoint";
+        String checkpointProperty = LifecycleConstants.REGISTRY_LIFECYCLE + aspectName + LifecycleConstants.CHECKPOINT;
         List<String> checkpoints = resource.getPropertyValues(checkpointProperty);
         if (checkpoints != null && !checkpoints.isEmpty()) {
             for (String checkpoint : checkpoints) {
-                resource.removeProperty(checkpointProperty + "." + checkpoint);
+                resource.removeProperty(checkpointProperty + LifecycleConstants.DOT + checkpoint);
             }
         }
         resource.removeProperty(checkpointProperty);
-        addCheckPointProperties(resource, requestContext.getRegistry(), nextState);
+        addCheckPointProperties(resource, nextState);
     }
 }

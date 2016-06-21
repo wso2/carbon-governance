@@ -17,7 +17,6 @@ package org.wso2.carbon.governance.api.common.dataobjects;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.util.ApproveItemBean;
@@ -33,17 +32,13 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import javax.xml.namespace.QName;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Governance Artifact abstract class, This is overwritten by Endpoint, Policy, Schema, Service,
@@ -1406,13 +1401,15 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
         try {
             if (registry.resourceExists(artifactPath)) {
                 Resource resource = registry.get(artifactPath);
-                List<String> checkpoints = resource.getPropertyValues("registry.lifecycle." + lcName + ".checkpoint");
+                List<String> checkpoints = resource.getPropertyValues(GovernanceConstants.REGISTRY_LIFECYCLE + lcName
+                        + GovernanceConstants.CHECKPOINT);
 
                 if (checkpoints != null) {
 
                     for (String checkpoint : checkpoints) {
-                        List<String> checkpointValues = resource.getPropertyValues("registry.lifecycle." + lcName +
-                                ".checkpoint." + checkpoint);
+                        List<String> checkpointValues = resource
+                                .getPropertyValues(GovernanceConstants.REGISTRY_LIFECYCLE + lcName +
+                                        GovernanceConstants.CHECKPOINT + GovernanceConstants.DOT + checkpoint);
                         if (checkpointValues != null) {
                             String checkpointName = checkpointValues.get(0);
                             String checkpointMin = checkpointValues.get(1);
@@ -1424,31 +1421,37 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                                     .getCurrentTime(), checkpointLastUpdatedTime);
                             if (CheckpointTimeUtils.isDurationBetweenTimestamps(duration, checkpointMin,
                                     checkpointMax)) {
-                                currentLCStateDurationInfo.put("durationColour", checkpointColour);
-                                currentLCStateDurationInfo.put("currentStateDuration", CheckpointTimeUtils
-                                        .formatTimeDuration(duration));
+                                currentLCStateDurationInfo
+                                        .put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, checkpointColour);
+                                currentLCStateDurationInfo
+                                        .put(GovernanceConstants.LIFECYCLE_DURATION, CheckpointTimeUtils
+                                                .formatTimeDuration(duration));
                                 break;
                             }
                         }
                     }
                 } else {
                     long duration = CheckpointTimeUtils.calculateTimeDifferenceToPresent(
-                            resource.getProperty("registry.lifecycle." + lcName + ".lastStateUpdatedTime"));
-                    currentLCStateDurationInfo.put("durationColour", null);
+                            resource.getProperty(GovernanceConstants.REGISTRY_LIFECYCLE + lcName +
+                                    GovernanceConstants.LAST_UPDATED_TIME));
+                    currentLCStateDurationInfo.put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, null);
                     currentLCStateDurationInfo
-                            .put("currentStateDuration", CheckpointTimeUtils.formatTimeDuration(duration));
+                            .put(GovernanceConstants.LIFECYCLE_DURATION,
+                                    CheckpointTimeUtils.formatTimeDuration(duration));
                 }
 
                 if (currentLCStateDurationInfo.isEmpty()) {
                     long duration = CheckpointTimeUtils.calculateTimeDifferenceToPresent(
-                            resource.getProperty("registry.lifecycle." + lcName + ".lastStateUpdatedTime"));
-                    currentLCStateDurationInfo.put("durationColour", null);
+                            resource.getProperty(GovernanceConstants.REGISTRY_LIFECYCLE + lcName
+                                    + GovernanceConstants.LAST_UPDATED_TIME));
+                    currentLCStateDurationInfo.put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, null);
                     currentLCStateDurationInfo
-                            .put("currentStateDuration", CheckpointTimeUtils.formatTimeDuration(duration));
+                            .put(GovernanceConstants.LIFECYCLE_DURATION,
+                                    CheckpointTimeUtils.formatTimeDuration(duration));
                 }
             }
         } catch (RegistryException e) {
-            throw new GovernanceException(e);
+            throw new GovernanceException("Error occurred while getting current lifecycle state duration info. ", e);
         }
 
         return currentLCStateDurationInfo;

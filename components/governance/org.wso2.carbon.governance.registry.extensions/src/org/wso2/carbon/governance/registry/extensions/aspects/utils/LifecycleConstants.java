@@ -228,4 +228,14 @@ public class LifecycleConstants {
      * This is the character used in lifecycle property keys
      */
     public static final String DOT = ".";
+
+    /**
+     * This is the character used in lifecycle checkpoint.
+     */
+    public static final String CHECKPOINT = ".checkpoint";
+
+    /**
+     * This is the character used in lifecycle checkpoint.
+     */
+    public static final String LAST_UPDATED_TIME = ".lastStateUpdatedTime";
 }
