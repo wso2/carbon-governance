@@ -1434,23 +1434,31 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                         }
                     }
                 } else {
-                    long duration = CheckpointTimeUtils.calculateTimeDifferenceToPresent(
-                            resource.getProperty(GovernanceConstants.REGISTRY_LIFECYCLE + lcName +
-                                    GovernanceConstants.LAST_UPDATED_TIME));
-                    currentLCStateDurationInfo.put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, null);
-                    currentLCStateDurationInfo
-                            .put(GovernanceConstants.LIFECYCLE_DURATION,
-                                    CheckpointTimeUtils.formatTimeDuration(duration));
+                    String lastUpdateTIme = resource.getProperty(GovernanceConstants.REGISTRY_LIFECYCLE + lcName +
+                            GovernanceConstants.LAST_UPDATED_TIME);
+                    if (lastUpdateTIme != null) {
+                        long duration = CheckpointTimeUtils.calculateTimeDifferenceToPresent(lastUpdateTIme);
+                        currentLCStateDurationInfo.put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, null);
+                        currentLCStateDurationInfo
+                                .put(GovernanceConstants.LIFECYCLE_DURATION,
+                                        CheckpointTimeUtils.formatTimeDuration(duration));
+                    } else {
+                        return null;
+                    }
                 }
 
                 if (currentLCStateDurationInfo.isEmpty()) {
-                    long duration = CheckpointTimeUtils.calculateTimeDifferenceToPresent(
-                            resource.getProperty(GovernanceConstants.REGISTRY_LIFECYCLE + lcName
-                                    + GovernanceConstants.LAST_UPDATED_TIME));
-                    currentLCStateDurationInfo.put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, null);
-                    currentLCStateDurationInfo
-                            .put(GovernanceConstants.LIFECYCLE_DURATION,
-                                    CheckpointTimeUtils.formatTimeDuration(duration));
+                    String lastUpdateTIme = resource.getProperty(GovernanceConstants.REGISTRY_LIFECYCLE + lcName +
+                            GovernanceConstants.LAST_UPDATED_TIME);
+                    if (lastUpdateTIme != null) {
+                        long duration = CheckpointTimeUtils.calculateTimeDifferenceToPresent(lastUpdateTIme);
+                        currentLCStateDurationInfo.put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, null);
+                        currentLCStateDurationInfo
+                                .put(GovernanceConstants.LIFECYCLE_DURATION,
+                                        CheckpointTimeUtils.formatTimeDuration(duration));
+                    } else {
+                        return null;
+                    }
                 }
             }
         } catch (RegistryException e) {
