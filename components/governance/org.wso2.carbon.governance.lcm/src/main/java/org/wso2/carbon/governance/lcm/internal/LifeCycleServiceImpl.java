@@ -19,14 +19,19 @@ package org.wso2.carbon.governance.lcm.internal;
 
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
+import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
-import org.wso2.carbon.governance.lcm.beans.*;
+import org.wso2.carbon.governance.lcm.beans.DurationBean;
+import org.wso2.carbon.governance.lcm.beans.LCStateBean;
+import org.wso2.carbon.governance.lcm.beans.LifeCycleActionsBean;
+import org.wso2.carbon.governance.lcm.beans.LifeCycleApprovalBean;
+import org.wso2.carbon.governance.lcm.beans.LifeCycleCheckListItemBean;
+import org.wso2.carbon.governance.lcm.beans.LifeCycleInputBean;
 import org.wso2.carbon.governance.lcm.exception.LifeCycleException;
 import org.wso2.carbon.governance.lcm.services.LifeCycleService;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.governance.lcm.util.LifecycleStateDurationUtils;
-import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
 import org.wso2.carbon.registry.api.GhostResource;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -41,8 +46,13 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
 
-import java.util.*;
 import javax.cache.Cache;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * API implementation of the LifeCycleService(Used to fetch lifecycle information) .
@@ -107,7 +117,23 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             if (path != null) {
                 removeCache(registry, path);
                 Resource resource = registry.get(path);
-                return getCheckListItems(resource, artifactLC, roleNames, registry);
+                LCStateBean lifeCycleStateBean = getCheckListItems(resource, artifactLC, roleNames, registry);
+
+                GovernanceArtifact governanceArtifact =
+                        GovernanceUtils.retrieveGovernanceArtifactById(registry, artifactId);
+
+                Map<String, String> currentStateDurationData = governanceArtifact
+                        .getCurrentStateDuration(artifactId, artifactLC);
+
+                if (!currentStateDurationData.isEmpty()) {
+                    lifeCycleStateBean
+                            .setLifeCycleCurrentStateDuration(currentStateDurationData.get("currentStateDuration"));
+                    lifeCycleStateBean
+                            .setLifeCycleCurrentStateDurationColour(currentStateDurationData.get("durationColour"));
+
+                }
+
+                return lifeCycleStateBean;
             } else {
                 throw new LifeCycleException("Unable to find the artifact " + artifactId);
             }
@@ -133,6 +159,15 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                     for (String aspect : aspects) {
                         LCStateBean lifeCycleStateBean =
                                 getCheckListItems(resource, aspect, rolesList, registry);
+
+                        GovernanceArtifact governanceArtifact =
+                                GovernanceUtils.retrieveGovernanceArtifactByPath(registry, resource.getPath());
+                        lifeCycleStateBean.setLifeCycleCurrentStateDuration(governanceArtifact.getCurrentStateDuration
+                                (resource.getPath(), aspect).get("currentStateDuration"));
+                        lifeCycleStateBean.setLifeCycleCurrentStateDurationColour(
+                                governanceArtifact.getCurrentStateDuration(resource.getPath(), aspect)
+                                        .get("durationColour"));
+
                         lifeCycleStateBeans.add(lifeCycleStateBean);
                     }
                 }

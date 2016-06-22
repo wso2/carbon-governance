@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2008 - 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.util.ApproveItemBean;
 import org.wso2.carbon.governance.api.common.util.CheckListItemBean;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
+import org.wso2.carbon.governance.api.util.CheckpointTimeUtils;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.Association;
@@ -1372,4 +1373,91 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
         }
         return false;
     }
+
+    /**
+     * TODO :Move this implementation to a solr based implementation in C5.
+     */
+    /**
+     * This method is used to get a lifecycle's current state duration information.
+     *
+     * @param artifactID lifecycle associated artifacts id.
+     * @param lcName     lifecycle name.
+     * @return a map of current lifecycle state duration colour and duration.
+     * @throws GovernanceException
+     */
+    @Override
+    public Map<String, String> getCurrentStateDuration(String artifactID, String lcName) throws GovernanceException {
+
+        if (artifactPath == null || lcName == null) {
+            return null;
+        }
+
+        String durationColour = null;
+        String currentStateDuration = null;
+        String lifecycleName;
+        Map<String, String> currentLCStateDurationInfo = new HashMap<>();
+
+        if (lcName.isEmpty()) {
+            lcName = getLifecycleName();
+        }
+        String artifactPath = GovernanceUtils.getArtifactPath(registry, artifactID);
+        try {
+            if (registry.resourceExists(artifactPath)) {
+                Resource resource = registry.get(artifactPath);
+                List<String> checkpoints = resource.getPropertyValues(GovernanceConstants.REGISTRY_LIFECYCLE + lcName
+                        + GovernanceConstants.CHECKPOINT);
+
+                if (checkpoints != null) {
+
+                    for (String checkpoint : checkpoints) {
+                        List<String> checkpointValues = resource
+                                .getPropertyValues(GovernanceConstants.REGISTRY_LIFECYCLE + lcName +
+                                        GovernanceConstants.CHECKPOINT + GovernanceConstants.DOT + checkpoint);
+                        if (checkpointValues != null) {
+                            String checkpointName = checkpointValues.get(0);
+                            String checkpointMin = checkpointValues.get(1);
+                            String checkpointMax = checkpointValues.get(2);
+                            String checkpointLastUpdatedTime = checkpointValues.get(3);
+                            String checkpointColour = checkpointValues.get(4);
+
+                            long duration = CheckpointTimeUtils.calculateTimeDifference(CheckpointTimeUtils
+                                    .getCurrentTime(), checkpointLastUpdatedTime);
+                            if (CheckpointTimeUtils.isDurationBetweenTimestamps(duration, checkpointMin,
+                                    checkpointMax)) {
+                                currentLCStateDurationInfo
+                                        .put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, checkpointColour);
+                                currentLCStateDurationInfo
+                                        .put(GovernanceConstants.LIFECYCLE_DURATION, CheckpointTimeUtils
+                                                .formatTimeDuration(duration));
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    long duration = CheckpointTimeUtils.calculateTimeDifferenceToPresent(
+                            resource.getProperty(GovernanceConstants.REGISTRY_LIFECYCLE + lcName +
+                                    GovernanceConstants.LAST_UPDATED_TIME));
+                    currentLCStateDurationInfo.put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, null);
+                    currentLCStateDurationInfo
+                            .put(GovernanceConstants.LIFECYCLE_DURATION,
+                                    CheckpointTimeUtils.formatTimeDuration(duration));
+                }
+
+                if (currentLCStateDurationInfo.isEmpty()) {
+                    long duration = CheckpointTimeUtils.calculateTimeDifferenceToPresent(
+                            resource.getProperty(GovernanceConstants.REGISTRY_LIFECYCLE + lcName
+                                    + GovernanceConstants.LAST_UPDATED_TIME));
+                    currentLCStateDurationInfo.put(GovernanceConstants.LIFECYCLE_DURATION_COLOUR, null);
+                    currentLCStateDurationInfo
+                            .put(GovernanceConstants.LIFECYCLE_DURATION,
+                                    CheckpointTimeUtils.formatTimeDuration(duration));
+                }
+            }
+        } catch (RegistryException e) {
+            throw new GovernanceException("Error occurred while getting current lifecycle state duration info. ", e);
+        }
+
+        return currentLCStateDurationInfo;
+    }
+
 }

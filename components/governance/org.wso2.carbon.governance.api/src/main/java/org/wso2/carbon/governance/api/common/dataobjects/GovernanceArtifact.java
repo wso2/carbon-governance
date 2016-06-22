@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2008 - 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -365,4 +365,15 @@ public interface GovernanceArtifact {
     public boolean uniqueTo(GovernanceArtifact artifact);
 
     public boolean compareTo(GovernanceArtifact artifact);
+
+    /**
+     * This method is used to get a lifecycle's current state duration information.
+     *
+     * @param artifactID          lifecycle associated artifacts ID.
+     * @param lcName                lifecycle name.
+     * @return                      a map of current lifecycle state duration colour and duration.
+     * @throws GovernanceException
+     */
+    public Map<String, String> getCurrentStateDuration(String artifactID,  String lcName) throws GovernanceException;
+
 }

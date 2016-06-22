@@ -311,4 +311,44 @@ public class GovernanceConstants {
     public static final String LIFECYCLE_HISTORY_PATH = RegistryConstants.GOVERNANCE_COMPONENT_PATH
                                                         + RegistryConstants.PATH_SEPARATOR + "lifecycles/history/";
 
+    /**
+     * Defines the prefix of the state property
+     */
+    public static final String REGISTRY_LIFECYCLE = "registry.lifecycle.";
+
+    /**
+     * lifecycle checkpoint boundary lower boundary QName.
+     */
+    public static final String LIFECYCLE_LOWER_BOUNDARY = "min";
+
+    /**
+     * lifecycle checkpoint boundary upper boundary QName.
+     */
+    public static final String LIFECYCLE_UPPER_BOUNDARY = "max";
+
+    /**
+     * lifecycle checkpoint duration colour QName.
+     */
+    public static final String LIFECYCLE_DURATION_COLOUR = "durationColour";
+
+    /**
+     * lifecycle checkpoint duration colour QName.
+     */
+    public static final String LIFECYCLE_DURATION= "currentStateDuration";
+
+    /**
+     * lifecycle checkpoint name QName.
+     */
+    public static final String LIFECYCLE_CHECKPOINT_ID = "id";
+
+    /**
+     * This is the character used in lifecycle checkpoint.
+     */
+    public static final String CHECKPOINT = ".checkpoint";
+
+    /**
+     * This is the character used in lifecycle checkpoint.
+     */
+    public static final String LAST_UPDATED_TIME = ".lastStateUpdatedTime";
+
 }

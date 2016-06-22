@@ -189,6 +189,12 @@ public class LifecycleConstants {
     public static final String XPATH_CHECKPOINT = "/*[name()='checkpoints']/*[name()='checkpoint']";
 
     /**
+     * XPath for checkpoint.
+     */
+    public static final String XPATH_STATE_ID = "/aspect/configuration/lifecycle/*[name()='scxml']/*[name()='state']";
+
+
+    /**
      * lifecycle configuration namespace URI.
      */
     public static final String LIFECYCLE_CONFIGURATION_NAMESPACE_URI = "http://www.w3.org/2005/07/scxml";
@@ -222,4 +228,14 @@ public class LifecycleConstants {
      * This is the character used in lifecycle property keys
      */
     public static final String DOT = ".";
+
+    /**
+     * This is the character used in lifecycle checkpoint.
+     */
+    public static final String CHECKPOINT = ".checkpoint";
+
+    /**
+     * This is the character used in lifecycle checkpoint.
+     */
+    public static final String LAST_UPDATED_TIME = ".lastStateUpdatedTime";
 }
