@@ -125,7 +125,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 Map<String, String> currentStateDurationData = governanceArtifact
                         .getCurrentStateDuration(artifactId, artifactLC);
 
-                if (!currentStateDurationData.isEmpty()) {
+                if (currentStateDurationData != null && !currentStateDurationData.isEmpty()) {
                     lifeCycleStateBean
                             .setLifeCycleCurrentStateDuration(currentStateDurationData.get("currentStateDuration"));
                     lifeCycleStateBean
