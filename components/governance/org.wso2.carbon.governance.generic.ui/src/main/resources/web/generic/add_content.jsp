@@ -25,6 +25,7 @@
 <%@ page import="org.wso2.carbon.utils.NetworkUtils" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+<%@ taglib uri="http://www.owasp.org/index.php/Category:OWASP_CSRFGuard_Project/Owasp.CsrfGuard.tld" prefix="csrf" %>
 <%@ page import="org.wso2.carbon.registry.extensions.utils.CommonConstants" %>
 
 <script type="text/javascript" src="../resources/js/resource_util.js"></script>
@@ -497,7 +498,7 @@
                                         <form method="post"
                                               name="uploadForm"
                                               id="uploadForm"
-                                              action="../../fileupload/resource"
+                                              action="../../fileupload/resource?<csrf:tokenname/>=<csrf:tokenvalue/>"
                                               enctype="multipart/form-data" target="_self">
                                             <input type="hidden" id="uStoragePath" name="uStoragePath"
                                                    value="<%=bean.getStoragePath()%>"/>
