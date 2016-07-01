@@ -16,35 +16,44 @@
 
 package org.wso2.carbon.governance.custom.lifecycles.checklist.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.custom.lifecycles.checklist.beans.LifecycleBean;
-import org.wso2.carbon.governance.registry.extensions.aspects.utils.LifecycleConstants;
-import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.api.GhostResource;
+import org.wso2.carbon.registry.common.utils.UserUtil;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourcePath;
+import org.wso2.carbon.registry.core.caching.RegistryCacheKey;
+import org.wso2.carbon.registry.core.config.DataBaseConfiguration;
+import org.wso2.carbon.registry.core.config.Mount;
+import org.wso2.carbon.registry.core.config.RemoteConfiguration;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.registry.common.utils.UserUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.user.core.UserRealm;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import javax.cache.Cache;
-import org.wso2.carbon.registry.core.config.DataBaseConfiguration;
-import org.wso2.carbon.registry.api.GhostResource;
-import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.core.caching.RegistryCacheKey;
-import org.wso2.carbon.registry.core.RegistryConstants;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.registry.core.config.Mount;
-import org.wso2.carbon.registry.core.config.RemoteConfiguration;
 
 public class LifecycleBeanPopulator {
 
     private static final Log log = LogFactory.getLog(LifecycleBeanPopulator.class);
 
     private static Map<String, Boolean> lifecycleAspects = new HashMap<String, Boolean>();
+    private static final String LIFECYCLE_PATH = "/repository/components/org.wso2.carbon.governance/lifecycles/";
 
     public static LifecycleBean getLifecycleBean(String path, UserRegistry registry,
                                                  Registry systemRegistry) throws Exception {
@@ -74,7 +83,10 @@ public class LifecycleBeanPopulator {
 
                     for (int i = 0; i < actions.length; i++) {
                         String aspect = aspects.get(i);
-
+                        if (!Arrays.asList(registry.getAvailableAspects()).contains(aspect)) {
+                            CommonUtil.generateAspect(LifecycleBeanPopulator.LIFECYCLE_PATH + aspect,
+                                                      CommonUtil.getRegistryService().getConfigSystemRegistry());
+                        }
                         String[] aspectActions = registry.getAspectActions(resourcePath.getPath(), aspect);
                         if (aspectActions == null) continue;
 
