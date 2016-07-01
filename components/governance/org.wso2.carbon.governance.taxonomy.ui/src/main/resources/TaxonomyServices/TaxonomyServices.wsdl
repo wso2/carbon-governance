@@ -1,0 +1,573 @@
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.taxonomy.governance.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2184="http://api.registry.carbon.wso2.org/xsd" xmlns:ax2183="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.taxonomy.governance.carbon.wso2.org">
+    <wsdl:documentation>TaxonomyServices</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax2186="http://exceptions.core.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.taxonomy.governance.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd"/>
+            <xs:element name="TaxonomyServicesRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2183:RegistryException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isTaxonomyAvailable">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isTaxonomyAvailableResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isTaxonomyEnable">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="isTaxonomyEnableResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="configureTaxonomy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="configuration" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="configureTaxonomyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateTaxonomy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="oldName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateTaxonomyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteTaxonomy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="taxonomyName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteTaxonomyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTaxonomyList">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTaxonomyListResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addTaxonomy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addTaxonomyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTaxonomy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getTaxonomyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="buildOMElement">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="buildOMElementResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:anyType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:ax2185="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd"/>
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ax2185:RegistryException">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="deleteTaxonomyRequest">
+        <wsdl:part name="parameters" element="ns:deleteTaxonomy"/>
+    </wsdl:message>
+    <wsdl:message name="deleteTaxonomyResponse">
+        <wsdl:part name="parameters" element="ns:deleteTaxonomyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="TaxonomyServicesRegistryException">
+        <wsdl:part name="parameters" element="ns:TaxonomyServicesRegistryException"/>
+    </wsdl:message>
+    <wsdl:message name="isTaxonomyAvailableRequest">
+        <wsdl:part name="parameters" element="ns:isTaxonomyAvailable"/>
+    </wsdl:message>
+    <wsdl:message name="isTaxonomyAvailableResponse">
+        <wsdl:part name="parameters" element="ns:isTaxonomyAvailableResponse"/>
+    </wsdl:message>
+    <wsdl:message name="isTaxonomyEnableRequest">
+        <wsdl:part name="parameters" element="ns:isTaxonomyEnable"/>
+    </wsdl:message>
+    <wsdl:message name="isTaxonomyEnableResponse">
+        <wsdl:part name="parameters" element="ns:isTaxonomyEnableResponse"/>
+    </wsdl:message>
+    <wsdl:message name="addTaxonomyRequest">
+        <wsdl:part name="parameters" element="ns:addTaxonomy"/>
+    </wsdl:message>
+    <wsdl:message name="addTaxonomyResponse">
+        <wsdl:part name="parameters" element="ns:addTaxonomyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="buildOMElementRequest">
+        <wsdl:part name="parameters" element="ns:buildOMElement"/>
+    </wsdl:message>
+    <wsdl:message name="buildOMElementResponse">
+        <wsdl:part name="parameters" element="ns:buildOMElementResponse"/>
+    </wsdl:message>
+    <wsdl:message name="configureTaxonomyRequest">
+        <wsdl:part name="parameters" element="ns:configureTaxonomy"/>
+    </wsdl:message>
+    <wsdl:message name="configureTaxonomyResponse">
+        <wsdl:part name="parameters" element="ns:configureTaxonomyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getTaxonomyListRequest">
+        <wsdl:part name="parameters" element="ns:getTaxonomyList"/>
+    </wsdl:message>
+    <wsdl:message name="getTaxonomyListResponse">
+        <wsdl:part name="parameters" element="ns:getTaxonomyListResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getTaxonomyRequest">
+        <wsdl:part name="parameters" element="ns:getTaxonomy"/>
+    </wsdl:message>
+    <wsdl:message name="getTaxonomyResponse">
+        <wsdl:part name="parameters" element="ns:getTaxonomyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="updateTaxonomyRequest">
+        <wsdl:part name="parameters" element="ns:updateTaxonomy"/>
+    </wsdl:message>
+    <wsdl:message name="updateTaxonomyResponse">
+        <wsdl:part name="parameters" element="ns:updateTaxonomyResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="TaxonomyServicesPortType">
+        <wsdl:operation name="deleteTaxonomy">
+            <wsdl:input message="ns:deleteTaxonomyRequest" wsaw:Action="urn:deleteTaxonomy"/>
+            <wsdl:output message="ns:deleteTaxonomyResponse" wsaw:Action="urn:deleteTaxonomyResponse"/>
+            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:deleteTaxonomyTaxonomyServicesRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="isTaxonomyAvailable">
+            <wsdl:input message="ns:isTaxonomyAvailableRequest" wsaw:Action="urn:isTaxonomyAvailable"/>
+            <wsdl:output message="ns:isTaxonomyAvailableResponse" wsaw:Action="urn:isTaxonomyAvailableResponse"/>
+            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:isTaxonomyAvailableTaxonomyServicesRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="isTaxonomyEnable">
+            <wsdl:input message="ns:isTaxonomyEnableRequest" wsaw:Action="urn:isTaxonomyEnable"/>
+            <wsdl:output message="ns:isTaxonomyEnableResponse" wsaw:Action="urn:isTaxonomyEnableResponse"/>
+            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:isTaxonomyEnableTaxonomyServicesRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="addTaxonomy">
+            <wsdl:input message="ns:addTaxonomyRequest" wsaw:Action="urn:addTaxonomy"/>
+            <wsdl:output message="ns:addTaxonomyResponse" wsaw:Action="urn:addTaxonomyResponse"/>
+            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:addTaxonomyTaxonomyServicesRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="buildOMElement">
+            <wsdl:input message="ns:buildOMElementRequest" wsaw:Action="urn:buildOMElement"/>
+            <wsdl:output message="ns:buildOMElementResponse" wsaw:Action="urn:buildOMElementResponse"/>
+            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:buildOMElementTaxonomyServicesRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="configureTaxonomy">
+            <wsdl:input message="ns:configureTaxonomyRequest" wsaw:Action="urn:configureTaxonomy"/>
+            <wsdl:output message="ns:configureTaxonomyResponse" wsaw:Action="urn:configureTaxonomyResponse"/>
+            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:configureTaxonomyTaxonomyServicesRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getTaxonomyList">
+            <wsdl:input message="ns:getTaxonomyListRequest" wsaw:Action="urn:getTaxonomyList"/>
+            <wsdl:output message="ns:getTaxonomyListResponse" wsaw:Action="urn:getTaxonomyListResponse"/>
+            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:getTaxonomyListTaxonomyServicesRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getTaxonomy">
+            <wsdl:input message="ns:getTaxonomyRequest" wsaw:Action="urn:getTaxonomy"/>
+            <wsdl:output message="ns:getTaxonomyResponse" wsaw:Action="urn:getTaxonomyResponse"/>
+            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:getTaxonomyTaxonomyServicesRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="updateTaxonomy">
+            <wsdl:input message="ns:updateTaxonomyRequest" wsaw:Action="urn:updateTaxonomy"/>
+            <wsdl:output message="ns:updateTaxonomyResponse" wsaw:Action="urn:updateTaxonomyResponse"/>
+            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:updateTaxonomyTaxonomyServicesRegistryException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="TaxonomyServicesSoap11Binding" type="ns:TaxonomyServicesPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="deleteTaxonomy">
+            <soap:operation soapAction="urn:deleteTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="isTaxonomyAvailable">
+            <soap:operation soapAction="urn:isTaxonomyAvailable" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="isTaxonomyEnable">
+            <soap:operation soapAction="urn:isTaxonomyEnable" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addTaxonomy">
+            <soap:operation soapAction="urn:addTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="buildOMElement">
+            <soap:operation soapAction="urn:buildOMElement" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="configureTaxonomy">
+            <soap:operation soapAction="urn:configureTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getTaxonomyList">
+            <soap:operation soapAction="urn:getTaxonomyList" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getTaxonomy">
+            <soap:operation soapAction="urn:getTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="updateTaxonomy">
+            <soap:operation soapAction="urn:updateTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="TaxonomyServicesSoap12Binding" type="ns:TaxonomyServicesPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="deleteTaxonomy">
+            <soap12:operation soapAction="urn:deleteTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="isTaxonomyAvailable">
+            <soap12:operation soapAction="urn:isTaxonomyAvailable" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="isTaxonomyEnable">
+            <soap12:operation soapAction="urn:isTaxonomyEnable" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addTaxonomy">
+            <soap12:operation soapAction="urn:addTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="buildOMElement">
+            <soap12:operation soapAction="urn:buildOMElement" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="configureTaxonomy">
+            <soap12:operation soapAction="urn:configureTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getTaxonomyList">
+            <soap12:operation soapAction="urn:getTaxonomyList" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getTaxonomy">
+            <soap12:operation soapAction="urn:getTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="updateTaxonomy">
+            <soap12:operation soapAction="urn:updateTaxonomy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="TaxonomyServicesRegistryException">
+                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="TaxonomyServicesHttpBinding" type="ns:TaxonomyServicesPortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="deleteTaxonomy">
+            <http:operation location="deleteTaxonomy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="isTaxonomyAvailable">
+            <http:operation location="isTaxonomyAvailable"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="isTaxonomyEnable">
+            <http:operation location="isTaxonomyEnable"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addTaxonomy">
+            <http:operation location="addTaxonomy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="buildOMElement">
+            <http:operation location="buildOMElement"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="configureTaxonomy">
+            <http:operation location="configureTaxonomy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getTaxonomyList">
+            <http:operation location="getTaxonomyList"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getTaxonomy">
+            <http:operation location="getTaxonomy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="updateTaxonomy">
+            <http:operation location="updateTaxonomy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="TaxonomyServices">
+        <wsdl:port name="TaxonomyServicesHttpsSoap11Endpoint" binding="ns:TaxonomyServicesSoap11Binding">
+            <soap:address location="https://172.17.0.1:9443/services/TaxonomyServices.TaxonomyServicesHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="TaxonomyServicesHttpsSoap12Endpoint" binding="ns:TaxonomyServicesSoap12Binding">
+            <soap12:address location="https://172.17.0.1:9443/services/TaxonomyServices.TaxonomyServicesHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="TaxonomyServicesHttpsEndpoint" binding="ns:TaxonomyServicesHttpBinding">
+            <http:address location="https://172.17.0.1:9443/services/TaxonomyServices.TaxonomyServicesHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
