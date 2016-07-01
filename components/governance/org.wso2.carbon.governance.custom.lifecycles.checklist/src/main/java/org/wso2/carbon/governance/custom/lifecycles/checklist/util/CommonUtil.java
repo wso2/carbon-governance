@@ -16,16 +16,27 @@
 
 package org.wso2.carbon.governance.custom.lifecycles.checklist.util;
 
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.common.CommonConstants;
+import org.wso2.carbon.registry.core.Aspect;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.config.RegistryConfigurationProcessor;
+import org.wso2.carbon.registry.core.config.RegistryContext;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 
 public class CommonUtil {
 
@@ -62,7 +73,37 @@ public class CommonUtil {
         allAssociations.add(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),path));
         return  allAssociations;
     }
-
+    public static boolean generateAspect(String resourceFullPath, Registry registry) throws RegistryException,
+                                                                                            XMLStreamException {
+        RegistryContext registryContext = registry.getRegistryContext();
+        if (registryContext == null) {
+            return false;
+        }
+        Resource resource = registry.get(resourceFullPath);
+        if (resource != null) {
+            String content = null;
+            if (resource.getContent() != null) {
+                content = RegistryUtils.decodeBytes((byte[])resource.getContent());
+            }
+            if (content != null) {
+                OMElement aspect = AXIOMUtil.stringToOM(content);
+                if (aspect != null) {
+                    OMElement dummy = OMAbstractFactory.getOMFactory().createOMElement("dummy", null);
+                    dummy.addChild(aspect);
+                    Aspect aspectinstance = RegistryConfigurationProcessor.updateAspects(dummy);
+                    Iterator aspectElement = dummy.getChildrenWithName(new QName("aspect"));
+                    String name = "";
+                    if (aspectElement != null) {
+                        OMElement aspectelement = (OMElement) aspectElement.next();
+                        name = aspectelement.getAttributeValue(new QName("name"));
+                    }
+                    registry.addAspect(name,aspectinstance);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /*public static UserRegistry getRegistry() throws RegistryException {
 
