@@ -108,7 +108,7 @@ public class WSDLOperationComparator extends AbstractWSDLComparator {
         }
 
         if (section != null) {
-            comparison.addSection(ComparatorConstants.WSDL_IMPORTS, section);
+            comparison.addSection(ComparatorConstants.WSDL_OPERATIONS, section);
         }
     }
 
@@ -159,8 +159,7 @@ public class WSDLOperationComparator extends AbstractWSDLComparator {
             tempDefinition.addPortType(portType);
             WSDLComparisonUtils.copyNamespaces(definition, tempDefinition);
             String content = WSDLComparisonUtils.getWSDLWithoutDeclaration(tempDefinition);
-            content = content.replace("<wsdl:portType name=\"temp\">", "");
-            content = content.substring(content.indexOf(">"));
+            content = content.substring(content.indexOf(">") + 2);
             return content.replace("</wsdl:portType>", "");
 
         } catch (WSDLException e) {

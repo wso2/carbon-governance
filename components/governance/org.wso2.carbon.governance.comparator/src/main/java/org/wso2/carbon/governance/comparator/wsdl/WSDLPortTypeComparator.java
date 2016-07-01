@@ -61,7 +61,7 @@ public class WSDLPortTypeComparator extends AbstractWSDLComparator {
         processRemovals(section, removalKeys, base);
 
         if (section != null) {
-            comparison.addSection(ComparatorConstants.WSDL_IMPORTS, section);
+            comparison.addSection(ComparatorConstants.WSDL_PORTTYPES, section);
         }
 
 

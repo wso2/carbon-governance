@@ -129,7 +129,7 @@ public class ComparatorUtils extends RegistryAbstractAdmin {
         case ComparatorConstants.WSDL_MEDIA_TYPE:
             return getWSDLComparison(resourceOne, resourceTwo);
         default:
-            return null;
+            return getArtifactTextDiff(resourcePathOne, resourcePathTwo);
         }
     }
 
@@ -148,15 +148,19 @@ public class ComparatorUtils extends RegistryAbstractAdmin {
             throws ComparisonException, WSDLException, RegistryException, UnsupportedEncodingException {
         GovernanceDiffGeneratorFactory diffGeneratorFactory = new GovernanceDiffGeneratorFactory();
         DiffGenerator flow = diffGeneratorFactory.getDiffGenerator();
-        WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
+        if (flow != null) {
+            WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
 
-        InputSource inputSourceOne = new InputSource(new ByteArrayInputStream((byte[]) WSDLOne.getContent()));
-        Definition originalWSDL = wsdlReader.readWSDL(null, inputSourceOne);
+            InputSource inputSourceOne = new InputSource(new ByteArrayInputStream((byte[]) WSDLOne.getContent()));
+            Definition originalWSDL = wsdlReader.readWSDL(null, inputSourceOne);
 
-        InputSource inputSourceTwo = new InputSource(new ByteArrayInputStream((byte[]) WSDLTwo.getContent()));
-        Definition changedWSDL = wsdlReader.readWSDL(null, inputSourceTwo);
+            InputSource inputSourceTwo = new InputSource(new ByteArrayInputStream((byte[]) WSDLTwo.getContent()));
+            Definition changedWSDL = wsdlReader.readWSDL(null, inputSourceTwo);
 
-        return flow.compare(originalWSDL, changedWSDL, ComparatorConstants.WSDL_MEDIA_TYPE);
+            return flow.compare(originalWSDL, changedWSDL, ComparatorConstants.WSDL_MEDIA_TYPE);
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 ///*
-// * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 // *
 // *   WSO2 Inc. licenses this file to you under the Apache License,
 // *   Version 2.0 (the "License"); you may not use this file except
@@ -18,24 +18,34 @@
 //
 //package org.wso2.carbon.governance.comparator.wsdl;
 //
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 //import org.wso2.carbon.governance.comparator.Comparison;
 //import org.wso2.carbon.governance.comparator.ComparisonException;
+//import org.wso2.carbon.governance.comparator.common.DefaultComparison;
 //
 //import javax.wsdl.Definition;
+//import javax.wsdl.Types;
 //
-//public class WSDLTypesComparator implements WSDLComparator {
+//public class WSDLTypesComparator extends AbstractWSDLComparator {
+//
+//    private final Log log = LogFactory.getLog(WSDLTypesComparator.class);
+//
 //    @Override
 //    public void init() {
 //
 //    }
 //
 //    @Override
-//    public Comparison compare(Definition base, Definition changed, Comparison comparison) throws ComparisonException {
-//        return null;
+//    public void compareInternal(Definition base, Definition changed, DefaultComparison comparison)
+//            throws ComparisonException {
+//        compareTypes(base, changed, comparison);
 //    }
 //
-//    @Override
-//    public boolean isSupportedMediaType(String mediaType) {
-//        return false;
+//    protected void compareTypes (Definition base, Definition changed, DefaultComparison comparison) {
+//        DefaultComparison.DefaultSection section = null;
+//        Types baseTypes = base.getTypes();
+//        Types changedTypes = changed.getTypes();
 //    }
 //}
+// TODO : Fix me

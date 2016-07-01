@@ -30,17 +30,21 @@ public class ComparatorConstants {
     // WSDL constants
     public static final String WSDL_DECLARATION = "wsdl_declaration";
     public static final String WSDL_IMPORTS = "wsdl_imports";
+    public static final String WSDL_BINDINGS = "wsdl_bindings";
     public static final String WSDL_MESSAGES = "wsdl_messages";
     public static final String WSDL_PORTTYPES = "wsdl_porttype";
     public static final String WSDL_OPERATIONS = "wsdl_operations";
+    public static final String WSDL_SERVICE = "wsdl_service";
+    public static final String WSDL_PORTS = "wsdl_ports";
 
     public static final String WSDL_DECLARATION_START_ELEMENT = "<wsdl:definitions";
     public static final String WSDL_DECLARATION_START = "<wsdl:definitions xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">";
-    public static final String WSDL_DECLARATION_END_ELEMENT = "</wsdl:definitions>";
+    public static final String WSDL_DECLARATION_END_ELEMENT = "\n</wsdl:definitions>";
     public static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
     //Text messages
-    public static final String TEXT_CHANGE = "";
+    public static final String TEXT_CHANGE = "default";
+    public static final String TEXT_CHANGE_SUMMARY = "There are modifications";
     public static final String XML = "xml";
     public static final String JSON = "json";
     public static final String XML_INDENT_AMOUNT = "{http://xml.apache.org/xslt}indent-amount";
@@ -65,6 +69,10 @@ public class ComparatorConstants {
     public static final String NEW_BINDING = "There are new WSDL Bindings ";
     public static final String REMOVE_BINDING = "There are WSDL Binding removals";
     public static final String CHANGED_BINDING = "There are WSDL Binding modifications";
-
-
+    public static final String NEW_SERVICE = "There are new WSDL Services ";
+    public static final String REMOVE_SERVICE = "There are WSDL Service removals";
+    public static final String CHANGED_SERVICE = "There are WSDL Service modifications";
+    public static final String NEW_PORTS = "There are new WSDL Ports ";
+    public static final String REMOVE_PORTS = "There are WSDL Port removals";
+    public static final String CHANGED_PORTS = "There are WSDL Port modifications";
 }
