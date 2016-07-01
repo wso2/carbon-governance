@@ -25,7 +25,8 @@
             <xs:element name="storagePath" type="xs:string" minOccurs="0"/>
             <xs:element name="nameAttribute" type="xs:string" minOccurs="0"/>
             <xs:element name="namespaceAttribute" type="xs:string" minOccurs="0"/>
-	    <xs:element name="lifecycle" type="xs:string" minOccurs="0"/>
+	        <xs:element name="lifecycle" type="xs:string" minOccurs="0"/>
+            <xs:element name="taxonomy" type="xs:string" minOccurs="0"/>
 	    <xs:element name="groupingAttribute" type="xs:string" minOccurs="0"/>
             <xs:element name="menu" minOccurs="0">
                 <xs:complexType>

@@ -15,10 +15,8 @@
  */
 package org.wso2.carbon.governance.taxonomy.internal;
 
-import org.wso2.carbon.governance.taxonomy.util.TaxonomyStorageService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
-import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 public class ServiceHolder {
@@ -30,9 +28,6 @@ public class ServiceHolder {
 
     //Tenant registry loader which is used to load tenant registry
     private static TenantRegistryLoader tenantRegLoader;
-
-    // RXT storage path service used to get artifact storage paths.
-    private static TaxonomyStorageService taxonomyStorageService;
 
     /**
      * Method to get RegistryService.
@@ -88,20 +83,4 @@ public class ServiceHolder {
         tenantRegLoader = service;
     }
 
-    /**
-     * This method used to set TaxonomyStorageService
-     * @param service
-     */
-    public static void setRXTStoragePathService(TaxonomyStorageService service) {
-        taxonomyStorageService = service;
-    }
-
-    /**
-     * This method used to get RXTStoragePathService
-     *
-     * @return taxonomyStorageService  used to get RXT storage path details.
-     */
-    public static TaxonomyStorageService getRXTStoragePathService() {
-        return taxonomyStorageService;
-    }
 }

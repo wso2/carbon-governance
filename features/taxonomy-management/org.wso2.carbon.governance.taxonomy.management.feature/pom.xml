@@ -1,5 +1,5 @@
 <!--
- ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~ WSO2 Inc. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -27,17 +27,25 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.governance.taxonomy.management.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Governance Taxonomy Management Feature</name>
+    <name>WSO2 Carbon - Governance taxonomy Management Feature</name>
     <url>http://wso2.org</url>
     <description>
-        Introduces Taxonomy configuration management
+        Introduces the resource (or collection) taxonomy and taxonomy configuration management
         capabilities.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon.governance</groupId>
-            <artifactId>org.wso2.carbon.governance.taxonomy</artifactId>
+            <artifactId>org.wso2.carbon.governance.taxonomy.management.server.feature</artifactId>
+            <version>${carbon.governance.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.governance</groupId>
+            <artifactId>org.wso2.carbon.governance.taxonomy.management.ui.feature</artifactId>
+            <version>${carbon.governance.version}</version>
+            <type>zip</type>
         </dependency>
     </dependencies>
 
@@ -56,16 +64,19 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.governance.taxonomy.management</id>
-                            <propertiesFile>../feature.properties</propertiesFile>
-                            <adviceFile>
-                                <properties>
-                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
-                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
-                                </properties>
-                            </adviceFile>
-                            <bundles>
-                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.taxonomy</bundleDef>
-                            </bundles>
+                            <propertiesFile>../../etc/feature.properties</propertiesFile>
+                            <importFeatures>
+                                <importFeatureDef>org.wso2.carbon.registry.core:${carbon.registry.version}
+                                </importFeatureDef>
+                            </importFeatures>
+                            <includedFeatures>
+                                <includedFeatureDef>
+                                    org.wso2.carbon.governance:org.wso2.carbon.governance.taxonomy.management.server.feature
+                                </includedFeatureDef>
+                                <includedFeatureDef>
+                                    org.wso2.carbon.governance:org.wso2.carbon.governance.taxonomy.management.ui.feature
+                                </includedFeatureDef>
+                            </includedFeatures>
                         </configuration>
                     </execution>
                 </executions>

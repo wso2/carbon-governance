@@ -407,6 +407,12 @@ public class GovernanceUtils {
                     configuration.setLifecycle(lifecycleElement.getText());
                 }
 
+                OMElement taxonomyElement = configElement.getFirstChildWithName(
+                        new QName("taxonomies"));
+                if (taxonomyElement != null) {
+                    configuration.setTaxonomy(taxonomyElement.getText());
+                }
+
                 OMElement groupingAttributeElement = configElement.getFirstChildWithName(
                         new QName("groupingAttribute"));
                 if (groupingAttributeElement != null) {
