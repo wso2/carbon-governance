@@ -18,9 +18,13 @@
 
 package org.wso2.carbon.governance.rest.api;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -39,6 +43,7 @@ import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
 import org.wso2.carbon.governance.rest.api.util.CommonConstants;
 import org.wso2.carbon.governance.rest.api.util.Util;
+import org.wso2.carbon.registry.common.ui.utils.TreeNodeBuilderUtil;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
@@ -50,7 +55,12 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.resource.services.utils.AddResourceUtil;
 import org.wso2.carbon.registry.resource.services.utils.CommonUtil;
 import org.wso2.carbon.registry.resource.services.utils.GetTextContentUtil;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -62,6 +72,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -675,9 +688,13 @@ public class Asset {
             if (artifact != null) {
                 Resource resource = getUserRegistry().get(artifact.getPath());
                 String mediaType = getMediaTypeForDownloading(artifact.getMediaType());
-                return Response.ok(resource.getContentStream()).type(mediaType).
-                        header(CONTENT_DISPOSITION, "filename=" + getFileName(shortName, artifact)).build();
-
+                if ("wsdl".equals(shortName) || "wadl".equals(shortName) || "schema".equals(shortName) || "policy".equals(shortName)){
+                    return Response.ok(changeContent(resource.getContentStream(), getUserRegistry(), artifact.getPath())).type(mediaType).
+                            header(CONTENT_DISPOSITION, "filename=" + getFileName(shortName, artifact)).build();
+                } else {
+                    return Response.ok(resource.getContentStream()).type(mediaType).
+                            header(CONTENT_DISPOSITION, "filename=" + getFileName(shortName, artifact)).build();
+                }
             // Check whether artifact is actually does not exists or we are getting null because of anonymous user.
             } else if (isAnonymousUser()) {
                 return handleStatusCode(id);
@@ -702,6 +719,45 @@ public class Asset {
                     findGovernanceArtifactConfiguration(shortName, getUserRegistry());
             return artifact.getAttribute(config.getArtifactNameAttribute());
         }
+    }
+
+    public String changeContent(InputStream content, Registry registry, String currentPath) throws GovernanceException {
+        String myString = null;
+        List<String> references = new ArrayList<>();
+        try {
+            myString = IOUtils.toString(content, "UTF-8");
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            // Use the factory to create a builder
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            InputSource is = new InputSource();
+            is.setCharacterStream(new StringReader(myString));
+            Document doc = builder.parse(is);
+            NodeList list = doc.getElementsByTagName("*");
+            for (int i = 0; i < list.getLength(); i++) {
+                Element element = (Element) list.item(i);
+                if (element.hasAttribute("schemaLocation")) {
+                    references.add(element.getAttribute("schemaLocation"));
+                }
+            }
+            CarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            for (String links : references) {
+                String link = RegistryUtils.getAbsolutePath(registry.getRegistryContext(), links);
+                String registryUrl = TreeNodeBuilderUtil.calculateAbsolutePath(currentPath, link);
+                if (registry.resourceExists(registryUrl)) {
+                    GovernanceArtifact artifact = GovernanceUtils.retrieveGovernanceArtifactByPath(registry, registryUrl);
+                    //Here we are calculating relative path to governance rest api
+                    String newLink = "./../../" + Util.getResourceName(getBelongToAssetShortName(artifact)) + "/" +
+                            artifact.getId() + "/content?tenant=" + carbonContext.getTenantDomain();
+                    myString = myString.replace(links, newLink);
+                }
+            }
+
+        } catch (ParserConfigurationException | SAXException | IOException  e) {
+            //ignore exception due to swagger and other types
+        } catch (RegistryException e) {
+            log.warn("Error occurred while reading resource from the regsitry ");
+        }
+        return myString;
     }
 
     private boolean isContentType(String shortName) throws RegistryException {
