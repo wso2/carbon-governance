@@ -73,6 +73,9 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
                 setAttributesToLowerCase(attributes);
                 fields.putAll(attributes);
                 updateTenantsUnboundedFieldMap(configuration.getContentDefinition().getParent().toString());
+                if (configuration.getArtifactNameAttribute() != null) {
+                    fields.put("overview_name", attributes.get(configuration.getArtifactNameAttribute()));
+                }
             } else {
                 fields.put("overview_name", Arrays.asList(RegistryUtils.getResourceName(fileData.path).toLowerCase()));
             }
