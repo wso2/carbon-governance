@@ -18,6 +18,7 @@ package org.wso2.carbon.governance.taxonomy.services;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.governance.taxonomy.beans.PaginationBean;
 import org.wso2.carbon.governance.taxonomy.beans.QueryBean;
@@ -127,6 +128,24 @@ public class TaxonomyManager {
         NodeList nodeList = queryProvider.query(taxonomyQueryBean);
         return CommonUtils.toJson(taxonomyQueryBean.getQuery(), queryProvider.getUpdatedQuery(taxonomyQueryBean),
                 taxonomyPaginationBean.getStartNode(), taxonomyPaginationBean.getEndNode(), nodeList);
+    }
+
+    /**
+     * This method will retrieve the results for rest api queries
+     *
+     * @return Json array with processed results
+     * @throws XPathExpressionException
+     * @throws JSONException
+     * @throws TaxonomyException
+     */
+    JSONArray query(QueryBean taxonomyQueryBean)
+            throws XPathExpressionException, JSONException, RegistryException, UserStoreException {
+        JSONArray jsonArray = new JSONArray();
+        JSONObject taxonomyNameObj = new JSONObject();
+        String taxonomyName = queryProvider.getTaxonomyNameById(taxonomyQueryBean);
+        taxonomyNameObj.put("taxonomyName",taxonomyName);
+        jsonArray.put(taxonomyNameObj);
+        return  jsonArray;
     }
 
     public void initTaxonomyStorage()

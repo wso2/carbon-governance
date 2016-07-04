@@ -18,8 +18,11 @@ package org.wso2.carbon.governance.taxonomy.services;
 
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.governance.taxonomy.beans.QueryBean;
+import org.wso2.carbon.governance.taxonomy.beans.RXTBean;
 import org.wso2.carbon.governance.taxonomy.beans.TaxonomyBean;
+import org.wso2.carbon.governance.taxonomy.util.CommonUtils;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.user.api.UserStoreException;
 import java.util.List;
 import javax.xml.xpath.*;
 
@@ -74,6 +77,46 @@ class QueryProviderImpl implements IQueryProvider {
 
     @Override
     public List<String> getTaxonomiesByRXT(String artifactType) {
+        return null;
+    }
+
+    @Override
+    public String getTaxonomyNameById(QueryBean taxonomyQueryBean)
+            throws UserStoreException, RegistryException, XPathExpressionException {
+
+        List<RXTBean> rxtBeanList = CommonUtils.getRxtTaxonomies();
+
+        for (RXTBean rxtBean : rxtBeanList) {
+            if (rxtBean.getRxtName().equals(taxonomyQueryBean.getAssetType())) {
+                String[] taxonomies;
+                String taxonomy = rxtBean.getTaxonomy();
+                if (taxonomy != null) {
+                    if (taxonomy.contains(",")) {
+                        taxonomies = taxonomy.split(",");
+                    } else {
+                        taxonomies = new String[] { taxonomy };
+                    }
+
+                    if (taxonomies.length > 0) {
+                        for (String taxonomyName : taxonomies) {
+                            taxonomyQueryBean.setTaxonomyName(taxonomyName);
+                            TaxonomyManager taxonomyManager = new TaxonomyManager();
+                            XPath xPathInstance = XPathFactory.newInstance().newXPath();
+                            XPathExpression exp = xPathInstance
+                                    .compile("/taxonomy/root[@id='" + taxonomyQueryBean.getQuery() + "']");
+                            NodeList nodeList = (NodeList) exp
+                                    .evaluate(taxonomyManager.getTaxonomy(taxonomyQueryBean).getDocument(),
+                                            XPathConstants.NODESET);
+                            if (nodeList.getLength() > 0) {
+                                return taxonomyName;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
         return null;
     }
 }

@@ -1,27 +1,46 @@
 
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.taxonomy.governance.carbon.wso2.org" xmlns:ax2192="http://beans.taxonomy.governance.carbon.wso2.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax2184="http://api.registry.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2183="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax2194="http://json.org/xsd" xmlns:ax2188="http://exception.api.governance.carbon.wso2.org/xsd" xmlns:ax2187="http://exception.taxonomy.governance.carbon.wso2.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.taxonomy.governance.carbon.wso2.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax2191="http://beans.taxonomy.governance.carbon.wso2.org/xsd" xmlns:ns="http://services.taxonomy.governance.carbon.wso2.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax2185="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2184="http://exception.api.governance.carbon.wso2.org/xsd" xmlns:ax2183="http://exception.taxonomy.governance.carbon.wso2.org/xsd" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ax2193="http://json.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax2186="http://api.registry.carbon.wso2.org/xsd" targetNamespace="http://services.taxonomy.governance.carbon.wso2.org">
     <wsdl:documentation>TaxonomyServices</wsdl:documentation>
     <wsdl:types>
-        <xs:schema xmlns:ax2191="http://exception.taxonomy.governance.carbon.wso2.org/xsd" xmlns:ax2193="http://beans.taxonomy.governance.carbon.wso2.org/xsd" xmlns:ax2186="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2195="http://json.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.taxonomy.governance.carbon.wso2.org">
-            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd"/>
+        <xs:schema xmlns:ax2190="http://exception.taxonomy.governance.carbon.wso2.org/xsd" xmlns:ax2192="http://beans.taxonomy.governance.carbon.wso2.org/xsd" xmlns:ax2194="http://json.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.taxonomy.governance.carbon.wso2.org">
             <xs:import namespace="http://exception.taxonomy.governance.carbon.wso2.org/xsd"/>
             <xs:import namespace="http://beans.taxonomy.governance.carbon.wso2.org/xsd"/>
             <xs:import namespace="http://json.org/xsd"/>
-            <xs:element name="TaxonomyServicesRegistryException">
+            <xs:element name="TaxonomyServicesException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2183:RegistryException"/>
+                        <xs:element minOccurs="0" name="TaxonomyServicesException" nillable="true" type="ns:Exception"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addTaxonomy">
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="deleteTaxonomy">
                 <xs:complexType>
                     <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteTaxonomyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateTaxonomy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="oldName" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addTaxonomyResponse">
+            <xs:element name="updateTaxonomyResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
@@ -42,6 +61,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="addTaxonomy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addTaxonomyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getTaxonomyList">
                 <xs:complexType>
                     <xs:sequence/>
@@ -54,47 +87,18 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="updateTaxonomy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="oldName" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateTaxonomyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="deleteTaxonomy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="deleteTaxonomyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="TaxonomyServicesTaxonomyException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="TaxonomyException" nillable="true" type="ax2191:TaxonomyException"/>
+                        <xs:element minOccurs="0" name="TaxonomyException" nillable="true" type="ax2190:TaxonomyException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="query">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="taxonomyQueryBean" nillable="true" type="ax2192:QueryBean"/>
-                        <xs:element minOccurs="0" name="paginationBean" nillable="true" type="ax2192:PaginationBean"/>
+                        <xs:element minOccurs="0" name="taxonomyQueryBean" nillable="true" type="ax2191:QueryBean"/>
+                        <xs:element minOccurs="0" name="paginationBean" nillable="true" type="ax2191:PaginationBean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -106,11 +110,11 @@
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema xmlns:ax2185="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+        <xs:schema xmlns:ax2187="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
             <xs:import namespace="http://api.registry.carbon.wso2.org/xsd"/>
             <xs:complexType name="RegistryException">
                 <xs:complexContent>
-                    <xs:extension base="ax2185:RegistryException">
+                    <xs:extension base="ax2187:RegistryException">
                         <xs:sequence/>
                     </xs:extension>
                 </xs:complexContent>
@@ -130,21 +134,21 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax2190="http://exception.api.governance.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.taxonomy.governance.carbon.wso2.org/xsd">
+        <xs:schema xmlns:ax2189="http://exception.api.governance.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.taxonomy.governance.carbon.wso2.org/xsd">
             <xs:import namespace="http://exception.api.governance.carbon.wso2.org/xsd"/>
             <xs:complexType name="TaxonomyException">
                 <xs:complexContent>
-                    <xs:extension base="ax2190:GovernanceException">
+                    <xs:extension base="ax2184:GovernanceException">
                         <xs:sequence/>
                     </xs:extension>
                 </xs:complexContent>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax2189="http://exceptions.core.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.api.governance.carbon.wso2.org/xsd">
+        <xs:schema xmlns:ax2188="http://exceptions.core.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.api.governance.carbon.wso2.org/xsd">
             <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd"/>
             <xs:complexType name="GovernanceException">
                 <xs:complexContent>
-                    <xs:extension base="ax2183:RegistryException">
+                    <xs:extension base="ax2185:RegistryException">
                         <xs:sequence/>
                     </xs:extension>
                 </xs:complexContent>
@@ -167,8 +171,8 @@
     <wsdl:message name="deleteTaxonomyResponse">
         <wsdl:part name="parameters" element="ns:deleteTaxonomyResponse"/>
     </wsdl:message>
-    <wsdl:message name="TaxonomyServicesRegistryException">
-        <wsdl:part name="parameters" element="ns:TaxonomyServicesRegistryException"/>
+    <wsdl:message name="TaxonomyServicesException">
+        <wsdl:part name="parameters" element="ns:TaxonomyServicesException"/>
     </wsdl:message>
     <wsdl:message name="queryRequest">
         <wsdl:part name="parameters" element="ns:query"/>
@@ -207,7 +211,7 @@
         <wsdl:operation name="deleteTaxonomy">
             <wsdl:input message="ns:deleteTaxonomyRequest" wsaw:Action="urn:deleteTaxonomy"/>
             <wsdl:output message="ns:deleteTaxonomyResponse" wsaw:Action="urn:deleteTaxonomyResponse"/>
-            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:deleteTaxonomyTaxonomyServicesRegistryException"/>
+            <wsdl:fault message="ns:TaxonomyServicesException" name="TaxonomyServicesException" wsaw:Action="urn:deleteTaxonomyTaxonomyServicesException"/>
         </wsdl:operation>
         <wsdl:operation name="query">
             <wsdl:input message="ns:queryRequest" wsaw:Action="urn:query"/>
@@ -217,22 +221,22 @@
         <wsdl:operation name="addTaxonomy">
             <wsdl:input message="ns:addTaxonomyRequest" wsaw:Action="urn:addTaxonomy"/>
             <wsdl:output message="ns:addTaxonomyResponse" wsaw:Action="urn:addTaxonomyResponse"/>
-            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:addTaxonomyTaxonomyServicesRegistryException"/>
+            <wsdl:fault message="ns:TaxonomyServicesException" name="TaxonomyServicesException" wsaw:Action="urn:addTaxonomyTaxonomyServicesException"/>
         </wsdl:operation>
         <wsdl:operation name="getTaxonomyList">
             <wsdl:input message="ns:getTaxonomyListRequest" wsaw:Action="urn:getTaxonomyList"/>
             <wsdl:output message="ns:getTaxonomyListResponse" wsaw:Action="urn:getTaxonomyListResponse"/>
-            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:getTaxonomyListTaxonomyServicesRegistryException"/>
+            <wsdl:fault message="ns:TaxonomyServicesException" name="TaxonomyServicesException" wsaw:Action="urn:getTaxonomyListTaxonomyServicesException"/>
         </wsdl:operation>
         <wsdl:operation name="getTaxonomy">
             <wsdl:input message="ns:getTaxonomyRequest" wsaw:Action="urn:getTaxonomy"/>
             <wsdl:output message="ns:getTaxonomyResponse" wsaw:Action="urn:getTaxonomyResponse"/>
-            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:getTaxonomyTaxonomyServicesRegistryException"/>
+            <wsdl:fault message="ns:TaxonomyServicesException" name="TaxonomyServicesException" wsaw:Action="urn:getTaxonomyTaxonomyServicesException"/>
         </wsdl:operation>
         <wsdl:operation name="updateTaxonomy">
             <wsdl:input message="ns:updateTaxonomyRequest" wsaw:Action="urn:updateTaxonomy"/>
             <wsdl:output message="ns:updateTaxonomyResponse" wsaw:Action="urn:updateTaxonomyResponse"/>
-            <wsdl:fault message="ns:TaxonomyServicesRegistryException" name="TaxonomyServicesRegistryException" wsaw:Action="urn:updateTaxonomyTaxonomyServicesRegistryException"/>
+            <wsdl:fault message="ns:TaxonomyServicesException" name="TaxonomyServicesException" wsaw:Action="urn:updateTaxonomyTaxonomyServicesException"/>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="TaxonomyServicesSoap11Binding" type="ns:TaxonomyServicesPortType">
@@ -245,8 +249,8 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="query">
@@ -269,8 +273,8 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getTaxonomyList">
@@ -281,8 +285,8 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getTaxonomy">
@@ -293,8 +297,8 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="updateTaxonomy">
@@ -305,8 +309,8 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
@@ -320,8 +324,8 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap12:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="query">
@@ -344,8 +348,8 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap12:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getTaxonomyList">
@@ -356,8 +360,8 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap12:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getTaxonomy">
@@ -368,8 +372,8 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap12:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="updateTaxonomy">
@@ -380,8 +384,8 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="TaxonomyServicesRegistryException">
-                <soap12:fault use="literal" name="TaxonomyServicesRegistryException"/>
+            <wsdl:fault name="TaxonomyServicesException">
+                <soap12:fault use="literal" name="TaxonomyServicesException"/>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>

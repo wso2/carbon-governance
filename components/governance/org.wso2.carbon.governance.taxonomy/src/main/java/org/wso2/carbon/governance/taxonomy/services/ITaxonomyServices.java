@@ -28,16 +28,18 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
  */
 public interface ITaxonomyServices {
 
-    public boolean addTaxonomy(String payload) throws RegistryException;
+    public boolean addTaxonomy(String payload) throws Exception;
 
-    public boolean deleteTaxonomy(String name) throws RegistryException;
+    public boolean deleteTaxonomy(String name) throws Exception;
 
-    public boolean updateTaxonomy(String oldName, String payload) throws RegistryException;
+    public boolean updateTaxonomy(String oldName, String payload) throws Exception;
 
-    public String getTaxonomy(String name) throws RegistryException;
+    public String getTaxonomy(String name) throws Exception;
 
-    public String[] getTaxonomyList() throws RegistryException;
+    public String[] getTaxonomyList() throws Exception;
 
     public JSONArray query(QueryBean taxonomyQueryBean, PaginationBean paginationBean) throws TaxonomyException;
+
+    public JSONArray getTaxonomyName(QueryBean taxonomyQueryBean) throws TaxonomyException;
 
 }

@@ -23,6 +23,15 @@ public class QueryBean {
 
     private String taxonomyName;
     private String query;
+    private String assetType;
+
+    public String getAssetType() {
+        return assetType;
+    }
+
+    public void setAssetType(String assetType) {
+        this.assetType = assetType;
+    }
 
     public String getTaxonomyName() {
         return taxonomyName;

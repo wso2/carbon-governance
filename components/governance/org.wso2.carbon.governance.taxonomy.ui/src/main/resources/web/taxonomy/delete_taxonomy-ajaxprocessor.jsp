@@ -16,15 +16,14 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.governance.taxonomy.ui.clients.TaxonomyManagementClient" %>
-<%@ page import="org.wso2.carbon.governance.taxonomy.stub.TaxonomyServicesRegistryExceptionException" %>
+<%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%
  String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
    try{
     TaxonomyManagementClient client = new TaxonomyManagementClient(cookie, config, session);
       client.deleteTaxonomy(request);
-   } catch (TaxonomyServicesRegistryExceptionException e){
+   } catch (Exception e){
       response.setStatus(500);
       %><%=e.getMessage()%><%
       return;

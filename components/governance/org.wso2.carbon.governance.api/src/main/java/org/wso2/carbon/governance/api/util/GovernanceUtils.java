@@ -1867,6 +1867,8 @@ public class GovernanceUtils {
                         case "tags":
                         case "associationType":
                         case "taxonomy":
+                            fields.put(subParts[0], subParts[1].toLowerCase());
+                            break;
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
                             break;
