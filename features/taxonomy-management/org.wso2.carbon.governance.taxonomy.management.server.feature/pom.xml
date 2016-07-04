@@ -29,7 +29,7 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Governance taxonomy Management Server Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for Back-end Governance Lifecycle Management functionality
+    <description>This feature contains the bundles required for Back-end Governance Taxonomy Management functionality
     </description>
     <dependencies>
 
@@ -112,8 +112,6 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.custom.lifecycles.checklist
-                                </bundleDef>
                                 <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.taxonomy</bundleDef>
                                 <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.registry.eventing</bundleDef>
                             </bundles>

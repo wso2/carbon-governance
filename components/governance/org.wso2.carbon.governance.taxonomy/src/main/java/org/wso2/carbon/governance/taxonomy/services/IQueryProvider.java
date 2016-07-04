@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 import org.wso2.carbon.governance.taxonomy.beans.QueryBean;
 import org.wso2.carbon.governance.taxonomy.beans.TaxonomyBean;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.user.api.UserStoreException;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 
@@ -33,5 +34,8 @@ public interface IQueryProvider {
     String getUpdatedQuery(QueryBean taxonomyQueryBean);
 
     List<String> getTaxonomiesByRXT(String artifactType);
+
+    String getTaxonomyNameById (QueryBean taxonomyQueryBean)
+            throws UserStoreException, RegistryException, XPathExpressionException;
 
 }

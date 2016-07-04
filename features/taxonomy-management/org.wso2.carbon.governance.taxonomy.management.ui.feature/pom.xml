@@ -29,7 +29,7 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Governance taxonomy Management UI Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for Front-end Governance Lifecycle Management
+    <description>This feature contains the bundles required for Front-end Governance Taxonomy Management
         functionality
     </description>
     <dependencies>
@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.governance</groupId>
-            <artifactId>org.wso2.carbon.governance.lcm.stub</artifactId>
+            <artifactId>org.wso2.carbon.governance.taxonomy.stub</artifactId>
         </dependency>
     </dependencies>
     <build>

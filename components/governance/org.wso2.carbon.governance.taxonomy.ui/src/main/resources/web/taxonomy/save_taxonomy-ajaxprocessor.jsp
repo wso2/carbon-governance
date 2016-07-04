@@ -18,10 +18,8 @@
 
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="org.wso2.carbon.governance.taxonomy.stub.TaxonomyServicesRegistryExceptionException" %>
 <%@ page import="org.wso2.carbon.governance.taxonomy.ui.clients.TaxonomyManagementClient" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
-<%@ page import="java.rmi.RemoteException" %>
 <%
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     String error = null;
@@ -40,9 +38,7 @@
             }
         }
 
-    } catch (RemoteException e) {
-        error = e.getMessage().replaceAll(">", "&gt;").replaceAll("<", "&lt;");
-    } catch (TaxonomyServicesRegistryExceptionException e) {
+    } catch (Exception e) {
         error = e.getMessage().replaceAll(">", "&gt;").replaceAll("<", "&lt;");
     }
 

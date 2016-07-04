@@ -20,16 +20,9 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.governance.taxonomy.stub.TaxonomyServicesRegistryExceptionException;
 import org.wso2.carbon.governance.taxonomy.stub.TaxonomyServicesStub;
-import org.wso2.carbon.governance.taxonomy.stub.TaxonomyServicesTaxonomyExceptionException;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.ui.CarbonUIUtil;
-
-import java.rmi.RemoteException;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -39,11 +32,10 @@ import javax.servlet.http.HttpSession;
  * taxonomy stub
  */
 public class TaxonomyManagementClient {
-    private static final Log log = LogFactory.getLog(TaxonomyManagementClient.class);
     private TaxonomyServicesStub stub;
 
     public TaxonomyManagementClient(String cookie, ServletConfig config, HttpSession session)
-            throws TaxonomyServicesRegistryExceptionException {
+            throws Exception {
         String endpointURL;
         String backendServerURL = CarbonUIUtil.getServerURL(config.getServletContext(), session);
         ConfigurationContext configContext = (ConfigurationContext) config.
@@ -59,7 +51,7 @@ public class TaxonomyManagementClient {
 
         } catch (AxisFault axisFault) {
             String msg = "Failed to initiate taxonomy service client. " + axisFault.getMessage();
-            throw new TaxonomyServicesRegistryExceptionException(msg, axisFault);
+            throw new Exception(msg, axisFault);
         }
     }
 
@@ -68,11 +60,10 @@ public class TaxonomyManagementClient {
      *
      * @param request User request
      * @return boolean
-     * @throws RemoteException
-     * @throws TaxonomyServicesRegistryExceptionException
+     * @throws Exception
      */
     public boolean newTaxonomy(HttpServletRequest request)
-            throws RemoteException, TaxonomyServicesRegistryExceptionException {
+            throws  Exception {
         return stub.addTaxonomy(request.getParameter("payload"));
     }
 
@@ -81,11 +72,10 @@ public class TaxonomyManagementClient {
      *
      * @param request user request which contains taxonomy file name
      * @return String content
-     * @throws RemoteException
-     * @throws TaxonomyServicesRegistryExceptionException
+     * @throws Exception
      */
     public String getTaxonomy(HttpServletRequest request)
-            throws RemoteException, TaxonomyServicesRegistryExceptionException {
+            throws  Exception {
         return stub.getTaxonomy(request.getParameter("taxonomyName"));
     }
 
@@ -94,11 +84,10 @@ public class TaxonomyManagementClient {
      *
      * @param request user request
      * @return boolean
-     * @throws RemoteException
-     * @throws TaxonomyServicesRegistryExceptionException
+     * @throws Exception
      */
     public boolean updateTaxonomy(HttpServletRequest request)
-            throws RemoteException, TaxonomyServicesRegistryExceptionException {
+            throws  Exception {
         return stub.updateTaxonomy(request.getParameter("taxonomyName"), request.getParameter("payload"));
     }
 
@@ -107,11 +96,10 @@ public class TaxonomyManagementClient {
      *
      * @param request user request
      * @return boolean
-     * @throws RemoteException
-     * @throws TaxonomyServicesRegistryExceptionException
+     * @throws Exception
      */
     public boolean deleteTaxonomy(HttpServletRequest request)
-            throws RemoteException, TaxonomyServicesRegistryExceptionException {
+            throws  Exception {
         return stub.deleteTaxonomy(request.getParameter("taxonomyName"));
     }
 
@@ -120,12 +108,11 @@ public class TaxonomyManagementClient {
      *
      * @param request user request
      * @return String array of taxonomy files
-     * @throws RemoteException
-     * @throws TaxonomyServicesRegistryExceptionException
+     * @throws Exception
      */
 
     public String[] getTaxonomyList(HttpServletRequest request)
-            throws RemoteException, TaxonomyServicesRegistryExceptionException {
+            throws  Exception {
         return stub.getTaxonomyList();
     }
 

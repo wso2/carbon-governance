@@ -19,7 +19,6 @@ package org.wso2.carbon.governance.taxonomy.beans;
 import org.w3c.dom.Document;
 
 /**
- *
  * This class will use to keep taxonomy meta data
  */
 public class TaxonomyBean {
