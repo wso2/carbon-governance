@@ -46,13 +46,13 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
 
-import javax.cache.Cache;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import javax.cache.Cache;
 
 /**
  * API implementation of the LifeCycleService(Used to fetch lifecycle information) .
@@ -196,7 +196,9 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         String artifactLCState = artifactResource.getProperty("registry.lifecycle." + artifactLC + ".state");
 
         LCStateBean lifeCycleStateBean = new LCStateBean();
-
+        if (artifactLCState == null) {
+            return lifeCycleStateBean;
+        }
         lifeCycleStateBean.setLifeCycleName(artifactLC);
         lifeCycleStateBean.setLifeCycleState(artifactLCState);
 
