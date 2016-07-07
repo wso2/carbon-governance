@@ -27,11 +27,7 @@ import org.wso2.carbon.base.CarbonContextHolderBase;
 import org.wso2.carbon.base.UnloadTenantTask;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.governance.api.cache.ArtifactCache;
-import org.wso2.carbon.governance.api.cache.ArtifactCacheManager;
-import org.wso2.carbon.governance.api.cache.RXTConfigCacheEntryCreatedListener;
-import org.wso2.carbon.governance.api.cache.RXTConfigCacheEntryRemovedListener;
-import org.wso2.carbon.governance.api.cache.RXTConfigCacheEntryUpdatedListener;
+import org.wso2.carbon.governance.api.cache.*;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.common.util.ApproveItemBean;
@@ -70,24 +66,6 @@ import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -95,6 +73,12 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utilities used by various Governance API related functionality.
@@ -2059,7 +2043,14 @@ public class GovernanceUtils {
             for (String referenceValue : e.getValue()) {
                 if (referenceValue != null && !"".equals(referenceValue)) {
                     String referenceValueModified = referenceValue.replace(" ", "\\ ");
-                    builder.append(referenceValueModified.toLowerCase()).append(',');
+                    referenceValueModified = referenceValueModified.toLowerCase();
+                    if (referenceValueModified.contains("*\\ ")) {
+                        referenceValueModified = referenceValueModified.replace("*\\ ", "* ");
+                    }
+                    if (referenceValueModified.contains("\\ *")) {
+                        referenceValueModified = referenceValueModified.replace("\\ *", " *");
+                    }
+                    builder.append(referenceValueModified).append(',');
                 }
             }
             if (builder.length() > 0) {
