@@ -33,6 +33,7 @@ import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import javax.xml.namespace.QName;
@@ -395,6 +396,10 @@ public class GenericArtifactManager {
 
     public void removeGenericArtifact(GenericArtifact artifact) throws GovernanceException {
         manager.removeGenericArtifact(artifact);
+    }
+
+    public void setContent(Resource resource, GovernanceArtifact artifact) throws GovernanceException {
+        manager.setContent(resource, artifact);
     }
 
 }

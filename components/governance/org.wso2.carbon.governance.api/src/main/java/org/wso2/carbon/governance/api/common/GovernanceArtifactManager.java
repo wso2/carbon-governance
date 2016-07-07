@@ -576,6 +576,18 @@ public class GovernanceArtifactManager {
      *
      * @param artifact the artifact.
      * @param resource the content resource.
+     * @throws GovernanceException if the operation failed.
+     */
+    public void setContent(Resource resource, GovernanceArtifact artifact) throws
+            GovernanceException {
+        this.setContent(artifact, resource);
+    }
+
+    /**
+     * Sets content of the given artifact to the given resource on the registry.
+     *
+     * @param artifact the artifact.
+     * @param resource the content resource.
      *
      * @throws GovernanceException if the operation failed.
      */
