@@ -2050,6 +2050,7 @@ public class GovernanceUtils {
                     if (referenceValueModified.contains("\\ *")) {
                         referenceValueModified = referenceValueModified.replace("\\ *", " *");
                     }
+                    referenceValueModified = referenceValueModified.replaceAll("\\\\\\s(or|and|&&)\\s", " $1 ");
                     builder.append(referenceValueModified).append(',');
                 }
             }
