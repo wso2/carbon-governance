@@ -42,7 +42,6 @@ public class TypedList<T> {
 
     public TypedList(Class<T> genericArtifactClass, String assetType, List<T> artifactList,
                      PaginationInfo paginationInfo) {
-        this.type = type;
         this.artifacts.put(assetType, artifactList);
         if(paginationInfo != null) {
             this.pagination = new Pagination(paginationInfo);
