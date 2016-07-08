@@ -1286,7 +1286,7 @@
 
     <properties>
         <!-- Carbon kernel version -->
-        <carbon.kernel.version>4.4.6</carbon.kernel.version>
+        <carbon.kernel.version>4.4.7</carbon.kernel.version>
         <carbon.kernel.imp.pkg.version>[4.4.0, 4.5.0)</carbon.kernel.imp.pkg.version>
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
@@ -1295,7 +1295,7 @@
         <carbon.commons.imp.pkg.version>[4.4.0, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Business Process -->
-        <carbon.business.process.version>4.4.7</carbon.business.process.version>
+        <carbon.business.process.version>4.4.9</carbon.business.process.version>
         <carbon.business.process.imp.pkg.version>[4.4.0, 4.5.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
