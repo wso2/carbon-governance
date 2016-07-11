@@ -1851,7 +1851,9 @@ public class GovernanceUtils {
                         case "tags":
                         case "associationType":
                         case "taxonomy":
-                            fields.put(subParts[0], subParts[1].toLowerCase());
+                            fields.put(subParts[0], subParts[1].toLowerCase().replaceAll("\\* (and|AND) \\*", "* && *").
+                                    replaceAll("\\) (and|AND) \\(", ") && (").replaceAll("\\* (and|AND) \\(", "* && (").
+                                    replaceAll("\\) (and|AND) \\*", ") && *"));
                             break;
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
@@ -2050,7 +2052,7 @@ public class GovernanceUtils {
                     if (referenceValueModified.contains("\\ *")) {
                         referenceValueModified = referenceValueModified.replace("\\ *", " *");
                     }
-                    referenceValueModified = referenceValueModified.replaceAll("\\\\\\s(or|and|&&)\\s", " $1 ");
+                    referenceValueModified = referenceValueModified.replaceAll("\\sand\\s", " && ");
                     builder.append(referenceValueModified).append(',');
                 }
             }
