@@ -937,17 +937,17 @@
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.user.mgt.stub</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.user.mgt</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
-                <version>${carbon.identity.version}</version>
+                <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
@@ -1309,7 +1309,7 @@
         <carbon.governance.package.import.version.range>[4.6.0, 5.0.0)
         </carbon.governance.package.import.version.range>
 
-        <carbon.identity.version>5.1.0</carbon.identity.version>
+        <carbon.identity.framework.version>5.2.0</carbon.identity.framework.version>
         <carbon.identity.imp.pkg.version>[4.4.0, 5.0.0)</carbon.identity.imp.pkg.version>
 
 
