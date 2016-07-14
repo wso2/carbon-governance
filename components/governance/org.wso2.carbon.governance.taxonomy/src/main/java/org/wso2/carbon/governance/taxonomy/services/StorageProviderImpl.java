@@ -22,22 +22,28 @@ import org.wso2.carbon.governance.taxonomy.beans.QueryBean;
 import org.wso2.carbon.governance.taxonomy.beans.TaxonomyBean;
 import org.wso2.carbon.governance.taxonomy.internal.ServiceHolder;
 import org.wso2.carbon.governance.taxonomy.util.CommonUtils;
+import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.parsers.ParserConfigurationException;
+
+import static org.wso2.carbon.governance.taxonomy.util.TaxonomyConstants.TAXONOMY_CONFIGURATION_PATH;
 import static org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_COMPONENT_PATH;
 
 /**
  * this class will implements methods to manage tenant specific taxonomy data map
  */
-class StorageProviderImpl implements IStorageProvider {
+class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvider {
     private static Map<Integer, Map<String, TaxonomyBean>> tenantTaxonomyMap;
     private int tenantId;
 
@@ -55,7 +61,7 @@ class StorageProviderImpl implements IStorageProvider {
     public TaxonomyBean getTaxonomy(String taxonomyName) {
         if (tenantTaxonomyMap != null) {
             if (tenantTaxonomyMap.containsKey(tenantId)) {
-                return tenantTaxonomyMap.get(tenantId).get(taxonomyName);
+                return getTaxonomyBean(taxonomyName);
             }
         }
         return null;
@@ -70,11 +76,33 @@ class StorageProviderImpl implements IStorageProvider {
     @Override
     public TaxonomyBean getTaxonomy(QueryBean taxonomyQueryBean) {
         if (tenantTaxonomyMap != null) {
-            if (tenantTaxonomyMap.containsKey(tenantId)) {
-                return tenantTaxonomyMap.get(tenantId).get(taxonomyQueryBean.getTaxonomyName());
-            }
+            String taxonomyName = taxonomyQueryBean.getTaxonomyName();
+            return getTaxonomyBean(taxonomyName);
         }
         return null;
+    }
+
+    private TaxonomyBean getTaxonomyBean(String taxonomyName) {
+        TaxonomyBean taxonomyBean = tenantTaxonomyMap.get(tenantId).get(taxonomyName);
+        if (taxonomyBean != null) {
+            return taxonomyBean;
+        } else {
+            Registry registry = getGovernanceSystemRegistry();
+            try {
+                if (registry.resourceExists(TAXONOMY_CONFIGURATION_PATH + taxonomyName)) {
+                    Resource resource;
+                    resource = registry.get(TAXONOMY_CONFIGURATION_PATH + taxonomyName);
+                    taxonomyBean = CommonUtils.documentBeanBuilder(RegistryUtils.decodeBytes((byte[]) resource.getContent()));
+                    tenantTaxonomyMap.get(tenantId).put(taxonomyName, taxonomyBean);
+                    return taxonomyBean;
+                } else {
+                    return null;
+                }
+            } catch (RegistryException | SAXException | IOException | ParserConfigurationException e) {
+                //Will ignore registry access and xml parsing related exception here.
+                return null;
+            }
+        }
     }
 
     /**
