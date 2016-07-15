@@ -17,12 +17,17 @@
 package org.wso2.carbon.governance.taxonomy.services;
 
 import org.apache.axiom.om.OMElement;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.taxonomy.beans.TaxonomyBean;
+import org.wso2.carbon.governance.taxonomy.clustering.ClusterMessage;
+import org.wso2.carbon.governance.taxonomy.clustering.ClusteringUtil;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+
 import javax.xml.namespace.QName;
+
 import static org.wso2.carbon.governance.taxonomy.util.CommonUtils.buildOMElement;
 import static org.wso2.carbon.governance.taxonomy.util.TaxonomyConstants.TAXONOMY_CONFIGURATION_PATH;
 import static org.wso2.carbon.governance.taxonomy.util.TaxonomyConstants.TAXONOMY_MEDIA_TYPE;
@@ -72,12 +77,19 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
 
         if (getGovernanceUserRegistry().resourceExists(TAXONOMY_CONFIGURATION_PATH + taxonomyName)) {
             registry.delete(TAXONOMY_CONFIGURATION_PATH + taxonomyName);
+            invalidateCache(taxonomyName);
             storageProvider.removeTaxonomy(taxonomyName);
             return true;
         } else {
             return false;
         }
 
+    }
+
+    private void invalidateCache(String taxonomyName) {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        ClusterMessage message = new ClusterMessage(tenantId, taxonomyName);
+        ClusteringUtil.sendClusterMessage(message);
     }
 
     /**
@@ -121,6 +133,7 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
             Resource resource = registry.get(TAXONOMY_CONFIGURATION_PATH + oldName);
             resource.setContent(taxonomyBean.getPayload());
             registry.put(TAXONOMY_CONFIGURATION_PATH + oldName, resource);
+            invalidateCache(oldName);
             storageProvider.updateTaxonomy(oldName, taxonomyBean);
             return true;
         } else {
@@ -129,6 +142,7 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
             resource = new ResourceImpl();
             resource.setContent(taxonomyBean.getPayload());
             registry.put(TAXONOMY_CONFIGURATION_PATH + newName, resource);
+            invalidateCache(oldName);
             storageProvider.addTaxonomy(taxonomyBean);
             storageProvider.removeTaxonomy(oldName);
             registry.delete(TAXONOMY_CONFIGURATION_PATH + oldName);
