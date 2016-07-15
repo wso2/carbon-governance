@@ -1928,6 +1928,18 @@ public class GovernanceUtils {
 
             List<GovernanceArtifact> propertySearchResults = performAttributeSearch(fields, registry);
 
+            Set<GovernanceArtifact> removeDuplicate = new TreeSet<>(new Comparator<GovernanceArtifact>() {
+                public int compare(GovernanceArtifact artifact1, GovernanceArtifact artifact2) {
+                    return artifact1.getId().compareTo(artifact2.getId());
+                }
+            });
+            removeDuplicate.addAll(attributeSearchResults);
+            removeDuplicate.addAll(propertySearchResults);
+
+            List<GovernanceArtifact> mergeListWithoutDuplicates = new ArrayList<>();
+            mergeListWithoutDuplicates.addAll(removeDuplicate);
+
+
             Set<GovernanceArtifact> set = new TreeSet<>(new Comparator<GovernanceArtifact>() {
                 public int compare(GovernanceArtifact artifact1, GovernanceArtifact artifact2) {
                     PaginationContext paginationContext = PaginationContext.getInstance();
@@ -1971,17 +1983,20 @@ public class GovernanceUtils {
                 }
             });
 
-            set.addAll(attributeSearchResults);
-            set.addAll(propertySearchResults);
+            set.addAll(mergeListWithoutDuplicates);
 
-            List<GovernanceArtifact> mergeListWithoutDuplicates = new ArrayList<>();
-            mergeListWithoutDuplicates.addAll(set);
+            List<GovernanceArtifact> sortedList = new ArrayList<>();
+            sortedList.addAll(set);
 
             if (paginationSizeAtt != 0 && PaginationContext.getInstance() != null){
+                int reduce = 0;
+                if (mergeListWithoutDuplicates.size() != 0 && mergeListWithoutDuplicates.size() !=attributeSearchResults.size() + propertySearchResults.size()){
+                    reduce = attributeSearchResults.size() + propertySearchResults.size() - mergeListWithoutDuplicates.size();
+                }
                 int paginationSizePros = PaginationContext.getInstance().getLength();
-                PaginationContext.getInstance().setLength(paginationSizeAtt +paginationSizePros);
+                PaginationContext.getInstance().setLength(paginationSizeAtt +paginationSizePros - reduce);
             }
-            return mergeListWithoutDuplicates;
+            return sortedList;
         }
 
         return attributeSearchResults;
