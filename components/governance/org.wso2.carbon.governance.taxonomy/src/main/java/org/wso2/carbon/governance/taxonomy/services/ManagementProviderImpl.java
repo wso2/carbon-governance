@@ -77,8 +77,8 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
 
         if (getGovernanceUserRegistry().resourceExists(TAXONOMY_CONFIGURATION_PATH + taxonomyName)) {
             registry.delete(TAXONOMY_CONFIGURATION_PATH + taxonomyName);
-            storageProvider.removeTaxonomy(taxonomyName);
             invalidateCache(taxonomyName);
+            storageProvider.removeTaxonomy(taxonomyName);
             return true;
         } else {
             return false;
@@ -133,8 +133,8 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
             Resource resource = registry.get(TAXONOMY_CONFIGURATION_PATH + oldName);
             resource.setContent(taxonomyBean.getPayload());
             registry.put(TAXONOMY_CONFIGURATION_PATH + oldName, resource);
-            storageProvider.updateTaxonomy(oldName, taxonomyBean);
             invalidateCache(oldName);
+            storageProvider.updateTaxonomy(oldName, taxonomyBean);
             return true;
         } else {
             // add new resource and remove old one
@@ -142,10 +142,10 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
             resource = new ResourceImpl();
             resource.setContent(taxonomyBean.getPayload());
             registry.put(TAXONOMY_CONFIGURATION_PATH + newName, resource);
+            invalidateCache(oldName);
             storageProvider.addTaxonomy(taxonomyBean);
             storageProvider.removeTaxonomy(oldName);
             registry.delete(TAXONOMY_CONFIGURATION_PATH + oldName);
-            invalidateCache(oldName);
             return true;
 
         }
