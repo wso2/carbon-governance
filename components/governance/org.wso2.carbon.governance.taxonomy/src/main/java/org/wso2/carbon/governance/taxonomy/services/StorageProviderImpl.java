@@ -54,22 +54,6 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
     /**
      * This method will return taxonomy document bean object for a given taxonomy taxonomyName from the map
      *
-     * @param taxonomyName String taxonomyName of the taxonomy (this must be unique for a tenant)
-     * @return Taxonomy document bean which contains taxonomy meta data
-     */
-    @Override
-    public TaxonomyBean getTaxonomy(String taxonomyName) {
-        if (tenantTaxonomyMap != null) {
-            if (tenantTaxonomyMap.containsKey(tenantId)) {
-                return getTaxonomyBean(taxonomyName);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * This method will return taxonomy document bean object for a given taxonomy taxonomyName from the map
-     *
      * @param taxonomyQueryBean taxonomy query meta data
      * @return Taxonomy document bean which contains taxonomy meta data
      */

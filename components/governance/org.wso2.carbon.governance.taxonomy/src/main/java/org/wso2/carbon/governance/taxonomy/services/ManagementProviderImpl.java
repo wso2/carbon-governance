@@ -52,7 +52,7 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
         element = buildOMElement(taxonomyBean.getPayload());
         name = element.getAttributeValue(new QName("name"));
 
-        if (!getGovernanceUserRegistry().resourceExists(TAXONOMY_CONFIGURATION_PATH + name)) {
+        if (!registry.resourceExists(TAXONOMY_CONFIGURATION_PATH + name)) {
             resource = new ResourceImpl();
             resource.setMediaType(TAXONOMY_MEDIA_TYPE);
             resource.setContent(taxonomyBean.getPayload());
@@ -73,9 +73,9 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
     @Override
     public boolean deleteTaxonomy(IStorageProvider storageProvider, String taxonomyName)
             throws RegistryException {
-        Registry registry = getGovernanceUserRegistry();
+        Registry registry = getGovernanceSystemRegistry();
 
-        if (getGovernanceUserRegistry().resourceExists(TAXONOMY_CONFIGURATION_PATH + taxonomyName)) {
+        if (registry.resourceExists(TAXONOMY_CONFIGURATION_PATH + taxonomyName)) {
             registry.delete(TAXONOMY_CONFIGURATION_PATH + taxonomyName);
             invalidateCache(taxonomyName);
             storageProvider.removeTaxonomy(taxonomyName);
@@ -159,9 +159,9 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
      */
     @Override
     public String getTaxonomy(IStorageProvider storageProvider, String name) throws RegistryException {
-        Registry registry = getGovernanceUserRegistry();
+        Registry registry = getGovernanceSystemRegistry();
 
-        if (getGovernanceUserRegistry().resourceExists(TAXONOMY_CONFIGURATION_PATH + name)) {
+        if (registry.resourceExists(TAXONOMY_CONFIGURATION_PATH + name)) {
             Resource resource;
             resource = registry.get(TAXONOMY_CONFIGURATION_PATH + name);
             return RegistryUtils.decodeBytes((byte[]) resource.getContent());
@@ -179,7 +179,7 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
     @Override
     public String[] getTaxonomyList(IStorageProvider storageProvider) throws RegistryException {
         Collection collection;
-        Registry registry = getGovernanceUserRegistry();
+        Registry registry = getGovernanceSystemRegistry();
 
         if (registry.resourceExists(TAXONOMY_CONFIGURATION_PATH)) {
             collection = (Collection) registry.get(TAXONOMY_CONFIGURATION_PATH);
