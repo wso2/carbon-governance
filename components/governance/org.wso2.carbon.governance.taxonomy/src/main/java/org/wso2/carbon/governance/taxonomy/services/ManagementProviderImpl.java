@@ -73,7 +73,7 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
     @Override
     public boolean deleteTaxonomy(IStorageProvider storageProvider, String taxonomyName)
             throws RegistryException {
-        Registry registry = getGovernanceSystemRegistry();
+        Registry registry = getGovernanceUserRegistry();
 
         if (registry.resourceExists(TAXONOMY_CONFIGURATION_PATH + taxonomyName)) {
             registry.delete(TAXONOMY_CONFIGURATION_PATH + taxonomyName);
