@@ -272,7 +272,7 @@ public class ApiStore2Executor implements Execution {
 		if (endPoints != null && endPoints.length > 0) {
 			for (int i = 0; i < endPoints.length; i++) {
 				if (endPoints[i] != null) {
-					if (endPoints[i] != null && endPoints[i].startsWith(ExecutorConstants.DEFAULT_ENDPOINT_ENV)) {
+					if (endPoints[i].startsWith(ExecutorConstants.DEFAULT_ENDPOINT_ENV)) {
 						String url = endPoints[i].split(":")[1];
 						endpointConfigJson = "{\"production_endpoints\":{\"url\":\"" +
 								url + "\",\"config\":null},\"endpoint_type\":\"http\"}";

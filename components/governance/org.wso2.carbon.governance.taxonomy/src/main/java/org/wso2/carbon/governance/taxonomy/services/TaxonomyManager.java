@@ -28,9 +28,10 @@ import org.wso2.carbon.governance.taxonomy.util.CommonUtils;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.xml.sax.SAXException;
-import java.io.IOException;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
 /**
  * This is the main class which manage all taxonomy operations including map storage and registry operations
@@ -151,5 +152,9 @@ public class TaxonomyManager {
     public void initTaxonomyStorage()
             throws UserStoreException, RegistryException, ParserConfigurationException, SAXException, IOException {
         storageProvider.initTaxonomyStorage();
+    }
+
+    public IStorageProvider getStorageProvider() {
+        return storageProvider;
     }
 }
