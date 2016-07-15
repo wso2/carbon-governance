@@ -2578,8 +2578,16 @@ public class GovernanceUtils {
         String historyResourcePath = GovernanceConstants.LIFECYCLE_HISTORY_PATH
                                      + artifactRootPath.replaceAll("/", "_");
         try {
-            if (registry.resourceExists(historyResourcePath)) {
-                registry.delete(historyResourcePath);
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            Registry govRegistry;
+            if (registryService != null){
+                govRegistry = registryService.getGovernanceSystemRegistry(tenantId);
+            } else {
+                //This will be used, when executing unit test cases.
+                govRegistry =  registry;
+            }
+            if (govRegistry.resourceExists(historyResourcePath)) {
+                govRegistry.delete(historyResourcePath);
             }
         } catch (RegistryException e) {
             String msg = "Error in deleting the the lifecycle history file at: " + historyResourcePath + ".";
