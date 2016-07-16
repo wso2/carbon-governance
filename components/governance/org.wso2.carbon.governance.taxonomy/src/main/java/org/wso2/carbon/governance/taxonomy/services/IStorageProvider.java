@@ -32,8 +32,6 @@ public interface IStorageProvider {
 
     TaxonomyBean getTaxonomy(QueryBean taxonomyQueryBean);
 
-    TaxonomyBean getTaxonomy(String taxonomyName);
-
     void removeTaxonomy(String taxonomyName);
 
     void addTaxonomy(TaxonomyBean taxonomyBean);
