@@ -423,14 +423,15 @@ td.deprecate-warning {
                                     <td style="vertical-align:middle;padding-left:10px;padding-right:5px;"> |</td>
                                     <td style="vertical-align:middle;padding-left:10px;padding-right:5px;">
                                         <a class="icon-link" style="background-image:url(../search/images/search-top.png);"
-                                        href="../generic/filter.jsp?list_region=<%=Encode.forUriComponent(region)%>
-                                        &list_item=<%=Encode.forUriComponent(item)%>&dataNamespace=
-                                        <%=Encode.forUriComponent(dataNamespace)%>&dataName=
-                                        <%=Encode.forUriComponent(dataName)%>&singularLabel=
-                                        <%=Encode.forUriComponent(singularLabel)%>&pluralLabel=
-                                        <%=Encode.forUriComponent(pluralLabel)%>&key=
-                                        <%=Encode.forUriComponent(key)%>&list_breadcrumb=
-                                        <%=Encode.forUriComponent(breadcrumb)%>"><fmt:message
+                                        href="../generic/filter.jsp?list_region=<%=
+                                        Encode.forUriComponent(region)%>&list_item=<%=
+                                        Encode.forUriComponent(item)%>&dataNamespace=<%=
+                                        Encode.forUriComponent(dataNamespace)%>&dataName=<%=
+                                        Encode.forUriComponent(dataName)%>&singularLabel=<%=
+                                        Encode.forUriComponent(singularLabel)%>&pluralLabel=<%=
+                                        Encode.forUriComponent(pluralLabel)%>&key=<%=
+                                        Encode.forUriComponent(key)%>&list_breadcrumb=<%=
+                                        Encode.forUriComponent(breadcrumb)%>"><fmt:message
                                                 key="filter.artifact.message"><fmt:param
                                                 value="<%=Encode.forHtml(singularLabel)%>"/></fmt:message></a>
                                     </td>

@@ -1849,6 +1849,8 @@ public class GovernanceUtils {
                             fields.put("mediaTypeNegate", "on");
                             break;
                         case "tags":
+                            fields.put(subParts[0], subParts[1]);
+                            break;
                         case "associationType":
                         case "taxonomy":
                             fields.put(subParts[0], subParts[1].toLowerCase().replaceAll("\\* (and|AND) \\*", "* && *").
