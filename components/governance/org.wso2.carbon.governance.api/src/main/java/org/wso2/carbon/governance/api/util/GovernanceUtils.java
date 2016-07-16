@@ -2580,9 +2580,9 @@ public class GovernanceUtils {
         String historyResourcePath = GovernanceConstants.LIFECYCLE_HISTORY_PATH
                                      + artifactRootPath.replaceAll("/", "_");
         try {
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             Registry govRegistry;
             if (registryService != null){
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
                 govRegistry = registryService.getGovernanceSystemRegistry(tenantId);
             } else {
                 //This will be used, when executing unit test cases.
