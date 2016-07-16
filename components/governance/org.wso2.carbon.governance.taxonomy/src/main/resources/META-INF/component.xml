@@ -27,5 +27,9 @@
             <DisplayName>Governance</DisplayName>
             <ResourceId>/permission/admin/configure/governance</ResourceId>
         </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Taxonomy</DisplayName>
+            <ResourceId>/permission/admin/configure/governance/taxonomy</ResourceId>
+        </ManagementPermission>
     </ManagementPermissions>
 </component>
