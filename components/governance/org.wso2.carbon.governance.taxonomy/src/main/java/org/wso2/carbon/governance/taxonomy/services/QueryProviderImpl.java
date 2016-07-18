@@ -24,6 +24,7 @@ import org.wso2.carbon.governance.taxonomy.util.CommonUtils;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.user.api.UserStoreException;
 import java.util.List;
+import java.util.Map;
 import javax.xml.xpath.*;
 
 /**
@@ -80,6 +81,15 @@ class QueryProviderImpl implements IQueryProvider {
         return null;
     }
 
+    /**
+     * This method will return taxonomy name related to given taxonomy id
+     * (this method will execute when only store page refresh and publisher edit view)
+     * @param taxonomyQueryBean Query bean object
+     * @return taxonomy name
+     * @throws UserStoreException
+     * @throws RegistryException
+     * @throws XPathExpressionException
+     */
     @Override
     public String getTaxonomyNameById(QueryBean taxonomyQueryBean)
             throws UserStoreException, RegistryException, XPathExpressionException {
@@ -88,18 +98,11 @@ class QueryProviderImpl implements IQueryProvider {
 
         for (RXTBean rxtBean : rxtBeanList) {
             if (rxtBean.getRxtName().equals(taxonomyQueryBean.getAssetType())) {
-                String[] taxonomies;
-                String taxonomy = rxtBean.getTaxonomy();
-                if (taxonomy != null) {
-                    if (taxonomy.contains(",")) {
-                        taxonomies = taxonomy.split(",");
-                    } else {
-                        taxonomies = new String[] { taxonomy };
-                    }
-
-                    if (taxonomies.length > 0) {
-                        for (String taxonomyName : taxonomies) {
-                            taxonomyQueryBean.setTaxonomyName(taxonomyName);
+                Map<String, Map<String, Boolean>> objTaxonomies = rxtBean.getTaxonomy();
+                if (objTaxonomies != null) {
+                    if (objTaxonomies.size() > 0) {
+                        for (Map.Entry<String, Map<String, Boolean>> entry : objTaxonomies.entrySet()) {
+                            taxonomyQueryBean.setTaxonomyName(entry.getKey());
                             TaxonomyManager taxonomyManager = new TaxonomyManager();
                             XPath xPathInstance = XPathFactory.newInstance().newXPath();
                             XPathExpression exp = xPathInstance
@@ -108,15 +111,52 @@ class QueryProviderImpl implements IQueryProvider {
                                     .evaluate(taxonomyManager.getTaxonomy(taxonomyQueryBean).getDocument(),
                                             XPathConstants.NODESET);
                             if (nodeList.getLength() > 0) {
-                                return taxonomyName;
+                                return entry.getKey();
                             }
+
+                        }
+                    } else {
+                        String entry = getGlobalTaxonomyName(taxonomyQueryBean);
+                        if (entry != null) {
+                            return entry;
                         }
                     }
+                }
+            } else {
+                String entry = getGlobalTaxonomyName(taxonomyQueryBean);
+                if (entry != null) {
+                    return entry;
                 }
             }
 
         }
 
+        return null;
+    }
+
+    /**
+     * This method will return global taxonomy name
+     * @param taxonomyQueryBean Query bean
+     * @return taxonomy name
+     * @throws XPathExpressionException
+     */
+    private String getGlobalTaxonomyName(QueryBean taxonomyQueryBean) throws XPathExpressionException {
+        TaxonomyManager taxonomyManager = new TaxonomyManager();
+        Map<String, TaxonomyBean> beanMap = taxonomyManager.getTaxonomyBeanMap();
+        for (Map.Entry<String, TaxonomyBean> entry : beanMap.entrySet()) {
+            if (entry.getValue().isTaxonomyGlobal()) {
+                taxonomyQueryBean.setTaxonomyName(entry.getKey());
+                XPath xPathInstance = XPathFactory.newInstance().newXPath();
+                XPathExpression exp = xPathInstance
+                        .compile("/taxonomy/root[@id='" + taxonomyQueryBean.getQuery() + "']");
+                NodeList nodeList = (NodeList) exp.evaluate(taxonomyManager.getTaxonomy(taxonomyQueryBean).getDocument(),
+                        XPathConstants.NODESET);
+                if (nodeList.getLength() > 0) {
+                    return entry.getKey();
+                }
+            }
+
+        }
         return null;
     }
 }

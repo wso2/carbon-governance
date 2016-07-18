@@ -182,4 +182,16 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
     public List<String> getTaxonomiesByRXT(String name) {
         return null;
     }
+
+    /**
+     * This method will return all available taxonomies for a specific tenant
+     * @return Map of taxonomy bean objects
+     */
+    @Override
+    public Map<String, TaxonomyBean> getTaxonomyBeanMap() {
+        if (tenantTaxonomyMap != null && tenantTaxonomyMap.containsKey(tenantId)) {
+            return tenantTaxonomyMap.get(tenantId);
+        }
+        return  null;
+    }
 }

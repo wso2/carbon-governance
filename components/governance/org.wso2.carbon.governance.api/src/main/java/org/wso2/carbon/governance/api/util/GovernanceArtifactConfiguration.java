@@ -40,6 +40,7 @@ public class GovernanceArtifactConfiguration {
     private String pathExpression;
     private String lifecycle;
     private String taxonomy;
+    private Map<String,Map<String,Boolean>> taxonomies;
     private String groupingAttribute;
     private OMElement uiConfigurations;
     private List<Association> relationships = new LinkedList<Association>();
@@ -446,8 +447,8 @@ public class GovernanceArtifactConfiguration {
      *
      * @return taxonomy name associated with the artifact configuration
      */
-    public String getTaxonomy() {
-        return taxonomy;
+    public Map<String, Map<String, Boolean>> getTaxonomy() {
+        return taxonomies;
     }
 
     /**
@@ -486,10 +487,16 @@ public class GovernanceArtifactConfiguration {
     /**
      * Method to associate taxonomy with the artifact configuration
      *
-     * @param taxonomy Name of the taxonomy associated with the artifact configuration
+     * @param taxonomyName Name of the taxonomy associated with the artifact configuration
      */
-    public void setTaxonomy(String taxonomy) {
-        this.taxonomy = taxonomy;
+    public void setTaxonomy(String taxonomyName,Boolean disable,Boolean isGlobal) {
+        Map<String,Boolean> metaData = new HashMap<>();
+        metaData.put("isDisable",disable);
+        metaData.put("isGlobal",isGlobal);
+        if (this.taxonomies == null) {
+            this.taxonomies = new HashMap<>();
+        }
+        this.taxonomies.put(taxonomyName, metaData);
     }
 
     /**

@@ -23,6 +23,7 @@ import org.wso2.carbon.user.api.UserStoreException;
 import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 
 /**
@@ -37,6 +38,8 @@ public interface IStorageProvider {
     void addTaxonomy(TaxonomyBean taxonomyBean);
 
     void updateTaxonomy(String oldName, TaxonomyBean taxonomyBean);
+
+    Map<String, TaxonomyBean> getTaxonomyBeanMap();
 
     List<String> getTaxonomiesByRXT(String rxtName);
 

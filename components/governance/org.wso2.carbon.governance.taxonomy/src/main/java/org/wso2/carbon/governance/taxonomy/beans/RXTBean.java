@@ -15,28 +15,31 @@
  */
 package org.wso2.carbon.governance.taxonomy.beans;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This is bean class for keeping rxt meta data
  */
 public class RXTBean {
     private String rxtName;
-    private String taxonomy;
+    private Map<String,Map<String,Boolean>> taxonomies = new HashMap<>();
     private boolean isDeleteAllowed = false;
 
     public void setRxtName(String setRxtName) {
         this.rxtName = setRxtName;
     }
 
-    public void setTaxonomy(String taxonomy) {
-        this.taxonomy = taxonomy;
+    public void setTaxonomy(Map<String,Map<String,Boolean>> taxonomies) {
+        this.taxonomies = taxonomies;
     }
 
     public String getRxtName() {
         return rxtName;
     }
 
-    public String getTaxonomy() {
-        return taxonomy;
+    public Map<String,Map<String,Boolean>> getTaxonomy() {
+        return taxonomies;
     }
 
 }

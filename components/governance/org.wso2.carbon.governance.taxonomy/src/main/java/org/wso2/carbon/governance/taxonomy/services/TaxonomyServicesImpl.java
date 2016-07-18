@@ -30,6 +30,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.xml.sax.SAXException;
 import java.io.IOException;
+import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
@@ -106,7 +107,7 @@ public class TaxonomyServicesImpl extends RegistryAbstractAdmin implements ITaxo
     }
 
     /**
-     * This method will retrieve the taxonomy data from taxonomy.xml
+     * This method will return text content of given taxonomy name (This will be a registry call)
      *
      * @return String type data
      * @throws Exception
@@ -120,6 +121,19 @@ public class TaxonomyServicesImpl extends RegistryAbstractAdmin implements ITaxo
             log.error("Error occurred while reading taxonomy from registry ", e);
             throw (e);
         }
+    }
+
+    /**
+     * This method will return taxonomyBean object for a given query bean (This will return from map)
+     * (cost will be low comparing to registry call)
+     * @param queryBean query bean object
+     * @return TaxonomyBean object
+     * @throws RegistryException
+     */
+    @Override
+    public TaxonomyBean getTaxonomyBean(QueryBean queryBean) throws RegistryException {
+        TaxonomyManager taxonomyManager = new TaxonomyManager();
+        return taxonomyManager.getTaxonomy(queryBean);
     }
 
     /**
@@ -173,6 +187,16 @@ public class TaxonomyServicesImpl extends RegistryAbstractAdmin implements ITaxo
         } catch (RegistryException e) {
             throw new TaxonomyException("Error occurred while reading rxt list for tenant ", e);
         }
+    }
+
+    @Override
+    /**
+     * This method will return all available taxonomies for a specific tenant
+     * @return  Map of taxonomy bean objects
+     */
+    public Map<String, TaxonomyBean> getTaxonomyBeanMap () {
+        TaxonomyManager taxonomyManager = new TaxonomyManager();
+        return taxonomyManager.getTaxonomyBeanMap();
     }
 
 }

@@ -26,7 +26,19 @@
             <xs:element name="nameAttribute" type="xs:string" minOccurs="0"/>
             <xs:element name="namespaceAttribute" type="xs:string" minOccurs="0"/>
 	        <xs:element name="lifecycle" type="xs:string" minOccurs="0"/>
-            <xs:element name="taxonomies" type="xs:string" minOccurs="0"/>
+            <xs:element name="taxonomies" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="taxonomy" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:attribute name="disable" type="xs:boolean"/>
+                                <xs:attribute name="name"  type="xs:string" use="required"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="excludeGlobal" type="xs:boolean"/>
+                </xs:complexType>
+            </xs:element>
 	    <xs:element name="groupingAttribute" type="xs:string" minOccurs="0"/>
             <xs:element name="menu" minOccurs="0">
                 <xs:complexType>
