@@ -1967,13 +1967,17 @@ public class GovernanceUtils {
         if (value.contains(" or ")) {
             String[] values = value.split(" or ");
             for (int i = 0; i < values.length; i++) {
-                values[i] = values[i].trim().replace(" ", "\\ ");
+                if (!value.contains(" or")) {
+                    values[i] = values[i].trim().replace(" ", "\\ ");
+                }
             }
             value = StringUtils.join(values, " OR ");
         } else if (value.contains(" and ")) {
             String[] values = value.split(" and ");
             for (int i = 0; i < values.length; i++) {
-                values[i] = values[i].trim().replace(" ", "\\ ");
+                if (!value.contains(" or")) {
+                    values[i] = values[i].trim().replace(" ", "\\ ");
+                }
             }
             value = StringUtils.join(values, " AND ");
         } else if (value.contains(" ") && !value.contains(" or")) {
