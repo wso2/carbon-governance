@@ -28,6 +28,7 @@
             <order>6</order>
             <style-class>manage</style-class>
             <icon>../taxonomy/images/taxonomy.gif</icon>
+            <require-permission>/permission/admin/configure/governance/taxonomy</require-permission>
         </menu>
     </menus>
 </component>

@@ -1879,6 +1879,8 @@ public class GovernanceUtils {
                             fields.put("mediaTypeNegate", "on");
                             break;
                         case "tags":
+                            fields.put(subParts[0], subParts[1]);
+                            break;
                         case "associationType":
                         case "taxonomy":
                             String taxaValue = subParts[1].toLowerCase().replaceAll("\\* (and|AND) \\*", "* && *").
@@ -2686,9 +2688,9 @@ public class GovernanceUtils {
         String historyResourcePath = GovernanceConstants.LIFECYCLE_HISTORY_PATH
                                      + artifactRootPath.replaceAll("/", "_");
         try {
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             Registry govRegistry;
             if (registryService != null){
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
                 govRegistry = registryService.getGovernanceSystemRegistry(tenantId);
             } else {
                 //This will be used, when executing unit test cases.
