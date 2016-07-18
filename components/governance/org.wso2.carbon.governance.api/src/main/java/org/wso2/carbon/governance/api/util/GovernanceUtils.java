@@ -61,6 +61,7 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
+import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -88,6 +89,18 @@ public class GovernanceUtils {
     private static final Log log = LogFactory.getLog(GovernanceUtils.class);
     private static final String OVERVIEW = "overview";
     private static final String UNDERSCORE = "_";
+    private static final String FIELDS_OR_WILD_SEARCH = " or*&";
+    private static final String FIELDS_OR_SEARCH = " or&";
+    private static final String FIELDS_AND_WILD_SEARCH = " and*&";
+    private static final String SYMBOL_EQUAL = "=";
+    private static final String SYMBOL_COLON = ":";
+    private static final String FIELDS_AND_SEARCH = " and&";
+    private static final String SYMBOL_AND = "&";
+    private static final String REPLACEMENT_OR_WILD_SEARCH = "* OR ";
+    private static final String REPLACEMENT_AND_WILD_SEARCH = "* AND ";
+    private static final String REPLACEMENT_OR_SEARCH = " OR ";
+    private static final String REPLACEMENT_AND_SEARCH = "AND ";
+    private static final String REPLACEMENT_SYMBOL_AND = " AND ";
     private static RegistryService registryService;
     //private static final String SEPARATOR = ":";
     private final static Map<Integer, List<GovernanceArtifactConfiguration>>
@@ -106,6 +119,8 @@ public class GovernanceUtils {
     private static boolean rxtCacheInitiated = false;
 
     private static TermsSearchService termsSearchService;
+
+    private static ContentSearchService contentSearchService;
     /**
      * Setting the registry service.
      *
@@ -1708,6 +1723,14 @@ public class GovernanceUtils {
         GovernanceUtils.termsSearchService = termsSearchService;
     }
 
+    public static ContentSearchService getContentSearchService() {
+        return contentSearchService;
+    }
+
+    public static void setContentSearchService(ContentSearchService contentSearchService) {
+        GovernanceUtils.contentSearchService = contentSearchService;
+    }
+
     /**
      * Method to make an aspect to default.
      * @param path path of the resource
@@ -1798,6 +1821,14 @@ public class GovernanceUtils {
         Map<String, String> fields = new HashMap<String, String>();
         Map<String, String> possibleProperties = new HashMap<String, String>();
         GovernanceArtifactConfiguration artifactConfiguration;
+        //maintain search query to support OR via content search
+        String editedCriteria;
+        try {
+            //decode search query
+            editedCriteria = URLDecoder.decode(criteria, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new GovernanceException("Error occurred while decoding the query params");
+        }
 
         if (mediaType != null && !"".equals(mediaType)) {
             fields.put("mediaType", mediaType);
@@ -1824,7 +1855,6 @@ public class GovernanceUtils {
                 }
             }
         }
-
         for(String temp : finalTempList) {
             String[] subParts = temp.split("=");
             if(subParts.length != 2) {
@@ -1853,19 +1883,27 @@ public class GovernanceUtils {
                             break;
                         case "associationType":
                         case "taxonomy":
-                            fields.put(subParts[0], subParts[1].toLowerCase().replaceAll("\\* (and|AND) \\*", "* && *").
+                            String taxaValue = subParts[1].toLowerCase().replaceAll("\\* (and|AND) \\*", "* && *").
                                     replaceAll("\\) (and|AND) \\(", ") && (").replaceAll("\\* (and|AND) \\(", "* && (").
-                                    replaceAll("\\) (and|AND) \\*", ") && *"));
+                                    replaceAll("\\) (and|AND) \\*", ") && *");
+                            fields.put(subParts[0], taxaValue);
+                            //edit taxa value in the edited criteria for content search
+                            editedCriteria = editedCriteria.replace(subParts[1], taxaValue);
                             break;
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
                             break;
                         default:
                             fields.put(subParts[0], subParts[1].toLowerCase());
+                            // lowercase to query value for the content search
+                            editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                             break;
                     }
                 } else if(subParts[0].equals("comments")){
                     fields.put("commentWords", subParts[1].toLowerCase());
+                    // change the key and lowercase to query value for the content search
+                    editedCriteria = editedCriteria.replace("comments", "commentWords");
+                    editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                 } else {
                     if(subParts[0].contains(":")) {
                         String value = subParts[1].toLowerCase();
@@ -1881,8 +1919,14 @@ public class GovernanceUtils {
                         String[] tableParts = subParts[0].split(":");
                         if ("overview".equals(tableParts[0])) {
                             possibleProperties.put(tableParts[1], value);
+                            //add new query parameter to support properties search.
+                            String overviewField = tableParts[1] + ":" + value + " OR ";
+                            editedCriteria = new StringBuilder(editedCriteria).insert(editedCriteria.lastIndexOf(subParts[0]), overviewField).toString();
                         }
                         fields.put(subParts[0].replace(":", "_"), value);
+                        // change the key and lowercase to query value for the content search
+                        editedCriteria = editedCriteria.replace(subParts[0], subParts[0].replace(":", "_"));
+                        editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                     } else {
                         String value = subParts[1].toLowerCase();
 
@@ -1898,16 +1942,37 @@ public class GovernanceUtils {
                         if(!subParts[0].equals("name")) {
                             possibleProperties.put(subParts[0], value);
                             fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
+                            editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
+                            //add new query parameter to search in both resource properties and metadata content
+                            String overviewField = OVERVIEW + UNDERSCORE + subParts[0] + ":" + value.toLowerCase() + " OR ";
+                            editedCriteria = new StringBuilder(editedCriteria).insert(editedCriteria.lastIndexOf(subParts[0]), overviewField).toString();
                         } else {
                             if (artifactConfiguration != null) {
                                 fields.put(artifactConfiguration.getArtifactNameAttribute(), value.toLowerCase());
+                                // change the key and lowercase to query value for the content search
+                                editedCriteria = editedCriteria.replace(subParts[0], artifactConfiguration.getArtifactNameAttribute());
+                                editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                             } else {
                                 fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
+                                editedCriteria = editedCriteria.replace(subParts[0], OVERVIEW + UNDERSCORE + subParts[0]);
+                                editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                             }
                         }
                     }
                 }
             }
+        }
+
+        if (editedCriteria.contains(FIELDS_OR_WILD_SEARCH) || editedCriteria.contains(FIELDS_OR_SEARCH)) {
+            editedCriteria = editedCriteria.replace(FIELDS_OR_WILD_SEARCH, REPLACEMENT_OR_WILD_SEARCH);
+            editedCriteria = editedCriteria.replace(FIELDS_AND_WILD_SEARCH, REPLACEMENT_AND_WILD_SEARCH);
+            editedCriteria = editedCriteria.replace(FIELDS_OR_SEARCH, REPLACEMENT_OR_SEARCH);
+            editedCriteria = editedCriteria.replace(FIELDS_AND_SEARCH, REPLACEMENT_AND_SEARCH);
+            editedCriteria = editedCriteria.replace(SYMBOL_AND, REPLACEMENT_SYMBOL_AND);
+            editedCriteria = editedCriteria.replace(SYMBOL_EQUAL, SYMBOL_COLON);
+            editedCriteria = "(" + editedCriteria + ") AND mediaType:" + mediaType;
+            log.debug("Content OR search | Search Criteria::: " + editedCriteria);
+            return performContentSearch(editedCriteria, registry);
         }
 
         List<GovernanceArtifact> attributeSearchResults = performAttributeSearch(fields, registry);
@@ -2031,6 +2096,49 @@ public class GovernanceUtils {
                     artifacts.add(governanceArtifact);
                 }
             } if (errorCount != 0 && errorCount == results.length) {
+                // This means that all the paths have failed. So we throw an error.
+                throw new GovernanceException("Error occurred while retrieving all the governance artifacts");
+            }
+        } catch (RegistryException e) {
+            throw new GovernanceException("Unable to search by attribute", e);
+        }
+        return artifacts;
+    }
+
+    /**
+     * Method returns artifacts results list of registry content search
+     *
+     * @param criteria search criteria
+     * @param registry registry
+     * @return search results
+     * @throws GovernanceException
+     */
+    private static List<GovernanceArtifact> performContentSearch(String criteria, Registry registry) throws GovernanceException {
+        if (getContentSearchService() == null) {
+            throw new GovernanceException("Content Search Service not Found");
+        }
+
+        List<GovernanceArtifact> artifacts = new ArrayList<>();
+
+        try {
+            ResourceData[] results = getContentSearchService().search(criteria);
+            int errorCount = 0; // We use this to check how many errors occurred.
+            for (ResourceData result : results) {
+                GovernanceArtifact governanceArtifact = null;
+                String path = result.getResourcePath().substring(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH.length());
+                try {
+                    governanceArtifact = retrieveGovernanceArtifactByPath(registry, path);
+                } catch (GovernanceException e) {
+                    // We do not through any exception here. Only logging is done.
+                    // We increase the error count for each error. If all the paths failed, then we throw an error
+                    errorCount++;
+                    log.error("Error occurred while retrieving governance artifact by path : " + path, e);
+                }
+                if (governanceArtifact != null) {
+                    artifacts.add(governanceArtifact);
+                }
+            }
+            if (errorCount != 0 && errorCount == results.length) {
                 // This means that all the paths have failed. So we throw an error.
                 throw new GovernanceException("Error occurred while retrieving all the governance artifacts");
             }
@@ -2580,9 +2688,9 @@ public class GovernanceUtils {
         String historyResourcePath = GovernanceConstants.LIFECYCLE_HISTORY_PATH
                                      + artifactRootPath.replaceAll("/", "_");
         try {
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             Registry govRegistry;
             if (registryService != null){
+                int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
                 govRegistry = registryService.getGovernanceSystemRegistry(tenantId);
             } else {
                 //This will be used, when executing unit test cases.
