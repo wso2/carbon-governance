@@ -190,8 +190,21 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
     @Override
     public Map<String, TaxonomyBean> getTaxonomyBeanMap() {
         if (tenantTaxonomyMap != null && tenantTaxonomyMap.containsKey(tenantId)) {
+
             return tenantTaxonomyMap.get(tenantId);
+
+        } else {
+            try {
+                initTaxonomyStorage();
+                if (tenantTaxonomyMap != null && tenantTaxonomyMap.containsKey(tenantId)) {
+                    return tenantTaxonomyMap.get(tenantId);
+                } else {
+                    return null;
+                }
+            } catch (RegistryException | SAXException | IOException | ParserConfigurationException | UserStoreException e) {
+                //Will ignore registry access and xml parsing related exception here.
+                return null;
+            }
         }
-        return  null;
     }
 }
