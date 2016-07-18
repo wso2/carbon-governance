@@ -1976,7 +1976,7 @@ public class GovernanceUtils {
                 values[i] = values[i].trim().replace(" ", "\\ ");
             }
             value = StringUtils.join(values, " AND ");
-        } else if (value.contains(" ")) {
+        } else if (value.contains(" ") && !value.contains(" or")) {
             value = value.replace(" ", "\\ ");
         }
         return value;
