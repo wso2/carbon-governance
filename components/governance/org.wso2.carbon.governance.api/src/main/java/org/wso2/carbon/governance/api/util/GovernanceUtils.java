@@ -62,6 +62,7 @@ import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
+import org.wso2.carbon.registry.indexing.service.TermsQuerySearchService;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -121,6 +122,8 @@ public class GovernanceUtils {
     private static TermsSearchService termsSearchService;
 
     private static ContentSearchService contentSearchService;
+
+    private static TermsQuerySearchService termsQuerySearchService;
     /**
      * Setting the registry service.
      *
@@ -1731,6 +1734,14 @@ public class GovernanceUtils {
         GovernanceUtils.contentSearchService = contentSearchService;
     }
 
+    public static TermsQuerySearchService getTermsQuerySearchService() {
+        return termsQuerySearchService;
+    }
+
+    public static void setTermsQuerySearchService(TermsQuerySearchService termsQuerySearchService) {
+        GovernanceUtils.termsQuerySearchService = termsQuerySearchService;
+    }
+
     /**
      * Method to make an aspect to default.
      * @param path path of the resource
@@ -1808,24 +1819,14 @@ public class GovernanceUtils {
         return artifacts;
     }
 
-    /**
-     * @param criteria query string that should be searched for
-     * @param registry the governance registry instance
-     * @param mediaType media type to be matched for search. Media type can be specified in the query string too
-     * @return The list of artifacts. null if the media type and string is empty.
-     * @throws GovernanceException thrown when an error occurs
-     */
-    public static List<GovernanceArtifact> findGovernanceArtifacts(String criteria,
-                                                                   Registry registry, String mediaType)
-            throws GovernanceException {
-        Map<String, String> fields = new HashMap<String, String>();
-        Map<String, String> possibleProperties = new HashMap<String, String>();
+    private static String buildSearchCriteria(String criteria, Registry registry, String mediaType, Map<String, String> possibleProperties, Map<String, String> fields) throws GovernanceException {
+        String editedCriteria = "";
         GovernanceArtifactConfiguration artifactConfiguration;
-        //maintain search query to support OR via content search
-        String editedCriteria;
         try {
-            //decode search query
-            editedCriteria = URLDecoder.decode(criteria, "utf-8");
+            if (criteria != null) {
+                //decode search query
+                editedCriteria = URLDecoder.decode(criteria, "utf-8");
+            }
         } catch (UnsupportedEncodingException e) {
             throw new GovernanceException("Error occurred while decoding the query params");
         }
@@ -1841,6 +1842,7 @@ public class GovernanceUtils {
         } catch (RegistryException e) {
             throw new GovernanceException(e);
         }
+
         List<String> possibleKeys = Arrays.asList("createdAfter", "createdBefore", "updatedAfter", "updatedBefore", "author", "author!", "associationType", "associationDest",
                 "updater", "updater!", "tags", "taxonomy", "content", "mediaType", "mediaType!", "lcName", "lcState");
 
@@ -1963,7 +1965,24 @@ public class GovernanceUtils {
             }
         }
 
-        if (editedCriteria.contains(FIELDS_OR_WILD_SEARCH) || editedCriteria.contains(FIELDS_OR_SEARCH)) {
+        return editedCriteria;
+    }
+    /**
+     * @param criteria query string that should be searched for
+     * @param registry the governance registry instance
+     * @param mediaType media type to be matched for search. Media type can be specified in the query string too
+     * @return The list of artifacts. null if the media type and string is empty.
+     * @throws GovernanceException thrown when an error occurs
+     */
+    public static List<GovernanceArtifact> findGovernanceArtifacts(String criteria,
+                                                                   Registry registry, String mediaType)
+            throws GovernanceException {
+        Map<String, String> fields = new HashMap<>();
+        Map<String, String> possibleProperties = new HashMap<>();
+        //maintain search query to support OR via content search
+        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields);
+
+        if (editedCriteria != null && (editedCriteria.contains(FIELDS_OR_WILD_SEARCH) || editedCriteria.contains(FIELDS_OR_SEARCH))) {
             editedCriteria = editedCriteria.replace(FIELDS_OR_WILD_SEARCH, REPLACEMENT_OR_WILD_SEARCH);
             editedCriteria = editedCriteria.replace(FIELDS_AND_WILD_SEARCH, REPLACEMENT_AND_WILD_SEARCH);
             editedCriteria = editedCriteria.replace(FIELDS_OR_SEARCH, REPLACEMENT_OR_SEARCH);
@@ -2198,6 +2217,85 @@ public class GovernanceUtils {
         try {
             TermData[] termData = getTermsSearchService().search(fields);
             return Arrays.asList(termData);
+        } catch (RegistryException e) {
+            throw new GovernanceException("Unable to get terms for the given field", e);
+        }
+    }
+
+    /**
+     * Find all possible terms and its count for the given facet field and query criteria
+     * @param criteria the filter criteria to be matched
+     * @param facetField field used for faceting : required
+     * @param mediaType artifact type need to filter : optional
+     * @return term results
+     * @throws GovernanceException
+     */
+    public static List<TermData> getTermDataList(String criteria, String facetField, String mediaType, Registry registry) throws GovernanceException {
+        if (getTermsSearchService() == null) {
+            throw new GovernanceException("Term Search Service not Found");
+        }
+        Map<String, String> fields = new HashMap<>();
+        Map<String, String> possibleProperties = new HashMap<>();
+        //maintain search query to support OR via content search
+        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields);
+
+        if (editedCriteria != null && (editedCriteria.contains(FIELDS_OR_WILD_SEARCH) || editedCriteria.contains(FIELDS_OR_SEARCH))) {
+            if (getTermsQuerySearchService() == null) {
+                throw new GovernanceException("Term Query Search Service not Found");
+            }
+            editedCriteria = editedCriteria.replace(FIELDS_OR_WILD_SEARCH, REPLACEMENT_OR_WILD_SEARCH);
+            editedCriteria = editedCriteria.replace(FIELDS_AND_WILD_SEARCH, REPLACEMENT_AND_WILD_SEARCH);
+            editedCriteria = editedCriteria.replace(FIELDS_OR_SEARCH, REPLACEMENT_OR_SEARCH);
+            editedCriteria = editedCriteria.replace(FIELDS_AND_SEARCH, REPLACEMENT_AND_SEARCH);
+            editedCriteria = editedCriteria.replace(SYMBOL_AND, REPLACEMENT_SYMBOL_AND);
+            editedCriteria = editedCriteria.replace(SYMBOL_EQUAL, SYMBOL_COLON);
+            editedCriteria = "(" + editedCriteria + ") AND mediaType:" + mediaType;
+            log.debug("Content OR search | Search Criteria::: " + editedCriteria);
+            try {
+                TermData[] termData = getTermsQuerySearchService().search(editedCriteria, facetField);
+                return Arrays.asList(termData);
+            } catch (RegistryException e) {
+                throw new GovernanceException("Unable to get terms for the given field", e);
+            }
+        }
+
+        //setting the facet Field which needs grouping. Facet Field is required for searching.
+        if (facetField != null) {
+            fields.put(IndexingConstants.FACET_FIELD_NAME, facetField);
+        } else {
+            throw new GovernanceException("Facet field is required. field cannot be null");
+        }
+
+        try {
+            TermData[] termData = getTermsSearchService().search(fields);
+            // Following check is done since Attribute Search service only has a way to search one property at a time
+            if(possibleProperties.size() == 1) {
+
+                for (Map.Entry<String, String> entry : possibleProperties.entrySet()) {
+                    String propertyName = entry.getKey();
+                    fields.remove("overview_" + propertyName);
+                    fields.put("propertyName", propertyName);
+                    fields.put("rightPropertyValue", entry.getValue());
+                    fields.put("rightOp", "eq");
+                }
+
+                TermData[] propertytermData = getTermsSearchService().search(fields);
+
+                Set<TermData> removeDuplicate = new TreeSet<>(new Comparator<TermData>() {
+                    public int compare(TermData term1, TermData term2) {
+                        return term1.getTerm().compareTo(term2.getTerm());
+                    }
+                });
+                removeDuplicate.addAll(Arrays.asList(termData));
+                removeDuplicate.addAll(Arrays.asList(propertytermData));
+
+                List<TermData> mergeListWithoutDuplicates = new ArrayList<>();
+                mergeListWithoutDuplicates.addAll(removeDuplicate);
+
+                return mergeListWithoutDuplicates;
+            }
+            return Arrays.asList(termData);
+
         } catch (RegistryException e) {
             throw new GovernanceException("Unable to get terms for the given field", e);
         }
