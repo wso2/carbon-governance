@@ -22,6 +22,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 
 
@@ -35,6 +36,9 @@ import org.wso2.carbon.registry.indexing.service.TermsSearchService;
  * @scr.reference name="registry.search.component"
  * interface="org.wso2.carbon.registry.common.AttributeSearchService"
  * cardinality="1..1" policy="dynamic" bind="setAttributeSearchService" unbind="unsetAttributeSearchService"
+ * @scr.reference name="registry.content.search.component"
+ * interface="org.wso2.carbon.registry.indexing.service.ContentSearchService"
+ * cardinality="1..1" policy="dynamic" bind="setContentSearchService" unbind="unsetContentSearchService"
  * @scr.reference name="registry.term.component"
  * interface="org.wso2.carbon.registry.indexing.service.TermsSearchService"
  * cardinality="1..1" policy="dynamic" bind="setTermsSearchService" unbind="unsetTermsSearchService"
@@ -90,7 +94,7 @@ public class GovernanceAPIServiceComponent {
 
     protected void  setAttributeSearchService(AttributeSearchService searchService){
         if (log.isDebugEnabled()) {
-            log.debug("Setting ContentBasedSearchService");
+            log.debug("Setting Attribute Search Service");
         }
         GovernanceUtils.setAttributeSearchService(searchService);
 
@@ -98,9 +102,25 @@ public class GovernanceAPIServiceComponent {
 
     protected void  unsetAttributeSearchService(AttributeSearchService searchService){
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting ContentBasedSearchService");
+            log.debug("Unsetting Attribute Search Service");
         }
         GovernanceUtils.setAttributeSearchService(null);
+
+    }
+
+    protected void setContentSearchService(ContentSearchService searchService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Content Search Service");
+        }
+        GovernanceUtils.setContentSearchService(searchService);
+
+    }
+
+    protected void unsetContentSearchService(ContentSearchService searchService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting Content Search Service");
+        }
+        GovernanceUtils.setContentSearchService(null);
 
     }
 
