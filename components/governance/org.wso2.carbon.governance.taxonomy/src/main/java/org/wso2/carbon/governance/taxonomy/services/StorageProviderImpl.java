@@ -201,7 +201,8 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
                 } else {
                     return null;
                 }
-            } catch (RegistryException | SAXException | IOException | ParserConfigurationException | UserStoreException e) {
+            } catch (RegistryException | SAXException | IOException | ParserConfigurationException |
+                    UserStoreException e) {
                 //Will ignore registry access and xml parsing related exception here.
                 return null;
             }
