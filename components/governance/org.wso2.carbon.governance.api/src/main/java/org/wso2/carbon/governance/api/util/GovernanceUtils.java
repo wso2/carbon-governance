@@ -1886,7 +1886,7 @@ public class GovernanceUtils {
                                     replaceAll("\\) (and|AND) \\*", ") && *");
                             fields.put(subParts[0], taxaValue);
                             //edit taxa value in the edited criteria for content search
-                            editedCriteria = editedCriteria.replace(subParts[1],taxaValue);
+                            editedCriteria = editedCriteria.replace(subParts[1], taxaValue);
                             break;
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
@@ -1894,14 +1894,14 @@ public class GovernanceUtils {
                         default:
                             fields.put(subParts[0], subParts[1].toLowerCase());
                             // lowercase to query value for the content search
-                            editedCriteria = editedCriteria.replace(subParts[1],subParts[1].toLowerCase());
+                            editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                             break;
                     }
                 } else if(subParts[0].equals("comments")){
                     fields.put("commentWords", subParts[1].toLowerCase());
                     // change the key and lowercase to query value for the content search
-                    editedCriteria = editedCriteria.replace("comments","commentWords");
-                    editedCriteria = editedCriteria.replace(subParts[1],subParts[1].toLowerCase());
+                    editedCriteria = editedCriteria.replace("comments", "commentWords");
+                    editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                 } else {
                     if(subParts[0].contains(":")) {
                         String value = subParts[1].toLowerCase();
@@ -1918,13 +1918,13 @@ public class GovernanceUtils {
                         if ("overview".equals(tableParts[0])) {
                             possibleProperties.put(tableParts[1], value);
                             //add new query parameter to support properties search.
-                            String overviewField = tableParts[1] +":"+value + " OR ";
+                            String overviewField = tableParts[1] + ":" + value + " OR ";
                             editedCriteria = new StringBuilder(editedCriteria).insert(editedCriteria.lastIndexOf(subParts[0]), overviewField).toString();
                         }
                         fields.put(subParts[0].replace(":", "_"), value);
                         // change the key and lowercase to query value for the content search
-                        editedCriteria = editedCriteria.replace(subParts[0],subParts[0].replace(":", "_"));
-                        editedCriteria = editedCriteria.replace(subParts[1],subParts[1].toLowerCase());
+                        editedCriteria = editedCriteria.replace(subParts[0], subParts[0].replace(":", "_"));
+                        editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                     } else {
                         String value = subParts[1].toLowerCase();
 
@@ -1940,20 +1940,20 @@ public class GovernanceUtils {
                         if(!subParts[0].equals("name")) {
                             possibleProperties.put(subParts[0], value);
                             fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
-                            editedCriteria = editedCriteria.replace(subParts[1],subParts[1].toLowerCase());
+                            editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                             //add new query parameter to search in both resource properties and metadata content
-                            String overviewField = OVERVIEW + UNDERSCORE + subParts[0] +":"+value.toLowerCase() + " OR ";
+                            String overviewField = OVERVIEW + UNDERSCORE + subParts[0] + ":" + value.toLowerCase() + " OR ";
                             editedCriteria = new StringBuilder(editedCriteria).insert(editedCriteria.lastIndexOf(subParts[0]), overviewField).toString();
                         } else {
                             if (artifactConfiguration != null) {
                                 fields.put(artifactConfiguration.getArtifactNameAttribute(), value.toLowerCase());
                                 // change the key and lowercase to query value for the content search
-                                editedCriteria = editedCriteria.replace(subParts[0],artifactConfiguration.getArtifactNameAttribute());
-                                editedCriteria = editedCriteria.replace(subParts[1],subParts[1].toLowerCase());
+                                editedCriteria = editedCriteria.replace(subParts[0], artifactConfiguration.getArtifactNameAttribute());
+                                editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                             } else {
                                 fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
-                                editedCriteria = editedCriteria.replace(subParts[0],OVERVIEW + UNDERSCORE + subParts[0]);
-                                editedCriteria = editedCriteria.replace(subParts[1],subParts[1].toLowerCase());
+                                editedCriteria = editedCriteria.replace(subParts[0], OVERVIEW + UNDERSCORE + subParts[0]);
+                                editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
                             }
                         }
                     }
@@ -1968,8 +1968,8 @@ public class GovernanceUtils {
             editedCriteria = editedCriteria.replace(FIELDS_AND_SEARCH, REPLACEMENT_AND_SEARCH);
             editedCriteria = editedCriteria.replace(SYMBOL_AND, REPLACEMENT_SYMBOL_AND);
             editedCriteria = editedCriteria.replace(SYMBOL_EQUAL, SYMBOL_COLON);
-            editedCriteria = "(" + editedCriteria + ") AND mediaType:" +mediaType;
-            log.info("Content OR search | Search Criteria::: "+editedCriteria);
+            editedCriteria = "(" + editedCriteria + ") AND mediaType:" + mediaType;
+            log.debug("Content OR search | Search Criteria::: " + editedCriteria);
             return performContentSearch(editedCriteria, registry);
         }
 
@@ -2077,7 +2077,6 @@ public class GovernanceUtils {
         try {
             ResourceData[] results = getAttributeSearchService().search(fields);
 
-
             int errorCount = 0; // We use this to check how many errors occurred.
 
             for (ResourceData result : results) {
@@ -2106,6 +2105,7 @@ public class GovernanceUtils {
 
     /**
      * Method returns artifacts results list of registry content search
+     *
      * @param criteria search criteria
      * @param registry registry
      * @return search results
@@ -2135,7 +2135,8 @@ public class GovernanceUtils {
                 if (governanceArtifact != null) {
                     artifacts.add(governanceArtifact);
                 }
-            } if (errorCount != 0 && errorCount == results.length) {
+            }
+            if (errorCount != 0 && errorCount == results.length) {
                 // This means that all the paths have failed. So we throw an error.
                 throw new GovernanceException("Error occurred while retrieving all the governance artifacts");
             }

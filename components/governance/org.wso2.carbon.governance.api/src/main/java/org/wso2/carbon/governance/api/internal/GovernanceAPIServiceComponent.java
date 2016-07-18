@@ -108,7 +108,7 @@ public class GovernanceAPIServiceComponent {
 
     }
 
-    protected void setContentSearchService(ContentSearchService searchService){
+    protected void setContentSearchService(ContentSearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Content Search Service");
         }
@@ -116,7 +116,7 @@ public class GovernanceAPIServiceComponent {
 
     }
 
-    protected void  unsetContentSearchService(ContentSearchService searchService){
+    protected void unsetContentSearchService(ContentSearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting Content Search Service");
         }
