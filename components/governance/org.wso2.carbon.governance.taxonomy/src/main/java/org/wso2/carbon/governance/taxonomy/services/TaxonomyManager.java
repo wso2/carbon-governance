@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * This is the main class which manage all taxonomy operations including map storage and registry operations
@@ -86,7 +87,7 @@ public class TaxonomyManager {
     }
 
     /**
-     * This method will return text content of given taxonomy
+     * This method will return text content of given taxonomy (This will be a registry call)
      *
      * @param taxonomyName taxonomy file taxonomyName
      * @return String content of taxonomy file taxonomyName
@@ -97,7 +98,7 @@ public class TaxonomyManager {
     }
 
     /**
-     * This method will return taxonomyBean object for a given query bean
+     * This method will return taxonomyBean object for a given query bean (This will return from map)
      *
      * @param taxonomyQueryBean Taxonomy query bean
      * @return taxonomy bean object
@@ -156,5 +157,13 @@ public class TaxonomyManager {
 
     public IStorageProvider getStorageProvider() {
         return storageProvider;
+    }
+
+    /**
+     * This method will return all available taxonomies for a specific tenant
+     * @return Map of taxonomy bean objects
+     */
+    public Map<String, TaxonomyBean> getTaxonomyBeanMap () {
+        return storageProvider.getTaxonomyBeanMap();
     }
 }

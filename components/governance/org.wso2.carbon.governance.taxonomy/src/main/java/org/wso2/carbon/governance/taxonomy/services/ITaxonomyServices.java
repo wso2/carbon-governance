@@ -19,8 +19,10 @@ package org.wso2.carbon.governance.taxonomy.services;
 import org.json.JSONArray;
 import org.wso2.carbon.governance.taxonomy.beans.PaginationBean;
 import org.wso2.carbon.governance.taxonomy.beans.QueryBean;
+import org.wso2.carbon.governance.taxonomy.beans.TaxonomyBean;
 import org.wso2.carbon.governance.taxonomy.exception.TaxonomyException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import java.util.Map;
 
 /**
  * This interface will provide methods to manage all taxonomy operations
@@ -36,10 +38,14 @@ public interface ITaxonomyServices {
 
     public String getTaxonomy(String name) throws Exception;
 
+    public TaxonomyBean getTaxonomyBean (QueryBean taxonomyQueryBean) throws RegistryException;
+
     public String[] getTaxonomyList() throws Exception;
 
     public JSONArray query(QueryBean taxonomyQueryBean, PaginationBean paginationBean) throws TaxonomyException;
 
     public JSONArray getTaxonomyName(QueryBean taxonomyQueryBean) throws TaxonomyException;
+
+    public Map<String, TaxonomyBean>  getTaxonomyBeanMap ();
 
 }
