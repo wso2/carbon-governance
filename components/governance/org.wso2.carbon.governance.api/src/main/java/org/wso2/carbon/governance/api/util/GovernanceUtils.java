@@ -406,10 +406,20 @@ public class GovernanceUtils {
                     configuration.setLifecycle(lifecycleElement.getText());
                 }
 
-                OMElement taxonomyElement = configElement.getFirstChildWithName(
-                        new QName("taxonomies"));
-                if (taxonomyElement != null) {
-                    configuration.setTaxonomy(taxonomyElement.getText());
+                OMElement taxonomiesElement = configElement.getFirstChildWithName(new QName("taxonomies"));
+                if (taxonomiesElement != null) {
+                    Iterator taxonomiesElements = taxonomiesElement.getChildrenWithName(new QName("taxonomy"));
+                    String isGlobalTaxonomyEnabled = taxonomiesElement.getAttributeValue(new QName("excludeGlobal"));
+
+                    while (taxonomiesElements.hasNext()) {
+                        OMElement taxonomyElement = (OMElement) taxonomiesElements.next();
+                        if (taxonomyElement != null) {
+                            String name = taxonomyElement.getAttributeValue(new QName("name"));
+                            String isDisable = taxonomyElement.getAttributeValue(new QName("disable"));
+                            configuration.setTaxonomy(name, Boolean.valueOf(isDisable),
+                                    Boolean.valueOf(isGlobalTaxonomyEnabled));
+                        }
+                    }
                 }
 
                 OMElement groupingAttributeElement = configElement.getFirstChildWithName(

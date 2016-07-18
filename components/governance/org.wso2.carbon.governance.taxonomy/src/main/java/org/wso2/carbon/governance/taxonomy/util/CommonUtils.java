@@ -46,7 +46,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -89,7 +91,10 @@ public class CommonUtils {
                     findGovernanceArtifactConfigurations(registry);
             for (GovernanceArtifactConfiguration governanceArtifactConfiguration : configurations) {
                 RXTBean rxtBean = new RXTBean();
-                rxtBean.setTaxonomy(governanceArtifactConfiguration.getTaxonomy());
+
+                if (governanceArtifactConfiguration.getTaxonomy() != null) {
+                    rxtBean.setTaxonomy(governanceArtifactConfiguration.getTaxonomy());
+                }
                 rxtBean.setRxtName(governanceArtifactConfiguration.getKey());
                 rxtBeenList.add(rxtBean);
             }
@@ -237,6 +242,7 @@ public class CommonUtils {
 
         OMElement element = buildOMElement(payload);
         String name = element.getAttributeValue(new QName("name"));
+        String global = element.getAttributeValue(new QName("global"));
         InputStream inputStream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
 
@@ -244,6 +250,7 @@ public class CommonUtils {
         documentBean.setTaxonomyName(name);
         documentBean.setDocument(document);
         documentBean.setPath(getCompletePath(name));
+        documentBean.setGlobal(Boolean.valueOf(global));
         documentBean.setPayload(payload);
 
         return documentBean;
