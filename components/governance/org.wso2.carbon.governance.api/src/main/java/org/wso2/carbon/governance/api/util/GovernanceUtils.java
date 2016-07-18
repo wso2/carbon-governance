@@ -1896,9 +1896,11 @@ public class GovernanceUtils {
                             fields.put(subParts[0], subParts[1]);
                             break;
                         default:
-                            fields.put(subParts[0], subParts[1].toLowerCase());
+                            String value = subParts[1].toLowerCase();
+                            value = buildSearchValue(value);
+                            fields.put(subParts[0], value);
                             // lowercase to query value for the content search
-                            editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
+                            editedCriteria = editedCriteria.replace(subParts[1], value);
                             break;
                     }
                 } else if(subParts[0].equals("comments")){
@@ -1909,15 +1911,7 @@ public class GovernanceUtils {
                 } else {
                     if(subParts[0].contains(":")) {
                         String value = subParts[1].toLowerCase();
-                        if(value.contains(" or ")){
-                            String[] values = value.split(" or ");
-                            for(int i=0; i<values.length; i++){
-                                values[i] = values[i].trim().replace(" ", "\\ ");
-                            }
-                            value = StringUtils.join(values, " OR ");
-                        } else if(value.contains(" ")) {
-                            value = value.replace(" ", "\\ ");
-                        }
+                        value = buildSearchValue(value);
                         String[] tableParts = subParts[0].split(":");
                         if ("overview".equals(tableParts[0])) {
                             possibleProperties.put(tableParts[1], value);
@@ -1928,36 +1922,27 @@ public class GovernanceUtils {
                         fields.put(subParts[0].replace(":", "_"), value);
                         // change the key and lowercase to query value for the content search
                         editedCriteria = editedCriteria.replace(subParts[0], subParts[0].replace(":", "_"));
-                        editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
+                        editedCriteria = editedCriteria.replace(subParts[1], value);
                     } else {
                         String value = subParts[1].toLowerCase();
-
-                        if(value.contains(" or ")){
-                            String[] values = value.split(" or ");
-                            for(int i=0; i<values.length; i++){
-                                values[i] = values[i].trim().replace(" ", "\\ ");
-                            }
-                            value = StringUtils.join(values, " OR ");
-                        } else if(value.contains(" ")) {
-                            value = value.replace(" ", "\\ ");
-                        }
+                        value = buildSearchValue(value);
                         if(!subParts[0].equals("name")) {
                             possibleProperties.put(subParts[0], value);
-                            fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
-                            editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
+                            fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
+                            editedCriteria = editedCriteria.replace(subParts[1], value);
                             //add new query parameter to search in both resource properties and metadata content
-                            String overviewField = OVERVIEW + UNDERSCORE + subParts[0] + ":" + value.toLowerCase() + " OR ";
+                            String overviewField = OVERVIEW + UNDERSCORE + subParts[0] + ":" + value + " OR ";
                             editedCriteria = new StringBuilder(editedCriteria).insert(editedCriteria.lastIndexOf(subParts[0]), overviewField).toString();
                         } else {
                             if (artifactConfiguration != null) {
-                                fields.put(artifactConfiguration.getArtifactNameAttribute(), value.toLowerCase());
+                                fields.put(artifactConfiguration.getArtifactNameAttribute(), value);
                                 // change the key and lowercase to query value for the content search
                                 editedCriteria = editedCriteria.replace(subParts[0], artifactConfiguration.getArtifactNameAttribute());
-                                editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
+                                editedCriteria = editedCriteria.replace(subParts[1], value);
                             } else {
-                                fields.put(OVERVIEW + UNDERSCORE + subParts[0], value.toLowerCase());
+                                fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
                                 editedCriteria = editedCriteria.replace(subParts[0], OVERVIEW + UNDERSCORE + subParts[0]);
-                                editedCriteria = editedCriteria.replace(subParts[1], subParts[1].toLowerCase());
+                                editedCriteria = editedCriteria.replace(subParts[1], value);
                             }
                         }
                     }
@@ -1967,6 +1952,26 @@ public class GovernanceUtils {
 
         return editedCriteria;
     }
+
+    private static String buildSearchValue(String value) {
+        if (value.contains(" or ")) {
+            String[] values = value.split(" or ");
+            for (int i = 0; i < values.length; i++) {
+                values[i] = values[i].trim().replace(" ", "\\ ");
+            }
+            value = StringUtils.join(values, " OR ");
+        } else if (value.contains(" and ")) {
+            String[] values = value.split(" and ");
+            for (int i = 0; i < values.length; i++) {
+                values[i] = values[i].trim().replace(" ", "\\ ");
+            }
+            value = StringUtils.join(values, " AND ");
+        } else if (value.contains(" ")) {
+            value = value.replace(" ", "\\ ");
+        }
+        return value;
+    }
+
     /**
      * @param criteria query string that should be searched for
      * @param registry the governance registry instance
