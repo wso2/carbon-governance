@@ -26,7 +26,7 @@
     <groupId>org.wso2.carbon.governance</groupId>
     <artifactId>carbon-governance</artifactId>
     <packaging>pom</packaging>
-    <version>4.6.5-SNAPSHOT</version>
+    <version>4.7.0-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -1299,18 +1299,18 @@
         <carbon.business.process.imp.pkg.version>[4.4.0, 4.5.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.5.7-SNAPSHOT</carbon.registry.version>
-        <carbon.registry.imp.pkg.version>[4.5.0, 5.0.0)</carbon.registry.imp.pkg.version>
+        <carbon.registry.version>4.6.0-SNAPSHOT</carbon.registry.version>
+        <carbon.registry.imp.pkg.version>[4.6.0, 5.0.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon governance version comes here-->
-        <carbon.governance.version>4.6.5-SNAPSHOT</carbon.governance.version>
+        <carbon.governance.version>4.7.0-SNAPSHOT</carbon.governance.version>
         <carbon.governance.package.export.version>${carbon.governance.version}
         </carbon.governance.package.export.version>
-        <carbon.governance.package.import.version.range>[4.6.0, 5.0.0)
+        <carbon.governance.package.import.version.range>[4.7.0, 5.0.0)
         </carbon.governance.package.import.version.range>
 
         <carbon.identity.framework.version>5.2.0</carbon.identity.framework.version>
-        <carbon.identity.imp.pkg.version>[4.4.0, 5.0.0)</carbon.identity.imp.pkg.version>
+        <carbon.identity.imp.pkg.version>[5.2.0, 6.0.0)</carbon.identity.imp.pkg.version>
 
 
 
