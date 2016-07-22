@@ -73,10 +73,19 @@ public class WSDLComparisonUtils {
             StringWriter writer = new StringWriter();
             serialize(definition, writer);
             String content = writer.toString();
-            content = content.substring(content.indexOf(ComparatorConstants.WSDL_DECLARATION_START_ELEMENT));
-            content = content.substring(content.indexOf(">") + 2);
-            content = content.replace(ComparatorConstants.WSDL_DECLARATION_START, "");
-            content = content.replace(ComparatorConstants.WSDL_DECLARATION_END_ELEMENT, "");
+            int index = content.indexOf(ComparatorConstants.WSDL_DECLARATION_START_ELEMENT);
+            if (index > 0) {
+                content = content.substring(index);
+                content = content.substring(content.indexOf(">") + 2);
+                content = content.replace(ComparatorConstants.WSDL_DECLARATION_START, "");
+                content = content.replace(ComparatorConstants.WSDL_DECLARATION_END_ELEMENT, "");
+            } else {
+                content = content
+                        .substring(content.indexOf(ComparatorConstants.WSDL_DECLARATION_START_ELEMENT_WITHOUT_WSDL));
+                content = content.substring(content.indexOf(">") + 2);
+                content = content.replace(ComparatorConstants.WSDL_DECLARATION_START_WITHOUT_WSDL, "");
+                content = content.replace(ComparatorConstants.WSDL_DECLARATION_END_ELEMENT_WITHOUT_WSDL, "");
+            }
             return content;
         } catch (WSDLException e) {
             log.error(e);

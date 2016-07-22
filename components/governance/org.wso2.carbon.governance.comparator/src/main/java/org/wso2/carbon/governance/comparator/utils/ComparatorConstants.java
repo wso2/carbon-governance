@@ -42,6 +42,11 @@ public class ComparatorConstants {
     public static final String WSDL_DECLARATION_END_ELEMENT = "\n</wsdl:definitions>";
     public static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
+    public static final String WSDL_DECLARATION_START_ELEMENT_WITHOUT_WSDL = "<definitions";
+    public static final String WSDL_DECLARATION_START_WITHOUT_WSDL = "<definitions xmlns:wsdl=\"http://schemas"
+            + ".xmlsoap.org/wsdl/\">";
+    public static final String WSDL_DECLARATION_END_ELEMENT_WITHOUT_WSDL = "\n</definitions>";
+
     //Text messages
     public static final String TEXT_CHANGE = "default";
     public static final String TEXT_CHANGE_SUMMARY = "There are modifications";
