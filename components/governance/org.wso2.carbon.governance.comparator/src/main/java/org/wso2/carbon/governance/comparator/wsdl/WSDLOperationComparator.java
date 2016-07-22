@@ -216,10 +216,12 @@ public class WSDLOperationComparator extends AbstractWSDLComparator {
     }
 
     private boolean isDifferent(Output left, Output right) {
-        if (left != null && right == null) {
+        if (left == null && right == null) {
+            return false;
+        } else if (left != null && right == null) {
             return true;
         } else if (right != null && left == null) {
-
+            return true;
         } else {
             if (left.getName() != null && right.getName() != null && !left.getName().equals(right.getName())) {
                 return true;
