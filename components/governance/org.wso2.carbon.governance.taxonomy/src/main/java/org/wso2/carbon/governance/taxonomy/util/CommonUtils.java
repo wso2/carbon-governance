@@ -19,7 +19,10 @@
 package org.wso2.carbon.governance.taxonomy.util;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.jaxen.JaxenException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,18 +43,28 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.CarbonUtils;
 import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+
 import static org.wso2.carbon.governance.taxonomy.util.TaxonomyConstants.TAXONOMY_CONFIGURATION_PATH;
 
 public class CommonUtils {
@@ -240,6 +253,11 @@ public class CommonUtils {
     public static TaxonomyBean documentBeanBuilder(String payload)
             throws RegistryException, ParserConfigurationException, IOException, SAXException {
 
+        if (!validateXMLConfigOnSchema(payload)) {
+            throw new RegistryException("Taxonomy definition violated, please follow the schema correctly.");
+        }
+
+
         OMElement element = buildOMElement(payload);
         String name = element.getAttributeValue(new QName("name"));
         String global = element.getAttributeValue(new QName("global"));
@@ -254,6 +272,36 @@ public class CommonUtils {
         documentBean.setPayload(payload);
 
         return documentBean;
+    }
+
+    private static boolean validateXMLConfigOnSchema(String rxtContent) throws RegistryException {
+        try {
+            String xsdPath = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator +
+                    "resources" + File.separator + "taxonomy.xsd";
+            OMElement rxt = getTaxonomyContentOMElement(rxtContent);
+            AXIOMXPath xpath = new AXIOMXPath("//taxonomy");
+            OMElement c1 = (OMElement) xpath.selectSingleNode(rxt);
+            InputStream is = new ByteArrayInputStream(c1.toString().getBytes());
+            Source xmlFile = new StreamSource(is);
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = schemaFactory.newSchema(new File(xsdPath));
+            Validator validator = schema.newValidator();
+            validator.validate(xmlFile);
+        } catch (RegistryException | JaxenException | IOException | SAXException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private static OMElement getTaxonomyContentOMElement(String xml) throws RegistryException {
+        XMLStreamReader parser;
+        try {
+            parser = XMLInputFactory.newInstance().createXMLStreamReader(new ByteArrayInputStream(xml.getBytes("utf-8")));
+            StAXOMBuilder builder = new StAXOMBuilder(parser);
+            return builder.getDocumentElement();
+        } catch (Exception e) {
+            throw new RegistryException(e.getMessage());
+        }
     }
 
     /**
