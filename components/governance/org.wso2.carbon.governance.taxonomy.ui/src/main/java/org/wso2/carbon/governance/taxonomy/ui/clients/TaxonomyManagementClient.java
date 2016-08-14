@@ -34,8 +34,7 @@ import javax.servlet.http.HttpSession;
 public class TaxonomyManagementClient {
     private TaxonomyServicesStub stub;
 
-    public TaxonomyManagementClient(String cookie, ServletConfig config, HttpSession session)
-            throws Exception {
+    public TaxonomyManagementClient(String cookie, ServletConfig config, HttpSession session) throws Exception {
         String endpointURL;
         String backendServerURL = CarbonUIUtil.getServerURL(config.getServletContext(), session);
         ConfigurationContext configContext = (ConfigurationContext) config.
@@ -60,10 +59,9 @@ public class TaxonomyManagementClient {
      *
      * @param request User request
      * @return boolean
-     * @throws Exception
+     * @throws Exception because stub can't catch different types of exceptions
      */
-    public boolean newTaxonomy(HttpServletRequest request)
-            throws  Exception {
+    public boolean newTaxonomy(HttpServletRequest request) throws Exception {
         return stub.addTaxonomy(request.getParameter("payload"));
     }
 
@@ -72,10 +70,9 @@ public class TaxonomyManagementClient {
      *
      * @param request user request which contains taxonomy file name
      * @return String content
-     * @throws Exception
+     * @throws Exception because stub can't catch different types of exceptions
      */
-    public String getTaxonomy(HttpServletRequest request)
-            throws  Exception {
+    public String getTaxonomy(HttpServletRequest request) throws Exception {
         return stub.getTaxonomy(request.getParameter("taxonomyName"));
     }
 
@@ -84,10 +81,9 @@ public class TaxonomyManagementClient {
      *
      * @param request user request
      * @return boolean
-     * @throws Exception
+     * @throws Exception because stub can't catch different types of exceptions
      */
-    public boolean updateTaxonomy(HttpServletRequest request)
-            throws  Exception {
+    public boolean updateTaxonomy(HttpServletRequest request) throws Exception {
         return stub.updateTaxonomy(request.getParameter("taxonomyName"), request.getParameter("payload"));
     }
 
@@ -96,10 +92,9 @@ public class TaxonomyManagementClient {
      *
      * @param request user request
      * @return boolean
-     * @throws Exception
+     * @throws Exception because stub can't catch different types of exceptions
      */
-    public boolean deleteTaxonomy(HttpServletRequest request)
-            throws  Exception {
+    public boolean deleteTaxonomy(HttpServletRequest request) throws Exception {
         return stub.deleteTaxonomy(request.getParameter("taxonomyName"));
     }
 
@@ -108,11 +103,10 @@ public class TaxonomyManagementClient {
      *
      * @param request user request
      * @return String array of taxonomy files
-     * @throws Exception
+     * @throws Exception because stub can't catch different types of exceptions
      */
 
-    public String[] getTaxonomyList(HttpServletRequest request)
-            throws  Exception {
+    public String[] getTaxonomyList(HttpServletRequest request) throws Exception {
         return stub.getTaxonomyList();
     }
 

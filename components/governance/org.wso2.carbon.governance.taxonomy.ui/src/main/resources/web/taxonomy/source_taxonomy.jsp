@@ -1,20 +1,20 @@
 <!--
- ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- ~
- ~ WSO2 Inc. licenses this file to you under the Apache License,
- ~ Version 2.0 (the "License"); you may not use this file except
- ~ in compliance with the License.
- ~ You may obtain a copy of the License at
- ~
- ~    http://www.apache.org/licenses/LICENSE-2.0
- ~
- ~ Unless required by applicable law or agreed to in writing,
- ~ software distributed under the License is distributed on an
- ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- ~ KIND, either express or implied.  See the License for the
- ~ specific language governing permissions and limitations
- ~ under the License.
- -->
+~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+~
+~ WSO2 Inc. licenses this file to you under the Apache License,
+~ Version 2.0 (the "License"); you may not use this file except
+~ in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing,
+~ software distributed under the License is distributed on an
+~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~ KIND, either express or implied. See the License for the
+~ specific language governing permissions and limitations
+~ under the License.
+-->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="carbon" uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" %>
@@ -33,8 +33,8 @@
 
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
 <carbon:jsi18n
-		resourceBundle="org.wso2.carbon.governance.taxonomy.ui.i18n.JSResources"
-		request="<%=request%>" namespace="org.wso2.carbon.governance.taxonomy.ui"/>
+        resourceBundle="org.wso2.carbon.governance.taxonomy.ui.i18n.JSResources"
+        request="<%=request%>" namespace="org.wso2.carbon.governance.taxonomy.ui"/>
 <script type="text/javascript" src="js/taxonomy.js"></script>
 <%
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
@@ -42,7 +42,7 @@
     boolean isNew = true;
 
     boolean viewMode = false;
-    try{
+    try {
         TaxonomyManagementClient client = new TaxonomyManagementClient(cookie, config, session);
         viewMode = request.getParameter("view") != null;
 
@@ -95,42 +95,40 @@
 
         }
 
-
-
-    } catch (Exception e){
+    } catch (Exception e) {
         response.setStatus(500);
         CarbonUIMessage uiMsg = new CarbonUIMessage(CarbonUIMessage.ERROR, e.getMessage(), e);
         session.setAttribute(CarbonUIMessage.ID, uiMsg);
 %>
-        <jsp:include page="../admin/error.jsp?<%=e.getMessage()%>"/>
+<jsp:include page="../admin/error.jsp?<%=e.getMessage()%>"/>
 <%
         return;
     }
 %>
 <fmt:bundle basename="org.wso2.carbon.governance.taxonomy.ui.i18n.Resources">
-<carbon:breadcrumb
-        label="taxonomy.source"
-        resourceBundle="org.wso2.carbon.governance.taxonomy.ui.i18n.Resources"
-        topPage="false"
-        request="<%=request%>"/>
-<script type="text/javascript">
+    <carbon:breadcrumb
+            label="taxonomy.source"
+            resourceBundle="org.wso2.carbon.governance.taxonomy.ui.i18n.Resources"
+            topPage="false"
+            request="<%=request%>"/>
+    <script type="text/javascript">
 
-    function cancelSequence() {
-        document.location.href = "taxonomy.jsp?region=region3&item=governance_taxonomy_menu";
-    }
+        function cancelSequence() {
+            document.location.href = "taxonomy.jsp?region=region3&item=governance_taxonomy_menu";
+        }
 
-    YAHOO.util.Event.onDOMReady(function() {
-        editAreaLoader.init({
-            id : "payload"        // textarea id
-            ,syntax: "xml"            // syntax to be uses for highgliting
-            ,start_highlight: true        // to display with highlight mode on start-up
-            ,allow_resize: "both"
-            ,min_height:250
+        YAHOO.util.Event.onDOMReady(function () {
+            editAreaLoader.init({
+                id: "payload"        // textarea id
+                , syntax: "xml"            // syntax to be uses for highgliting
+                , start_highlight: true        // to display with highlight mode on start-up
+                , allow_resize: "both"
+                , min_height: 250
+            });
         });
-    });
 
 
-</script>
+    </script>
 
 
     <div id="middle">
@@ -141,26 +139,38 @@
                     <thead>
                     <tr>
                         <th>
-                            <span style="float: left; position: relative; margin-top: 2px;"><fmt:message key="taxonomy.source"/></span>
+                            <span style="float: left; position: relative; margin-top: 2px;"><fmt:message
+                                    key="taxonomy.source"/></span>
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td>
-                            <textarea id="payload" style="border: 0px solid rgb(204, 204, 204); width: 99%; height: 275px; margin-top: 5px;" name="payload" rows="30" class="codepress html linenumbers-on" wrap="off"><%=temp%></textarea>
+                            <textarea id="payload"
+                                      style="border: 0px solid rgb(204, 204, 204); width: 99%; height: 275px;
+                                      margin-top: 5px;" name="payload" rows="30" class="codepress html linenumbers-on"
+                                      wrap="off"><%=temp%></textarea>
                         </td>
                     </tr>
                     <tr>
                         <td class="buttonRow">
                             <% if (!viewMode) { %>
-                            <input class="button registryWriteOperation" type="button" onclick="saveTaxonomy('<%=request.getParameter("taxonomyName")%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
-                            <input class="button registryNonWriteOperation" type="button" disabled="disabled" value="<fmt:message key="save"/>"/>
-                            <input class="button" type="button" value="<fmt:message key="cancel"/>" onclick="javascript: cancelSequence(); return false;"/>
+                            <input class="button registryWriteOperation" type="button"
+                                   onclick="saveTaxonomy('<%=request.getParameter("taxonomyName")%>',
+                                           <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
+                            <input class="button registryNonWriteOperation" type="button" disabled="disabled"
+                                   value="<fmt:message key="save"/>"/>
+                            <input class="button" type="button" value="<fmt:message key="cancel"/>"
+                                   onclick="javascript: cancelSequence(); return false;"/>
                             <% } else { %>
-                            <input class="button registryWriteOperation" type="button" onclick="saveTaxonomy('<%=request.getParameter("taxonomyName")%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
-                            <input class="button registryNonWriteOperation" type="button" disabled="disabled" value="<fmt:message key="save"/>"/>
-                            <input class="button" type="button" value="<fmt:message key="cancel"/>" onclick="javascript: cancelSequence(); return false;"/>
+                            <input class="button registryWriteOperation" type="button"
+                                   onclick="saveTaxonomy('<%=request.getParameter("taxonomyName")%>',
+                                           <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
+                            <input class="button registryNonWriteOperation" type="button" disabled="disabled"
+                                   value="<fmt:message key="save"/>"/>
+                            <input class="button" type="button" value="<fmt:message key="cancel"/>"
+                                   onclick="javascript: cancelSequence(); return false;"/>
                             <% } %>
                         </td>
                     </tr>
