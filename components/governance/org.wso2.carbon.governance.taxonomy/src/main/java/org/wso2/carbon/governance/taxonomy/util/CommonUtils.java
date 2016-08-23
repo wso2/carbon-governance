@@ -69,6 +69,9 @@ import java.util.List;
 
 import static org.wso2.carbon.governance.taxonomy.util.TaxonomyConstants.TAXONOMY_CONFIGURATION_PATH;
 
+/**
+ * This class contain all common static methods which we can use inside taxonomy component
+ */
 public class CommonUtils {
     private static final String ELEMENT_ID = "id";
     private static final String PREVIOUS_ELEMENT_PATH = "previousSibling";
@@ -152,7 +155,7 @@ public class CommonUtils {
         }
 
         JSONObject dataArray;
-        if (!updatedQuery.equals("/taxonomy/root/*")) {
+        if (!"/taxonomy/root/*".equals(updatedQuery)) {
             // this will execute when there is long path
             for (int i = startNode; i < nodeCount; ++i) {
                 dataArray = new JSONObject();
@@ -166,27 +169,27 @@ public class CommonUtils {
 
                 if (nodeCount == 1) {
                     dataArray.put(PREVIOUS_ELEMENT_PATH, "");
-                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf("/")) + "/" + currentId);
+                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf('/')) + "/" + currentId);
                     dataArray.put(NEXT_ELEMENT_PATH, "");
                 } else if (i == 0) {
                     dataArray.put(PREVIOUS_ELEMENT_PATH, "");
-                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf("/")) + "/" + currentId);
+                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf('/')) + "/" + currentId);
                     dataArray.put(NEXT_ELEMENT_PATH,
-                            query.substring(0, query.lastIndexOf("/")) + "/" + ((Element) nodeList.item(i + 1))
+                            query.substring(0, query.lastIndexOf('/')) + "/" + ((Element) nodeList.item(i + 1))
                                     .getAttribute(ID));
                 } else if (i == nodeCount - 1) {
                     dataArray.put(PREVIOUS_ELEMENT_PATH,
-                            query.substring(0, query.lastIndexOf("/")) + "/" + ((Element) nodeList.item(i - 1))
+                            query.substring(0, query.lastIndexOf('/')) + "/" + ((Element) nodeList.item(i - 1))
                                     .getAttribute(ID));
-                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf("/")) + "/" + currentId);
+                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf('/')) + "/" + currentId);
                     dataArray.put(NEXT_ELEMENT_PATH, "");
                 } else {
                     dataArray.put(PREVIOUS_ELEMENT_PATH,
-                            query.substring(0, query.lastIndexOf("/")) + "/" + ((Element) nodeList.item(i - 1))
+                            query.substring(0, query.lastIndexOf('/')) + "/" + ((Element) nodeList.item(i - 1))
                                     .getAttribute(ID));
-                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf("/")) + "/" + currentId);
+                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf('/')) + "/" + currentId);
                     dataArray.put(NEXT_ELEMENT_PATH,
-                            query.substring(0, query.lastIndexOf("/")) + "/" + ((Element) nodeList.item(i + 1))
+                            query.substring(0, query.lastIndexOf('/')) + "/" + ((Element) nodeList.item(i + 1))
                                     .getAttribute(ID));
 
                 }
@@ -314,7 +317,7 @@ public class CommonUtils {
      */
     private static String getCompletePath(String name) {
         String path = "/_system/governance/" + TAXONOMY_CONFIGURATION_PATH;
-        if (!name.startsWith(path)) {
+        if (!path.startsWith(name)) {
             name = path + name;
         }
         return name;

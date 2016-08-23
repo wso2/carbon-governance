@@ -37,7 +37,7 @@
     TaxonomyManagementClient client;
     try {
         client = new TaxonomyManagementClient(cookie, config, session);
-        temp = client.getTaxonomyList(request);
+        temp = client.getTaxonomyList();
     } catch (Exception e) {
         response.setStatus(500);
         CarbonUIMessage uiMsg = new CarbonUIMessage(CarbonUIMessage.ERROR, e.getMessage(), e);
