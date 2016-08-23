@@ -1698,12 +1698,7 @@ public class GovernanceUtils {
             while (iKeys.hasNext()) {
                 String propKey = (String) iKeys.next();
 
-                if ((propKey.startsWith("registry.custom_lifecycle.votes.")
-                        || propKey.startsWith("registry.custom_lifecycle.user.")
-                        || propKey.startsWith("registry.custom_lifecycle.checklist.")
-                        || propKey.startsWith("registry.LC.name")
-                        || propKey.startsWith("registry.lifecycle.")
-                        || propKey.startsWith("registry.Aspects")) && propKey.contains(aspect)) {
+                if (isStartsWithRegistry(propKey) && propKey.contains(aspect)) {
                     propertiesToRemove.add(propKey);
                 }
             }
@@ -1731,6 +1726,15 @@ public class GovernanceUtils {
             log.error(msg, e);
             throw new RegistryException(msg, e);
         }
+    }
+
+    private static boolean isStartsWithRegistry(String propKey) {
+        return (propKey.startsWith("registry.custom_lifecycle.votes.")
+                || propKey.startsWith("registry.custom_lifecycle.user.")
+                || propKey.startsWith("registry.custom_lifecycle.checklist.")
+                || propKey.startsWith("registry.LC.name")
+                || propKey.startsWith("registry.lifecycle.")
+                || propKey.startsWith("registry.Aspects"));
     }
 
     public static AttributeSearchService getAttributeSearchService() {
