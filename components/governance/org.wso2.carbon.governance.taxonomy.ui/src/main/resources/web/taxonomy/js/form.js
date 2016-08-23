@@ -141,7 +141,7 @@
             var form = $form[0];
 
             if ($(':input[@name=submit]', form).length) {
-                alert('Error: Form elements must not be named "submit".');
+                CARBON.showErrorDialog('Error: Form elements must not be named "submit".');
                 return;
             }
 
@@ -262,7 +262,8 @@
                     // extract the server response from the iframe
                     var data, doc;
 
-                    doc = io.contentWindow ? io.contentWindow.document : io.contentDocument ? io.contentDocument : io.document;
+                    doc = io.contentWindow ? io.contentWindow.document : io.contentDocument ? io.contentDocument :
+                        io.document;
 
                     if (doc.body == null && !operaHack && $.browser.opera) {
                         // In Opera 9.2.x the iframe DOM is not always traversable when
