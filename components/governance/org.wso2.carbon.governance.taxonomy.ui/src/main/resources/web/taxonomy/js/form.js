@@ -141,7 +141,7 @@
             var form = $form[0];
 
             if ($(':input[@name=submit]', form).length) {
-                CARBON.showErrorDialog('Error: Form elements must not be named "submit".');
+                alert('Error: Form elements must not be named "submit".');
                 return;
             }
 
