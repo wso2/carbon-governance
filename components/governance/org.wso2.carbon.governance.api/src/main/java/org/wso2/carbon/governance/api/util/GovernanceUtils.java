@@ -1729,12 +1729,12 @@ public class GovernanceUtils {
     }
 
     private static boolean isStartsWithRegistry(String propKey) {
-        return (propKey.startsWith("registry.custom_lifecycle.votes.")
-                || propKey.startsWith("registry.custom_lifecycle.user.")
-                || propKey.startsWith("registry.custom_lifecycle.checklist.")
-                || propKey.startsWith("registry.LC.name")
-                || propKey.startsWith("registry.lifecycle.")
-                || propKey.startsWith("registry.Aspects"));
+        return (propKey.startsWith(GovernanceConstants.REGISTRY_CUSTOM_LC_VOTES_PROPERTY)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_CUSTOM_LC_USER_PROPERTY)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_CUSTOM_LC_CHECKLIST_PROPERTY)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_LIFECYCLE_NAME_PROPERTY)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_LIFECYCLE)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_ASPECTS_PROPERTY));
     }
 
     public static AttributeSearchService getAttributeSearchService() {

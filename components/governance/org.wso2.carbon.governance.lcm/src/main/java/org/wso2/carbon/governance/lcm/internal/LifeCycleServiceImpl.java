@@ -231,7 +231,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             String votePrefix = "registry.custom_lifecycle.votes.";
             String votePermissionSuffix = ".vote.permission";
             if (propertyKey.startsWith(checkListPrefix) && propertyKey.endsWith(permissionSuffix) &&
-                propertyKey.contains(GovernanceConstants.DOT + artifactLC + GovernanceConstants.DOT)) {
+                    propertyKey.contains(GovernanceConstants.LIFECYCLE_PROPERTY_SEPERATOR + artifactLC
+                    + GovernanceConstants.LIFECYCLE_PROPERTY_SEPERATOR)) {
                 for (String role : roleNames) {
                     List<String> propValues = (List<String>) lifecycleProps.get(propertyKey);
                     for (String propValue : propValues) {
@@ -245,7 +246,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 }
             }
             if (propertyKey.startsWith(votePrefix) && propertyKey.endsWith(votePermissionSuffix) &&
-                propertyKey.contains(GovernanceConstants.DOT + artifactLC + GovernanceConstants.DOT)) {
+                    propertyKey.contains(GovernanceConstants.LIFECYCLE_PROPERTY_SEPERATOR + artifactLC
+                    + GovernanceConstants.LIFECYCLE_PROPERTY_SEPERATOR)) {
                 for (String role : roleNames) {
                     List<String> propValues = (List<String>) lifecycleProps.get(propertyKey);
                     for (String propValue : propValues) {
@@ -289,7 +291,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             String suffixVote = ".vote";
 
             if (propertyKey.startsWith(checkListPrefix) && propertyKey.endsWith(checkListSuffix) &&
-                propertyKey.contains(GovernanceConstants.DOT + artifactLC + GovernanceConstants.DOT)) {
+                    propertyKey.contains(GovernanceConstants.LIFECYCLE_PROPERTY_SEPERATOR + artifactLC
+                    + GovernanceConstants.LIFECYCLE_PROPERTY_SEPERATOR)) {
                 List<String> propValues = (List<String>) lifecycleProps.get(propertyKey);
                 LifeCycleCheckListItemBean checkListItem = new LifeCycleCheckListItemBean();
                 if (propValues != null && propValues.size() > 2) {
@@ -312,7 +315,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
                 checkListItemList.add(checkListItem);
             } else if (propertyKey.startsWith(prefixVote) && propertyKey.endsWith(suffixVote) &&
-                       propertyKey.contains(GovernanceConstants.DOT + artifactLC + GovernanceConstants.DOT)) {
+                    propertyKey.contains(GovernanceConstants.LIFECYCLE_PROPERTY_SEPERATOR + artifactLC
+                            + GovernanceConstants.LIFECYCLE_PROPERTY_SEPERATOR)) {
                 List<String> propValues = (List<String>) lifecycleProps.get(propertyKey);
                 LifeCycleApprovalBean approveItem = new LifeCycleApprovalBean();
                 approveItem.setVisible("false");

@@ -82,7 +82,7 @@ public class GovernanceConstants {
     /**
      * This is the character used in lifecycle property keys
      */
-    public static final String DOT = ".";
+    public static final String LIFECYCLE_PROPERTY_SEPERATOR = ".";
 
     /**
      * The index path of the governance artifacts.
@@ -315,6 +315,31 @@ public class GovernanceConstants {
      * Defines the prefix of the state property
      */
     public static final String REGISTRY_LIFECYCLE = "registry.lifecycle.";
+
+    /**
+     * Defines the lifecycle name property
+     */
+    public static final String REGISTRY_LIFECYCLE_NAME_PROPERTY = "registry.LC.name";
+
+    /**
+     * Defines the registry aspects property
+     */
+    public static final String REGISTRY_ASPECTS_PROPERTY = "registry.Aspects";
+
+    /**
+     * Defines the prefix of the custom lifecycle votes property
+     */
+    public static final String REGISTRY_CUSTOM_LC_VOTES_PROPERTY = "registry.custom_lifecycle.votes.";
+
+    /**
+     * Defines the prefix of the custom lifecycle user property
+     */
+    public static final String REGISTRY_CUSTOM_LC_USER_PROPERTY = "registry.custom_lifecycle.user.";
+
+    /**
+     * Defines the prefix of the custom lifecycle checklist property
+     */
+    public static final String REGISTRY_CUSTOM_LC_CHECKLIST_PROPERTY = "registry.custom_lifecycle.checklist.";
 
     /**
      * lifecycle checkpoint boundary lower boundary QName.
