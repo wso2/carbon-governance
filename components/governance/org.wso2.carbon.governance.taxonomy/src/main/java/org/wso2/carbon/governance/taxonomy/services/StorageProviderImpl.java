@@ -46,6 +46,7 @@ import static org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_COMPONE
 class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvider {
     private static Map<Integer, Map<String, TaxonomyBean>> tenantTaxonomyMap;
     private static final Log log = LogFactory.getLog(StorageProviderImpl.class);
+    private static final String taxonomyPath = GOVERNANCE_COMPONENT_PATH + "/taxonomy";
     private int tenantId;
 
     StorageProviderImpl() {
@@ -171,7 +172,6 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
     @Override
     public void initTaxonomyStorage()
             throws UserStoreException, RegistryException, IOException, SAXException, ParserConfigurationException {
-        String taxonomyPath = GOVERNANCE_COMPONENT_PATH + "/taxonomy";
         String adminName = ServiceHolder.getRealmService().getTenantUserRealm(tenantId).getRealmConfiguration()
                 .getAdminUserName();
         Registry registry = ServiceHolder.getRegistryService().getGovernanceUserRegistry(adminName, tenantId);
