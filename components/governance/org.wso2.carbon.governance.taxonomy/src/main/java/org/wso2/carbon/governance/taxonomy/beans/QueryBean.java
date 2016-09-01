@@ -25,26 +25,56 @@ public class QueryBean {
     private String query;
     private String assetType;
 
+    /**
+     * This method will return the asset type of query bean object
+     *
+     * @return String asset type
+     */
     public String getAssetType() {
         return assetType;
     }
 
+    /**
+     * This method will set the asset type of query bean object
+     *
+     * @param assetType String asset type
+     */
     public void setAssetType(String assetType) {
         this.assetType = assetType;
     }
 
+    /**
+     * This method will return the taxonomy name of query bean object
+     *
+     * @return String taxonomy name
+     */
     public String getTaxonomyName() {
         return taxonomyName;
     }
 
+    /**
+     * This method will set the taxonomy name of query bean object
+     *
+     * @param taxonomyName String taxonomy name
+     */
     public void setTaxonomyName(String taxonomyName) {
         this.taxonomyName = taxonomyName;
     }
 
+    /**
+     * This method will return the query of query bean object; for example path to a specific node (root/nodeA1/nodeB2)
+     *
+     * @return String query of query bean object
+     */
     public String getQuery() {
         return query;
     }
 
+    /**
+     * This method will set the query of query bean object; for example path to a specific node (root/nodeA1/nodeB2)
+     *
+     * @param query String query
+     */
     public void setQuery(String query) {
         this.query = query;
     }

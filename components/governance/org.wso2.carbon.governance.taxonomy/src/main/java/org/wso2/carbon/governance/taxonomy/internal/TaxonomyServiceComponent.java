@@ -97,16 +97,12 @@ public class TaxonomyServiceComponent {
         } catch (UserStoreException e) {
             log.error("Error occurred while getting RealmConfigurations when activating osgi service", e);
         } catch (RegistryException e) {
-
             log.error("Error occurred while getting taxonomy files from registry when activating osgi service", e);
         } catch (IOException e) {
-
             log.error("Error occurred while parsing taxonomy xml when activating osgi service", e);
         } catch (ParserConfigurationException e) {
-
             log.error("Error occurred while building new document for taxonomy when activating osgi service", e);
         } catch (SAXException e) {
-
             log.error("Error occurred parsing taxonomy content stream when activating osgi service", e);
         }
 
