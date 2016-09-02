@@ -23,4 +23,5 @@ import static org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_COMPONE
 public final class TaxonomyConstants {
     public static final String TAXONOMY_MEDIA_TYPE = "application/taxo+xml";
     public static final String TAXONOMY_CONFIGURATION_PATH = GOVERNANCE_COMPONENT_PATH + "/taxonomy/";
+    public static final String TAXONOMY_NAME = "taxonomyName";
 }

@@ -25,6 +25,7 @@ import org.wso2.carbon.governance.taxonomy.beans.QueryBean;
 import org.wso2.carbon.governance.taxonomy.beans.TaxonomyBean;
 import org.wso2.carbon.governance.taxonomy.exception.TaxonomyException;
 import org.wso2.carbon.governance.taxonomy.util.CommonUtils;
+import org.wso2.carbon.governance.taxonomy.util.TaxonomyConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.xml.sax.SAXException;
@@ -145,7 +146,7 @@ public class TaxonomyManager {
         JSONArray jsonArray = new JSONArray();
         JSONObject taxonomyNameObj = new JSONObject();
         String taxonomyName = queryProvider.getTaxonomyNameById(taxonomyQueryBean);
-        taxonomyNameObj.put("taxonomyName", taxonomyName);
+        taxonomyNameObj.put(TaxonomyConstants.TAXONOMY_NAME, taxonomyName);
         jsonArray.put(taxonomyNameObj);
         return jsonArray;
     }
