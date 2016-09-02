@@ -32,6 +32,7 @@ import javax.servlet.http.HttpSession;
  * taxonomy stub
  */
 public class TaxonomyManagementClient {
+    public static final String TAXONOMY_SERVICES = "TaxonomyServices";
     private TaxonomyServicesStub stub;
 
     public TaxonomyManagementClient(String cookie, ServletConfig config, HttpSession session)
@@ -40,7 +41,7 @@ public class TaxonomyManagementClient {
         String backendServerURL = CarbonUIUtil.getServerURL(config.getServletContext(), session);
         ConfigurationContext configContext = (ConfigurationContext) config.
                 getServletContext().getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
-        endpointURL = backendServerURL + "TaxonomyServices";
+        endpointURL = backendServerURL + TAXONOMY_SERVICES;
 
         try {
             stub = new TaxonomyServicesStub(configContext, endpointURL);

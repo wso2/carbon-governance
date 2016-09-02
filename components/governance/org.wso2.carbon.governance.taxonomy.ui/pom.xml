@@ -46,14 +46,14 @@
                             org.wso2.carbon.governance.taxonomy.ui.*,
                         </Export-Package>
                         <Import-Package>
+                            org.wso2.carbon.registry.common.ui.*;version="${carbon.registry.imp.pkg.version}",
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
+                            javax.xml.namespace; version="[0.0.0,1.0.0)",
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
-                            javax.xml.namespace;version=0.0.0;version=0.0.0,
-                            org.wso2.carbon.governance.taxonomy.stub;version="${carbon.governance.package.import.version.range}",
-                            org.wso2.carbon.ui;version="${carbon.governance.package.import.version.range}",
-                            org.apache.axis2.context;version="${axis2.version}",
-                            org.apache.axis2.client;version="${axis2.version}",
-                            org.apache.axis2;version="${axis2.version}"
+                            org.apache.axiom.*; version="${axiom.osgi.version.range}",
+                            org.wso2.carbon.governance.taxonomy.stub.*;version="${carbon.governance.package.import.version.range}",
+                            *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
                     </instructions>
