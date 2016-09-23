@@ -2076,7 +2076,7 @@ public class GovernanceUtils {
 
                 private int comparison(String value1, String value2, String sortBy) throws GovernanceException {
                     //If sortBy is equal to a date/time attribute, preserve the order returned from the solr client.
-                    if(sortBy.equals("createdDate") || sortBy.equals("lastUpdatedDate")) {
+                    if("createdDate".equals(sortBy) || "lastUpdatedDate".equals(sortBy)) {
                         return 1;
                     }
                     //Else if sortBy an attribute
