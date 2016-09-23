@@ -42,7 +42,13 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.*;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
@@ -240,9 +246,10 @@ public class Utils {
                         " Authentication with API Manager failed: HTTP error code : " + response.getStatusLine()
                                 .getStatusCode());
             }
-
+        } catch (UnsupportedEncodingException e) {
+            throw new RegistryException(ExecutorConstants.ENCODING_FAIL, e);
         } catch (IOException e) {
-            throw new RegistryException("Authentication with API Manager failed. ", e);
+            throw new RegistryException(ExecutorConstants.APIM_POST_REQ_FAIL, e);
         }
     }
 }
