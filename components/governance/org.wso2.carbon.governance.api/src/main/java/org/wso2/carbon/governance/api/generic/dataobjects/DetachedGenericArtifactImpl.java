@@ -46,4 +46,15 @@ public class DetachedGenericArtifactImpl extends GenericArtifactImpl implements 
         }
         return newArtifact;
     }
+
+    @Override
+    public GenericArtifact makeRegistryAware(String id, GenericArtifactManager artifactManager) throws GovernanceException {
+        GenericArtifact artifact = artifactManager.getGenericArtifact(id);
+        for (String key : getAttributeKeys()) {
+            for (String attribute : getAttributes(key)) {
+                artifact.setAttribute(key, attribute);
+            }
+        }
+        return artifact;
+    }
 }

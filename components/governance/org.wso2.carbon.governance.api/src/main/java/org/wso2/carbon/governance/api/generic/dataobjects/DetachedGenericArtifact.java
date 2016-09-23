@@ -30,4 +30,7 @@ import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 public interface DetachedGenericArtifact extends GenericArtifact {
     public GenericArtifact makeRegistryAware(GenericArtifactManager artifactManager)
             throws GovernanceException;
+
+    public GenericArtifact makeRegistryAware(String id, GenericArtifactManager artifactManager)
+            throws GovernanceException;
 }

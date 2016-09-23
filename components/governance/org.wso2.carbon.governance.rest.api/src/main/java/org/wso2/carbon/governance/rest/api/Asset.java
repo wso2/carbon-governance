@@ -459,8 +459,12 @@ public class Asset {
         String shortName = Util.getShortName(assetType);
         try {
             GenericArtifactManager manager = getGenericArtifactManager(shortName);
-            GenericArtifact artifact = genericArtifact.makeRegistryAware(manager);
-            artifact.setId(id);
+            GenericArtifact artifact = manager.getGenericArtifact(id);
+            for (String key : genericArtifact.getAttributeKeys()) {
+                for (String attribute : genericArtifact.getAttributes(key)) {
+                    artifact.setAttribute(key, attribute);
+                }
+            }
             manager.updateGenericArtifact(artifact);
             //Use 'generateLink' method with four parameters.
             //Fix for REGISTRY-3129
