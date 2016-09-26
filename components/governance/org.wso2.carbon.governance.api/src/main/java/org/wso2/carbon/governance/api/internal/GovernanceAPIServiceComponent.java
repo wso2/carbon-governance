@@ -23,6 +23,7 @@ import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
+import org.wso2.carbon.registry.indexing.service.TermsQuerySearchService;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 
 
@@ -42,6 +43,9 @@ import org.wso2.carbon.registry.indexing.service.TermsSearchService;
  * @scr.reference name="registry.term.component"
  * interface="org.wso2.carbon.registry.indexing.service.TermsSearchService"
  * cardinality="1..1" policy="dynamic" bind="setTermsSearchService" unbind="unsetTermsSearchService"
+ * @scr.reference name="registry.term.query.component"
+ * interface="org.wso2.carbon.registry.indexing.service.TermsQuerySearchService"
+ * cardinality="1..1" policy="dynamic" bind="setTermsQuerySearchService" unbind="unsetTermsQuerySearchService"
  */
 @SuppressWarnings({"JavaDoc", "unused"})
 public class GovernanceAPIServiceComponent {
@@ -136,6 +140,19 @@ public class GovernanceAPIServiceComponent {
             log.debug("Unsetting TermSearchService");
         }
         GovernanceUtils.setTermsSearchService(null);
+    }
 
+    protected void setTermsQuerySearchService(TermsQuerySearchService searchService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting TermsQuerySearchService");
+        }
+        GovernanceUtils.setTermsQuerySearchService(searchService);
+    }
+
+    protected void  unsetTermsQuerySearchService(TermsQuerySearchService searchService){
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting TermQuerySearchService");
+        }
+        GovernanceUtils.setTermsQuerySearchService(null);
     }
 }

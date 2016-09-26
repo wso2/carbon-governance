@@ -37,6 +37,7 @@ import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.governance.common.GovernanceConfiguration;
 import org.wso2.carbon.governance.common.GovernanceConfigurationService;
+import org.wso2.carbon.governance.rest.api.model.AssociationModel;
 import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
 import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
@@ -290,6 +291,13 @@ public class Asset {
     }
 
 
+    @GET
+    @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/associations")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAssociations(@PathParam("assetType") String assetType, @PathParam("id") String id,
+            @Context UriInfo uriInfo) throws RegistryException {
+        return getGovernanceAssetAssociation(assetType, id, uriInfo);
+    }
 
 
     protected Registry getUserRegistry() throws RegistryException {
@@ -933,4 +941,52 @@ public class Asset {
         return governanceConfiguration;
     }
 
+    /**
+     * This method is used to get all associations.
+     *
+     * @param assetType association type
+     * @param id        artifact id
+     * @param uriInfo   uri information
+     * @return          all associations.
+     * @throws RegistryException
+     */
+    private Response getGovernanceAssetAssociation(String assetType, String id, UriInfo uriInfo)
+            throws RegistryException {
+        String shortName = Util.getShortName(assetType);
+        if (validateAssetType(shortName)) {
+            GenericArtifact currentAsset = getUniqueAsset(shortName, id, uriInfo);
+            if (currentAsset != null) {
+                List<AssociationModel> associationsList = new ArrayList<>();
+                Association[] associations = getUserRegistry()
+                        .getAllAssociations(currentAsset.getPath());
+                if (associations.length > 0) {
+                    for (org.wso2.carbon.registry.core.Association association : associations) {
+
+                        String artifactPath = association.getDestinationPath();
+
+                        GovernanceArtifact artifact = GovernanceUtils.retrieveGovernanceArtifactByPath
+                                (getUserRegistry(), artifactPath);
+
+                        String artifactShortName = GovernanceUtils.getArtifactConfigurationByMediaType
+                                (getUserRegistry(), artifact.getMediaType()).getKey();
+
+                        String baseURI = Util.getBaseURL(uriInfo);
+                        String selfLink = Util.generateLink(artifactShortName, artifact.getId(), baseURI);
+
+                        AssociationModel associationModel = new AssociationModel();
+                        associationModel.setAssociationType(association.getAssociationType());
+                        associationModel.setAssociationPath(association.getDestinationPath());
+                        associationModel.setAssociationArtifactType(artifactShortName);
+                        associationModel.setSelfLink(selfLink);
+                        associationsList.add(associationModel);
+                    }
+
+                    return Response.ok().entity(associationsList).build();
+                }
+            }
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return validationFail(shortName);
+        }
+    }
 }
