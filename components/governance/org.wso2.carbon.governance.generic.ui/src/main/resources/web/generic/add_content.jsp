@@ -218,11 +218,10 @@
                     var uResourceFile = document.getElementById('uResourceFile');
                     var uResourceName = document.getElementById('uResourceName');
 
-                    //reason += validateEmpty(uResourceFile, "<fmt:message key="file.or.zip.file"><fmt:param value="<%=Encode.forJavaScript(singularLabel)%>"/></fmt:message>");
                     if (uResourceFile.value == null || uResourceFile.value == "") {
                         reason += org_wso2_carbon_registry_common_ui_jsi18n["the.required.field"] + " " +
                                 "<fmt:message key="file.or.zip.file"><fmt:param value="<%=Encode.forHtml(singularLabel)%>"/></fmt:message>" +
-                                " " + org_wso2_carbon_registry_common_ui_jsi18n["not.filled"] + "<br />";
+                                " " + org_wso2_carbon_registry_common_ui_jsi18n["not.filled"] + "<br/>";
                     }
 
                     if (reason == "") {

@@ -45,10 +45,6 @@
                 .addArtifactContent(head, request, config, session, dataName, dataNamespace, currentPath);
         if (effectivePath != null) {
             try {
-                //REGISTRY-698
-                //                if(request.getParameter("path")!=null){
-                //                    effectivePath = request.getParameter("path");
-                //                }
                 registryArtifactPath = effectivePath;
             } catch (Exception ignore) {
             }

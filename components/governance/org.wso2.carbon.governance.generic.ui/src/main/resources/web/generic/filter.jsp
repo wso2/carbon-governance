@@ -108,15 +108,15 @@
         });
 
         <%
-           if(unboundedNameList != null && unboundedWidgetList != null && unboundedValues != null){
-           for(int i=0;i<unboundedNameList.length;i++){%>
-        <%=unboundedNameList[i]%>Count = 0;
-        jQuery(document).ready(function () {
-            var countTracker = document.getElementById("<%=unboundedNameList[i]%>CountTaker");
-            if (countTracker != null && countTracker.value) {
-                <%=unboundedNameList[i]%>Count = parseInt(countTracker.value);
-            }
-        });
+           if (unboundedNameList != null && unboundedWidgetList != null && unboundedValues != null) {
+           for(int i = 0 ; i < unboundedNameList.length ; i++) {%>
+                <%=unboundedNameList[i]%>Count = 0;
+                jQuery(document).ready(function () {
+                    var countTracker = document.getElementById("<%=unboundedNameList[i]%>CountTaker");
+                    if (countTracker != null && countTracker.value) {
+                        <%=unboundedNameList[i]%>Count = parseInt(countTracker.value);
+                    }
+                });
 
         function add<%=unboundedNameList[i].replaceAll(" ", "")%>_<%=unboundedWidgetList[i].replaceAll(" ", "")%>(inputParam) {
 
