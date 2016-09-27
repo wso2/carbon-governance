@@ -2080,7 +2080,7 @@ public class GovernanceUtils {
                         return 1;
                     }
                     //Else if sortBy an attribute
-                    if (value1 == null) {
+                    if (StringUtils.isEmpty(value1)) {
                         throw new GovernanceException("Artifact does not contain the attribute " + sortBy);
                     }
 
