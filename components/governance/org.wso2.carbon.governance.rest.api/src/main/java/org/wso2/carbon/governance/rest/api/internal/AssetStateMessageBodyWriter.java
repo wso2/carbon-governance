@@ -72,12 +72,12 @@ public class AssetStateMessageBodyWriter implements MessageBodyWriter<AssetState
         if (assetState.getState() != null) {
             writer.name(STATE);
             writer.value(assetState.getState());
-        } else if (assetState.getStates() != null) {
-            for (Map.Entry<String, String> stateEntry : assetState.getStates().entrySet()) {
+        } /*else if (assetState.getActions() != null) {
+            for (Map.Entry<String, String> stateEntry : assetState.getActions().entrySet()) {
                 writer.name(stateEntry.getKey());
                 writer.value(stateEntry.getValue());
             }
-        }
+        }*/
         writer.endObject();
 
         writer.flush();

@@ -37,10 +37,10 @@ import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.governance.common.GovernanceConfiguration;
 import org.wso2.carbon.governance.common.GovernanceConfigurationService;
-import org.wso2.carbon.governance.rest.api.model.AssociationModel;
 import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
 import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
+import org.wso2.carbon.governance.rest.api.model.AssociationModel;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
 import org.wso2.carbon.governance.rest.api.util.CommonConstants;
 import org.wso2.carbon.governance.rest.api.util.Util;
@@ -52,6 +52,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.secure.AuthorizationFailedException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.resource.services.utils.AddResourceUtil;
 import org.wso2.carbon.registry.resource.services.utils.CommonUtil;
@@ -59,23 +60,6 @@ import org.wso2.carbon.registry.resource.services.utils.GetTextContentUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -90,6 +74,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 //TODO - test this
@@ -435,23 +436,38 @@ public class Asset {
     }
 
     private Response getGovernanceAssetStates(GenericArtifact artifact, String lcName) throws RegistryException {
-        AssetState assetState = null;
         if (artifact != null) {
             // lc == null means user look for all LCs
             if (lcName != null) {
-                String state = artifact.getLifecycleState(lcName);
-                assetState = new AssetState(state);
+                AssetState assetState = getAssetState(artifact, lcName);
+                return Response.ok().entity(assetState).build();
+
             } else {
                 String[] stateNames = artifact.getLifecycleNames();
                 if (stateNames != null) {
-                    assetState = new AssetState();
+                    List<AssetState> list = new ArrayList<>();
                     for (String name : stateNames) {
-                        assetState.addState(name, artifact.getLifecycleState(name));
+                        AssetState assetState = getAssetState(artifact, name);
+                        list.add(assetState);
+
                     }
+                    return Response.ok().entity(list).build();
                 }
             }
         }
-        return Response.ok().entity(assetState).build();
+        return Response.ok().entity(null).build();
+    }
+
+    private AssetState getAssetState(GenericArtifact artifact, String name) throws RegistryException {
+        UserRegistry userRegistry = (UserRegistry) getUserRegistry();
+        Resource resource = userRegistry.get(artifact.getPath());
+        String artifactLCState = resource.getProperty("registry.lifecycle." + name + ".state");
+        String[]  aspects = userRegistry.getAspectActions(artifact.getPath(), name);
+        AssetState assetState = new AssetState(artifactLCState, name);
+        for (String action:aspects  ) {
+            assetState.addActions(action);
+        }
+        return assetState;
     }
 
     private Response modifyGovernanceAsset(String assetType, String id, DetachedGenericArtifact genericArtifact,

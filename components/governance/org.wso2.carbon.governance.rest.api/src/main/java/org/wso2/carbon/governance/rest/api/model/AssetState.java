@@ -18,37 +18,49 @@
 
 package org.wso2.carbon.governance.rest.api.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AssetState {
     String state = null;
-    Map<String, String> states = new HashMap<>();
+    String lifecycleName;
+    List<String> actions = new ArrayList<>();
 
     public AssetState() {
     }
 
-    public AssetState(String state) {
+    public AssetState(String state, String lifecycleName) {
         this.state = state;
+        this.lifecycleName = lifecycleName;
     }
 
     public String getState() {
         return state;
     }
 
-    public void addState(String lcName, String state) {
-        states.put(lcName, state);
+    public void addActions(String action) {
+        actions.add(action);
     }
 
-    public Map<String, String> getStates() {
-        return states;
+    public List<String> getActions() {
+        return actions;
+    }
+
+    public String getLc() {
+        return lifecycleName;
+    }
+
+    public void setLc(String lifecycle) {
+        this.lifecycleName = lifecycle;
     }
 
     @Override
     public String toString() {
         return "AssetState{" +
                "state='" + state + '\'' +
-               ", states=" + states +
+               ", states=" + actions +
                '}';
     }
 }
