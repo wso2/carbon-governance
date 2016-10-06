@@ -44,7 +44,7 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
         <bean class="org.wso2.carbon.governance.rest.api.security.AuthenticationHandler"/>
         <bean class="org.wso2.carbon.governance.rest.api.internal.ContentArtifactMessageBodyWriter"/>
         <bean class="org.wso2.carbon.governance.rest.api.internal.GenericArtifactMessageBodyWriter"/>
-        <!--bean class="org.wso2.carbon.governance.rest.api.internal.AssetStateMessageBodyWriter"/-->
+        <bean class="org.wso2.carbon.governance.rest.api.internal.AssetStateMessageBodyWriter"/>
         <bean class="org.wso2.carbon.governance.rest.api.internal.GenericArtifactMessageBodyReader"/>
         <bean class="org.wso2.carbon.governance.rest.api.internal.LCStateMessageBodyReader"/>
         <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />

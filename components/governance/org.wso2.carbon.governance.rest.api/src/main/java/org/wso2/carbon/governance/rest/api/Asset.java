@@ -39,6 +39,7 @@ import org.wso2.carbon.governance.common.GovernanceConfiguration;
 import org.wso2.carbon.governance.common.GovernanceConfigurationService;
 import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
+import org.wso2.carbon.governance.rest.api.model.LCState;
 import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
 import org.wso2.carbon.governance.rest.api.model.AssociationModel;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
@@ -438,36 +439,39 @@ public class Asset {
     private Response getGovernanceAssetStates(GenericArtifact artifact, String lcName) throws RegistryException {
         if (artifact != null) {
             // lc == null means user look for all LCs
+            AssetState assetState = new AssetState();
             if (lcName != null) {
-                AssetState assetState = getAssetState(artifact, lcName);
+                LCState lCState = getAssetState(artifact, lcName);
+                assetState.setLcState(lCState);
                 return Response.ok().entity(assetState).build();
 
             } else {
                 String[] stateNames = artifact.getLifecycleNames();
                 if (stateNames != null) {
-                    List<AssetState> list = new ArrayList<>();
+                    List<LCState> list = new ArrayList<>();
                     for (String name : stateNames) {
-                        AssetState assetState = getAssetState(artifact, name);
-                        list.add(assetState);
+                        LCState lCState = getAssetState(artifact, name);
+                        list.add(lCState);
 
                     }
-                    return Response.ok().entity(list).build();
+                    assetState.setLcStates(list);
+                    return Response.ok().entity(assetState).build();
                 }
             }
         }
         return Response.ok().entity(null).build();
     }
 
-    private AssetState getAssetState(GenericArtifact artifact, String name) throws RegistryException {
+    private LCState getAssetState(GenericArtifact artifact, String name) throws RegistryException {
         UserRegistry userRegistry = (UserRegistry) getUserRegistry();
         Resource resource = userRegistry.get(artifact.getPath());
         String artifactLCState = resource.getProperty("registry.lifecycle." + name + ".state");
         String[]  aspects = userRegistry.getAspectActions(artifact.getPath(), name);
-        AssetState assetState = new AssetState(artifactLCState, name);
+        LCState LCState = new LCState(artifactLCState, name);
         for (String action:aspects  ) {
-            assetState.addActions(action);
+            LCState.addActions(action);
         }
-        return assetState;
+        return LCState;
     }
 
     private Response modifyGovernanceAsset(String assetType, String id, DetachedGenericArtifact genericArtifact,
