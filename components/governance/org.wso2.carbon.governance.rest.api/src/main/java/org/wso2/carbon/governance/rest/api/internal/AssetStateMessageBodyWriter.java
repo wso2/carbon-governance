@@ -20,6 +20,7 @@ package org.wso2.carbon.governance.rest.api.internal;
 
 import com.google.gson.stream.JsonWriter;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
+import org.wso2.carbon.governance.rest.api.model.LCState;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -34,7 +35,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Map;
 
 
 @Provider
@@ -42,7 +42,7 @@ import java.util.Map;
 public class AssetStateMessageBodyWriter implements MessageBodyWriter<AssetState> {
 
     public static final String INDENT = "  ";
-    public static final String STATE = "state";
+    public static final String STATE = "states";
     @Context
     UriInfo uriInfo;
 
@@ -68,16 +68,28 @@ public class AssetStateMessageBodyWriter implements MessageBodyWriter<AssetState
         JsonWriter writer = new JsonWriter(printWriter);
         writer.setIndent(INDENT);
         writer.beginObject();
+        writer.name(STATE);
+        if (assetState.getLcStates().size() > 0) {
+            writer.beginArray();
+            for (LCState lcState : assetState.getLcStates()) {
+                writer.beginObject();
+                writer.name("state").value(lcState.getState());
+                writer.name("lcName").value(lcState.getLc());
 
-        if (assetState.getState() != null) {
-            writer.name(STATE);
-            writer.value(assetState.getState());
-        } /*else if (assetState.getActions() != null) {
-            for (Map.Entry<String, String> stateEntry : assetState.getActions().entrySet()) {
-                writer.name(stateEntry.getKey());
-                writer.value(stateEntry.getValue());
+                if (lcState.getActions().size() > 0) {
+                    writer.name("actions");
+                    writer.beginArray();
+                    for (String action : lcState.getActions()) {
+                        writer.beginObject();
+                        writer.name("action").value(action);
+                        writer.endObject();
+                    }
+                    writer.endArray();
+                }
+                writer.endObject();
             }
-        }*/
+            writer.endArray();
+        }
         writer.endObject();
 
         writer.flush();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -19,48 +19,32 @@
 package org.wso2.carbon.governance.rest.api.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 public class AssetState {
-    String state = null;
-    String lifecycleName;
-    List<String> actions = new ArrayList<>();
+
+    private List<LCState> lcStates = new ArrayList<>();
 
     public AssetState() {
     }
 
-    public AssetState(String state, String lifecycleName) {
-        this.state = state;
-        this.lifecycleName = lifecycleName;
+    public List<LCState> getLcStates() {
+        return this.lcStates;
     }
 
-    public String getState() {
-        return state;
+    public void setLcState(LCState lcState) {
+        this.lcStates.add(lcState);
     }
 
-    public void addActions(String action) {
-        actions.add(action);
-    }
-
-    public List<String> getActions() {
-        return actions;
-    }
-
-    public String getLc() {
-        return lifecycleName;
-    }
-
-    public void setLc(String lifecycle) {
-        this.lifecycleName = lifecycle;
+    public void setLcStates(List<LCState> lcStates) {
+        this.lcStates.addAll(lcStates);
     }
 
     @Override
     public String toString() {
         return "AssetState{" +
-               "state='" + state + '\'' +
-               ", states=" + actions +
-               '}';
+                "lcStates=" + this.lcStates +
+                '}';
     }
 }
