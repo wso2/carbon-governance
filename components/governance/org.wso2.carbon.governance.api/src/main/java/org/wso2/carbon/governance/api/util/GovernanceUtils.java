@@ -533,25 +533,16 @@ public class GovernanceUtils {
                     String idPrefixConfigure = "/permission/admin/configure";
                     String idPrefixGovernance = idPrefixConfigure + "/governance";
 
-                    managementPermissions.add(
-                            new ManagementPermission("Manage", idPrefixManage));
-                    managementPermissions.add(
-                            new ManagementPermission("Resources", idPrefixResources));
-                    managementPermissions.add(
-                            new ManagementPermission("Govern", idPrefixGovern));
-                    managementPermissions.add(
-                            new ManagementPermission(configuration.getPluralLabel(), idPrefixFromConfig));
-                    managementPermissions.add(
-                            new ManagementPermission("Add", idPrefixFromConfig + "/add"));
-                    managementPermissions.add(
-                            new ManagementPermission("List", idPrefixFromConfig + "/list"));
+                    managementPermissions.add(new ManagementPermission("Manage", idPrefixManage));
+                    managementPermissions.add(new ManagementPermission("Resources", idPrefixResources));
+                    managementPermissions.add(new ManagementPermission("Govern", idPrefixGovern));
+                    managementPermissions
+                            .add(new ManagementPermission(configuration.getPluralLabel(), idPrefixFromConfig));
+                    managementPermissions.add(new ManagementPermission("Add", idPrefixFromConfig + "/add"));
+                    managementPermissions.add(new ManagementPermission("List", idPrefixFromConfig + "/list"));
 
-                    managementPermissions.add(
-                            new ManagementPermission("Configure", idPrefixConfigure)
-                    );
-                    managementPermissions.add(
-                            new ManagementPermission("Governance", idPrefixGovernance)
-                    );
+                    managementPermissions.add(new ManagementPermission("Configure", idPrefixConfigure));
+                    managementPermissions.add(new ManagementPermission("Governance", idPrefixGovernance));
                     managementPermissions.add(  
                             new ManagementPermission(configuration.getPluralLabel(),
                                     "/permission/admin/configure/governance/" +
