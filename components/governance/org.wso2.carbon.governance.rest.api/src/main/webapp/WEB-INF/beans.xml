@@ -54,4 +54,35 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
     </jaxrs:providers>
    </jaxrs:server>
 
+    <!-- Swagger API listing resource -->
+    <bean id="swaggerResourceJSON"
+          class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON" />
+
+    <!-- Swagger writers -->
+    <bean id="resourceWriter"
+          class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" />
+    <bean id="apiWriter"
+          class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" />
+
+    <jaxrs:server address="/swagger" id="swagger">
+        <jaxrs:serviceBeans>
+            <ref bean="swaggerResourceJSON" />
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="resourceWriter" />
+            <ref bean="apiWriter" />
+        </jaxrs:providers>
+    </jaxrs:server>
+
+    <bean id="swaggerConfig" class="org.wso2.carbon.governance.rest.api.swagger.SwaggerJaxrsConfig">
+        <property name="resourcePackage" value="org.wso2.carbon.governance.rest.api" />
+        <property name="version" value="2.0" />
+        <property name="basePath" value="https://localhost:9443" />
+        <property name="title" value="Swagger documentation for Governance REST API" />
+        <property name="description"
+                  value="Swagger documentation for Governance REST API" />
+        <property name="contact" value="dev@wso2.org" />
+        <property name="scan" value="true" />
+    </bean>
+
 </beans>

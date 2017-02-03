@@ -18,6 +18,10 @@
 
 package org.wso2.carbon.governance.rest.api;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -39,9 +43,9 @@ import org.wso2.carbon.governance.common.GovernanceConfiguration;
 import org.wso2.carbon.governance.common.GovernanceConfigurationService;
 import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
-import org.wso2.carbon.governance.rest.api.model.LCState;
 import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
 import org.wso2.carbon.governance.rest.api.model.AssociationModel;
+import org.wso2.carbon.governance.rest.api.model.LCState;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
 import org.wso2.carbon.governance.rest.api.util.CommonConstants;
 import org.wso2.carbon.governance.rest.api.util.Util;
@@ -94,8 +98,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
-//TODO - test this
-//@RolesAllowed("GOV-REST")
+@Api(value = "/governance",
+             description = "governance Rest api for doing operations on a asset",
+             produces = MediaType.APPLICATION_JSON)
 public class Asset {
 
 
@@ -121,6 +126,10 @@ public class Asset {
     @GET
     @Path("/types")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get supported asset list",
+            httpMethod = "GET",
+            notes = "Fetch available asset type list")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found the available asset types and returned in body")})
     public Response getTypes() throws RegistryException {
         return getAssetTypes();
     }
@@ -128,6 +137,11 @@ public class Asset {
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get list of assets for provided asset type",
+            httpMethod = "GET",
+            notes = "Fetch list of assets for provided asset type")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found list of assets for provided asset type and returned in body"),
+            @ApiResponse(code = 404, message = "Given specific asset type not found")})
     public Response getAssets(@PathParam("assetType") String assetType, @Context UriInfo uriInfo,
                               @HeaderParam("X_TENANT") String tenant)
             throws RegistryException {
@@ -137,6 +151,11 @@ public class Asset {
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get asset for provided asset type and ID",
+            httpMethod = "GET",
+            notes = "Fetch asset for provided asset type and ID")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found the asset for provided asset type and ID, then returned in body"),
+            @ApiResponse(code = 404, message = "Given ID is not found in specific asset type")})
     public Response getAsset(@PathParam("assetType") String assetType, @PathParam("id") String id)
             throws RegistryException {
         return getGovernanceAsset(assetType, id);
@@ -145,6 +164,11 @@ public class Asset {
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/content")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get content of the provided asset type and ID",
+            httpMethod = "GET",
+            notes = "Fetch asset for provided asset type and ID")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found the asset for provided asset type and ID, then returned in body"),
+            @ApiResponse(code = 404, message = "Given ID is not found in specific asset type")})
     public Response getAssetRawContent(@PathParam("assetType") String assetType, @PathParam("id") String id)
             throws RegistryException {
         return getRawContentOfGovernanceAsset(assetType, id);
@@ -161,6 +185,11 @@ public class Asset {
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/endpoints")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get endpoints of an asset instance",
+            httpMethod = "GET",
+            notes = "Fetch endpoints of an asset instance")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found the asset for provided asset type and ID, then returned endpoints if any in body"),
+            @ApiResponse(code = 404, message = "Given ID is not found in specific asset type")})
     public Response getAssetEndpoints(@PathParam("assetType") String assetType, @PathParam("id") String id,
                                       @Context UriInfo uriInfo) throws RegistryException {
         return getGovernanceEndpointAssets(assetType, id, uriInfo);
@@ -169,6 +198,11 @@ public class Asset {
     @POST
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Add an asset to registry",
+            httpMethod = "POST",
+            notes = "Add an asset to registry")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Asset added successfully"),
+            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response createAsset(@PathParam("assetType") String assetType, GenericArtifact genericArtifact,
                                 @Context UriInfo uriInfo) throws RegistryException {
         return createGovernanceAsset(assetType, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
@@ -178,6 +212,11 @@ public class Asset {
     @PUT
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Update an already added asset",
+            httpMethod = "PUT",
+            notes = "Update an already added asset")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Asset updated successfully"),
+            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response modifyAsset(@PathParam("assetType") String assetType, @PathParam("id") String id,
                                 GenericArtifact genericArtifact, @Context UriInfo uriInfo) throws RegistryException {
         return modifyGovernanceAsset(assetType, id, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
@@ -186,6 +225,11 @@ public class Asset {
 
     @DELETE
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}")
+    @ApiOperation(value = "Delete an artifact",
+            httpMethod = "DELETE",
+            notes = "Delete an asset")
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "Asset deleted successfully"),
+            @ApiResponse(code = 404, message = "Specified asset type or ID not found")})
     public Response deleteAsset(@PathParam("assetType") String assetType, @PathParam("id") String id)
             throws RegistryException {
         return deleteGovernanceAsset(assetType, id);
@@ -194,6 +238,10 @@ public class Asset {
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/states")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get all the current LC states or specified lifecycle state of the asset.",
+            httpMethod = "GET",
+            notes = "Fetch all the current LC states or specified lifecycle state of the asset.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found all the current LC states or specified lifecycle state of the asset.")})
     public Response getAssetStates(@PathParam("assetType") String assetType, @PathParam("id") String id,
                                    @Context UriInfo uriInfo) throws RegistryException {
         String lc = uriInfo.getQueryParameters().getFirst("lc");
@@ -204,6 +252,11 @@ public class Asset {
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/states")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Update lifecycle state of an asset",
+            httpMethod = "PUT",
+            notes = "Update lifecycle state of an asset")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Asset updated successfully"),
+            @ApiResponse(code = 404, message = "Specified asset not found")})
     public Response updateLCState(@PathParam("assetType") String assetType, @PathParam("id") String id,
                                   AssetStateChange stateChange,
                                   @Context UriInfo uriInfo) throws RegistryException {
@@ -215,6 +268,11 @@ public class Asset {
     @GET
     @Path("/endpoints")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get all endpoints",
+            httpMethod = "GET",
+            notes = "Fetch all endpoints")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found list of endpoints and returned in body"),
+            @ApiResponse(code = 404, message = "Specified resource not found")})
     public Response getEndpoints(@Context UriInfo uriInfo, @HeaderParam("X_TENANT") String tenant) throws RegistryException {
         return getGovernanceAssets(ENDPOINTS, uriInfo, tenant);
     }
@@ -222,6 +280,11 @@ public class Asset {
     @GET
     @Path("/endpoints/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get the endpoint of provided ID",
+            httpMethod = "GET",
+            notes = "Fetch the endpoint of provided ID")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found the endpoint of the provided ID and returned in body"),
+            @ApiResponse(code = 404, message = "Given ID is not found in endpoints")})
     public Response getEndpoint(@PathParam("id") String id) throws RegistryException {
         return getGovernanceEndpoint(id);
     }
@@ -230,6 +293,12 @@ public class Asset {
     @POST
     @Path("/endpoints")
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Add an endpoint to registry",
+            httpMethod = "POST",
+            notes = "Add an endpoint to registry")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Endpoint added successfully"),
+            @ApiResponse(code = 404, message = "Specified resource not found"),
+            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response createEndpoint(GenericArtifact genericArtifact, @Context UriInfo uriInfo)
             throws RegistryException {
         return createGovernanceAsset(ENDPOINTS, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
@@ -238,6 +307,11 @@ public class Asset {
     @POST
     @Path("/endpoints/{assetType : [a-zA-Z][a-zA-Z_0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Add an endpoint with association",
+            httpMethod = "POST",
+            notes = "Add an endpoint with association")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Endpoint added with associated successfully"),
+            @ApiResponse(code = 404, message = "Specified resource not found")})
     public Response createEndpoint(@PathParam("assetType") String assetType,
                                    GenericArtifact genericArtifact, @Context UriInfo uriInfo) throws RegistryException {
         return createEndpointWithAssociation(assetType, null, uriInfo, genericArtifact);
@@ -247,6 +321,11 @@ public class Asset {
     @POST
     @Path("/endpoints/{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Add an endpoint to registry and associate it with provided ID",
+            httpMethod = "POST",
+            notes = "Add an endpoint to registry and associate it with provided ID")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Endpoint added and associated with the provided asset ID successfully"),
+            @ApiResponse(code = 404, message = "Given asset ID is not found")})
     public Response createEndpoint(@PathParam("assetType") String assetType, @PathParam("id") String id,
                                    GenericArtifact genericArtifact, @Context UriInfo uriInfo) throws RegistryException {
         return createEndpointWithAssociation(assetType, id, uriInfo, genericArtifact);
@@ -255,6 +334,10 @@ public class Asset {
     @PUT
     @Path("/endpoints/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Update an already added endpoint",
+            httpMethod = "PUT",
+            notes = "Update an already added endpoint")
+    @ApiResponses(value = {@ApiResponse(code = 404, message = "Specified api endpoint not implemented")})
     public Response modifyEndpoint(@PathParam("id") String id,
                                    GenericArtifact genericArtifact, @Context UriInfo uriInfo) throws RegistryException {
         //TODO - IMO it's incorrect to allow endpoint edit instead use create/delete through REST API WDYT ?
@@ -265,13 +348,23 @@ public class Asset {
 
     @DELETE
     @Path("/endpoints/{id}")
+    @ApiOperation(value = "Delete an endpoint",
+            httpMethod = "DELETE",
+            notes = "Delete an endpoint")
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "Asset deleted successfully"),
+            @ApiResponse(code = 404, message = "Specified ID not found")})
     public Response deleteEndpoint(@PathParam("id") String id) throws RegistryException {
-        return deleteGovernanceAsset("endpoints", id);
+        return deleteGovernanceAsset(ENDPOINTS, id);
     }
 
     @GET
     @Path("/endpoints/{id}/states")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get the endpoints lifecycle and it's state information",
+            httpMethod = "GET",
+            notes = "Fetch the endpoints lifecycle and it's state information")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found the endpoint of the provided ID and returned in body"),
+            @ApiResponse(code = 404, message = "Given ID is not found in endpoints")})
     public Response getEndpointStates(@PathParam("id") String id,
                                       @Context UriInfo uriInfo) throws RegistryException {
         String lc = uriInfo.getQueryParameters().getFirst("lc");
@@ -280,6 +373,11 @@ public class Asset {
 
     @POST
     @Path("/endpoints/activate/{id}")
+    @ApiOperation(value = "Add endpoint LC state as activate in the provided endpoint ID",
+            httpMethod = "POST",
+            notes = "Add endpoint LC state as activate in the provided endpoint ID")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Endpoint activated successfully"),
+            @ApiResponse(code = 404, message = "Given endpoint ID is not found")})
     public Response endpointActivate(@PathParam("id") String id,
                                      @Context UriInfo uriInfo) throws RegistryException {
         return endpointActivate(id);
@@ -287,6 +385,11 @@ public class Asset {
 
     @POST
     @Path("/endpoints/deactivate/{id}")
+    @ApiOperation(value = "Add endpoint LC state as deactivate in the provided endpoint ID",
+            httpMethod = "POST",
+            notes = "Add endpoint LC state as deactivate in the provided endpoint ID")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Endpoint deactivated successfully"),
+            @ApiResponse(code = 404, message = "Given endpoint ID is not found")})
     public Response endpointDeactivate(@PathParam("id") String id,
                                        @Context UriInfo uriInfo) throws RegistryException {
         return endpointDeactivate(id);
@@ -296,6 +399,11 @@ public class Asset {
     @GET
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/associations")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get all the assets which is associated with provided ID",
+            httpMethod = "GET",
+            notes = "Fetch all the assets which is associated with provided ID")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Found all the assets which is associated with provided ID and returned in body"),
+            @ApiResponse(code = 404, message = "Given ID is not found in endpoints")})
     public Response getAssociations(@PathParam("assetType") String assetType, @PathParam("id") String id,
             @Context UriInfo uriInfo) throws RegistryException {
         return getGovernanceAssetAssociation(assetType, id, uriInfo);
