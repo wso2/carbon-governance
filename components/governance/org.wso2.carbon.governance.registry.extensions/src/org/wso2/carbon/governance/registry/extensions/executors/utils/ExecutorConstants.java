@@ -60,6 +60,11 @@ public class ExecutorConstants {
      */
     public static final String POLICY_MEDIA_TYPE = GovernanceConstants.POLICY_XML_MEDIA_TYPE;
 
+    /**
+     * defines the SOAP Service media type
+     */
+    public static String SOAP_MEDIA_TYPE = "application/vnd.wso2-soap-service+xml";
+
 
     /**
      * Defines the copy comments key
@@ -252,6 +257,7 @@ public class ExecutorConstants {
 	public static final String EMPTY_ENDPOINT = "Service Endpoint is empty.";
 	public static final String APIM_LOGIN_UNDEFINED = "APIManager login credentials are not defined";
 	public static final String ENCODING_FAIL = "Failed when encoding the parameter list. ";
+    public static final String FAILED_TO_DELETE_MESSAGE = "Failed to delete API from API Publisher ";
 
     //API Manager 2.0.0 constants
     public static final String DESIGN_API_ACTION = "design";
