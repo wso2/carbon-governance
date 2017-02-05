@@ -47,8 +47,14 @@
     boolean viewMode = false;
     ManageGenericArtifactServiceClient client;
     ResourceServiceClient resourceServiceClient;
-    String rxtPath = Encode.forHtml(request.getParameter("path"));
-    String rxtName = Encode.forHtml(request.getParameter("rxtName"));
+    String rxtPath = null;
+    if (request.getParameter("path") != null) {
+        rxtPath = Encode.forHtml(request.getParameter("path"));
+    }
+    String rxtName = null;
+    if (request.getParameter("rxtName") != null) {
+        rxtName = Encode.forHtml(request.getParameter("rxtName"));
+    }
     try {
         client = new ManageGenericArtifactServiceClient(config, session);
         viewMode = request.getParameter("view") != null;
