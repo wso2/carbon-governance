@@ -17,6 +17,7 @@
 */
 package org.wso2.carbon.governance.lcm.internal;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
@@ -46,13 +47,14 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
 
+import javax.cache.Cache;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import javax.cache.Cache;
 
 /**
  * API implementation of the LifeCycleService(Used to fetch lifecycle information) .
@@ -321,8 +323,12 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                         if ((param.startsWith("name:"))) {
                             approveItem.setName(param.substring(5));
                         }
-                        if ((param.startsWith("uservote:"))) {
-                            approveItem.setValue(Boolean.getBoolean(param.substring(9)));
+                        if ((param.startsWith("users:"))) {
+                            boolean userVoted = false;
+                            String users = param.replace("users:", "");
+                            String[] votedUsers = users.split(",");
+                            userVoted = Arrays.asList(votedUsers).contains(registry.getUserName());
+                            approveItem.setValue(userVoted);
                         }
                         if ((param.startsWith("votes:"))) {
                             approveItem.setRequiredVote(Integer.parseInt(param.substring(6)));
@@ -340,7 +346,19 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 if (approvePermissionList.contains(key)) {
                     approveItem.setVisible("true");
                 }
-                lifeCycleApprovalBeanList.add(approveItem);
+                if (lifeCycleStateBean.getLifeCycleActionsBean() != null) {
+                    LifeCycleActionsBean lifeCycleActionsBean = lifeCycleStateBean.getLifeCycleActionsBean();
+                    List<String> lcActionList = Arrays.asList(lifeCycleActionsBean.getActions());
+                    if (lcActionList.contains(approveItem.getName()) && ("true").equals(approveItem.getVisible())) {
+                        lifeCycleApprovalBeanList.add(approveItem);
+                    }
+                    if (approveItem.getCurrentVote() < approveItem.getRequiredVote()) {
+                        String[] newActions = (String[]) ArrayUtils.removeElement(lifeCycleActionsBean.getActions(),
+                                                                                  approveItem.getName());
+                        lifeCycleActionsBean.setActions(newActions);
+                    }
+                    lifeCycleStateBean.setLifeCycleActionsBean(lifeCycleActionsBean);
+                }
             }
 
         }

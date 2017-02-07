@@ -951,10 +951,10 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public String[] getAllVotingItems() throws GovernanceException {
+    public String[] getAllVotingItems(String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
         ApproveItemBean[] approveItemBeans = GovernanceUtils.
-                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this);
+                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this, aspectName);
         if (approveItemBeans == null) {
             throw new GovernanceException("No voting event found for the lifecycle: " + getLcName() +
                     " in lifecycle state: " + getLcState() + " of the artifact " + getQName().getLocalPart());
@@ -973,17 +973,17 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public void vote(int order) throws GovernanceException {
+    public void vote(int order, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
         ApproveItemBean[] approveItemBeans = GovernanceUtils.
-                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this);
+                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this, aspectName);
         if (approveItemBeans == null || order < 0 || order >= approveItemBeans.length) {
             throw new GovernanceException("Invalid voting action selected");
         } else if (approveItemBeans[order].getValue()) {
             throw new GovernanceException("Already voted for the action " + approveItemBeans[order].getName());
         }
         try {
-            setVotingItemValue(order, true, approveItemBeans);
+            setVotingItemValue(order, true, approveItemBeans, aspectName);
         } catch (RegistryException e) {
             String msg = "Voting failed for action " + approveItemBeans[order].getName();
             log.error(msg, e);
@@ -999,10 +999,10 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public boolean isVoted(int order) throws GovernanceException {
+    public boolean isVoted(int order, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
         ApproveItemBean[] approveItemBeans = GovernanceUtils.
-                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this);
+                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this,aspectName);
         if (approveItemBeans == null || order < 0 || order >= approveItemBeans.length) {
             throw new GovernanceException("Invalid voting action selected");
         }
@@ -1016,10 +1016,10 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException
      *          throws if the operation failed.
      */
-    public void unvote(int order) throws GovernanceException {
+    public void unvote(int order, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
         ApproveItemBean[] approveItemBeans = GovernanceUtils.
-                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this);
+                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this, aspectName);
         if (approveItemBeans == null || order < 0 || order >= approveItemBeans.length) {
             throw new GovernanceException("Invalid voting action selected");
         } else if (!approveItemBeans[order].getValue()) {
@@ -1027,7 +1027,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                     + approveItemBeans[order].getName() + "\"");
         }
         try {
-            setVotingItemValue(order, false, approveItemBeans);
+            setVotingItemValue(order, false, approveItemBeans, aspectName);
         } catch (RegistryException e) {
             String msg = "Unvoting failed for action \"" + approveItemBeans[order].getName() + "\"";
             log.error(msg, e);
@@ -1043,13 +1043,13 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * @throws RegistryException throws if the operation failed.
      */
     private void setVotingItemValue(int order, boolean value,
-                                    ApproveItemBean[] approveItemBeans) throws RegistryException {
+                                    ApproveItemBean[] approveItemBeans, String aspectName) throws RegistryException {
         approveItemBeans[order].setValue(value);
         Map<String, String> parameters = new HashMap<String, String>();
         for (ApproveItemBean approveItemBean : approveItemBeans) {
             parameters.put(approveItemBean.getOrder() + ".vote", approveItemBean.getValue().toString());
         }
-        registry.invokeAspect(getArtifactPath(), getLcName(), "voteClick", parameters);
+        registry.invokeAspect(getArtifactPath(), aspectName, "voteClick", parameters);
     }
 
     /**

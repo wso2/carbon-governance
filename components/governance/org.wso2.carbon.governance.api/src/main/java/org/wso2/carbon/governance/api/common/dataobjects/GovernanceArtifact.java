@@ -277,7 +277,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
     @SuppressWarnings("unused")
-    public String[] getAllVotingItems() throws GovernanceException;
+    public String[] getAllVotingItems( String aspectName) throws GovernanceException;
 
     /**
      * Vote for an action
@@ -285,7 +285,7 @@ public interface GovernanceArtifact {
      * @param order order of the action which need to be voted
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
-    public void vote(int order) throws GovernanceException;
+    public void vote(int order, String aspectName) throws GovernanceException;
 
     /**
      * Check whether the current user voted for given order event
@@ -295,7 +295,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
     @SuppressWarnings("unused")
-    public boolean isVoted(int order) throws GovernanceException;
+    public boolean isVoted(int order, String aspectName) throws GovernanceException;
 
     /**
      * Unvote for an action
@@ -304,7 +304,7 @@ public interface GovernanceArtifact {
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
     @SuppressWarnings("unused")
-    public void unvote(int order) throws GovernanceException;
+    public void unvote(int order, String aspectName) throws GovernanceException;
 
     /**
      * Returns the available attribute keys
