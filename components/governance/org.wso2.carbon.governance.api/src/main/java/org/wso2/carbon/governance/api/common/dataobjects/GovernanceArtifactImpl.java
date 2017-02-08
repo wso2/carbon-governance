@@ -945,11 +945,11 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     }
 
     /**
-     * Retrieve action set which need votes
+     * Retrieve action set which need votes.
      *
+     * @param aspectName Lifecycle name
      * @return Action set which can vote
-     * @throws org.wso2.carbon.governance.api.exception.GovernanceException
-     *          throws if the operation failed.
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
     public String[] getAllVotingItems(String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
@@ -957,7 +957,8 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
                 getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this, aspectName);
         if (approveItemBeans == null) {
             throw new GovernanceException("No voting event found for the lifecycle: " + getLcName() +
-                    " in lifecycle state: " + getLcState() + " of the artifact " + getQName().getLocalPart());
+                                                  " in lifecycle state: " + getLcState() + " of the artifact " +
+                                                  getQName().getLocalPart());
         }
         String[] votingItems = new String[approveItemBeans.length];
         for (ApproveItemBean approveItemBean : approveItemBeans) {
@@ -967,11 +968,21 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     }
 
     /**
-     * Vote for an action
+     * Retrieve action set which need votes.
      *
-     * @param order order of the action which need to be voted
-     * @throws org.wso2.carbon.governance.api.exception.GovernanceException
-     *          throws if the operation failed.
+     * @return Action set which can vote
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
+     */
+    public String[] getAllVotingItems() throws GovernanceException {
+        return getAllVotingItems(getLifecycleName());
+    }
+
+    /**
+     * Vote for an action.
+     *
+     * @param order      order of the action which need to be voted
+     * @param aspectName Lifecycle name
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
     public void vote(int order, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
@@ -992,17 +1003,27 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     }
 
     /**
-     * Check whether the current user voted for given order event
+     * Vote for an action.
      *
      * @param order order of the action which need to be voted
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
+     */
+    public void vote(int order) throws GovernanceException {
+        vote(order, getLifecycleName());
+    }
+
+    /**
+     * Check whether the current user voted for given order event
+     *
+     * @param order      order of the action which need to be voted
+     * @param aspectName Lifecycle name
      * @return whether the current user voted for the given order event
-     * @throws org.wso2.carbon.governance.api.exception.GovernanceException
-     *          throws if the operation failed.
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
     public boolean isVoted(int order, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
         ApproveItemBean[] approveItemBeans = GovernanceUtils.
-                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this,aspectName);
+                getAllApproveItemBeans(((UserRegistry) registry).getUserName(), artifactResource, this, aspectName);
         if (approveItemBeans == null || order < 0 || order >= approveItemBeans.length) {
             throw new GovernanceException("Invalid voting action selected");
         }
@@ -1010,11 +1031,22 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     }
 
     /**
+     * Check whether the current user voted for given order event.
+     *
+     * @param order order of the action which need to be voted
+     * @return whether the current user voted for the given order event
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
+     */
+    public boolean isVoted(int order) throws GovernanceException {
+        return isVoted(order, getLifecycleName());
+    }
+
+    /**
      * Unvote for an action
      *
-     * @param order order of the action which need to be unvoted
-     * @throws org.wso2.carbon.governance.api.exception.GovernanceException
-     *          throws if the operation failed.
+     * @param order      order of the action which need to be unvoted
+     * @param aspectName Lifecycle name
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
     public void unvote(int order, String aspectName) throws GovernanceException {
         Resource artifactResource = getArtifactResource();
@@ -1024,7 +1056,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             throw new GovernanceException("Invalid voting action selected");
         } else if (!approveItemBeans[order].getValue()) {
             throw new GovernanceException("Not voted for the action \""
-                    + approveItemBeans[order].getName() + "\"");
+                                                  + approveItemBeans[order].getName() + "\"");
         }
         try {
             setVotingItemValue(order, false, approveItemBeans, aspectName);
@@ -1033,6 +1065,16 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             log.error(msg, e);
             throw new GovernanceException(msg, e);
         }
+    }
+
+    /**
+     * Unvote for an action.
+     *
+     * @param order order of the action which need to be un voted
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
+     */
+    public void unvote(int order) throws GovernanceException {
+        unvote(order, getLifecycleName());
     }
 
     /**
