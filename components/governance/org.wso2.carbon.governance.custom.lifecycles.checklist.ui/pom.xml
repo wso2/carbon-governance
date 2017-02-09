@@ -124,7 +124,7 @@
             <artifactId>org.wso2.carbon.governance.custom.lifecycles.checklist.stub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
             <artifactId>org.wso2.carbon.user.mgt.stub</artifactId>
         </dependency>
         <dependency>
