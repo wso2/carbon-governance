@@ -16,7 +16,7 @@
 
 function deleteService(pathToDelete, parentPath,redirectpath) {
     sessionAwareFunction(function() {
-        CARBON.showConfirmationDialog(org_wso2_carbon_governance_list_ui_jsi18n["are.you.sure.you.want.to.delete"] + "<strong>'" + pathToDelete + "'</strong> " + org_wso2_carbon_governance_list_ui_jsi18n["permanently"], function() {
+        CARBON.showConfirmationDialog(org_wso2_carbon_governance_list_ui_jsi18n["are.you.sure.you.want.to.delete"] + "'" + pathToDelete + "' " + org_wso2_carbon_governance_list_ui_jsi18n["permanently"], function() {
 
             var addSuccess = true;
             new Ajax.Request('../resources/delete_ajaxprocessor.jsp', {
