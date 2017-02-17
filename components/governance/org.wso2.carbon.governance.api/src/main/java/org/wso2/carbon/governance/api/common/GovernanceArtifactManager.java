@@ -42,7 +42,20 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
 import javax.xml.namespace.QName;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Base Manager Functionality which can be used by any Artifact Manager instance.
@@ -425,13 +438,15 @@ public class GovernanceArtifactManager {
             GovernanceArtifact oldArtifact = getGovernanceArtifact(artifact.getId());
             // first check for the old artifact and remove it.
             String oldPath = null;
+            boolean needsToMove = false;
             if (oldArtifact != null) {
                 QName oldName = oldArtifact.getQName();
                 if (!oldName.equals(artifact.getQName())) {
                     String temp = oldArtifact.getPath();
                     // then it is analogue to moving the resource for the new location
                     // so just delete the old path
-                    registry.delete(temp);
+                    needsToMove = true;
+                    //registry.delete(temp);
                 } else {
                     oldPath = oldArtifact.getPath();
                 }
@@ -449,6 +464,14 @@ public class GovernanceArtifactManager {
                 path = oldPath;
             } else {
                 path = GovernanceUtils.getPathFromPathExpression(pathExpression, artifact);
+            }
+            if (needsToMove){
+                if (isInbuiltMediatype()) {
+                    registry.delete(oldArtifact.getPath());
+                } else {
+                    registry.move(oldPath, path);
+                }
+
             }
 
             if (registry.resourceExists(path)) {
@@ -546,6 +569,12 @@ public class GovernanceArtifactManager {
                 }
             }
         }
+    }
+
+    private boolean isInbuiltMediatype() {
+        return CommonConstants.REST_SERVICE_MEDIA_TYPE.equals(mediaType) ||
+                CommonConstants.SOAP_SERVICE_MEDIA_TYPE.equals(mediaType) || CommonConstants.SERVICE_MEDIA_TYPE.equals(
+                mediaType);
     }
 
     /**
