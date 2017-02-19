@@ -468,8 +468,8 @@ public class GovernanceArtifactManager {
             if (needsToMove){
                 if (isInbuiltMediatype()) {
                     registry.delete(oldArtifact.getPath());
-                } else {
-                    registry.move(oldPath, path);
+                } else if (!oldArtifact.getPath().equals(path)) {
+                    registry.move(oldArtifact.getPath(), path);
                 }
 
             }
