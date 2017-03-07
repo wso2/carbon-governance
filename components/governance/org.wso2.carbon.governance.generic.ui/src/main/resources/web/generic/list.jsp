@@ -629,19 +629,19 @@ td.deprecate-warning {
                                     if (bean.getTypes()[i].equals("path")) {
                         %>
                         <td>
-                            <a href="../resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=URLEncoder.encode(artifact.getValuesB()[i], "UTF-8")%>"><%= artifact.getValuesA()[i] != null ? artifact.getValuesA()[i] : "" %>
+                            <a href="../resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=URLEncoder.encode(artifact.getValuesB()[i], "UTF-8")%>"><%= artifact.getValuesA()[i] != null ? Encode.forHtml(artifact.getValuesA()[i]) : "" %>
                             </a></td>
                         <%
                         } else if (bean.getTypes()[i].equals("link")) {
                         %>
                             <td>
-                                <a target="_blank" href="<%=artifact.getValuesB()[i]%>"><%= artifact.getValuesA()[i] != null ? artifact.getValuesA()[i] : "" %>
+                                <a target="_blank" href="<%=artifact.getValuesB()[i]%>"><%= artifact.getValuesA()[i] != null ? Encode.forHtml(artifact.getValuesA()[i]) : "" %>
                                 </a>
                             </td>
                         <%
                         } else {
                         %>
-                        <td><%= artifact.getValuesA()[i] != null ? artifact.getValuesA()[i] : "" %>
+                        <td><%= artifact.getValuesA()[i] != null ? Encode.forHtml(artifact.getValuesA()[i]) : "" %>
                         </td>
                         <%
                                 }
