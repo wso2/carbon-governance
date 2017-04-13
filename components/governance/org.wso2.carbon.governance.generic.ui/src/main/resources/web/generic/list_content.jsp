@@ -142,6 +142,17 @@
             bean = client.listContentArtifactsByLC(mediaType, lc_name, lc_state, lc_in_out, lc_state_in_out);
         }
 
+    } catch (NumberFormatException e) {
+    %>
+    <script type="text/javascript">
+        CARBON.showErrorDialog("The value for parameter \"page\" is not a number", function () {
+            location.href = "../admin/index.jsp";
+            return;
+        });
+
+    </script>
+    <%
+        return;
     } catch (Exception e) {
 
 
