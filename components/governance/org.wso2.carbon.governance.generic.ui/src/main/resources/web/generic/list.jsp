@@ -686,7 +686,7 @@ td.deprecate-warning {
                         } else {
                             for (int i = 0; i < bean.getNames().length; i++) {
                         %>
-                        <td><%=Encode.forHtml(artifact.getValuesA()[i])%> <script>alert("changed !!");</script>
+                        <td><%=Encode.forHtml(artifact.getValuesA()[i])%>
                         </td>
                         <%
                                 }
