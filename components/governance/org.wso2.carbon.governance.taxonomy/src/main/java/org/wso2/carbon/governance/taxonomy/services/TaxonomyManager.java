@@ -145,9 +145,9 @@ public class TaxonomyManager {
         JSONArray jsonArray = new JSONArray();
         JSONObject taxonomyNameObj = new JSONObject();
         String taxonomyName = queryProvider.getTaxonomyNameById(taxonomyQueryBean);
-        taxonomyNameObj.put("taxonomyName",taxonomyName);
+        taxonomyNameObj.put("taxonomyName", taxonomyName);
         jsonArray.put(taxonomyNameObj);
-        return  jsonArray;
+        return jsonArray;
     }
 
     public void initTaxonomyStorage()
@@ -161,9 +161,10 @@ public class TaxonomyManager {
 
     /**
      * This method will return all available taxonomies for a specific tenant
+     *
      * @return Map of taxonomy bean objects
      */
-    public Map<String, TaxonomyBean> getTaxonomyBeanMap () {
+    public Map<String, TaxonomyBean> getTaxonomyBeanMap() {
         return storageProvider.getTaxonomyBeanMap();
     }
 }

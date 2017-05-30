@@ -63,9 +63,7 @@ public class TaxonomyServiceComponent {
      *
      * @param context OSGi component context.
      */
-    protected void activate(ComponentContext context)
-            throws UserStoreException, RegistryException, ParserConfigurationException, SAXException,
-            XPathExpressionException, IOException {
+    protected void activate(ComponentContext context) {
 
         BundleContext bundleContext = context.getBundleContext();
         TenantLoginStorageService tenantLoginStorageService = new TenantLoginStorageService();
@@ -161,7 +159,7 @@ public class TaxonomyServiceComponent {
      * @param realmService service to get tenant data.
      */
     protected void setRealmService(RealmService realmService) {
-        log.debug("Setting RealmService for WSO2 Governance Registry migration");
+        log.debug("Setting RealmService for taxonomy feature ");
         ServiceHolder.setRealmService(realmService);
     }
 
@@ -183,7 +181,7 @@ public class TaxonomyServiceComponent {
      * @param tenantRegLoader tenant registry loader
      */
     protected void setTenantRegistryLoader(TenantRegistryLoader tenantRegLoader) {
-        log.debug("Setting TenantRegistryLoader for WSO2 Governance Registry migration");
+        log.debug("Setting TenantRegistryLoader for taxonomy feature");
         ServiceHolder.setTenantRegLoader(tenantRegLoader);
     }
 

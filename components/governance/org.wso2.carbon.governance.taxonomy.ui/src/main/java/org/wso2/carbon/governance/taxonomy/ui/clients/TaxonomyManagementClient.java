@@ -106,12 +106,11 @@ public class TaxonomyManagementClient {
     /**
      * This method will return array of taxonomies which in the registry for a specific tenant
      *
-     * @param request user request
      * @return String array of taxonomy files
      * @throws Exception
      */
 
-    public String[] getTaxonomyList(HttpServletRequest request)
+    public String[] getTaxonomyList()
             throws  Exception {
         return stub.getTaxonomyList();
     }

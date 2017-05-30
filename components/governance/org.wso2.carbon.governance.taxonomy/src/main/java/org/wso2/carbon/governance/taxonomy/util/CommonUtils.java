@@ -69,6 +69,9 @@ import java.util.List;
 
 import static org.wso2.carbon.governance.taxonomy.util.TaxonomyConstants.TAXONOMY_CONFIGURATION_PATH;
 
+/**
+ * This class contain all common static methods which we can use inside taxonomy component
+ */
 public class CommonUtils {
     private static final String ELEMENT_ID = "id";
     private static final String PREVIOUS_ELEMENT_PATH = "previousSibling";
@@ -152,85 +155,116 @@ public class CommonUtils {
         }
 
         JSONObject dataArray;
-        if (!updatedQuery.equals("/taxonomy/root/*")) {
+        if (!"/taxonomy/root/*".equals(updatedQuery)) {
             // this will execute when there is long path
-            for (int i = startNode; i < nodeCount; ++i) {
-                dataArray = new JSONObject();
-
-                String currentId = ((Element) nodeList.item(i)).getAttribute(ID);
-
-                dataArray.put(ELEMENT_ID, currentId);
-                //                dataArray.put(ID, currentId);
-                dataArray.put(TEXT, ((Element) nodeList.item(i)).getAttribute(DISPLAY_NAME));
-                dataArray.put(CHILDREN, nodeList.item(i).hasChildNodes());
-
-                if (nodeCount == 1) {
-                    dataArray.put(PREVIOUS_ELEMENT_PATH, "");
-                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf("/")) + "/" + currentId);
-                    dataArray.put(NEXT_ELEMENT_PATH, "");
-                } else if (i == 0) {
-                    dataArray.put(PREVIOUS_ELEMENT_PATH, "");
-                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf("/")) + "/" + currentId);
-                    dataArray.put(NEXT_ELEMENT_PATH,
-                            query.substring(0, query.lastIndexOf("/")) + "/" + ((Element) nodeList.item(i + 1))
-                                    .getAttribute(ID));
-                } else if (i == nodeCount - 1) {
-                    dataArray.put(PREVIOUS_ELEMENT_PATH,
-                            query.substring(0, query.lastIndexOf("/")) + "/" + ((Element) nodeList.item(i - 1))
-                                    .getAttribute(ID));
-                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf("/")) + "/" + currentId);
-                    dataArray.put(NEXT_ELEMENT_PATH, "");
-                } else {
-                    dataArray.put(PREVIOUS_ELEMENT_PATH,
-                            query.substring(0, query.lastIndexOf("/")) + "/" + ((Element) nodeList.item(i - 1))
-                                    .getAttribute(ID));
-                    dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf("/")) + "/" + currentId);
-                    dataArray.put(NEXT_ELEMENT_PATH,
-                            query.substring(0, query.lastIndexOf("/")) + "/" + ((Element) nodeList.item(i + 1))
-                                    .getAttribute(ID));
-
-                }
-
-                mainArray.put(dataArray);
-            }
+            rootPathQueryToJson(query, startNode, nodeList, mainArray, nodeCount);
         } else {
-            itemRelativeRoot.put(CHILDREN, childrenArray);
-            mainArray.put(itemRelativeRoot);
-            String rootId = ((Element) nodeList.item(0).getParentNode()).getAttribute(ID);
-            for (int i = startNode; i < nodeCount; ++i) {
-                dataArray = new JSONObject();
-                new JSONObject();
-                String currentId = ((Element) nodeList.item(i)).getAttribute(ID);
-
-                dataArray.put(ELEMENT_ID, currentId);
-                dataArray.put(TEXT, ((Element) nodeList.item(i)).getAttribute(DISPLAY_NAME));
-                dataArray.put(CHILDREN, nodeList.item(i).hasChildNodes());
-
-                if (nodeCount == 1) {
-                    dataArray.put(PREVIOUS_ELEMENT_PATH, "");
-                    dataArray.put(CURRENT_ELEMENT_PATH, rootId + "/" + currentId);
-                    dataArray.put(NEXT_ELEMENT_PATH, "");
-                } else if (i == 0) {
-                    dataArray.put(PREVIOUS_ELEMENT_PATH, "");
-                    dataArray.put(CURRENT_ELEMENT_PATH, rootId + "/" + currentId);
-                    dataArray.put(NEXT_ELEMENT_PATH, rootId + "/" + ((Element) nodeList.item(i + 1)).getAttribute(ID));
-                } else if (i == nodeCount - 1) {
-                    dataArray.put(PREVIOUS_ELEMENT_PATH,
-                            rootId + "/" + ((Element) nodeList.item(i - 1)).getAttribute(ID));
-                    dataArray.put(CURRENT_ELEMENT_PATH, rootId + "/" + currentId);
-                    dataArray.put(NEXT_ELEMENT_PATH, "");
-                } else {
-                    dataArray.put(PREVIOUS_ELEMENT_PATH,
-                            rootId + "/" + ((Element) nodeList.item(i - 1)).getAttribute(ID));
-                    dataArray.put(CURRENT_ELEMENT_PATH, rootId + "/" + currentId);
-                    dataArray.put(NEXT_ELEMENT_PATH, rootId + "/" + ((Element) nodeList.item(i + 1)).getAttribute(ID));
-                }
-
-                childrenArray.put(dataArray);
-            }
+            customPathQueryToJson(startNode, nodeList, childrenArray, mainArray, itemRelativeRoot, nodeCount);
         }
 
         return mainArray;
+    }
+
+    /**
+     *
+     * @param startNode start node
+     * @param nodeList variable node list
+     * @param childrenArray Json array of list of elements
+     * @param mainArray main json array that will return as result
+     * @param itemRelativeRoot json object which will be act as a root for one iteration
+     * @param nodeCount count of nodes in taxonomy file or use end node if pagination provided
+     * @throws JSONException
+     */
+    private static void customPathQueryToJson(int startNode, NodeList nodeList, JSONArray childrenArray,
+            JSONArray mainArray, JSONObject itemRelativeRoot, int nodeCount) throws JSONException {
+        JSONObject dataArray;
+        itemRelativeRoot.put(CHILDREN, childrenArray);
+        mainArray.put(itemRelativeRoot);
+        String rootId = ((Element) nodeList.item(0).getParentNode()).getAttribute(ID);
+        for (int i = startNode; i < nodeCount; ++i) {
+            dataArray = new JSONObject();
+            new JSONObject();
+            String currentId = ((Element) nodeList.item(i)).getAttribute(ID);
+
+            dataArray.put(ELEMENT_ID, currentId);
+            dataArray.put(TEXT, ((Element) nodeList.item(i)).getAttribute(DISPLAY_NAME));
+            dataArray.put(CHILDREN, nodeList.item(i).hasChildNodes());
+
+            if (nodeCount == 1) {
+                dataArray.put(PREVIOUS_ELEMENT_PATH, "");
+                dataArray.put(CURRENT_ELEMENT_PATH, rootId + "/" + currentId);
+                dataArray.put(NEXT_ELEMENT_PATH, "");
+            } else if (i == 0) {
+                dataArray.put(PREVIOUS_ELEMENT_PATH, "");
+                dataArray.put(CURRENT_ELEMENT_PATH, rootId + "/" + currentId);
+                dataArray.put(NEXT_ELEMENT_PATH, rootId + "/" + ((Element) nodeList.item(i + 1)).getAttribute(ID));
+            } else if (i == nodeCount - 1) {
+                dataArray.put(PREVIOUS_ELEMENT_PATH,
+                        rootId + "/" + ((Element) nodeList.item(i - 1)).getAttribute(ID));
+                dataArray.put(CURRENT_ELEMENT_PATH, rootId + "/" + currentId);
+                dataArray.put(NEXT_ELEMENT_PATH, "");
+            } else {
+                dataArray.put(PREVIOUS_ELEMENT_PATH,
+                        rootId + "/" + ((Element) nodeList.item(i - 1)).getAttribute(ID));
+                dataArray.put(CURRENT_ELEMENT_PATH, rootId + "/" + currentId);
+                dataArray.put(NEXT_ELEMENT_PATH, rootId + "/" + ((Element) nodeList.item(i + 1)).getAttribute(ID));
+            }
+
+            childrenArray.put(dataArray);
+        }
+    }
+
+    /**
+     *
+     * @param query user query request
+     * @param startNode start node uses for pagination purpose
+     * @param nodeList variable node list
+     * @param mainArray main json array that will return as result
+     * @param nodeCount count of nodes in taxonomy file
+     * @throws JSONException
+     */
+    private static void rootPathQueryToJson(String query, int startNode, NodeList nodeList, JSONArray mainArray,
+            int nodeCount) throws JSONException {
+        JSONObject dataArray;
+        for (int i = startNode; i < nodeCount; ++i) {
+            dataArray = new JSONObject();
+
+            String currentId = ((Element) nodeList.item(i)).getAttribute(ID);
+
+            dataArray.put(ELEMENT_ID, currentId);
+            //                dataArray.put(ID, currentId);
+            dataArray.put(TEXT, ((Element) nodeList.item(i)).getAttribute(DISPLAY_NAME));
+            dataArray.put(CHILDREN, nodeList.item(i).hasChildNodes());
+
+            if (nodeCount == 1) {
+                dataArray.put(PREVIOUS_ELEMENT_PATH, "");
+                dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf('/')) + "/" + currentId);
+                dataArray.put(NEXT_ELEMENT_PATH, "");
+            } else if (i == 0) {
+                dataArray.put(PREVIOUS_ELEMENT_PATH, "");
+                dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf('/')) + "/" + currentId);
+                dataArray.put(NEXT_ELEMENT_PATH,
+                        query.substring(0, query.lastIndexOf('/')) + "/" + ((Element) nodeList.item(i + 1))
+                                .getAttribute(ID));
+            } else if (i == nodeCount - 1) {
+                dataArray.put(PREVIOUS_ELEMENT_PATH,
+                        query.substring(0, query.lastIndexOf('/')) + "/" + ((Element) nodeList.item(i - 1))
+                                .getAttribute(ID));
+                dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf('/')) + "/" + currentId);
+                dataArray.put(NEXT_ELEMENT_PATH, "");
+            } else {
+                dataArray.put(PREVIOUS_ELEMENT_PATH,
+                        query.substring(0, query.lastIndexOf('/')) + "/" + ((Element) nodeList.item(i - 1))
+                                .getAttribute(ID));
+                dataArray.put(CURRENT_ELEMENT_PATH, query.substring(0, query.lastIndexOf('/')) + "/" + currentId);
+                dataArray.put(NEXT_ELEMENT_PATH,
+                        query.substring(0, query.lastIndexOf('/')) + "/" + ((Element) nodeList.item(i + 1))
+                                .getAttribute(ID));
+
+            }
+
+            mainArray.put(dataArray);
+        }
     }
 
     /**
@@ -252,13 +286,21 @@ public class CommonUtils {
         return element;
     }
 
+    /**
+     * This method will generate a documentBean object from given payload
+     * @param payload String content of taxonomy file
+     * @return Document Bean object
+     * @throws RegistryException
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
     public static TaxonomyBean documentBeanBuilder(String payload)
             throws RegistryException, ParserConfigurationException, IOException, SAXException {
 
         if (!validateXMLConfigOnSchema(payload)) {
             throw new RegistryException("Taxonomy definition violated, please follow the schema correctly.");
         }
-
 
         OMElement element = buildOMElement(payload);
         String name = element.getAttributeValue(new QName("name"));
@@ -314,7 +356,7 @@ public class CommonUtils {
      */
     private static String getCompletePath(String name) {
         String path = "/_system/governance/" + TAXONOMY_CONFIGURATION_PATH;
-        if (!name.startsWith(path)) {
+        if (!path.startsWith(name)) {
             name = path + name;
         }
         return name;

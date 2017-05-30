@@ -17,6 +17,8 @@
 package org.wso2.carbon.governance.taxonomy.services;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.taxonomy.beans.QueryBean;
 import org.wso2.carbon.governance.taxonomy.beans.TaxonomyBean;
@@ -30,13 +32,11 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import javax.xml.parsers.ParserConfigurationException;
 import static org.wso2.carbon.governance.taxonomy.util.TaxonomyConstants.TAXONOMY_CONFIGURATION_PATH;
 import static org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_COMPONENT_PATH;
 
@@ -45,6 +45,7 @@ import static org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_COMPONE
  */
 class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvider {
     private static Map<Integer, Map<String, TaxonomyBean>> tenantTaxonomyMap;
+    private static final Log log = LogFactory.getLog(StorageProviderImpl.class);
     private int tenantId;
 
     StorageProviderImpl() {
@@ -96,9 +97,10 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
      */
     @Override
     public void removeTaxonomy(String taxonomyName) {
-        if (tenantTaxonomyMap != null) {
-            if (tenantTaxonomyMap.containsKey(tenantId)) {
-                tenantTaxonomyMap.get(tenantId).remove(taxonomyName);
+        if (tenantTaxonomyMap != null && tenantTaxonomyMap.containsKey(tenantId)) {
+            tenantTaxonomyMap.get(tenantId).remove(taxonomyName);
+            if (log.isDebugEnabled()) {
+                log.debug("Taxonomy : " + taxonomyName + " removed from map successful");
             }
         }
     }
@@ -120,11 +122,17 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
                 tempTaxonomyMap.put(taxonomyBean.getTaxonomyName(), taxonomyBean);
                 tenantTaxonomyMap.put(tenantId, tempTaxonomyMap);
             }
+            if (log.isDebugEnabled()) {
+                log.debug("Taxonomy : " + taxonomyBean.getTaxonomyName() + " has added successfully to existing map");
+            }
         } else {
             tenantTaxonomyMap = new HashMap<>();
             Map<String, TaxonomyBean> tempTaxonomyMap = new HashMap<>();
             tempTaxonomyMap.put(taxonomyBean.getTaxonomyName(), taxonomyBean);
             tenantTaxonomyMap.put(tenantId, tempTaxonomyMap);
+            if (log.isDebugEnabled()) {
+                log.debug("Taxonomy : " + taxonomyBean.getTaxonomyName() + " has added successfully to new map");
+            }
         }
     }
 
@@ -143,7 +151,9 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
                 taxonomyMaps.remove(oldName);
                 taxonomyMaps.put(taxonomyBean.getTaxonomyName(), taxonomyBean);
                 tenantTaxonomyMap.put(tenantId, taxonomyMaps);
-
+                if (log.isDebugEnabled()) {
+                    log.debug("Taxonomy : " + taxonomyBean.getTaxonomyName() + " updated in map successful");
+                }
             }
 
         }
@@ -161,13 +171,12 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
     @Override
     public void initTaxonomyStorage()
             throws UserStoreException, RegistryException, IOException, SAXException, ParserConfigurationException {
-        String TAXONOMY_PATH = GOVERNANCE_COMPONENT_PATH + "/taxonomy";
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        String taxonomyPath = GOVERNANCE_COMPONENT_PATH + "/taxonomy";
         String adminName = ServiceHolder.getRealmService().getTenantUserRealm(tenantId).getRealmConfiguration()
                 .getAdminUserName();
         Registry registry = ServiceHolder.getRegistryService().getGovernanceUserRegistry(adminName, tenantId);
-        if (registry.resourceExists(TAXONOMY_PATH)) {
-            Collection collection = (Collection) registry.get(TAXONOMY_PATH);
+        if (registry.resourceExists(taxonomyPath)) {
+            Collection collection = (Collection) registry.get(taxonomyPath);
             String[] childrenList = collection.getChildren();
             for (String child : childrenList) {
                 String myString = IOUtils.toString(registry.get(child).getContentStream(), "UTF-8");
