@@ -162,7 +162,7 @@ public class AuthenticationHandler implements RequestHandler {
              * is updated to mimic the authenticated user */
 
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            carbonContext.setUsername(userName);
+            carbonContext.setUsername(tenantAwareUserName);
             carbonContext.setTenantId(tenantId);
             carbonContext.setTenantDomain(tenantDomain);
         }
