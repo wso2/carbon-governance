@@ -26,6 +26,8 @@ import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.governance.lcm.stub.LifeCycleManagementServiceStub;
 import org.wso2.carbon.registry.common.utils.CommonUtil;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.pagination.PaginationContext;
+import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.ui.CarbonUIUtil;
 
 import javax.servlet.ServletConfig;
@@ -167,8 +169,15 @@ public class LifeCycleManagementServiceClient {
 
     public boolean isLifeCycleNameInUse(String lifeCycleName) throws Exception  {
         boolean output;
+        int rowCount;
         try {
+            // Need to check whether there is atleast one usage for the lifecycle.
+            // Pagination parameters. start=0, count=1, limit=1
+            PaginationContext.init(0, 1, "", "", 1);
+            PaginationUtils.copyPaginationContext(stub._getServiceClient());
             output = stub.isLifecycleNameInUse(lifeCycleName);
+            // Get total usage count irrespective of pagination parameters.
+            rowCount = PaginationUtils.getRowCount(stub._getServiceClient());
         } catch (Exception e) {
             if (e instanceof RegistryException) {
                 return false;
@@ -176,7 +185,7 @@ public class LifeCycleManagementServiceClient {
                 throw e;
             }
         }
-        return output;
+        return output ? output : rowCount > 0;
     }
 
 	}
