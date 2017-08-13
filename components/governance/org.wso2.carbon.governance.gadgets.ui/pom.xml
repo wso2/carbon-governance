@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance</artifactId>
-        <version>4.7.3-SNAPSHOT</version>
+        <version>4.7.10-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -63,7 +63,7 @@
             <artifactId>org.wso2.carbon.governance.api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
             <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
         </dependency>
     </dependencies>

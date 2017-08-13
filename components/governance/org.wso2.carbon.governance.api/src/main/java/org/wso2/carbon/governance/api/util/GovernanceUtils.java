@@ -1201,13 +1201,17 @@ public class GovernanceUtils {
      * @throws GovernanceException if the operation failed.
      */
     public static ApproveItemBean[] getAllApproveItemBeans(
-            String currentUser, Resource artifactResource, GovernanceArtifact artifact) throws GovernanceException {
-        String artifactLC = artifactResource.getProperty("registry.LC.name");
+            String currentUser, Resource artifactResource, GovernanceArtifact artifact, String artifactLC) throws GovernanceException {
+        String defaultLC = artifactResource.getProperty("registry.LC.name");
+        String artifactLCState = artifactResource.getProperty("registry.lifecycle." + artifactLC + ".state");
+
+        if (artifactLC.equals(defaultLC)) {
+            ((GovernanceArtifactImpl) artifact).setLcState(artifactLCState);
+        }
         if (artifactLC == null) {
             throw new GovernanceException("No lifecycle associated with the artifact path " +
                     artifactResource.getPath());
         }
-        String artifactLCState = artifactResource.getProperty("registry.lifecycle." + artifactLC + ".state");
         ((GovernanceArtifactImpl) artifact).setLcState(artifactLCState);
         ArrayList<ApproveItemBean> approveItemList = new ArrayList<ApproveItemBean>();
         Properties lifecycleProps = artifactResource.getProperties();
@@ -1218,7 +1222,8 @@ public class GovernanceUtils {
             String votingPrefix = "registry.custom_lifecycle.votes.";
             String votingSuffix = ".vote";
 
-            if (propertyKey.startsWith(votingPrefix) && propertyKey.endsWith(votingSuffix)) {
+            if (propertyKey.startsWith(votingPrefix) && propertyKey.endsWith(votingSuffix) && propertyKey
+                    .contains(GovernanceConstants.DOT + artifactLC + GovernanceConstants.DOT)) {
                 List<String> propValues = (List<String>) lifecycleProps.get(propertyKey);
                 ApproveItemBean approveItemBean = new ApproveItemBean();
                 if (propValues != null && propValues.size() > 2) {

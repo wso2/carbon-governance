@@ -155,10 +155,34 @@ td.deprecate-warning {
                 bean = client.listArtifactsByLC(key, lc_name, lc_state, lc_in_out, lc_state_in_out);
             }
         }
+    } catch (NumberFormatException e) {
+        if (filter) {
+%>
+    <script type="text/javascript">
+    CARBON.showErrorDialog("The value for parameter \"page\" is not a number", function() {
+        location.href = "../generic/list.jsp?region=<%=Encode.forUriComponent(region)%>&item=
+        <%=Encode.forUriComponent(item)%><%=Encode.forUriComponent(queryTrailer)%>";
+        return;
+    });
+
+    </script>
+<%
+} else {
+%>
+    <script type="text/javascript">
+    CARBON.showErrorDialog("The value for parameter \"page\" is not a number", function() {
+        location.href = "../admin/index.jsp";
+        return;
+    });
+
+    </script>
+<%
+        }
+        return;
     } catch (Exception e) {
         if (filter) {
 %>
-<script type="text/javascript">
+    <script type="text/javascript">
     CARBON.showErrorDialog("<%=Encode.forJavaScript(e.getMessage())%>", function() {
         location.href = "../generic/list.jsp?region=<%=Encode.forUriComponent(region)%>&item=
         <%=Encode.forUriComponent(item)%><%=Encode.forUriComponent(queryTrailer)%>";
@@ -629,19 +653,19 @@ td.deprecate-warning {
                                     if (bean.getTypes()[i].equals("path")) {
                         %>
                         <td>
-                            <a href="../resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=URLEncoder.encode(artifact.getValuesB()[i], "UTF-8")%>"><%= artifact.getValuesA()[i] != null ? artifact.getValuesA()[i] : "" %>
+                            <a href="../resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=URLEncoder.encode(artifact.getValuesB()[i], "UTF-8")%>"><%= artifact.getValuesA()[i] != null ? Encode.forHtml(artifact.getValuesA()[i]) : "" %>
                             </a></td>
                         <%
                         } else if (bean.getTypes()[i].equals("link")) {
                         %>
                             <td>
-                                <a target="_blank" href="<%=artifact.getValuesB()[i]%>"><%= artifact.getValuesA()[i] != null ? artifact.getValuesA()[i] : "" %>
+                                <a target="_blank" href="<%=artifact.getValuesB()[i]%>"><%= artifact.getValuesA()[i] != null ? Encode.forHtml(artifact.getValuesA()[i]) : "" %>
                                 </a>
                             </td>
                         <%
                         } else {
                         %>
-                        <td><%= artifact.getValuesA()[i] != null ? artifact.getValuesA()[i] : "" %>
+                        <td><%= artifact.getValuesA()[i] != null ? Encode.forHtml(artifact.getValuesA()[i]) : "" %>
                         </td>
                         <%
                                 }
@@ -686,7 +710,7 @@ td.deprecate-warning {
                         } else {
                             for (int i = 0; i < bean.getNames().length; i++) {
                         %>
-                        <td><%=artifact.getValuesA()[i]%>
+                        <td><%=Encode.forHtml(artifact.getValuesA()[i])%>
                         </td>
                         <%
                                 }

@@ -273,11 +273,30 @@ public interface GovernanceArtifact {
     /**
      * Retrieve action set which need votes
      *
+     * @param aspectName Lifecycle name
+     * @return Action set which can vote
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
+     */
+    @SuppressWarnings("unused")
+    public String[] getAllVotingItems( String aspectName) throws GovernanceException;
+
+    /**
+     * Retrieve action set which need votes
+     *
      * @return Action set which can vote
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
     @SuppressWarnings("unused")
     public String[] getAllVotingItems() throws GovernanceException;
+
+    /**
+     * Vote for an action
+     *
+     * @param order order of the action which need to be voted
+     * @param aspectName Lifecycle name
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
+     */
+    public void vote(int order, String aspectName) throws GovernanceException;
 
     /**
      * Vote for an action
@@ -291,11 +310,32 @@ public interface GovernanceArtifact {
      * Check whether the current user voted for given order event
      *
      * @param order order of the action which need to be voted
+     * @param aspectName Lifecycle name
+     * @return whether the current user voted for the given order event
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
+     */
+    @SuppressWarnings("unused")
+    public boolean isVoted(int order, String aspectName) throws GovernanceException;
+
+    /**
+     * Check whether the current user voted for given order event
+     *
+     * @param order order of the action which need to be voted
      * @return whether the current user voted for the given order event
      * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
      */
     @SuppressWarnings("unused")
     public boolean isVoted(int order) throws GovernanceException;
+
+    /**
+     * Unvote for an action
+     *
+     * @param order order of the action which need to be un voted
+     * @param aspectName Lifecycle name
+     * @throws org.wso2.carbon.governance.api.exception.GovernanceException throws if the operation failed.
+     */
+    @SuppressWarnings("unused")
+    public void unvote(int order, String aspectName) throws GovernanceException;
 
     /**
      * Unvote for an action

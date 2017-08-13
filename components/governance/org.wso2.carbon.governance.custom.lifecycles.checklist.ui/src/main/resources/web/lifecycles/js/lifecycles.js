@@ -61,7 +61,7 @@ function removeAspect() {
     var path = document.getElementById('resPath').value;
 	var aspect = document.getElementById('aspectName').value;
     sessionAwareFunction(function() {
-        CARBON.showConfirmationDialog(org_wso2_carbon_governance_custom_lifecycles_checklist_ui_jsi18n["are.you.sure.you.want.to.delete"] + "<strong>'" + aspect + "'</strong> " + org_wso2_carbon_governance_custom_lifecycles_checklist_ui_jsi18n["permanently"], function() {
+        CARBON.showConfirmationDialog(org_wso2_carbon_governance_custom_lifecycles_checklist_ui_jsi18n["are.you.sure.you.want.to.delete"] + "'" + aspect + "' " + org_wso2_carbon_governance_custom_lifecycles_checklist_ui_jsi18n["permanently"], function() {
             new Ajax.Request('../lifecycles/remove_aspect_ajaxprocessor.jsp',
             {
                 method : 'post',
