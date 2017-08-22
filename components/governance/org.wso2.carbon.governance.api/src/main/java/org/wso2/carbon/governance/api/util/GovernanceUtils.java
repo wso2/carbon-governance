@@ -226,8 +226,9 @@ public class GovernanceUtils {
 
         List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(((UserRegistry) registry).getTenantId());
 
-        if (governanceArtifactConfigurations == null) {
+        if (governanceArtifactConfigurations == null || governanceArtifactConfigurations.isEmpty()) {
             governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
+            artifactConfigurations.put(((UserRegistry) registry).getTenantId(), governanceArtifactConfigurations);
         }
         for (GovernanceArtifactConfiguration configuration : governanceArtifactConfigurations) {
             if (mediaType.equals(configuration.getMediaType())) {
@@ -251,8 +252,9 @@ public class GovernanceUtils {
 
         List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(((UserRegistry) registry).getTenantId());
 
-        if (governanceArtifactConfigurations == null) {
+        if (governanceArtifactConfigurations == null || governanceArtifactConfigurations.isEmpty()) {
             governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
+            artifactConfigurations.put(((UserRegistry) registry).getTenantId(), governanceArtifactConfigurations);
         }
         for (GovernanceArtifactConfiguration configuration : governanceArtifactConfigurations) {
             if (key.equals(configuration.getKey())) {
