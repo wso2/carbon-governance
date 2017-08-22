@@ -128,6 +128,12 @@ public class GovernanceEventingHandler extends Handler {
             oldResource.getProperties() == null || newResource.getProperties() == null) {
             return;
         }
+
+        // Avoid sending multiple notifications for one event
+        if (!sendNotifications(requestContext, relativePath)) {
+            return;
+        }
+
         Properties props = oldResource.getProperties();
         Properties newProps = newResource.getProperties();
         String lcName = newResource.getProperty("registry.LC.name");
@@ -730,25 +736,7 @@ public class GovernanceEventingHandler extends Handler {
                 isMountPath = true;
             }
         }
-        if (isMountPath) {
-            if (getRequestDepth(requestContext) != 1) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            int requestDepth = getRequestDepth(requestContext);
-            if (!(requestDepth == 1 || requestDepth == 3)) {
-                if (requestDepth == 2 && resourceMediaType != null && !mediatypes.contains(resourceMediaType)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return true;
-            }
-        }
-
+        return !isMountPath || getRequestDepth(requestContext) == 1;
     }
 }
 
