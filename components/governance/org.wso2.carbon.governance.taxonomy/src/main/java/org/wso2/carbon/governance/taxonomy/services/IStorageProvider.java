@@ -45,4 +45,6 @@ public interface IStorageProvider {
 
     void initTaxonomyStorage()
             throws UserStoreException, RegistryException, IOException, SAXException, ParserConfigurationException;
+
+    boolean isTaxonomyIdExist(String taxonomyId);
 }
