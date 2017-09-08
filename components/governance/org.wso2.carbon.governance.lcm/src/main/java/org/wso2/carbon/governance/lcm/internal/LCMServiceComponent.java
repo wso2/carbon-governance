@@ -46,6 +46,20 @@ public class LCMServiceComponent {
 
     protected void activate(ComponentContext context) {
         BundleContext bundleContext = context.getBundleContext();
+        // Generate LCM search query if it doesn't exist.
+        try {
+        	PrivilegedCarbonContext.startTenantFlow();
+        	PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(-1234, true);
+        	PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+            RegistryService registryService = LifeCycleServiceHolder.getInstance().getRegistryService();
+            CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(),
+                    registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME));
+        } catch (XMLStreamException | FileNotFoundException | RegistryException e) {
+            log.error("An error occurred while setting up Governance Life Cycle Management", e);
+        } finally {
+        	PrivilegedCarbonContext.endTenantFlow();
+        }
+
         LifecycleLoader lifecycleLoader = new LifecycleLoader();
         ServiceRegistration tenantMgtListenerSR = bundleContext.registerService(
                 Axis2ConfigurationContextObserver.class.getName(), lifecycleLoader, null);
