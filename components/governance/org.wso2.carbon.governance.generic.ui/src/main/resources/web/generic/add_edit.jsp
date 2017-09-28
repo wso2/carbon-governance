@@ -134,14 +134,14 @@
 
                 getArtifactName();
                 var reason = "";
-                <%for(int i=0;i<mandatory.length;i++){%>
+                <%for (int i = 0; i < mandatory.length; i++) {%>
                 reason += validateEmpty(document.getElementById('<%=mandatory[i]%>'),
                         "<%=name[i]%>");
                 <%}%>
 
                 <%
                     //validate date fields
-                    for (int i=0; i<dateIdAndNameList.length; ++i) { %>
+                    for (int i=0; i < dateIdAndNameList.length; ++i) { %>
                 if (document.getElementById('<%=dateIdAndNameList[i][0]%>') != null) {
                     reason
                             += validateDate(document.getElementById('<%=dateIdAndNameList[i][0]%>'),
@@ -153,7 +153,7 @@
 
                 var eleArr = null, ele = null;
                 <%
-                    for (int i=0; i<validatationAttributes.size(); i++) {
+                    for (int i = 0; i < validatationAttributes.size(); i++) {
                         Map<String, Object> map = validatationAttributes.get(i);
                         String prop = (String)map.get("properties");
                         Boolean isUnboundedTable = (Boolean)map.get("unboundedTable");
@@ -164,15 +164,15 @@
                         if (prop != null && "unbounded".equals(prop)) {  %>
 
                 for (var i = 0, len = parseInt(document.getElementsByName('<%=eleName.replaceAll(" ",
-            "-") + UIGeneratorConstants.COUNT%>')[0].value); i < len; ++i) {
+                    "-") + UIGeneratorConstants.COUNT%>')[0].value); i < len; ++i) {
                     eleArr = new Array();
                     <%
-                                   for (int j=0; j<eleIds.size(); ++j) { %>
-                    ele = document.getElementById('<%=eleIds.get(j)%>' + (i + 1));
-                    if (ele == undefined || ele == null) {
-                        ele = document.getElementsByName('<%=eleIds.get(j)%>' + (i + 1))[0];
-                    }
-                    eleArr.push(ele);
+                    for (int j = 0 ; j < eleIds.size(); ++j) { %>
+                        ele = document.getElementById('<%=eleIds.get(j)%>' + (i + 1));
+                        if (ele == undefined || ele == null) {
+                            ele = document.getElementsByName('<%=eleIds.get(j)%>' + (i + 1))[0];
+                        }
+                        eleArr.push(ele);
                     <%} %>
                     reason += validateRegex("<%=regexp%>", eleArr, "<%=eleName%>" + (i + 1));
                 }
