@@ -31,9 +31,7 @@ public class SchemaTest extends BaseTestCase {
     public void testAddSchema() throws Exception {
         SchemaManager schemaManager = new SchemaManager(registry);
 
-        Schema schema = schemaManager.newSchema(
-                "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
-                        ".governance.api/src/test/resources/test-resources/xsd/purchasing.xsd");
+        Schema schema = schemaManager.newSchema("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/xsd/purchasing.xsd");
         schema.addAttribute("creator", "it is me");
         schema.addAttribute("version", "0.01");
         schemaManager.addSchema(schema);
@@ -87,10 +85,7 @@ public class SchemaTest extends BaseTestCase {
         SchemaManager schemaManager = new SchemaManager(registry);
         byte[] bytes = null;
         try {
-            InputStream inputStream = new URL(
-                    "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
-                            ".governance.api/src/test/resources/test-resources/xsd/purchasing.xsd")
-                    .openStream();
+            InputStream inputStream = new URL("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/xsd/purchasing.xsd").openStream();
             try {
                 bytes = IOUtils.toByteArray(inputStream);
             } finally {
@@ -119,10 +114,7 @@ public class SchemaTest extends BaseTestCase {
         SchemaManager schemaManager = new SchemaManager(registry);
         byte[] bytes = null;
         try {
-            InputStream inputStream = new URL(
-                    "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
-                            ".governance.api/src/test/resources/test-resources/xsd/purchasing.xsd")
-                    .openStream();
+            InputStream inputStream = new URL("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/xsd/purchasing.xsd").openStream();
             try {
                 bytes = IOUtils.toByteArray(inputStream);
             } finally {

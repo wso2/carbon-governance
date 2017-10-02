@@ -18,6 +18,7 @@ package org.wso2.carbon.governance.api.test;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
+import org.apache.commons.io.IOUtils;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.schema.dataobjects.Schema;
 import org.wso2.carbon.governance.api.test.utils.BaseTestCase;
@@ -27,15 +28,16 @@ import org.wso2.carbon.governance.api.wsdls.WsdlManager;
 import org.wso2.carbon.governance.api.wsdls.dataobjects.Wsdl;
 
 import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 public class WSDLTest extends BaseTestCase {
     public void testAddWSDL() throws Exception {
         WsdlManager wsdlManager = new WsdlManager(registry);
 
-        Wsdl wsdl = wsdlManager.newWsdl(
-                "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
-                        ".governance.api/src/test/resources/test-resources/wsdl/BizService.wsdl");
+        Wsdl wsdl = wsdlManager.newWsdl("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/wsdl/BizService.wsdl");
         wsdl.addAttribute("creator", "it is me");
         wsdl.addAttribute("version", "0.01");
         wsdlManager.addWsdl(wsdl);
@@ -77,10 +79,7 @@ public class WSDLTest extends BaseTestCase {
         OMElement importElement = factory.createOMElement(
                 new QName("http://www.w3.org/2001/XMLSchema", "import"));
         importElement.addAttribute("schemaLocation",
-                                   "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org" +
-                                           ".wso2.carbon.governance" +
-                                           ".api/src/test/resources/test-resources/xsd/purchasing_dup.xsd",
-                                   null);
+                "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/xsd/purchasing_dup.xsd", null);
         schemaElement.addChild(importElement);
         importElement.addAttribute("namespace", "http://bar.org/purchasing_dup", null);
 
@@ -88,13 +87,13 @@ public class WSDLTest extends BaseTestCase {
 
         Schema[] schemas = newWsdl.getAttachedSchemas();
         assertEquals("/schemas/org/bar/purchasing_dup/0.01/purchasing_dup.xsd",
-                     schemas[schemas.length - 1].getPath());
+                schemas[schemas.length - 1].getPath());
 
 
         Wsdl[] wsdls = wsdlManager.findWsdls(new WsdlFilter() {
             public boolean matches(Wsdl wsdl) throws GovernanceException {
                 Schema[] schemas = wsdl.getAttachedSchemas();
-                for (Schema schema : schemas) {
+                for (Schema schema: schemas) {
                     if (schema.getPath().equals("/schemas/org/bar/purchasing_dup/0.01/purchasing_dup.xsd")) {
                         return true;
                     }
@@ -112,9 +111,7 @@ public class WSDLTest extends BaseTestCase {
 
         wsdlManager = new WsdlManager(registry);
         // add again
-        Wsdl anotherWsdl = wsdlManager.newWsdl(
-                "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
-                        ".governance.api/src/test/resources/test-resources/wsdl/BizService.wsdl");
+        Wsdl anotherWsdl = wsdlManager.newWsdl("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/wsdl/BizService.wsdl");
         anotherWsdl.addAttribute("creator", "it is not me");
         anotherWsdl.addAttribute("version", "0.02");
         wsdlManager.addWsdl(anotherWsdl);
@@ -129,9 +126,7 @@ public class WSDLTest extends BaseTestCase {
     public void testEditWSDL() throws Exception {
         WsdlManager wsdlManager = new WsdlManager(registry);
 
-        Wsdl wsdl = wsdlManager.newWsdl("http://svn.wso2
-        .org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance
-        .api/src/test/resources/test-resources/wsdl/BizService.wsdl");
+        Wsdl wsdl = wsdlManager.newWsdl("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/wsdl/BizService.wsdl");
         wsdl.addAttribute("creator2", "it is me");
         wsdl.addAttribute("version2", "0.01");
         wsdlManager.addWsdl(wsdl);
@@ -157,7 +152,7 @@ public class WSDLTest extends BaseTestCase {
 */
 
     private static OMElement evaluateXPathToElement(String expression,
-                                                    OMElement root) throws Exception {
+                                                           OMElement root) throws Exception {
         List<OMElement> nodes = GovernanceUtils.evaluateXPathToElements(expression, root);
         if (nodes == null || nodes.size() == 0) {
             return null;
