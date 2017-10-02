@@ -30,14 +30,16 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class PolicyTest extends BaseTestCase {
-	
-	private static Log log = LogFactory.getLog(WSDLProcessor.class);
-	
-	
+
+    private static Log log = LogFactory.getLog(WSDLProcessor.class);
+
+
     public void testAddPolicy() throws Exception {
         PolicyManager policyManager = new PolicyManager(registry);
 
-        Policy policy = policyManager.newPolicy("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/policy/policy.xml");
+        Policy policy = policyManager.newPolicy(
+                "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
+                        ".governance.api/src/test/resources/test-resources/policy/policy.xml");
         policy.addAttribute("creator", "it is me");
         policy.addAttribute("version", "0.01");
         policyManager.addPolicy(policy);
@@ -89,7 +91,10 @@ public class PolicyTest extends BaseTestCase {
         PolicyManager policyManager = new PolicyManager(registry);
         byte[] bytes = null;
         try {
-            InputStream inputStream = new URL("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/policy/SigEncr.xml").openStream();
+            InputStream inputStream = new URL(
+                    "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
+                            ".governance.api/src/test/resources/test-resources/policy/SigEncr.xml")
+                    .openStream();
             try {
                 bytes = IOUtils.toByteArray(inputStream);
             } finally {
@@ -119,7 +124,10 @@ public class PolicyTest extends BaseTestCase {
         PolicyManager policyManager = new PolicyManager(registry);
         byte[] bytes = null;
         try {
-            InputStream inputStream = new URL("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/policy/EncrOnlyAnonymous.xml").openStream();
+            InputStream inputStream = new URL(
+                    "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
+                            ".governance.api/src/test/resources/test-resources/policy/EncrOnlyAnonymous.xml")
+                    .openStream();
             try {
                 bytes = IOUtils.toByteArray(inputStream);
             } finally {
@@ -140,7 +148,7 @@ public class PolicyTest extends BaseTestCase {
 
         // change the target namespace and check
         String oldPolicyPath = newPolicy.getPath();
-        assertEquals(oldPolicyPath, "/policies/0.01/"+ policy.getId() + ".xml");
-        assertTrue(registry.resourceExists("/policies/0.01/"+ policy.getId() + ".xml"));
+        assertEquals(oldPolicyPath, "/policies/0.01/" + policy.getId() + ".xml");
+        assertTrue(registry.resourceExists("/policies/0.01/" + policy.getId() + ".xml"));
     }
 }

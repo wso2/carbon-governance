@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EndpointTest extends BaseTestCase {
-    
+
     public void testAddEndpoint() throws Exception {
         // first add an endpoint, get it delete it, simply stuff like that.
         EndpointManager endpointManager = new EndpointManager(registry);
@@ -63,7 +63,9 @@ public class EndpointTest extends BaseTestCase {
     public void testAddWsdlWithEndpoints() throws Exception {
         WsdlManager wsdlManager = new WsdlManager(registry);
 
-        Wsdl wsdl = wsdlManager.newWsdl("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/wsdl/BizService.wsdl");
+        Wsdl wsdl = wsdlManager.newWsdl(
+                "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
+                        ".governance.api/src/test/resources/test-resources/wsdl/BizService.wsdl");
         wsdlManager.addWsdl(wsdl);
 
         Endpoint[] endpoints = wsdl.getAttachedEndpoints();
@@ -88,13 +90,13 @@ public class EndpointTest extends BaseTestCase {
 
         ServiceManager serviceManager = new ServiceManager(registry);
 
-        for (GovernanceArtifact artifact: artifacts) {
+        for (GovernanceArtifact artifact : artifacts) {
             if (artifact instanceof Service) {
                 // getting the service.
-                Service service2 = (Service)artifact;
+                Service service2 = (Service) artifact;
                 serviceManager.removeService(service2.getId());
             }
-        }        
+        }
 
         // now try to remove the endpoint
         endpointManager.removeEndpoint(endpoints[0].getId());
@@ -121,7 +123,7 @@ public class EndpointTest extends BaseTestCase {
         assertEquals("QA", endpoints[1].getAttribute(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR));
 
         // now update the endpoints in the service
-        service.setAttributes("endpoints_entry", new String[] {
+        service.setAttributes("endpoints_entry", new String[]{
                 "Dev:http://endpoint3",
                 "Production:http://endpoint4",
                 "QA:http://endpoint2",
@@ -143,7 +145,7 @@ public class EndpointTest extends BaseTestCase {
 
         assertEquals("http://endpoint2", endpoints[2].getUrl());
         assertEquals(1, endpoints[2].getAttributeKeys().length);
-        assertEquals("QA", endpoints[2].getAttribute(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR));       
+        assertEquals("QA", endpoints[2].getAttribute(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR));
     }
 
     // add endpoints as attachments
@@ -176,21 +178,21 @@ public class EndpointTest extends BaseTestCase {
         service.detachEndpoint(ep1.getId());
         endpoints = service.getAttachedEndpoints();
         assertEquals(1, endpoints.length);
-        
+
         assertEquals("http://endpoint2xx", endpoints[0].getUrl());
         assertEquals(1, endpoints[0].getAttributeKeys().length);
         assertEquals("QA", endpoints[0].getAttribute(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR));
 
 
         // now update the endpoints in the service
-        service.setAttributes("endpoints_entry", new String[] {
+        service.setAttributes("endpoints_entry", new String[]{
                 "Dev:http://endpoint3",
                 "Production:http://endpoint4",
                 "QA:http://endpoint2xx",
         });
         serviceManager.updateService(service);
 
-       endpoints = getAttachedEndpointsFromService(service);
+        endpoints = getAttachedEndpointsFromService(service);
 //        endpoints = service.getAttachedEndpoints();
         assertEquals(3, endpoints.length);
 
@@ -234,7 +236,7 @@ public class EndpointTest extends BaseTestCase {
     public void testServiceAddingEndpointsWithWsdl() throws Exception {
         File file = new File("src/test/resources/service.metadata.xml");
         FileInputStream fileInputStream = new FileInputStream(file);
-        byte[] fileContents = new byte[(int)file.length()];
+        byte[] fileContents = new byte[(int) file.length()];
         fileInputStream.read(fileContents);
 
         OMElement contentElement = GovernanceUtils.buildOMElement(fileContents);
@@ -249,23 +251,25 @@ public class EndpointTest extends BaseTestCase {
         // so retrieve it back
         String serviceId = service.getId();
         Service newService = serviceManager.getService(serviceId);
-        assertEquals(newService.getAttribute("custom-attribute"),  "custom-value");
+        assertEquals(newService.getAttribute("custom-attribute"), "custom-value");
         assertEquals(newService.getAttribute("endpoints_entry"),
-                ":http://localhost:8080/axis2/services/BizService");
+                     ":http://localhost:8080/axis2/services/BizService");
 
         // now we just add an endpoints
         WsdlManager wsdlManager = new WsdlManager(registry);
-        Wsdl wsdl = wsdlManager.newWsdl("http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon.governance.api/src/test/resources/test-resources/wsdl/MyChangedBizService.wsdl");
+        Wsdl wsdl = wsdlManager.newWsdl(
+                "http://svn.wso2.org/repos/wso2/carbon/platform/trunk/components/governance/org.wso2.carbon" +
+                        ".governance.api/src/test/resources/test-resources/wsdl/MyChangedBizService.wsdl");
         wsdl.addAttribute("boom", "hahahaha");
 
         wsdlManager.addWsdl(wsdl);
 
         GovernanceArtifact[] artifacts = wsdl.getDependents();
 
-        for (GovernanceArtifact artifact: artifacts) {
+        for (GovernanceArtifact artifact : artifacts) {
             if (artifact instanceof Service) {
                 // getting the service.
-                Service service2 = (Service)artifact;
+                Service service2 = (Service) artifact;
                 Endpoint[] endpoints = service2.getAttachedEndpoints();
                 assertEquals(1, endpoints.length);
                 assertEquals("http://localhost:8080/axis2/services/BizService-my-changes", endpoints[0].getUrl());
@@ -329,27 +333,27 @@ public class EndpointTest extends BaseTestCase {
         assertEquals(2, endpointValues.length);
     }
 
-    private  Endpoint[] getAttachedEndpointsFromService(Service service) throws GovernanceException {
-        List<Endpoint> endpoints =new ArrayList<Endpoint>();
+    private Endpoint[] getAttachedEndpointsFromService(Service service) throws GovernanceException {
+        List<Endpoint> endpoints = new ArrayList<Endpoint>();
         try {
             String[] endpointValues = service.getAttributes("endpoints_entry");
             EndpointManager endpointManager = new EndpointManager(registry);
-            for(String ep:endpointValues) {
+            for (String ep : endpointValues) {
                 endpoints.add(endpointManager.getEndpointByUrl(getFilteredEPURL(ep)));
             }
         } catch (GovernanceException e) {
             throw new GovernanceException("Exception occurred while geting endpoints ");
         }
-     return endpoints.toArray(new Endpoint[endpoints.size()]);
+        return endpoints.toArray(new Endpoint[endpoints.size()]);
     }
 
-    private String getFilteredEPURL(String ep){
+    private String getFilteredEPURL(String ep) {
 //        Dev:http://endpoint3
-      if(!ep.startsWith("http")){
-      return ep.substring(ep.indexOf(":") + 1, ep.length());
-      } else {
-       return ep;
-      }
+        if (!ep.startsWith("http")) {
+            return ep.substring(ep.indexOf(":") + 1, ep.length());
+        } else {
+            return ep;
+        }
     }
 
 }
