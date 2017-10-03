@@ -33,9 +33,11 @@ import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.registry.extensions.aspects.DefaultLifecycle;
 import org.wso2.carbon.user.core.service.RealmService;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 
 public class BaseTestCase extends TestCase {
@@ -86,5 +88,34 @@ public class BaseTestCase extends TestCase {
 
         ArtifactCache cache = ArtifactCacheFactory.createArtifactCache();
         ArtifactCacheManager.getCacheManager().addTenantArtifactCache(cache, MultitenantConstants.SUPER_TENANT_ID);
+    }
+
+    public static String getStringFromInputStream(InputStream is) {
+
+        BufferedReader br = null;
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+
+            br = new BufferedReader(new InputStreamReader(is));
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+        } catch (IOException e) {
+
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+
+                }
+            }
+        }
+
+        return sb.toString();
+
     }
 }

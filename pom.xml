@@ -22,6 +22,7 @@
         <version>1</version>
     </parent>
 
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.governance</groupId>
     <artifactId>carbon-governance</artifactId>
@@ -66,7 +67,36 @@
                         </execution>
                     </executions>
                 </plugin>
-
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.18.1</version>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <jacoco-agent.destfile>${basedir}/target/coverage-reports/jacoco-ut.exec
+                            </jacoco-agent.destfile>
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <jacoco-agent.destfile>${basedir}/target/coverage-reports/jacoco-it.exec
+                            </jacoco-agent.destfile>
+                        </systemPropertyVariables>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <extensions>
@@ -110,6 +140,104 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>pre-unit-test</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${basedir}/target/coverage-reports/jacoco-ut.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${basedir}/target/coverage-reports/jacoco-it.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-integration-test</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${basedir}/target/coverage-reports/jacoco-it.exec</dataFile>
+                            <outputDirectory>${basedir}/target/coverage-reports/site/jacoco-it</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${basedir}/target/coverage-reports/jacoco-ut.exec</dataFile>
+                            <outputDirectory>${basedir}/target/coverage-reports/site/jacoco-ut</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>merge-results</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${basedir}/target/coverage-reports</directory>
+                                    <includes>
+                                        <include>*.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${basedir}/target/coverage-reports/aggregate.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-merge-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${basedir}/target/coverage-reports/aggregate.exec</dataFile>
+                            <outputDirectory>${basedir}/target/coverage-reports/site/jacoco-aggregate
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${basedir}/target/coverage-reports/aggregate.exec</dataFile>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>INSTRUCTION</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.00</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -1090,8 +1218,8 @@
                 <version>${commons-dbcp.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.h2database.wso2</groupId>
-                <artifactId>h2-database-engine</artifactId>
+                <groupId>org.wso2.orbit.com.h2database</groupId>
+                <artifactId>h2</artifactId>
                 <version>${orbit.version.h2.engine}</version>
                 <exclusions>
                     <exclusion>
@@ -1280,6 +1408,17 @@
                 <artifactId>encoder</artifactId>
                 <version>${owasp.encoder.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.agent</artifactId>
+                <classifier>runtime</classifier>
+                <version>${jacoco.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1389,7 +1528,7 @@
         <juddi.wso2.version>3.1.5.wso2v1</juddi.wso2.version>
         <junit.version>3.8.2</junit.version>
         <xmlschema.version>1.4.3</xmlschema.version>
-        <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
+        <orbit.version.h2.engine>1.3.175.wso2v1</orbit.version.h2.engine>
         <orbit.version.hsqldb>1.8.0.7wso2v1</orbit.version.hsqldb>
         <version.javax.servlet>3.0.0.v201112011016</version.javax.servlet>
         <rhino.wso2.version>1.7.0.R4.wso2v1</rhino.wso2.version>
@@ -1398,6 +1537,9 @@
         <orbit.version.asm>4.0.0.wso2v1</orbit.version.asm>
         <project.scm.id>my-scm-server</project.scm.id>
         <owasp.encoder.version>1.1</owasp.encoder.version>
+
+        <jacoco.version>0.7.9</jacoco.version>
+        <mockito.version>2.4.2</mockito.version>
 
     </properties>
 </project>
