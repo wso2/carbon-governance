@@ -18,7 +18,6 @@
 
 var DEFAULT_DIV_ID = 'nsEditor';
 
-//private method 
 function show_ns_editor(dID, id, mode, linkID) {
 
     var sufix = "";
@@ -50,15 +49,19 @@ function show_ns_editor(dID, id, mode, linkID) {
 function showNameSpaceEditorOnDiv(dID, id) {
     return show_ns_editor(dID, id);
 }
+
 function showNameSpaceEditor(id) {
     return show_ns_editor('nsEditor', id);
 }
+
 function showNameSpaceEditorHideLink(id, linkID) {
     return show_ns_editor('nsEditor', id, null, linkID);
 }
+
 function showSingleNameSpaceEditorOnDiv(dID, id) {
     return show_ns_editor(dID, id, 'single');
 }
+
 function showSingleNameSpaceEditor(id) {
     return show_ns_editor('nsEditor', id, 'single');
 }
@@ -66,6 +69,7 @@ function showSingleNameSpaceEditor(id) {
 function showMultiNameSpaceEditorOnDiv(dID, id) {
     return show_ns_editor(dID, id);
 }
+
 function showMultiNameSpaceEditor(id) {
     return show_ns_editor('nsEditor', id);
 }
@@ -150,60 +154,7 @@ function isValidNameSpaces(prefixemptymsg, uriemptymsg) {
     return true;
 }
 
-function saveNameSpace(divID, id, linkID, prefixemptymsg, uriemptymsg) {
-
-    if (!isValidNameSpaces(prefixemptymsg, uriemptymsg)) {
-        return false;
-    }
-
-    if (linkID != undefined && linkID != null && linkID != "null" && linkID != "") {
-        document.getElementById(linkID).style.display = "";
-    }
-
-    var nsCount = document.getElementById("nsCount");
-    var count = parseInt(nsCount.value);
-    var referenceString = "";
-    for (var i = 0; i < count; i++) {
-        var prefixID = "prefix" + i;
-        var prefix = document.getElementById(prefixID);
-        var uriID = "uri" + i;
-        var uri = document.getElementById(uriID);
-        if (prefix != null && prefix != undefined && uri != null && uri != undefined) {
-            var prefixValue = prefix.value;
-            var uriValue = uri.value;
-            if (prefixValue != undefined && uriValue != undefined && uriValue != "") {
-                referenceString += "&" + prefixID + "=" + prefixValue + "&" + uriID + "=" + uriValue;
-            }
-        }
-    }
-    var url = 'ns_save-ajaxprocessor.jsp?currentID=' + id + "&nsCount=" + count + referenceString;
-    jQuery.post(url, ({}),
-        function (data, status) {
-            if (status != "success") {
-                CARBON.showWarningDialog(org_wso2_carbon_governance_lcm_ui_jsi18n["ns.editor.load.error"]);
-            }
-        });
-    hideNameSpaceEditor(divID);
-    CARBON.closeWindow();
-    return false;
-}
-
 function hideNameSpaceEditor(divID, linkID) {
     CARBON.closeWindow();
     return false;
-    /*
-     if (linkID != undefined && linkID != null && linkID!="null" && linkID!="") {
-     var linkObj = document.getElementById(linkID);
-     if (linkObj) {
-     linkObj.style.display = "";
-     }
-     }
-
-     var nsDiv = document.getElementById(divID);
-     if (nsDiv != null && nsDiv != undefined) {
-     nsDiv.style.display = "none";
-     nsDiv.innerHTML = "";
-     }
-     return false;
-     */
 }
