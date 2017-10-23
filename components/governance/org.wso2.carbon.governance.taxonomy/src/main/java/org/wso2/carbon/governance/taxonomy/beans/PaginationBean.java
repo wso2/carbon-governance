@@ -24,18 +24,38 @@ public class PaginationBean {
     private int startNode;
     private int endNode;
 
+    /**
+     * This method will return the last node index of pagination bean object
+     *
+     * @return Integer end node index value
+     */
     public int getEndNode() {
         return endNode;
     }
 
+    /**
+     * This method will set the end node's index value in bean object
+     *
+     * @param endNode Integer end node index value
+     */
     public void setEndNode(int endNode) {
         this.endNode = endNode;
     }
 
+    /**
+     * This method will return the start node index of pagination object
+     *
+     * @return Integer start node index value
+     */
     public int getStartNode() {
         return startNode;
     }
 
+    /**
+     * This method will set the start node index value of pagination object
+     *
+     * @param startNode Integer start node index value
+     */
     public void setStartNode(int startNode) {
         this.startNode = startNode;
     }

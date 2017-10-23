@@ -23,22 +23,41 @@ import java.util.Map;
  */
 public class RXTBean {
     private String rxtName;
-    private Map<String,Map<String,Boolean>> taxonomies = new HashMap<>();
-    private boolean isDeleteAllowed = false;
+    private Map<String, Map<String, Boolean>> taxonomies = new HashMap<>();
 
+    /**
+     * This method will set the RXT name for RXT Bean object
+     *
+     * @param setRxtName String RXT name
+     */
     public void setRxtName(String setRxtName) {
         this.rxtName = setRxtName;
     }
 
-    public void setTaxonomy(Map<String,Map<String,Boolean>> taxonomies) {
+    /**
+     * This method will set the taxonomy map details for RXT Bean object
+     *
+     * @param taxonomies Map contain (taxonomy name , (global value, is enable ))
+     */
+    public void setTaxonomy(Map<String, Map<String, Boolean>> taxonomies) {
         this.taxonomies = taxonomies;
     }
 
+    /**
+     * This method will return the rxt name of RXT Bean object
+     *
+     * @return String RXT name
+     */
     public String getRxtName() {
         return rxtName;
     }
 
-    public Map<String,Map<String,Boolean>> getTaxonomy() {
+    /**
+     * This method will return the taxonomy map
+     *
+     * @return Map contain (taxonomy name , (global value, is enable ))
+     */
+    public Map<String, Map<String, Boolean>> getTaxonomy() {
         return taxonomies;
     }
 
