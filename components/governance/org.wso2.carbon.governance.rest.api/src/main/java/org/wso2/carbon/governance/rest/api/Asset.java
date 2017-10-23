@@ -37,11 +37,12 @@ import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.governance.common.GovernanceConfiguration;
 import org.wso2.carbon.governance.common.GovernanceConfigurationService;
+import org.wso2.carbon.governance.rest.api.model.AssetAssociateModel;
+import org.wso2.carbon.governance.rest.api.model.AssociationModel;
 import org.wso2.carbon.governance.rest.api.internal.PaginationInfo;
 import org.wso2.carbon.governance.rest.api.model.AssetState;
 import org.wso2.carbon.governance.rest.api.model.LCState;
 import org.wso2.carbon.governance.rest.api.model.AssetStateChange;
-import org.wso2.carbon.governance.rest.api.model.AssociationModel;
 import org.wso2.carbon.governance.rest.api.model.TypedList;
 import org.wso2.carbon.governance.rest.api.util.CommonConstants;
 import org.wso2.carbon.governance.rest.api.util.Util;
@@ -174,6 +175,33 @@ public class Asset {
         return createGovernanceAsset(assetType, (DetachedGenericArtifact) genericArtifact, Util.getBaseURL(uriInfo));
     }
 
+    @POST
+    @Path("/{destType : [a-zA-Z][a-zA-Z_0-9]*}/{sourceType : [a-zA-Z][a-zA-Z_0-9]*}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createAsset(@PathParam("destType") String destType, @PathParam("sourceType") String sourceType,
+                                GenericArtifact genericArtifact, @Context UriInfo uriInfo) throws RegistryException {
+        return createAssetWithAssociation(destType, sourceType, null, uriInfo, genericArtifact);
+    }
+
+
+    @POST
+    @Path("/{destType : [a-zA-Z][a-zA-Z_0-9]*}/{sourceType : [a-zA-Z][a-zA-Z_0-9]*}/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createAsset(@PathParam("destType") String destType, @PathParam("sourceType") String sourceType,
+                                @PathParam("id") String id, GenericArtifact genericArtifact,
+                                @Context UriInfo uriInfo) throws RegistryException {
+        return createAssetWithAssociation(destType, sourceType, id, uriInfo, genericArtifact);
+    }
+
+    @POST
+    @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}/associates")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response associateAsset(@PathParam("assetType") String assetType, @PathParam("id") String id,
+                                   AssetAssociateModel associateModel,
+                                   @Context UriInfo uriInfo) throws RegistryException {
+        return createAssetAssociation(assetType, id, associateModel, uriInfo);
+    }
 
     @PUT
     @Path("{assetType : [a-zA-Z][a-zA-Z_0-9]*}/{id}")
@@ -366,6 +394,49 @@ public class Asset {
             return response;
         }
         return validationFail(shortName);
+    }
+
+    private Response createAssetWithAssociation(String destType, String sourceType, String id, UriInfo uriInfo,
+                                                GenericArtifact genericArtifact) throws RegistryException {
+        String destShortName = Util.getShortName(destType);
+        if (!validateAssetType(destShortName)) {
+            return validationFail(destShortName);
+        }
+        String sourceShortName = Util.getShortName(sourceType);
+        if (!validateAssetType(sourceShortName)) {
+            return validationFail(sourceShortName);
+        }
+
+        GenericArtifactManager manager = getGenericArtifactManager(destShortName);
+        GenericArtifact newArtifact = ((DetachedGenericArtifact) genericArtifact).makeRegistryAware(manager);
+        Response response = persistGovernanceAsset(destShortName, manager, newArtifact, Util.getBaseURL(uriInfo));
+        createEndpointAssociation(sourceShortName, id, uriInfo, newArtifact);
+        return response;
+    }
+
+    private Response createAssetAssociation(String assetType, String id,
+                                            AssetAssociateModel associateModel, UriInfo uriInfo) throws RegistryException {
+        String sourceShortName = Util.getShortName(assetType);
+        if (!validateAssetType(sourceShortName)) {
+            return validationFail(sourceShortName);
+        }
+        if (!validateAssetType(associateModel.getDestAssetType())) {
+            return validationFail(associateModel.getDestAssetType());
+        }
+
+        GenericArtifact source = getUniqueAsset(sourceShortName, id, uriInfo);
+        GenericArtifact destination = getUniqueAsset(associateModel.getDestAssetType(),
+                associateModel.getDestAssetID(), uriInfo);
+        if (source != null && destination != null) {
+            if (associateModel.getDestAssocType() == null) {
+                source.addAssociation(associateModel.getSourceAssocType(), destination);
+            } else {
+                source.addBidirectionalAssociation(associateModel.getSourceAssocType(),
+                        associateModel.getDestAssocType(), destination);
+            }
+            return Response.ok().build();
+        }
+        return validationFail(sourceShortName);
     }
 
     private void createEndpointAssociation(String shortName, String id, UriInfo uriInfo,
