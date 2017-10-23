@@ -30,6 +30,7 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.governance.common.utils.GovernanceUtils;
+import org.wso2.carbon.governance.registry.extensions.indexers.RXTIndexer;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -245,6 +246,7 @@ public class CommonUtil {
 	                    String mediaType = configuration.getMediaType();
 	                    String storagePath = configuration.getPathExpression();
 	                    addStoragePath(mediaType, storagePath);
+	                    updateTenantsUnboundedFieldMap(configuration);
                     }
                 } else {
 	                Resource resource = systemRegistry.get(resourcePath);
@@ -259,6 +261,7 @@ public class CommonUtil {
 	                String mediaType = configuration.getMediaType();
 	                String storagePath = configuration.getPathExpression();
 	                addStoragePath(mediaType, storagePath);
+	                updateTenantsUnboundedFieldMap(configuration);
                     if (log.isDebugEnabled()) {
                         log.debug("RXT " + rxtName + " already exists.");
                     }
@@ -272,6 +275,13 @@ public class CommonUtil {
                 String msg = "Failed to add rxt to registry ";
                 throw new RegistryException(msg, e);
             }
+        }
+    }
+
+    private static void updateTenantsUnboundedFieldMap(GovernanceArtifactConfiguration rxtConfiguration)
+            throws RegistryException {
+        if (rxtConfiguration.getMediaType().matches("application/vnd.(.)+\\+xml")) {
+            RXTIndexer.updateTenantsUnboundedFieldMap(rxtConfiguration.getContentDefinition().getParent().toString());
         }
     }
 

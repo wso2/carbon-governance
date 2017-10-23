@@ -128,7 +128,7 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
      * @param elementString     rxt configuration.
      * @throws RegistryException
      */
-    private static void updateTenantsUnboundedFieldMap(String elementString) throws RegistryException {
+    public static void updateTenantsUnboundedFieldMap(String elementString) throws RegistryException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         RxtUnboundedEntryBean rxtUnboundedFields = RxtUnboundedDataLoadUtils.getRxtUnboundedEntries(
                 elementString);
