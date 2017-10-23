@@ -1,0 +1,82 @@
+<!--
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Taxonomy Configuration - User Guide</title>
+  <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+
+<body>
+<p></p>
+<h1>Configuring and Managing Taxonomy</h1>
+<p></p>
+<ul>
+    <li><a href="#addTconfig">Adding a Taxonomy configuration</a></li>
+    <li><a href="#editingLCconfig">Editing a Taxonomy configuration</a></li>
+    <li><a href="#deleteTconfig">Deleting a Taxonomy configuration</a></li>
+    <li><a href="#Tconfig">Taxonomy Configuration</a></li>
+</ul>
+<p></p>
+<p>In the navigator under "Extensions" click on "Taxonomy". A list of available taxonomies is shown. </p>
+<p><img src="images/view_taxonomy.png" alt="" width="749px"/></p>
+<p></p>
+
+<a name="addTconfig"></a>
+<h2>Adding a Taxonomy configuration</h2>
+<p>In the above Taxonomy configuration page, click on "Add New Taxonomy". A configuration page with a sample taxonomy configuration is shown.
+   Click on save to save the configuration or cancel to return to available taxonomy configuration list.</p>
+
+<a name="editingLCconfig"></a>
+<h2>Editing an existing taxonomy configuration</h2>
+<p>Click on corresponding "Edit" link found under each taxonomy configuration, from taxonomy configuration list.
+   A configuration page with the taxonomy configuration is shown.</p>
+<p><img src="images/edit_taxonomy.png" alt="" width="749px"/></p>
+
+<a name="deleteTconfig"></a>
+<h2>Deleting an existing taxonomy configuration</h2>
+<p>Click on corresponding "Delete" link found under each taxonomy configuration, from taxonomy configuration list.</p>
+
+<a name="Tconfig"></a>
+<h2>Taxonomy Configuration</h2>
+<p>Following is the template of the taxonomy configuration. In the configuration, the xml element structure should strictly followed.
+The configuration elements and their usage is defined inline with the elements. </p>
+<p>
+<pre>
+
+&lt;taxonomy id=&quot;Teams&quot; name=&quot;Teams&quot;&gt;
+	&lt;root id=&quot;developmentTeam&quot; displayName=&quot;Development team&quot;&gt;
+		&lt;node id=&quot;newJersey&quot; displayName=&quot;New Jersey&quot;&gt;
+			&lt;node id=&quot;theRockStars&quot; displayName=&quot;The Rock Stars&quot;&gt;&lt;/node&gt;
+			&lt;node id=&quot;topShelf&quot; displayName=&quot;Top Shelf&quot;&gt;&lt;/node&gt;
+		&lt;/node&gt;
+		&lt;node id=&quot;boston&quot; displayName=&quot;Boston&quot;&gt;
+			&lt;node id=&quot;thinkTank&quot; displayName=&quot;Think Tank&quot;&gt;&lt;/node&gt;
+			&lt;node id=&quot;conceptCrew&quot; displayName=&quot;Concept Crew&quot;&gt;&lt;/node&gt;
+			&lt;node id=&quot;theDominators&quot; displayName=&quot;The Dominators&quot;&gt;&lt;/node&gt;
+		&lt;/node&gt;
+		&lt;node id=&quot;chicago&quot; displayName=&quot;Chicago&quot;&gt;
+			&lt;node id=&quot;centurions&quot; displayName=&quot;Centurions&quot;/&gt;
+		&lt;/node&gt;
+	&lt;/root&gt;
+&lt;/taxonomy&gt;
+
+</pre>
+
+</body>
+</html>
