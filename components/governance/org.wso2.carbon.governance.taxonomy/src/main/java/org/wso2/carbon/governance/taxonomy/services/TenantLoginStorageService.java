@@ -53,9 +53,8 @@ public class TenantLoginStorageService extends AbstractAxis2ConfigurationContext
         } catch (IOException e) {
             log.error("Error occurred while parsing taxonomy xml when initializing taxonomy storage service", e);
         } catch (ParserConfigurationException e) {
-            log.error(
-                    "Error occurred while building new document for taxonomy when initializing taxonomy storage service"
-                            + e);
+            log.error("Error occurred while building new document for taxonomy when initializing taxonomy storage "
+                    + "service", e);
         } catch (SAXException e) {
             log.error("Error occurred parsing taxonomy content stream when initializing taxonomy storage service", e);
         }

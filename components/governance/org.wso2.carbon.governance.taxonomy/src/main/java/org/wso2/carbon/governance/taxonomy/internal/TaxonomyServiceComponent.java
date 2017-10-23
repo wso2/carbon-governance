@@ -63,9 +63,7 @@ public class TaxonomyServiceComponent {
      *
      * @param context OSGi component context.
      */
-    protected void activate(ComponentContext context)
-            throws UserStoreException, RegistryException, ParserConfigurationException, SAXException,
-            XPathExpressionException, IOException {
+    protected void activate(ComponentContext context) {
 
         BundleContext bundleContext = context.getBundleContext();
         TenantLoginStorageService tenantLoginStorageService = new TenantLoginStorageService();
@@ -73,9 +71,7 @@ public class TaxonomyServiceComponent {
                 .registerService(Axis2ConfigurationContextObserver.class.getName(), tenantLoginStorageService, null);
 
         if (tenantMgtListenerSR != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Governance Taxonomy Management - TenantLoginStorageService registered");
-            }
+            log.debug("Governance Taxonomy Management - TenantLoginStorageService registered");
         } else {
             log.error("Governance Taxonomy Management - TenantLoginStorageService could not be registered");
         }
@@ -85,16 +81,12 @@ public class TaxonomyServiceComponent {
                 .registerService(ITaxonomyServices.class.getName(), new TaxonomyServicesImpl(), null);
 
         if (taxonomyManagementService != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Governance Taxonomy Management - Manager services registered");
-            }
+            log.debug("Governance Taxonomy Management - Manager services registered");
         } else {
             log.error("Governance Taxonomy Management - Manager services could not be registered");
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Governance Taxonomy Management Service bundle is activated");
-        }
+        log.debug("Governance Taxonomy Management Service bundle is activated");
 
         try {
             TaxonomyManager taxonomyManager = new TaxonomyManager();
@@ -126,9 +118,7 @@ public class TaxonomyServiceComponent {
      * @param context OSGi component context.
      */
     protected void deactivate(ComponentContext context) {
-        if (log.isDebugEnabled()) {
-            log.info("taxonomy bundle is deactivated");
-        }
+        log.info("taxonomy bundle is deactivated");
     }
 
     /**
@@ -137,9 +127,7 @@ public class TaxonomyServiceComponent {
      * @param registryService service to get tenant data.
      */
     protected void setRegistryService(RegistryService registryService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting RegistryService for taxonomy");
-        }
+        log.debug("Setting RegistryService for taxonomy");
         ServiceHolder.setRegistryService(registryService);
     }
 
@@ -149,9 +137,7 @@ public class TaxonomyServiceComponent {
      * @param registryService service to get registry data.
      */
     protected void unsetRegistryService(RegistryService registryService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unset Registry service");
-        }
+        log.debug("Unset Registry service");
         ServiceHolder.setRegistryService(null);
     }
 
@@ -161,7 +147,7 @@ public class TaxonomyServiceComponent {
      * @param realmService service to get tenant data.
      */
     protected void setRealmService(RealmService realmService) {
-        log.debug("Setting RealmService for WSO2 Governance Registry migration");
+        log.debug("Setting RealmService for taxonomy feature ");
         ServiceHolder.setRealmService(realmService);
     }
 
@@ -171,9 +157,7 @@ public class TaxonomyServiceComponent {
      * @param realmService service to get tenant data.
      */
     protected void unsetRealmService(RealmService realmService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unset Realm service");
-        }
+        log.debug("Unset Realm service");
         ServiceHolder.setRealmService(null);
     }
 
@@ -183,7 +167,7 @@ public class TaxonomyServiceComponent {
      * @param tenantRegLoader tenant registry loader
      */
     protected void setTenantRegistryLoader(TenantRegistryLoader tenantRegLoader) {
-        log.debug("Setting TenantRegistryLoader for WSO2 Governance Registry migration");
+        log.debug("Setting TenantRegistryLoader for taxonomy feature");
         ServiceHolder.setTenantRegLoader(tenantRegLoader);
     }
 

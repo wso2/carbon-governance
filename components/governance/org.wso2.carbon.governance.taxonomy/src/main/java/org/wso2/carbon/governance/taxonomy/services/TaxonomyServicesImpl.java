@@ -36,28 +36,29 @@ import javax.xml.xpath.XPathExpressionException;
 
 public class TaxonomyServicesImpl extends RegistryAbstractAdmin implements ITaxonomyServices {
     private static final Log log = LogFactory.getLog(TaxonomyServicesImpl.class);
+
     /**
      * This method will add user defined taxonomy into taxonomy.xml
      *
      * @param payload String
      * @return boolean
-     * @throws Exception
+     * @throws RegistryException
      */
-    @Override public boolean
-    addTaxonomy(String payload) throws Exception {
+    @Override
+    public boolean addTaxonomy(String payload) throws RegistryException {
         TaxonomyManager taxonomyManager = new TaxonomyManager();
         try {
             TaxonomyBean documentBean = CommonUtils.documentBeanBuilder(payload);
             return taxonomyManager.addTaxonomy(documentBean);
         } catch (ParserConfigurationException e) {
             log.error("Error occurred while parsing payload ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while parsing payload ", e);
         } catch (IOException e) {
             log.error("Error occurred while building document ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while building document ", e);
         } catch (SAXException e) {
             log.error("Error occurred while creating document instance ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while creating document instance ", e);
         }
     }
 
@@ -65,16 +66,16 @@ public class TaxonomyServicesImpl extends RegistryAbstractAdmin implements ITaxo
      * This method will delete the taxonomy.xml file
      *
      * @return boolean
-     * @throws Exception
+     * @throws RegistryException
      */
     @Override
-    public boolean deleteTaxonomy(String name) throws Exception{
+    public boolean deleteTaxonomy(String name) throws RegistryException {
         TaxonomyManager taxonomyManager = new TaxonomyManager();
         try {
             return taxonomyManager.deleteTaxonomy(name);
         } catch (RegistryException e) {
             log.error("Error occurred while deleting taxonomy from registry ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while deleting taxonomy from registry ", e);
         }
     }
 
@@ -83,26 +84,26 @@ public class TaxonomyServicesImpl extends RegistryAbstractAdmin implements ITaxo
      *
      * @param payload String
      * @return boolean
-     * @throws Exception
+     * @throws RegistryException
      */
     @Override
-    public boolean updateTaxonomy(String oldName, String payload) throws Exception{
+    public boolean updateTaxonomy(String oldName, String payload) throws RegistryException {
         TaxonomyManager taxonomyManager = new TaxonomyManager();
         try {
             TaxonomyBean documentBean = CommonUtils.documentBeanBuilder(payload);
             return taxonomyManager.updateTaxonomy(oldName, documentBean);
         } catch (ParserConfigurationException e) {
             log.error("Error occurred while parsing payload ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while parsing payload ", e);
         } catch (IOException e) {
             log.error("Error occurred while building document ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while building document ", e);
         } catch (SAXException e) {
             log.error("Error occurred while creating document instance ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while creating document instance ", e);
         } catch (RegistryException e) {
             log.error("Error occurred while converting payload to a DOM instance ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while converting payload to a DOM instance ", e);
         }
     }
 
@@ -110,22 +111,23 @@ public class TaxonomyServicesImpl extends RegistryAbstractAdmin implements ITaxo
      * This method will return text content of given taxonomy name (This will be a registry call)
      *
      * @return String type data
-     * @throws Exception
+     * @throws RegistryException
      */
     @Override
-    public String getTaxonomy(String name) throws Exception {
+    public String getTaxonomy(String name) throws RegistryException {
         try {
             TaxonomyManager taxonomyManager = new TaxonomyManager();
             return taxonomyManager.getTaxonomy(name);
         } catch (RegistryException e) {
             log.error("Error occurred while reading taxonomy from registry ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while reading taxonomy from registry ", e);
         }
     }
 
     /**
      * This method will return taxonomyBean object for a given query bean (This will return from map)
      * (cost will be low comparing to registry call)
+     *
      * @param queryBean query bean object
      * @return TaxonomyBean object
      * @throws RegistryException
@@ -140,15 +142,15 @@ public class TaxonomyServicesImpl extends RegistryAbstractAdmin implements ITaxo
      * This method will retrieve all taxonomy file list
      *
      * @return Array of Strings which contains taxonomy file list
-     * @throws Exception
+     * @throws RegistryException
      */
-    public String[] getTaxonomyList() throws Exception {
+    public String[] getTaxonomyList() throws RegistryException {
         try {
             TaxonomyManager taxonomyManager = new TaxonomyManager();
             return taxonomyManager.getTaxonomyList();
         } catch (RegistryException e) {
             log.error("Error occurred while reading taxonomy list from registry ", e);
-            throw (e);
+            throw new RegistryException("Error occurred while reading taxonomy list from registry ", e);
         }
     }
 
@@ -156,7 +158,7 @@ public class TaxonomyServicesImpl extends RegistryAbstractAdmin implements ITaxo
      * This method will return processed results for
      *
      * @param taxonomyQueryBean Taxonomy meta data bean object
-     * @param paginationBean pagination meta data
+     * @param paginationBean    pagination meta data
      * @return json array of results
      * @throws TaxonomyException
      */

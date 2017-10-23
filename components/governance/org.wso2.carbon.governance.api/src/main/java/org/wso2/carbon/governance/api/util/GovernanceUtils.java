@@ -102,6 +102,9 @@ public class GovernanceUtils {
     private static final String REPLACEMENT_OR_SEARCH = " OR ";
     private static final String REPLACEMENT_AND_SEARCH = "AND ";
     private static final String REPLACEMENT_SYMBOL_AND = " AND ";
+    public static final String TAXONOMIES = "taxonomies";
+    public static final String TAXONOMY = "taxonomy";
+    public static final String EXCLUDE_GLOBAL = "excludeGlobal";
     private static RegistryService registryService;
     //private static final String SEPARATOR = ":";
     private final static Map<Integer, List<GovernanceArtifactConfiguration>>
@@ -411,10 +414,10 @@ public class GovernanceUtils {
                     configuration.setLifecycle(lifecycleElement.getText());
                 }
 
-                OMElement taxonomiesElement = configElement.getFirstChildWithName(new QName("taxonomies"));
+                OMElement taxonomiesElement = configElement.getFirstChildWithName(new QName(TAXONOMIES));
                 if (taxonomiesElement != null) {
-                    Iterator taxonomiesElements = taxonomiesElement.getChildrenWithName(new QName("taxonomy"));
-                    String isGlobalTaxonomyEnabled = taxonomiesElement.getAttributeValue(new QName("excludeGlobal"));
+                    Iterator taxonomiesElements = taxonomiesElement.getChildrenWithName(new QName(TAXONOMY));
+                    String isGlobalTaxonomyEnabled = taxonomiesElement.getAttributeValue(new QName(EXCLUDE_GLOBAL));
 
                     while (taxonomiesElements.hasNext()) {
                         OMElement taxonomyElement = (OMElement) taxonomiesElements.next();

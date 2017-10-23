@@ -24,7 +24,6 @@ import java.util.Map;
 public class RXTBean {
     private String rxtName;
     private Map<String,Map<String,Boolean>> taxonomies = new HashMap<>();
-    private boolean isDeleteAllowed = false;
 
     public void setRxtName(String setRxtName) {
         this.rxtName = setRxtName;
