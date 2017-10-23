@@ -26,6 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.governance.lcm.beans.LifecycleBean;
 import org.wso2.carbon.governance.lcm.internal.LifeCycleServiceHolder;
+import org.wso2.carbon.registry.common.AttributeSearchService;
+import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.config.RegistryConfigurationProcessor;
@@ -564,48 +566,14 @@ public class CommonUtil {
                 throw new RegistryException("Lifecycle Configuration does not contain the name attribute");
         }
 
-        String sql = null;
-//        if (!registry.resourceExists(searchLCMPropertiesQuery)) {
-            if(StaticConfiguration.isVersioningProperties()) {
-                sql = "SELECT R.REG_PATH_ID, R.REG_NAME FROM REG_RESOURCE R , REG_PROPERTY PP, REG_RESOURCE_PROPERTY RP "
-                        + "WHERE R.REG_VERSION=RP.REG_VERSION AND "
-                        + "RP.REG_PROPERTY_ID=PP.REG_ID AND PP.REG_NAME=? AND PP.REG_VALUE=?";
-            }
-            else
-            {
-                sql = "SELECT R.REG_PATH_ID, R.REG_NAME FROM REG_RESOURCE R, REG_PROPERTY PP, REG_RESOURCE_PROPERTY RP WHERE "
-                        + "R.REG_PATH_ID=RP.REG_PATH_ID AND "
-                        + "((R.REG_NAME=RP.REG_RESOURCE_NAME) OR (R.REG_NAME IS NULL AND RP.REG_RESOURCE_NAME IS NULL)) AND "
-                        + "RP.REG_PROPERTY_ID=PP.REG_ID AND "
-                        + "PP.REG_NAME=? AND PP.REG_VALUE=?";
-            }
-            // This modification is done to stop the queries been stored to the registry.
-            /*Resource q1 = registry.newResource();
-            q1.setContent(sql);
-            q1.setMediaType(RegistryConstants.SQL_QUERY_MEDIA_TYPE);
-            q1.addProperty(RegistryConstants.RESULT_TYPE_PROPERTY_NAME,
-                    RegistryConstants.RESOURCES_RESULT_TYPE);
-            registry.put(searchLCMPropertiesQuery, q1);*/
-//        }
-
-        Map<String, String> parameters = new HashMap<String, String>();
-//        if (sql != null && RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
-//            parameters.put("query", sql);
-//        }
-        parameters.put("query", sql);
-        parameters.put("1", "registry.LC.name");
-        parameters.put("2", name);
-//        Collection result = rootRegistry.executeQuery(RegistryConstants.CONFIG_REGISTRY_BASE_PATH +
-//                searchLCMPropertiesQuery, parameters);
-        Collection result = rootRegistry.executeQuery(null, parameters);
-
-        String[] servicePaths = result.getChildren();
-
-        if ((servicePaths == null) || (servicePaths.length == 0)) {
-            return false;
-        }
-
-        return true;
+        // Execute a search query to find out whether there is any usage in lifecycle.
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("propertyName", "registry.Aspects");
+        parameters.put("rightPropertyValue", name);
+        parameters.put("rightOp", "eq");
+        AttributeSearchService searchService = LifeCycleServiceHolder.getInstance().getAttributeSearchService();
+        ResourceData[] resourceData = searchService.search(parameters);
+        return resourceData.length != 0;
     }
 
 

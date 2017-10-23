@@ -295,7 +295,7 @@ public class CommonUtil {
                 if (association.getNodeType() == Node.ELEMENT_NODE) {
                     HashMap<String, String> associationMap = new HashMap<>();
                     HashMap<String, String> reverseAssociationMap = new HashMap<>();
-                    HashMap iconClassMap = new HashMap();
+                    HashMap iconClassMap = new LinkedHashMap();
                     NodeList childNodeList = association.getChildNodes();
 
                     if (childNodeList != null) {
