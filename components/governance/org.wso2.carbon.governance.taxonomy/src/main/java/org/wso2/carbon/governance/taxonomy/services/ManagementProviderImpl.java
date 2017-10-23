@@ -21,6 +21,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.taxonomy.beans.TaxonomyBean;
 import org.wso2.carbon.governance.taxonomy.clustering.ClusterMessage;
 import org.wso2.carbon.governance.taxonomy.clustering.ClusteringUtil;
+import org.wso2.carbon.governance.taxonomy.exception.TaxonomyException;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -51,15 +52,16 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
         OMElement element = null;
         element = buildOMElement(taxonomyBean.getPayload());
         name = element.getAttributeValue(new QName("name"));
+        String id = element.getAttributeValue(new QName("id"));
 
-        if (!registry.resourceExists(TAXONOMY_CONFIGURATION_PATH + name)) {
+        if (!registry.resourceExists(TAXONOMY_CONFIGURATION_PATH + name) && !storageProvider.isTaxonomyIdExist(id)) {
             resource = new ResourceImpl();
             resource.setMediaType(TAXONOMY_MEDIA_TYPE);
             resource.setContent(taxonomyBean.getPayload());
             registry.put(TAXONOMY_CONFIGURATION_PATH + name, resource);
             storageProvider.addTaxonomy(taxonomyBean);
         } else {
-            return false;
+            throw new TaxonomyException("Taxonomy Name or/and ID already in use.");
         }
         return true;
     }
@@ -107,14 +109,17 @@ class ManagementProviderImpl extends RegistryAbstractAdmin implements IManagemen
         Registry registry = getGovernanceUserRegistry();
 
         String newName = null;
+        String id = null;
         OMElement element = null;
         element = buildOMElement(taxonomyBean.getPayload());
 
         if (element != null) {
             newName = element.getAttributeValue(new QName("name"));
+            id = element.getAttributeValue(new QName("id"));
+
         }
 
-        if (newName == null || newName.equals("")) {
+        if (newName == null || newName.equals("") || id == null || id.equals("")) {
             return false; // invalid configuration
         }
 

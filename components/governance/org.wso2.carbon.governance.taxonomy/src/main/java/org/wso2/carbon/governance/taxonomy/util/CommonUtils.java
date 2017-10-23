@@ -262,6 +262,7 @@ public class CommonUtils {
 
         OMElement element = buildOMElement(payload);
         String name = element.getAttributeValue(new QName("name"));
+        String id = element.getAttributeValue(new QName("id"));
         String global = element.getAttributeValue(new QName("global"));
         InputStream inputStream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
@@ -272,6 +273,7 @@ public class CommonUtils {
         documentBean.setPath(getCompletePath(name));
         documentBean.setGlobal(Boolean.valueOf(global));
         documentBean.setPayload(payload);
+        documentBean.setTaxonomyId(id);
 
         return documentBean;
     }
