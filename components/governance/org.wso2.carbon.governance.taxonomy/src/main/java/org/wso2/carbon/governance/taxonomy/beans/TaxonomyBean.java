@@ -26,6 +26,7 @@ public class TaxonomyBean {
     private Document document;
     private boolean isGlobal;
     private String taxonomyName;
+    private String taxonomyId;
     private String payload;
 
     public String getPayload() {
@@ -68,4 +69,11 @@ public class TaxonomyBean {
         return this.isGlobal;
     }
 
+    public String getTaxonomyId() {
+        return taxonomyId;
+    }
+
+    public void setTaxonomyId(String taxonomyId) {
+        this.taxonomyId = taxonomyId;
+    }
 }

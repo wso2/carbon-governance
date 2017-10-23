@@ -179,6 +179,22 @@ class StorageProviderImpl extends RegistryAbstractAdmin implements IStorageProvi
     }
 
     @Override
+    public boolean isTaxonomyIdExist(String taxonomyId) {
+        if (tenantTaxonomyMap != null && tenantTaxonomyMap.containsKey(tenantId)) {
+            Map<String, TaxonomyBean> taxonomies = getTaxonomyBeanMap();
+            if (taxonomies == null) {
+                return false;
+            }
+            for (Map.Entry<String, TaxonomyBean> entry : taxonomies.entrySet()) {
+                if (taxonomyId.equalsIgnoreCase(entry.getValue().getTaxonomyId())){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
     public List<String> getTaxonomiesByRXT(String name) {
         return null;
     }
