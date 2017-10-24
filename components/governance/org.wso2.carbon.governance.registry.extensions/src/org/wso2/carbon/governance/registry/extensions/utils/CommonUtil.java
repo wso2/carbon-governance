@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.CarbonException;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
@@ -42,6 +43,9 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.registry.extensions.services.RXTStoragePathServiceImpl;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
+import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
+import org.wso2.carbon.registry.indexing.service.RxtUnboundedFieldManagerService;
+import org.wso2.carbon.registry.indexing.utils.RxtUnboundedDataLoadUtils;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.FileUtil;
 import org.xml.sax.SAXException;
@@ -54,6 +58,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.wso2.carbon.governance.api.util.GovernanceUtils.getGovernanceArtifactConfiguration;
 import static org.wso2.carbon.governance.api.util.GovernanceUtils.getRXTConfigCache;
@@ -281,7 +286,7 @@ public class CommonUtil {
     private static void updateTenantsUnboundedFieldMap(GovernanceArtifactConfiguration rxtConfiguration)
             throws RegistryException {
         if (rxtConfiguration.getMediaType().matches("application/vnd.(.)+\\+xml")) {
-            RXTIndexer.updateTenantsUnboundedFieldMap(rxtConfiguration.getContentDefinition().getParent().toString());
+            updateTenantsUnboundedFieldMap(rxtConfiguration.getContentDefinition().getParent().toString());
         }
     }
 
@@ -484,5 +489,28 @@ public class CommonUtil {
 
     public static void releaseMetaDataClearLock() {
         clearMetaDataInProgress.set(false);
+    }
+
+    /**
+     * This method is used to update rxt unbounded fields map.
+     *
+     * @param elementString     rxt configuration.
+     * @throws RegistryException
+     */
+    public static void updateTenantsUnboundedFieldMap(String elementString) throws RegistryException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        RxtUnboundedEntryBean rxtUnboundedFields = RxtUnboundedDataLoadUtils.getRxtUnboundedEntries(
+                elementString);
+        if (rxtUnboundedFields != null) {
+            Map<String, List<String>> currentTenantUnboundedFields = RxtUnboundedFieldManagerService.getInstance()
+                    .getTenantsUnboundedFields().get(tenantId);
+            if (currentTenantUnboundedFields == null) {
+                currentTenantUnboundedFields = new ConcurrentHashMap<>();
+            }
+            currentTenantUnboundedFields.put(rxtUnboundedFields.getMediaType(),
+                                             rxtUnboundedFields.getFields());
+            RxtUnboundedFieldManagerService.getInstance().setTenantsUnboundedFields(tenantId,
+                                                                                    currentTenantUnboundedFields);
+        }
     }
 }
