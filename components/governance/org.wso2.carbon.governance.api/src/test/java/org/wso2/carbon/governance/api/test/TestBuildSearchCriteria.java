@@ -149,7 +149,6 @@ public class TestBuildSearchCriteria extends BaseTestCase {
         // Mocking the search method to return both of the resources as a result.
         Mockito.doAnswer(new Answer() {
             private int count = 0;
-
             public Object answer(InvocationOnMock invocation) {
                 if (count == 0) {
                     count++;
