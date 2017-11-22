@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.wso2.carbon.governance.api.util.GovernanceUtils.findGovernanceArtifacts;
-
 public class TestBuildSearchCriteria extends BaseTestCase {
 
     public void testBuildSearchCriteria() throws Exception {
@@ -52,7 +50,7 @@ public class TestBuildSearchCriteria extends BaseTestCase {
         GovernanceUtils.loadGovernanceArtifacts((UserRegistry) registry);
 
         try {
-            findGovernanceArtifacts(
+            GovernanceUtils.findGovernanceArtifacts(
                     "name=SampleURI2&version=1.2" +
                             ".3&tags=123&updater!=admin&author!=admin&mediaType!=admin&associationDest=admin&comments" +
                             "=123",
@@ -77,7 +75,7 @@ public class TestBuildSearchCriteria extends BaseTestCase {
         GovernanceUtils.loadGovernanceArtifacts((UserRegistry) registry);
 
         try {
-            findGovernanceArtifacts("name:(SampleURI2 OR SampleURI1)", registry,
+            GovernanceUtils.findGovernanceArtifacts("name:(SampleURI2 OR SampleURI1)", registry,
                                                     governanceArtifactConfiguration.getMediaType());
         } catch (GovernanceException e) {
             assertEquals("Attribute Search Service not Found", e.getMessage());
@@ -99,7 +97,7 @@ public class TestBuildSearchCriteria extends BaseTestCase {
         GovernanceUtils.loadGovernanceArtifacts((UserRegistry) registry);
 
         try {
-            findGovernanceArtifacts("taxonomy=(SampleURI2 OR SampleURI1)", registry,
+            GovernanceUtils.findGovernanceArtifacts("taxonomy=(SampleURI2 OR SampleURI1)", registry,
                                                     governanceArtifactConfiguration.getMediaType());
         } catch (GovernanceException e) {
             assertEquals("Attribute Search Service not Found", e.getMessage());
@@ -121,7 +119,7 @@ public class TestBuildSearchCriteria extends BaseTestCase {
         GovernanceUtils.loadGovernanceArtifacts((UserRegistry) registry);
 
         try {
-            findGovernanceArtifacts("overview:name=(SampleURI2 OR SampleURI1)", registry,
+            GovernanceUtils.findGovernanceArtifacts("overview:name=(SampleURI2 OR SampleURI1)", registry,
                                                     governanceArtifactConfiguration.getMediaType());
         } catch (GovernanceException e) {
             assertEquals("Attribute Search Service not Found", e.getMessage());
@@ -151,6 +149,7 @@ public class TestBuildSearchCriteria extends BaseTestCase {
         // Mocking the search method to return both of the resources as a result.
         Mockito.doAnswer(new Answer() {
             private int count = 0;
+
             public Object answer(InvocationOnMock invocation) {
                 if (count == 0) {
                     count++;
@@ -168,7 +167,8 @@ public class TestBuildSearchCriteria extends BaseTestCase {
         List<GovernanceArtifact> governanceArtifacts = GovernanceUtils
                 .findGovernanceArtifacts("name=(SampleURI2 OR " + "SampleURI1)&publisher_roles=(admin)", registry,
                         governanceArtifactConfiguration.getMediaType());
-        assertEquals(2, governanceArtifacts.size());
+        assertEquals("Some governance artifacts are missing in the property search result", 2,
+                governanceArtifacts.size());
     }
 
     /**
