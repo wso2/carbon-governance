@@ -572,8 +572,11 @@ public class CommonUtil {
         parameters.put("rightPropertyValue", name);
         parameters.put("rightOp", "eq");
         AttributeSearchService searchService = LifeCycleServiceHolder.getInstance().getAttributeSearchService();
-        ResourceData[] resourceData = searchService.search(parameters);
-        return resourceData.length != 0;
+        if (searchService != null) {
+            ResourceData[] resourceData = searchService.search(parameters);
+            return resourceData.length != 0;
+        }
+        return false;
     }
 
 

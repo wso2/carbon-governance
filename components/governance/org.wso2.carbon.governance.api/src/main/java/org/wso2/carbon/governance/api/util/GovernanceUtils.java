@@ -2051,7 +2051,6 @@ public class GovernanceUtils {
             List<GovernanceArtifact> mergeListWithoutDuplicates = new ArrayList<>();
             mergeListWithoutDuplicates.addAll(removeDuplicate);
 
-
             Set<GovernanceArtifact> set = new TreeSet<>(new Comparator<GovernanceArtifact>() {
                 public int compare(GovernanceArtifact artifact1, GovernanceArtifact artifact2) {
                     PaginationContext paginationContext = PaginationContext.getInstance();
@@ -2090,8 +2089,11 @@ public class GovernanceUtils {
                     if (value1 == null) {
                         throw new GovernanceException("Artifact does not contain the attribute " + sortBy);
                     }
-
-                    return value1.compareTo(value2);
+                    int comparisonValue = value1.compareTo(value2);
+                    if (comparisonValue == 0) {
+                        return -1;
+                    }
+                    return comparisonValue;
                 }
             });
 
