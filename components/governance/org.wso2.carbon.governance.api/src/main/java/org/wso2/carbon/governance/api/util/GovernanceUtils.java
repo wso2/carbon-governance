@@ -135,7 +135,7 @@ public class GovernanceUtils {
 
     // Method to register a list of governance artifact configurations.
     private static void registerArtifactConfigurations(int tenantId,
-                                                       List<GovernanceArtifactConfiguration> configurations) {
+            List<GovernanceArtifactConfiguration> configurations) {
         artifactConfigurations.put(tenantId, configurations);
         CarbonContextHolderBase.registerUnloadTenantTask(new UnloadTenantTask() {
             public void register(int tenantId, Object registration) {
@@ -185,7 +185,7 @@ public class GovernanceUtils {
 
     }
 
-   /**
+    /**
      * Query to search for governance artifacts.
      *
      * @param mediaType the media type of the artifacts to be searched for.
@@ -329,7 +329,7 @@ public class GovernanceUtils {
      * @throws RegistryException if the operation failed.
      */
     public static void loadGovernanceArtifacts(UserRegistry registry,
-                                               List<GovernanceArtifactConfiguration> configurations)
+            List<GovernanceArtifactConfiguration> configurations)
             throws RegistryException {
         registerArtifactConfigurations(registry.getTenantId(), configurations);
     }
@@ -750,7 +750,7 @@ public class GovernanceUtils {
      */
     public static String getArtifactPath(Registry registry, String artifactId)
             throws GovernanceException {
-    	Cache<String, String> cache;
+        Cache<String, String> cache;
         UserRegistry userRegistry = (UserRegistry) registry;
         //This is temp fix to identify remote calls. Will move cache initialization logic into registry core
         // with next major carbon(ex:4.5.0) release.
@@ -758,44 +758,44 @@ public class GovernanceUtils {
             return getDirectArtifactPath(registry, artifactId);
         }
         try{
-    		PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(userRegistry.getTenantId());
             String tenantDomain  = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
-            if (tenantDomain == null) {            	
-            	tenantDomain = MultitenantUtils.getTenantDomain(((UserRegistry) registry).getUserName());
+            if (tenantDomain == null) {
+                tenantDomain = MultitenantUtils.getTenantDomain(((UserRegistry) registry).getUserName());
             }
-            
+
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             cache  = RegistryUtils.getUUIDCache(RegistryConstants.UUID_CACHE_ID);
             if(cache.containsKey(artifactId)){
                 return cache.get(artifactId);
-            }           
-    	    	
-    		try {
-    
-    			String sql = "SELECT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_UUID = ?";
-    
-    			String[] result;
-    			Map<String, String> parameter = new HashMap<String, String>();
-    			parameter.put("1", artifactId);
-    			parameter.put("query", sql);
-    			result = registry.executeQuery(null, parameter).getChildren();
-    
-    			if (result != null && result.length == 1) {
-    				cache.put(artifactId, result[0]);
-    				return result[0];
-    			}
-    			return null;
-    		} catch (RegistryException e) {
-    			String msg =
-    			             "Error in getting the path from the registry. Execute query failed with message : " +
-    			                     e.getMessage();
-    			log.error(msg, e);
-    			throw new GovernanceException(msg, e);
-    		}
-		} finally {
-    		PrivilegedCarbonContext.endTenantFlow();
-    	}
+            }
+
+            try {
+
+                String sql = "SELECT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_UUID = ?";
+
+                String[] result;
+                Map<String, String> parameter = new HashMap<String, String>();
+                parameter.put("1", artifactId);
+                parameter.put("query", sql);
+                result = registry.executeQuery(null, parameter).getChildren();
+
+                if (result != null && result.length == 1) {
+                    cache.put(artifactId, result[0]);
+                    return result[0];
+                }
+                return null;
+            } catch (RegistryException e) {
+                String msg =
+                        "Error in getting the path from the registry. Execute query failed with message : " +
+                                e.getMessage();
+                log.error(msg, e);
+                throw new GovernanceException(msg, e);
+            }
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
     }
 
 
@@ -944,7 +944,7 @@ public class GovernanceUtils {
      * @throws GovernanceException if the operation failed.
      */
     public static GovernanceArtifact retrieveGovernanceArtifactById(Registry registry,
-                                                                    String artifactId)
+            String artifactId)
             throws GovernanceException {
         String artifactPath = getArtifactPath(registry, artifactId);
         if (artifactPath == null) {
@@ -966,7 +966,7 @@ public class GovernanceUtils {
      * @throws GovernanceException if the operation failed.
      */
     public static GovernanceArtifact retrieveGovernanceArtifactByPath(Registry registry,
-                                                                      String artifactPath)
+            String artifactPath)
             throws GovernanceException {
         UserRegistry userRegistry = (UserRegistry) registry;
         String currentUser = userRegistry.getUserName();
@@ -1370,8 +1370,8 @@ public class GovernanceUtils {
      * @throws GovernanceException if the operation failed.
      */
     public static String getPathFromPathExpression(String pathExpression,
-                                                   GovernanceArtifact artifact,
-                                                   String storagePath) throws GovernanceException {
+            GovernanceArtifact artifact,
+            String storagePath) throws GovernanceException {
         return getPathFromPathExpression(
                 pathExpression.replace("@{storagePath}", storagePath).replace("@{uuid}",
                         artifact.getId()), artifact
@@ -1388,7 +1388,7 @@ public class GovernanceUtils {
      * @throws GovernanceException if the operation failed.
      */
     public static String getPathFromPathExpression(String pathExpression,
-                                                   GovernanceArtifact artifact)
+            GovernanceArtifact artifact)
             throws GovernanceException {
         String output = replaceNameAndNamespace(pathExpression, artifact);
         String[] elements = output.split("@");
@@ -1419,7 +1419,7 @@ public class GovernanceUtils {
      */
     @SuppressWarnings("unused")
     public static boolean hasSamePath(String pathExpression,
-                                      GovernanceArtifact newArtifact, GovernanceArtifact oldArtifact)
+            GovernanceArtifact newArtifact, GovernanceArtifact oldArtifact)
             throws GovernanceException {
         String output = replaceNameAndNamespace(pathExpression, newArtifact);
         String[] elements = output.split("@");
@@ -1454,7 +1454,7 @@ public class GovernanceUtils {
      * @throws GovernanceException if the operation failed.
      */
     public static String[] getPathsFromPathExpression(String pathExpression,
-                                                      GovernanceArtifact artifact)
+            GovernanceArtifact artifact)
             throws GovernanceException {
         String expression = replaceNameAndNamespace(pathExpression, artifact);
         String[] elements = expression.split("@");
@@ -1473,7 +1473,7 @@ public class GovernanceUtils {
     }
 
     private static List<String> fixExpressionForMultiplePaths(GovernanceArtifact artifact,
-                                                              String expression)
+            String expression)
             throws GovernanceException {
         if (!expression.contains("@")) {
             return Collections.singletonList(expression);
@@ -1501,7 +1501,7 @@ public class GovernanceUtils {
     }
 
     private static String replaceNameAndNamespace(String pathExpression,
-                                                  GovernanceArtifact artifact) {
+            GovernanceArtifact artifact) {
         String output = pathExpression;
         QName qName = artifact.getQName();
 
@@ -1622,7 +1622,7 @@ public class GovernanceUtils {
 
     @SuppressWarnings("unchecked")
     public static List<OMElement> evaluateXPathToElements(String expression,
-                                                          OMElement root) throws JaxenException {
+            OMElement root) throws JaxenException {
 
         String[] wsdlPrefixes = {
                 "wsdl", "http://schemas.xmlsoap.org/wsdl/",
@@ -1783,7 +1783,7 @@ public class GovernanceUtils {
      * @throws GovernanceException if the operation failed
      */
     public static List<GovernanceArtifact> findGovernanceArtifacts(Map<String, List<String>> criteria,
-                                                                   Registry registry, String mediaType)
+            Registry registry, String mediaType)
             throws GovernanceException {
         if (getAttributeSearchService() == null) {
             throw new GovernanceException("Attribute Search Service not Found");
@@ -1836,7 +1836,8 @@ public class GovernanceUtils {
         return artifacts;
     }
 
-    private static String buildSearchCriteria(String criteria, Registry registry, String mediaType, Map<String, String> possibleProperties, Map<String, String> fields) throws GovernanceException {
+    private static String buildSearchCriteria(String criteria, Registry registry, String mediaType, Map<String,
+            String> possibleProperties, Map<String, String> fields, boolean hasOneProperty) throws GovernanceException {
         String editedCriteria = "";
         GovernanceArtifactConfiguration artifactConfiguration;
         try {
@@ -1885,40 +1886,40 @@ public class GovernanceUtils {
             } else {
                 if(possibleKeys.contains(subParts[0])) {
                     switch(subParts[0]) {
-                        case "author!":
-                            fields.put(subParts[0].substring(0, subParts[0].length() - 1), subParts[1].toLowerCase());
-                            fields.put("authorNameNegate", "on");
-                            break;
-                        case "updater!":
-                            fields.put(subParts[0].substring(0, subParts[0].length() - 1), subParts[1].toLowerCase());
-                            fields.put("updaterNameNegate", "on");
-                            break;
-                        case "mediaType!":
-                            fields.put(subParts[0].substring(0, subParts[0].length() - 1), subParts[1].toLowerCase());
-                            fields.put("mediaTypeNegate", "on");
-                            break;
-                        case "tags":
-                            fields.put(subParts[0], subParts[1]);
-                            break;
-                        case "associationType":
-                        case "taxonomy":
-                            String taxaValue = subParts[1].toLowerCase().replaceAll("\\* (and|AND) \\*", "* && *").
-                                    replaceAll("\\) (and|AND) \\(", ") && (").replaceAll("\\* (and|AND) \\(", "* && (").
-                                    replaceAll("\\) (and|AND) \\*", ") && *");
-                            fields.put(subParts[0], taxaValue);
-                            //edit taxa value in the edited criteria for content search
-                            editedCriteria = editedCriteria.replace(subParts[1], taxaValue);
-                            break;
-                        case "associationDest":
-                            fields.put(subParts[0], subParts[1]);
-                            break;
-                        default:
-                            String value = subParts[1].toLowerCase();
-                            value = buildSearchValue(value);
-                            fields.put(subParts[0], value);
-                            // lowercase to query value for the content search
-                            editedCriteria = editedCriteria.replace(subParts[1], value);
-                            break;
+                    case "author!":
+                        fields.put(subParts[0].substring(0, subParts[0].length() - 1), subParts[1].toLowerCase());
+                        fields.put("authorNameNegate", "on");
+                        break;
+                    case "updater!":
+                        fields.put(subParts[0].substring(0, subParts[0].length() - 1), subParts[1].toLowerCase());
+                        fields.put("updaterNameNegate", "on");
+                        break;
+                    case "mediaType!":
+                        fields.put(subParts[0].substring(0, subParts[0].length() - 1), subParts[1].toLowerCase());
+                        fields.put("mediaTypeNegate", "on");
+                        break;
+                    case "tags":
+                        fields.put(subParts[0], subParts[1]);
+                        break;
+                    case "associationType":
+                    case "taxonomy":
+                        String taxaValue = subParts[1].toLowerCase().replaceAll("\\* (and|AND) \\*", "* && *").
+                                replaceAll("\\) (and|AND) \\(", ") && (").replaceAll("\\* (and|AND) \\(", "* && (").
+                                replaceAll("\\) (and|AND) \\*", ") && *");
+                        fields.put(subParts[0], taxaValue);
+                        //edit taxa value in the edited criteria for content search
+                        editedCriteria = editedCriteria.replace(subParts[1], taxaValue);
+                        break;
+                    case "associationDest":
+                        fields.put(subParts[0], subParts[1]);
+                        break;
+                    default:
+                        String value = subParts[1].toLowerCase();
+                        value = buildSearchValue(value);
+                        fields.put(subParts[0], value);
+                        // lowercase to query value for the content search
+                        editedCriteria = editedCriteria.replace(subParts[1], value);
+                        break;
                     }
                 } else if(subParts[0].equals("comments")){
                     fields.put("commentWords", subParts[1].toLowerCase());
@@ -1931,7 +1932,9 @@ public class GovernanceUtils {
                         value = buildSearchValue(value);
                         String[] tableParts = subParts[0].split(":");
                         if ("overview".equals(tableParts[0])) {
-                            possibleProperties.put(tableParts[1], value);
+                            if (!hasOneProperty || possibleProperties.size() == 0) {
+                                possibleProperties.put(tableParts[1], value);
+                            }
                             //add new query parameter to support properties search.
                             String overviewField = tableParts[1] + ":" + value + " OR ";
                             editedCriteria = new StringBuilder(editedCriteria).insert(editedCriteria.lastIndexOf(subParts[0]), overviewField).toString();
@@ -1944,7 +1947,9 @@ public class GovernanceUtils {
                         String value = subParts[1].toLowerCase();
                         value = buildSearchValue(value);
                         if(!subParts[0].equals("name")) {
-                            possibleProperties.put(subParts[0], value);
+                            if (!hasOneProperty || possibleProperties.size() == 0) {
+                                possibleProperties.put(subParts[0], value);
+                            }
                             fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
                             editedCriteria = editedCriteria.replace(subParts[1], value);
                             //add new query parameter to search in both resource properties and metadata content
@@ -1994,19 +1999,31 @@ public class GovernanceUtils {
     }
 
     /**
-     * @param criteria query string that should be searched for
-     * @param registry the governance registry instance
+     * @param criteria  query string that should be searched for
+     * @param registry  the governance registry instance
      * @param mediaType media type to be matched for search. Media type can be specified in the query string too
      * @return The list of artifacts. null if the media type and string is empty.
      * @throws GovernanceException thrown when an error occurs
      */
-    public static List<GovernanceArtifact> findGovernanceArtifacts(String criteria,
-                                                                   Registry registry, String mediaType)
+    public static List<GovernanceArtifact> findGovernanceArtifacts(String criteria, Registry registry, String mediaType)
             throws GovernanceException {
+        return findGovernanceArtifacts(criteria, registry, mediaType, false);
+    }
+
+    /**
+     * @param criteria       query string that should be searched for
+     * @param registry       the governance registry instance
+     * @param mediaType      media type to be matched for search. Media type can be specified in the query string too.
+     * @param hasOneProperty To specify whether search criteria contains one property.
+     * @return The list of artifacts. null if the media type and string is empty.
+     * @throws GovernanceException thrown when an error occurs
+     */
+    public static List<GovernanceArtifact> findGovernanceArtifacts(String criteria, Registry registry, String mediaType,
+            boolean hasOneProperty) throws GovernanceException {
         Map<String, String> fields = new HashMap<>();
         Map<String, String> possibleProperties = new HashMap<>();
         //maintain search query to support OR via content search
-        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields);
+        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields, hasOneProperty);
 
         if (editedCriteria != null && (editedCriteria.contains(FIELDS_OR_WILD_SEARCH) || editedCriteria.contains(FIELDS_OR_SEARCH))) {
             editedCriteria = editedCriteria.replace(FIELDS_OR_WILD_SEARCH, REPLACEMENT_OR_WILD_SEARCH);
@@ -2060,15 +2077,15 @@ public class GovernanceUtils {
                         try {
                             if (StringUtils.isNotBlank(sortBy) && StringUtils.isNotBlank(sortOrder)) {
                                 switch (sortOrder) {
-                                    case "ASC":
-                                        return comparison(artifact1.getAttribute(sortBy),
-                                                artifact2.getAttribute(sortBy), sortBy);
-                                    case "DES":
-                                    case "DESC":
-                                        return comparison(artifact2.getAttribute(sortBy),
-                                                artifact1.getAttribute(sortBy), sortBy);
-                                    default:
-                                        return artifact1.getId().compareTo(artifact2.getId());
+                                case "ASC":
+                                    return comparison(artifact1.getAttribute(sortBy),
+                                            artifact2.getAttribute(sortBy), sortBy);
+                                case "DES":
+                                case "DESC":
+                                    return comparison(artifact2.getAttribute(sortBy),
+                                            artifact1.getAttribute(sortBy), sortBy);
+                                default:
+                                    return artifact1.getId().compareTo(artifact2.getId());
                                 }
                             }
                         } catch (GovernanceException e) {
@@ -2265,7 +2282,7 @@ public class GovernanceUtils {
         Map<String, String> fields = new HashMap<>();
         Map<String, String> possibleProperties = new HashMap<>();
         //maintain search query to support OR via content search
-        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields);
+        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields, false);
 
         if (editedCriteria != null && (editedCriteria.contains(FIELDS_OR_WILD_SEARCH) || editedCriteria.contains(FIELDS_OR_SEARCH))) {
             if (getTermsQuerySearchService() == null) {
@@ -2329,7 +2346,7 @@ public class GovernanceUtils {
         }
     }
 
-     /**
+    /**
      * Method used to retrieve cache object for RXT Configs.
      *
      * @param name the name of the cache
@@ -2723,7 +2740,7 @@ public class GovernanceUtils {
     }
 
     public static List<String> getUniqueAttributesNames(Registry registry,
-                                                        String mediaType) throws GovernanceException {
+            String mediaType) throws GovernanceException {
         try {
             GovernanceArtifactConfiguration configuration = findGovernanceArtifactConfigurationByMediaType(mediaType, registry);
             if (configuration != null) {
@@ -2781,7 +2798,7 @@ public class GovernanceUtils {
                         if (values[j] == null || "".equals(values[j])) {
                             //return an exception to stop adding artifact
                             throw new GovernanceException((String) map.get("name") + " is a required field, " +
-                                                          "Please provide a value for this parameter.");
+                                    "Please provide a value for this parameter.");
                         }
                     }
                 }
@@ -2797,7 +2814,7 @@ public class GovernanceUtils {
                 if (value == null || "".equals(value)) {
                     //return an exception to stop adding artifact
                     throw new GovernanceException((String) map.get("name") + " is a required field, " +
-                                                  "Please provide a value for this parameter.");
+                            "Please provide a value for this parameter.");
                 }
             }
         }
@@ -2812,7 +2829,7 @@ public class GovernanceUtils {
     private static void deleteLifecycleHistoryFile(String artifactPath, Registry registry) throws GovernanceException {
         String artifactRootPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + artifactPath;
         String historyResourcePath = GovernanceConstants.LIFECYCLE_HISTORY_PATH
-                                     + artifactRootPath.replaceAll("/", "_");
+                + artifactRootPath.replaceAll("/", "_");
         try {
             Registry govRegistry;
             if (registryService != null){
