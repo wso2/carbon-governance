@@ -41,6 +41,9 @@
 <%@ page import="org.wso2.carbon.governance.custom.lifecycles.checklist.ui.Beans.CurrentStateDurationBean" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="org.wso2.carbon.governance.lcm.stub.beans.xsd.CheckpointBean" %>
+<%@ page import="org.wso2.carbon.governance.api.exception.GovernanceException" %>
+<%@ page import="org.apache.commons.logging.Log" %>
+<%@ page import="org.apache.commons.logging.LogFactory" %>
 
 <%
     class CheckListItem implements Comparable {
@@ -166,6 +169,11 @@
 			this.requiredVote = requiredVote;
 		}			
 	}
+
+    /**
+     *  log object to use when logging is required in this class.
+     */
+    final Log log = LogFactory.getLog("lifecycles_ajaxprocessor.jsp");
 
     String path = RegistryUtil.getPath(request);
     String lcName = request.getParameter("aspect");
@@ -478,14 +486,20 @@
             ConfigurationContext configContext = (ConfigurationContext) config.getServletContext()
                     .getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
             String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
-            LifecycleManagementServiceClient lifecycleManagementServiceClient;
+            LifecycleManagementServiceClient lifecycleManagementServiceClient = null;
 
             String currentLifecycleStateDuration;
             String currentLifecycleStateDurationColour = null;
-            lifecycleManagementServiceClient = new LifecycleManagementServiceClient(cookie, serverURL,
-                    configContext);
-            CurrentStateDurationBean currentStateDurationBean = lifecycleManagementServiceClient
-                    .getLifecycleCurrentStateDuration(path, lifecycleName);
+            CurrentStateDurationBean currentStateDurationBean = null;
+            try {
+                lifecycleManagementServiceClient = new LifecycleManagementServiceClient(cookie, serverURL,
+                        configContext);
+                currentStateDurationBean = lifecycleManagementServiceClient
+                        .getLifecycleCurrentStateDuration(path, lifecycleName);
+            } catch (GovernanceException e) {
+                log.error("Error while getting lifecycle state '" + lifeCycleState + "' duration for lifecycle '"
+                        + lifecycleName + "' in '" + path, e);
+            }
 
             if (currentStateDurationBean != null) {
                 currentLifecycleStateDuration = currentStateDurationBean.getDuration();
@@ -531,11 +545,13 @@
                 </tr>
                 <tr>
                     <th><fmt:message key="lifecycle.currentLifecycleStateDuration"/>:</th>
-                    <% if(StringUtils.isNotEmpty(currentLifecycleStateDurationColour)) {%>
+                    <% if (StringUtils.isNotEmpty(currentLifecycleStateDurationColour)) {%>
                     <td style="border:0; color: <%=currentLifecycleStateDurationColour%>">
-                        <%=currentLifecycleStateDuration%></td>
+                        <%=currentLifecycleStateDuration%>
+                    </td>
                     <%} else {%>
-                    <td style="border:0;"><%=currentLifecycleStateDuration%></td>
+                    <td style="border:0;"><%=currentLifecycleStateDuration%>
+                    </td>
                     <%}%>
                 </tr>
                 <tr>

@@ -21,8 +21,7 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.custom.lifecycles.checklist.ui.Beans.CurrentStateDurationBean;
 import org.wso2.carbon.governance.lcm.stub.LifeCycleManagementServiceGovernanceExceptionException;
 import org.wso2.carbon.governance.lcm.stub.LifeCycleManagementServiceStub;
@@ -35,11 +34,6 @@ import java.util.concurrent.TimeUnit;
  * This class contains the client to call lifecycle management service and get data.
  */
 public class LifecycleManagementServiceClient {
-
-    /**
-     *  log object to use when logging is required in this class.
-     */
-    private static final Log log = LogFactory.getLog(LifecycleManagementServiceClient.class);
 
     /**
      * Lifecycle management service name.
@@ -96,12 +90,13 @@ public class LifecycleManagementServiceClient {
     /**
      * Constructor to initialize lifecycle management service client.
      *
-     * @param cookie            session cookie
-     * @param backendServerURL  backend service URL
-     * @param configContext     Configuration context.
+     * @param cookie                session cookie.
+     * @param backendServerURL      backend service URL.
+     * @param configContext         Configuration context.
+     * @throws GovernanceException  Throws when lifecycle management service client initialization failed.
      */
     public LifecycleManagementServiceClient(
-            String cookie, String backendServerURL, ConfigurationContext configContext) {
+            String cookie, String backendServerURL, ConfigurationContext configContext) throws GovernanceException {
         // End point reference to the service.
         String endPointReference = backendServerURL + serviceName;
         try {
@@ -111,23 +106,28 @@ public class LifecycleManagementServiceClient {
             option.setManageSession(true);
             option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
         } catch (AxisFault axisFault) {
-            log.error("Failed to initiate lifecycle management service client. " + axisFault.getMessage(), axisFault);
+            throw new GovernanceException("Failed to initiate lifecycle management service client. "
+                    + axisFault.getMessage(), axisFault);
         }
     }
 
     /**
      * This client side method to get current lifecycle state duration from lifecycle management service.
-     * @param resourcePath  registry path to the resource.
-     * @param lifecycleName lifecycle name associated to the resource. In multiple lifecycle scenario this service is
-     *                      called once at a time.
-     * @return              lifecycle current lifecycle state duration.
+     * @param resourcePath          registry path to the resource.
+     * @param lifecycleName         lifecycle name associated to the resource. In multiple lifecycle scenario this
+     *                              service is called once at a time.
+     * @return                      lifecycle current lifecycle state duration.
+     * @throws GovernanceException  Throws when LifeCycleManagementService is not available or an error occurs when
+     *                              getting current lifecycle duration or when lifecycle directory path or lifecycle
+     *                              name is not sent.
      */
-    public CurrentStateDurationBean getLifecycleCurrentStateDuration(String resourcePath, String lifecycleName) {
+    public CurrentStateDurationBean getLifecycleCurrentStateDuration(String resourcePath, String lifecycleName)
+            throws GovernanceException {
         CurrentStateDurationBean currentStateDurationBean = null;
         if (!StringUtils.isEmpty(resourcePath) && !StringUtils.isEmpty(lifecycleName)) {
             try {
                 DurationBean durationBean = stub.getLifecycleCurrentStateDuration(resourcePath, lifecycleName);
-                if(durationBean != null) {
+                if (durationBean != null) {
                     currentStateDurationBean = new CurrentStateDurationBean();
                     // Checkpoint includes its name, colour to be displayed and boundaries
                     currentStateDurationBean.setCheckpointBean(durationBean.getCheckpoint());
@@ -135,15 +135,16 @@ public class LifecycleManagementServiceClient {
                     currentStateDurationBean.setDuration(formatTimeDuration(durationBean.getDuration()));
                 }
             } catch (RemoteException e) {
-                log.error(serviceName + "'s operation, getLifecycleCurrentStateDuration error or its not "
-                        + "unavailable", e);
+                throw new GovernanceException(
+                        serviceName + "'s operation, getLifecycleCurrentStateDuration error or it's not unavailable",
+                        e);
             } catch (LifeCycleManagementServiceGovernanceExceptionException e) {
-                log.error("Error in service: " + serviceName + " while getting lifecycle current state "
-                        + "duration", e);
+                throw new GovernanceException(
+                        "Error in service: " + serviceName + " while getting lifecycle current state duration", e);
             }
         } else {
-            log.error("Lifecycle directory path: '" + resourcePath + "' is or lifecycle name: '" + lifecycleName
-                    + "' is not set");
+            throw new GovernanceException("Lifecycle directory path: '" + resourcePath + "' is or lifecycle name: '"
+                    + lifecycleName + "' is not sent");
         }
         return currentStateDurationBean;
     }
