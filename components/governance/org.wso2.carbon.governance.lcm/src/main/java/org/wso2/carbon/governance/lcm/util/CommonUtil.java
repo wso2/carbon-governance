@@ -610,8 +610,8 @@ public class CommonUtil {
                         .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
                 Schema schema = schemaFactory.newSchema(new File(schemaPath));
                 lifecycleSchemaValidator = schema.newValidator();
-            } catch (SAXException e) {
-                log.error("Unable to get a schema validator from the given file path : " + schemaPath);
+            } catch (Exception e) {
+                log.error("Unable to get a schema validator from the given file path : " + schemaPath,e);
             }
         }
         return lifecycleSchemaValidator;
