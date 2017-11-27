@@ -28,6 +28,7 @@ import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
+import org.wso2.carbon.governance.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
@@ -72,7 +73,7 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
             if (fileData.mediaType.matches("application/vnd.(.)+\\+xml") && attributes.size() > 0) {
                 setAttributesToLowerCase(attributes);
                 fields.putAll(attributes);
-                updateTenantsUnboundedFieldMap(configuration.getContentDefinition().getParent().toString());
+                CommonUtil.updateTenantsUnboundedFieldMap(configuration.getContentDefinition().getParent().toString());
                 if (configuration.getArtifactNameAttribute() != null) {
                     fields.put("overview_name", attributes.get(configuration.getArtifactNameAttribute()));
                 }
@@ -119,29 +120,6 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
 
         public Map<String, List<String>> getAttributes() {
             return attributes;
-        }
-    }
-
-    /**
-     * This method is used to update rxt unbounded fields map.
-     *
-     * @param elementString     rxt configuration.
-     * @throws RegistryException
-     */
-    private static void updateTenantsUnboundedFieldMap(String elementString) throws RegistryException {
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        RxtUnboundedEntryBean rxtUnboundedFields = RxtUnboundedDataLoadUtils.getRxtUnboundedEntries(
-                elementString);
-        if (rxtUnboundedFields != null) {
-            Map<String, List<String>> currentTenantUnboundedFields = RxtUnboundedFieldManagerService.getInstance()
-                    .getTenantsUnboundedFields().get(tenantId);
-            if (currentTenantUnboundedFields == null) {
-                currentTenantUnboundedFields = new ConcurrentHashMap<>();
-            }
-            currentTenantUnboundedFields.put(rxtUnboundedFields.getMediaType(),
-                    rxtUnboundedFields.getFields());
-            RxtUnboundedFieldManagerService.getInstance().setTenantsUnboundedFields(tenantId,
-                    currentTenantUnboundedFields);
         }
     }
 }
