@@ -26,9 +26,13 @@ import org.wso2.carbon.governance.lcm.listener.LifecycleLoader;
 import org.wso2.carbon.governance.lcm.services.LifeCycleService;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
 import org.wso2.carbon.registry.common.AttributeSearchService;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+
+import javax.xml.stream.XMLStreamException;
+import java.io.FileNotFoundException;
 
 /**
  * @scr.component name="org.wso2.carbon.governance.lcm"
@@ -46,6 +50,20 @@ public class LCMServiceComponent {
 
     protected void activate(ComponentContext context) {
         BundleContext bundleContext = context.getBundleContext();
+        // Generate LCM search query if it doesn't exist.
+        try {
+        	PrivilegedCarbonContext.startTenantFlow();
+        	PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(-1234, true);
+        	PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+        	RegistryService registryService = LifeCycleServiceHolder.getInstance().getRegistryService();
+        	CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(),
+                    registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME));
+        } catch (XMLStreamException | FileNotFoundException | RegistryException e) {
+            log.error("An error occurred while setting up Governance Life Cycle Management", e);
+        } finally {
+        	PrivilegedCarbonContext.endTenantFlow();
+        }
+
         LifecycleLoader lifecycleLoader = new LifecycleLoader();
         ServiceRegistration tenantMgtListenerSR = bundleContext.registerService(
                 Axis2ConfigurationContextObserver.class.getName(), lifecycleLoader, null);
