@@ -79,6 +79,9 @@ public class GovernanceConstants {
      */
     public static final String ENTRY_VALUE_SEPARATOR = ":";
 
+    @Deprecated
+    public static final String DOT = ".";
+    
     /**
      * This is the character used in lifecycle property keys
      */
