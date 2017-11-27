@@ -23,8 +23,8 @@ import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -43,7 +43,12 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
@@ -215,40 +220,36 @@ public class Utils {
         return null;
     }
 
-	/**
-	 * Authenticate to API Manager
-	 *
-	 * @param httpContext HTTP context.
-	 */
-	public static void authenticateAPIM(HttpContext httpContext, String apimEndpoint, String apimUsername,
-	                                    String apimPassword) throws RegistryException {
-		String loginEP = apimEndpoint + ExecutorConstants.APIM_LOGIN_URL;
-		try {
-			// create a post request to addAPI.
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(loginEP);
-			// Request parameters and other properties.
-			List<NameValuePair> params = new ArrayList<NameValuePair>(3);
+    /**
+     * Authenticate to API Manager
+     *
+     * @param httpContext HTTP context.
+     */
+    public static void authenticateAPIM(HttpContext httpContext, String apimEndpoint, String apimUsername,
+            String apimPassword) throws RegistryException {
+        String loginEP = apimEndpoint + ExecutorConstants.APIM_LOGIN_URL;
+        try {
+            // create a post request to addAPI.
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(loginEP);
+            // Request parameters and other properties.
+            List<NameValuePair> params = new ArrayList<NameValuePair>(3);
 
-			params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION, ExecutorConstants.API_LOGIN_ACTION));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_USERNAME, apimUsername));
-			params.add(new BasicNameValuePair(ExecutorConstants.API_PASSWORD, apimPassword));
-			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+            params.add(new BasicNameValuePair(ExecutorConstants.API_ACTION, ExecutorConstants.API_LOGIN_ACTION));
+            params.add(new BasicNameValuePair(ExecutorConstants.API_USERNAME, apimUsername));
+            params.add(new BasicNameValuePair(ExecutorConstants.API_PASSWORD, apimPassword));
+            httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
-			HttpResponse response = httpclient.execute(httppost, httpContext);
-			if (response.getStatusLine().getStatusCode() != 200) {
-				throw new RuntimeException(" Authentication with API Manager failed: HTTP error code : " +
-				                           response.getStatusLine().getStatusCode());
-			}
-
-		} catch (ClientProtocolException e) {
-			throw new RegistryException("", e);
-		} catch (UnsupportedEncodingException e) {
-			throw new RegistryException("", e);
-		} catch (IOException e) {
-			throw new RegistryException("", e);
-		}
-	}
-
-
+            HttpResponse response = httpclient.execute(httppost, httpContext);
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new RuntimeException(
+                        " Authentication with API Manager failed: HTTP error code : " + response.getStatusLine()
+                                .getStatusCode());
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RegistryException(ExecutorConstants.ENCODING_FAIL, e);
+        } catch (IOException e) {
+            throw new RegistryException(ExecutorConstants.APIM_POST_REQ_FAIL, e);
+        }
+    }
 }

@@ -2060,15 +2060,15 @@ public class GovernanceUtils {
                         try {
                             if (StringUtils.isNotBlank(sortBy) && StringUtils.isNotBlank(sortOrder)) {
                                 switch (sortOrder) {
-                                    case "ASC":
-                                        return comparison(artifact1.getAttribute(sortBy),
-                                                artifact2.getAttribute(sortBy), sortBy);
-                                    case "DES":
-                                    case "DESC":
-                                        return comparison(artifact2.getAttribute(sortBy),
-                                                artifact1.getAttribute(sortBy), sortBy);
-                                    default:
-                                        return artifact1.getId().compareTo(artifact2.getId());
+                                case "ASC":
+                                    return comparison(artifact1.getAttribute(sortBy), artifact2.getAttribute(sortBy),
+                                            sortBy);
+                                case "DES":
+                                case "DESC":
+                                    return comparison(artifact2.getAttribute(sortBy), artifact1.getAttribute(sortBy),
+                                            sortBy);
+                                default:
+                                    return artifact1.getId().compareTo(artifact2.getId());
                                 }
                             }
                         } catch (GovernanceException e) {
@@ -2082,11 +2082,11 @@ public class GovernanceUtils {
 
                 private int comparison(String value1, String value2, String sortBy) throws GovernanceException {
                     //If sortBy is equal to a date/time attribute, preserve the order returned from the solr client.
-                    if(sortBy.equals("createdDate") || sortBy.equals("lastUpdatedDate")) {
+                    if ("createdDate".equals(sortBy) || "lastUpdatedDate".equals(sortBy)) {
                         return 1;
                     }
                     //Else if sortBy an attribute
-                    if (value1 == null) {
+                    if (StringUtils.isEmpty(value1)) {
                         throw new GovernanceException("Artifact does not contain the attribute " + sortBy);
                     }
                     int comparisonValue = value1.compareTo(value2);

@@ -21,8 +21,8 @@ import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -197,13 +197,10 @@ public class APIPublishExecutor implements Execution {
 
 			HttpResponse response = httpclient.execute(httppost, httpContext);
 
-			if (response.getStatusLine().getStatusCode() != 200) {
+			if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				throw new RuntimeException(
 						"Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
 			}
-
-		} catch (ClientProtocolException e) {
-			throw new RegistryException(ExecutorConstants.APIM_POST_REQ_FAIL, e);
 		} catch (UnsupportedEncodingException e) {
 			throw new RegistryException(ExecutorConstants.ENCODING_FAIL, e);
 		} catch (IOException e) {
