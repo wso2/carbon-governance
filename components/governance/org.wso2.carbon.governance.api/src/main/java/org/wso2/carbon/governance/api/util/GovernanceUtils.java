@@ -774,26 +774,26 @@ public class GovernanceUtils {
     		PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(userRegistry.getTenantId());
             String tenantDomain  = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
-            if (tenantDomain == null) {            	
+            if (tenantDomain == null) {
             	tenantDomain = MultitenantUtils.getTenantDomain(((UserRegistry) registry).getUserName());
             }
-            
+
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             cache  = RegistryUtils.getUUIDCache(RegistryConstants.UUID_CACHE_ID);
             if(cache.containsKey(artifactId)){
                 return cache.get(artifactId);
-            }           
-    	    	
+            }
+
     		try {
-    
+
     			String sql = "SELECT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_UUID = ?";
-    
+
     			String[] result;
     			Map<String, String> parameter = new HashMap<String, String>();
     			parameter.put("1", artifactId);
     			parameter.put("query", sql);
     			result = registry.executeQuery(null, parameter).getChildren();
-    
+
     			if (result != null && result.length == 1) {
     				cache.put(artifactId, result[0]);
     				return result[0];
@@ -1853,7 +1853,9 @@ public class GovernanceUtils {
         return artifacts;
     }
 
-    private static String buildSearchCriteria(String criteria, Registry registry, String mediaType, Map<String, String> possibleProperties, Map<String, String> fields) throws GovernanceException {
+    private static String buildSearchCriteria(String criteria, Registry registry, String mediaType,
+            Map<String, String> possibleProperties, Map<String, String> fields, boolean hasOneProperty)
+            throws GovernanceException {
         String editedCriteria = "";
         GovernanceArtifactConfiguration artifactConfiguration;
         try {
@@ -1948,7 +1950,9 @@ public class GovernanceUtils {
                         value = buildSearchValue(value);
                         String[] tableParts = subParts[0].split(":");
                         if ("overview".equals(tableParts[0])) {
-                            possibleProperties.put(tableParts[1], value);
+                            if (!hasOneProperty || possibleProperties.size() == 0) {
+                                possibleProperties.put(tableParts[1], value);
+                            }
                             //add new query parameter to support properties search.
                             String overviewField = tableParts[1] + ":" + value + " OR ";
                             editedCriteria = new StringBuilder(editedCriteria).insert(editedCriteria.lastIndexOf(subParts[0]), overviewField).toString();
@@ -1961,7 +1965,9 @@ public class GovernanceUtils {
                         String value = subParts[1].toLowerCase();
                         value = buildSearchValue(value);
                         if(!subParts[0].equals("name")) {
-                            possibleProperties.put(subParts[0], value);
+                            if (!hasOneProperty || possibleProperties.size() == 0) {
+                                possibleProperties.put(subParts[0], value);
+                            }
                             fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
                             editedCriteria = editedCriteria.replace(subParts[1], value);
                             //add new query parameter to search in both resource properties and metadata content
@@ -2017,13 +2023,26 @@ public class GovernanceUtils {
      * @return The list of artifacts. null if the media type and string is empty.
      * @throws GovernanceException thrown when an error occurs
      */
-    public static List<GovernanceArtifact> findGovernanceArtifacts(String criteria,
-                                                                   Registry registry, String mediaType)
+    public static List<GovernanceArtifact> findGovernanceArtifacts(String criteria, Registry registry, String mediaType)
             throws GovernanceException {
+        return findGovernanceArtifacts(criteria, registry, mediaType, false);
+    }
+
+    /**
+     * @param criteria       query string that should be searched for
+     * @param registry       the governance registry instance
+     * @param mediaType      media type to be matched for search. Media type can be specified in the query string too.
+     * @param hasOneProperty To specify whether search criteria contains one property.
+     * @return The list of artifacts. null if the media type and string is empty.
+     * @throws GovernanceException thrown when an error occurs
+     */
+    public static List<GovernanceArtifact> findGovernanceArtifacts(String criteria, Registry registry, String mediaType,
+            boolean hasOneProperty) throws GovernanceException {
         Map<String, String> fields = new HashMap<>();
         Map<String, String> possibleProperties = new HashMap<>();
         //maintain search query to support OR via content search
-        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields);
+        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields,
+                hasOneProperty);
 
         if (editedCriteria != null && (editedCriteria.contains(FIELDS_OR_WILD_SEARCH) || editedCriteria.contains(FIELDS_OR_SEARCH))) {
             editedCriteria = editedCriteria.replace(FIELDS_OR_WILD_SEARCH, REPLACEMENT_OR_WILD_SEARCH);
@@ -2282,7 +2301,7 @@ public class GovernanceUtils {
         Map<String, String> fields = new HashMap<>();
         Map<String, String> possibleProperties = new HashMap<>();
         //maintain search query to support OR via content search
-        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields);
+        String editedCriteria = buildSearchCriteria(criteria, registry, mediaType, possibleProperties, fields, false);
 
         if (editedCriteria != null && (editedCriteria.contains(FIELDS_OR_WILD_SEARCH) || editedCriteria.contains(FIELDS_OR_SEARCH))) {
             if (getTermsQuerySearchService() == null) {
