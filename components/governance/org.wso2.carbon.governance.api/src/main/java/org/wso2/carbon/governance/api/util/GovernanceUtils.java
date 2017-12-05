@@ -78,7 +78,19 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -200,9 +212,9 @@ public class GovernanceUtils {
             paths = new String[0];
         }
         Arrays.sort(paths, new Comparator<String>() {
+
             public int compare(String o1, String o2) {
-                int result = RegistryUtils.getResourceName(o1)
-                        .compareToIgnoreCase(RegistryUtils.getResourceName(o2));
+                int result = RegistryUtils.getResourceName(o1).compareToIgnoreCase(RegistryUtils.getResourceName(o2));
                 if (result == 0) {
                     return o1.compareToIgnoreCase(o2);
                 }
@@ -342,7 +354,8 @@ public class GovernanceUtils {
      */
     public static void loadGovernanceArtifacts(UserRegistry registry) throws RegistryException {
         if (!artifactConfigurations.containsKey(registry.getTenantId())) {
-            loadGovernanceArtifacts(registry, Collections.unmodifiableList(findGovernanceArtifactConfigurations(registry)));
+            loadGovernanceArtifacts(registry, Collections
+                    .unmodifiableList(findGovernanceArtifactConfigurations(registry)));
         }
     }
 
@@ -1692,12 +1705,7 @@ public class GovernanceUtils {
             while (iKeys.hasNext()) {
                 String propKey = (String) iKeys.next();
 
-                if ((propKey.startsWith("registry.custom_lifecycle.votes.")
-                        || propKey.startsWith("registry.custom_lifecycle.user.")
-                        || propKey.startsWith("registry.custom_lifecycle.checklist.")
-                        || propKey.startsWith("registry.LC.name")
-                        || propKey.startsWith("registry.lifecycle.")
-                        || propKey.startsWith("registry.Aspects")) && propKey.contains(aspect)) {
+                if (isStartsWithRegistry(propKey) && propKey.contains(aspect)) {
                     propertiesToRemove.add(propKey);
                 }
             }
@@ -1725,6 +1733,15 @@ public class GovernanceUtils {
             log.error(msg, e);
             throw new RegistryException(msg, e);
         }
+    }
+
+    private static boolean isStartsWithRegistry(String propKey) {
+        return (propKey.startsWith(GovernanceConstants.REGISTRY_CUSTOM_LC_VOTES_PROPERTY)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_CUSTOM_LC_USER_PROPERTY)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_CUSTOM_LC_CHECKLIST_PROPERTY)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_LIFECYCLE_NAME_PROPERTY)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_LIFECYCLE)
+                || propKey.startsWith(GovernanceConstants.REGISTRY_ASPECTS_PROPERTY));
     }
 
     public static AttributeSearchService getAttributeSearchService() {
