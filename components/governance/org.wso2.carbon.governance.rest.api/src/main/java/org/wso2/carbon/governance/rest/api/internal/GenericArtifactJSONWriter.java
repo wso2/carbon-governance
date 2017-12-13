@@ -175,45 +175,47 @@ public class GenericArtifactJSONWriter {
                 if (value.length > 1) {
                     if (key.endsWith(ENTRY)) {
 
-                       String optionTextTableName = key.split("_", 2)[0];
+                        String optionTextTableName = key.split("_", 2)[0];
 
-                       //Get the table name as a upper camel string.
-                       optionTextTableName = optionTextTableName.substring(0, 1).toUpperCase() +
-                               optionTextTableName.substring(1).toLowerCase();
+                        //Get the table name as a upper camel string.
+                        optionTextTableName =
+                                optionTextTableName.substring(0, 1).toUpperCase() + optionTextTableName.substring(1)
+                                        .toLowerCase();
 
-                       List subheadings = evaluateXpath(artifactConfiguration.getContentDefinition(),
-                               "/artifactType/content/table[@name='" + optionTextTableName + "']/subheading/heading",
-                               null);
+                        List subheadings = evaluateXpath(artifactConfiguration.getContentDefinition(),
+                                "/artifactType/content/table[@name='" + optionTextTableName +
+                                        "']/subheading/heading",
+                                null);
 
-                       List<String> headings = new ArrayList<>();
+                        List<String> headings = new ArrayList<>();
 
-                       for (Object subheadingObject : subheadings) {
-                           OMElement subheadingElement = (OMElement) subheadingObject;
-                           headings.add(subheadingElement.getText());
-                       }
+                        for (Object subheadingObject : subheadings) {
+                            OMElement subheadingElement = (OMElement) subheadingObject;
+                            headings.add(subheadingElement.getText());
+                        }
 
-                       if (headings.size() > 0) {
-                           writer.name(key);
-                           writer.beginArray();
-                           writer.setIndent("    ");
-                           for (int i = 0; i < value.length; i++) {
-                               writer.beginObject();
-                               // Setting the key and empty string map in JSON for empty values.
-                               if (value[i] == null) {
-                                   value[i] = "";
-                               }
+                        if (headings.size() > 0) {
+                            writer.name(key);
+                            writer.beginArray();
+                            writer.setIndent("    ");
+                            for (int i = 0; i < value.length; i++) {
+                                writer.beginObject();
+                                // Setting the key and empty string map in JSON for empty values.
+                                if (value[i] == null) {
+                                    value[i] = "";
+                                }
 
-                               String[] optionValues = value[i].split(":", headings.size());
+                                String[] optionValues = value[i].split(":", headings.size());
 
-                               if (optionValues.length > 0) {
-                                   for (int j = 0; j < optionValues.length; j++) {
-                                       writer.name(headings.get(j)).value(optionValues[j]);
-                                   }
-                               }
-                               writer.endObject();
-                           }
-                           writer.endArray();
-                       }
+                                if (optionValues.length > 0) {
+                                    for (int j = 0; j < optionValues.length; j++) {
+                                        writer.name(headings.get(j)).value(optionValues[j]);
+                                    }
+                                }
+                                writer.endObject();
+                            }
+                            writer.endArray();
+                        }
                     } else {
                         writer.name(key);
                         writer.beginArray();
