@@ -31,7 +31,7 @@ import java.util.Map;
 public abstract class JSONMessageBodyReader {
 
     protected void handleJSON(JsonReader reader, Map<String, Object> map) throws IOException {
-        handleObject(reader, map, null, false);
+        handleObject(reader, map, null, false, null);
     }
 
     /**
@@ -43,9 +43,9 @@ public abstract class JSONMessageBodyReader {
      * @param isArray       whether the object is inside a json array
      * @throws IOException  If unable to parse the json object
      */
-    protected void handleObject(JsonReader reader, Map<String, Object> map, JsonToken token, boolean isArray)
+    protected void handleObject(JsonReader reader, Map<String, Object> map, JsonToken token, boolean isArray, String parentKey)
             throws IOException {
-        String key = null;
+        String key = parentKey;
         while (true) {
             if (token == null) {
                 token = reader.peek();
@@ -63,7 +63,9 @@ public abstract class JSONMessageBodyReader {
             } else if (JsonToken.STRING.equals(token)) {
                 String value = reader.nextString();
                 handleValue(key, value, map, isArray);
-                key = null;
+                if (parentKey == null) {
+                    key = null;
+                }
 
             } else if (JsonToken.NUMBER.equals(token)) {
                 Double value = reader.nextDouble();
@@ -71,7 +73,7 @@ public abstract class JSONMessageBodyReader {
                 key = null;
 
             } else if (token.equals(JsonToken.BEGIN_ARRAY)) {
-                Map<String, Object> values = handleArray(reader);
+                Map<String, Object> values = handleArray(key ,reader);
                 if (key != null) {
                     map.put(key, values);
                 }
@@ -95,7 +97,7 @@ public abstract class JSONMessageBodyReader {
      * @return              map with json array values mapped to key value pairs.
      * @throws IOException  If unable to parse the json array.
      */
-    private Map<String, Object> handleArray(JsonReader reader) throws IOException {
+    private Map<String, Object> handleArray(String key, JsonReader reader) throws IOException {
         Map<String, Object> values = new HashMap<>();
         reader.beginArray();
         JsonToken token = reader.peek();
@@ -104,7 +106,7 @@ public abstract class JSONMessageBodyReader {
                 reader.endArray();
                 return values;
             } else {
-                handleObject(reader, values, token, true);
+                handleObject(reader, values, token, true, key);
             }
             token = reader.peek();
         }
