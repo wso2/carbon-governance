@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -163,6 +164,8 @@ public class GenericArtifactJSONWriter {
         writer.name(ID).value(artifact.getId());
         writer.name(TYPE).value(shortName);
         String belongToLink = Util.generateBelongToLink(artifact, baseURI);
+
+        Map<String, ArrayList> multiValueAttributes = new HashMap<>();
         for (String key : artifact.getAttributeKeys()) {
             //TODO value can be something else not a String value
             // Get all attributes.
@@ -217,15 +220,27 @@ public class GenericArtifactJSONWriter {
                             writer.endArray();
                         }
                     } else {
-                        writer.name(key);
-                        writer.beginArray();
-                        for (int i = 0; i < value.length; i++) {
-                            if (value[i] == null) {
-                                value[i] = "";
+                        String[] res = key.split("_");
+                        if (res.length > 1) {
+                            ArrayList existingMultiValueFields = multiValueAttributes.get(res[0]);
+                            if (existingMultiValueFields != null) {
+                                for (int j = 0; j < existingMultiValueFields.size(); j++) {
+                                    Map<String, String> existingValuesMap = (Map<String, String>) existingMultiValueFields
+                                            .remove(0);
+                                    existingValuesMap.put(res[1], value[j]);
+                                    existingMultiValueFields.add(existingValuesMap);
+                                }
+                                multiValueAttributes.put(res[0], existingMultiValueFields);
+                            } else {
+                                ArrayList<Map> unboundedFields = new ArrayList<>();
+                                for (int i = 0; i < value.length; i++) {
+                                    Map<String, String> fields = new HashMap<>();
+                                    fields.put(res[1], value[i]);
+                                    unboundedFields.add(fields);
+                                }
+                                multiValueAttributes.put(res[0], unboundedFields);
                             }
-                            writer.value(value[i]);
                         }
-                        writer.endArray();
                     }
                     // If only one attribute is received.
                 } else if (value.length == 1) {
@@ -233,6 +248,30 @@ public class GenericArtifactJSONWriter {
                 } else {
                     writer.name(key).nullValue();
                 }
+        }
+
+        Iterator<Map.Entry<String, ArrayList>> it = multiValueAttributes.entrySet().iterator();
+        while (it.hasNext()){
+           Map.Entry<String, ArrayList> unboundedFields = (Map.Entry<String, ArrayList>)it.next();
+            writer.name(unboundedFields.getKey());
+            writer.beginArray();
+            ArrayList unboundedFieldsValues = unboundedFields.getValue();
+            for (Object fields: unboundedFieldsValues) {
+                writer.beginObject();
+                Map<String, String>  fieldMap = (Map<String, String>) fields;
+
+                Iterator<Map.Entry<String, String>> fieldIt = fieldMap.entrySet().iterator();
+                while (fieldIt.hasNext()){
+                    Map.Entry<String, String> fieldMapValue = (Map.Entry<String, String>)fieldIt.next();
+                    String val = fieldMapValue.getValue();
+                    if(fieldMapValue.getValue() == null){
+                        val = "";
+                    }
+                    writer.name(fieldMapValue.getKey()).value(val);
+                }
+                writer.endObject();
+            }
+            writer.endArray();
         }
         String self_link = Util.generateLink(shortName, artifact.getId(), baseURI);
         writer.name(SELF_LINK).value(self_link);

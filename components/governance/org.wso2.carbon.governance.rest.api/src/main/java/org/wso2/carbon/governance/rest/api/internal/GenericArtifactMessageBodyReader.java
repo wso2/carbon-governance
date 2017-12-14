@@ -91,7 +91,9 @@ public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
                 if (key.endsWith(UNBOUNDED_SUFFIX)) {
                     key = key.substring(0, key.indexOf(UNBOUNDED_SUFFIX));
                 }
-                if (!key.contains(RXT_SEPARATOR)) {
+                Object value = entry.getValue();
+
+                if (!key.contains(RXT_SEPARATOR) && !(value instanceof Map)) {
                     key = OVERVIEW_PREFIX.concat(key);
                 }
 
@@ -100,7 +102,6 @@ public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
                  * Enabling multiple values with the same key to be added as attributes in order to save
                  * unbounded elements such as endpoints.
                  */
-                Object value = entry.getValue();
 
                 if (value instanceof String) {
                     artifact.addAttribute(key, String.valueOf(value));
@@ -108,7 +109,7 @@ public class GenericArtifactMessageBodyReader extends JSONMessageBodyReader
                     //if value is a json array with multiple values
                     Map<?,?> arrayMap = (Map) value;
                     for (Map.Entry arrayEntry : arrayMap.entrySet()) {
-                        String tempKey = key.concat((String) arrayEntry.getKey());
+                        String tempKey = key.concat(RXT_SEPARATOR).concat((String) arrayEntry.getKey());
                         List arrayValues = (List) arrayEntry.getValue();
 
                         for (Object val : arrayValues) {
