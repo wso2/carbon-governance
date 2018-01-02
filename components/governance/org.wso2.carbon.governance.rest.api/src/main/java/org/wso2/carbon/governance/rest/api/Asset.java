@@ -635,6 +635,11 @@ public class Asset {
                     return Response.created(link).build();
                 } catch (MalformedURLException | URISyntaxException e) {
                     throw new GovernanceException(e);
+                } catch (GovernanceException e) {
+                    if (e.getMessage().contains("already exists at")) {
+                        String message = e.getMessage().split("\\.", 2)[1].replaceAll("^\\s+", "");
+                        return Response.status(Response.Status.CONFLICT).entity(message).build();
+                    }
                 }
             }
         }
