@@ -54,6 +54,7 @@ public class GenericArtifactJSONWriter {
     public static final String ID = "id";
     public static final String TYPE = "type";
     public static final String OVERVIEW = "overview_";
+    public static final String OVERVIEW_TYPE = "overview_type";
     public static final String SELF_LINK = "self-link";
     public static final String CONTENT_LINK = "content-link";
     public static final String LINKS = "links";
@@ -171,6 +172,9 @@ public class GenericArtifactJSONWriter {
             // Get all attributes.
             String[] value = artifact.getAttributes(key);
             if (key.indexOf(OVERVIEW) > -1) {
+                if(key.equals(OVERVIEW_TYPE)){
+                    continue;
+                }
                 key = key.replace(OVERVIEW, "");
             }
             // If the attributes are more than one.
