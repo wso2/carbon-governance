@@ -212,11 +212,11 @@
                 <tr>
                     <td class="buttonRow">
                         <% if (!viewMode) { %>
-                        <input class="button registryWriteOperation" type="button" onclick="saveLC('<%=Encode.forHtmlContent(request.getParameter("lifecycleName"))%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
+                        <input class="button registryWriteOperation" type="button" onclick="saveLC('<%=Encode.forHtmlAttribute(request.getParameter("lifecycleName"))%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
                         <input class="button registryNonWriteOperation" type="button" disabled="disabled" value="<fmt:message key="save"/>"/>
                         <input class="button" type="button" value="<fmt:message key="cancel"/>" onclick="javascript: cancelSequence(); return false;"/>
                         <% } else { %>
-                        <input class="button registryWriteOperation" type="button" onclick="saveLC('<%=Encode.forHtmlContent(request.getParameter("lifecycleName"))%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
+                        <input class="button registryWriteOperation" type="button" onclick="saveLC('<%=Encode.forHtmlAttribute(request.getParameter("lifecycleName"))%>', <%=Boolean.toString(isNew)%>,'false')" value="<fmt:message key="save"/>"/>
                         <input class="button registryNonWriteOperation" type="button" disabled="disabled" value="<fmt:message key="save"/>"/>
                         <input class="button" type="button" value="<fmt:message key="cancel"/>" onclick="javascript: cancelSequence(); return false;"/>
                         <% } %>
