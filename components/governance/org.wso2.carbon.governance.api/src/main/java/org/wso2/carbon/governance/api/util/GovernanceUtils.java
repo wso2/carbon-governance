@@ -261,19 +261,32 @@ public class GovernanceUtils {
     public static GovernanceArtifactConfiguration findGovernanceArtifactConfiguration(
             String key, Registry registry)
             throws RegistryException {
-
-        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(((UserRegistry) registry).getTenantId());
+        int tenantID = ((UserRegistry) registry).getTenantId();
+        List<GovernanceArtifactConfiguration> governanceArtifactConfigurations = artifactConfigurations.get(tenantID);
 
         if (governanceArtifactConfigurations == null || governanceArtifactConfigurations.isEmpty()) {
             governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
-            artifactConfigurations.put(((UserRegistry) registry).getTenantId(), governanceArtifactConfigurations);
+            artifactConfigurations.put(tenantID, governanceArtifactConfigurations);
         }
-        for (GovernanceArtifactConfiguration configuration : governanceArtifactConfigurations) {
-            if (key.equals(configuration.getKey())) {
-                return configuration;
+        GovernanceArtifactConfiguration configuration = null;
+        for (GovernanceArtifactConfiguration config : governanceArtifactConfigurations) {
+            if (key.equals(config.getKey())) {
+                configuration = config;
+                break;
             }
         }
-        return null;
+        if(configuration == null) {
+            artifactConfigurations.remove(tenantID);
+            governanceArtifactConfigurations = findGovernanceArtifactConfigurations(registry);
+            artifactConfigurations.put(tenantID, governanceArtifactConfigurations);
+            for (GovernanceArtifactConfiguration config : governanceArtifactConfigurations) {
+                if (key.equals(config.getKey())) {
+                    configuration = config;
+                    break;
+                }
+            }
+        }
+        return configuration;
     }
 
     /**
