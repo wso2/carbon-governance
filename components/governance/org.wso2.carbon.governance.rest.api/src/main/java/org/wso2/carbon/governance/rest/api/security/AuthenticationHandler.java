@@ -32,6 +32,7 @@ import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
+import org.wso2.carbon.user.core.util.UserCoreUtil;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
@@ -162,7 +163,16 @@ public class AuthenticationHandler implements RequestHandler {
              * is updated to mimic the authenticated user */
 
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-            carbonContext.setUsername(tenantAwareUserName);
+
+            // if username doesn't contain a domain, add domain to user
+            // name in order to comply with multiple user store feature.
+            if (!userName.contains(CarbonConstants.DOMAIN_SEPARATOR)) {
+                String domain = UserCoreUtil.getDomainFromThreadLocal();
+                if (domain != null) {
+                    userName = domain + CarbonConstants.DOMAIN_SEPARATOR + userName;
+                }
+            }
+            carbonContext.setUsername(userName);
             carbonContext.setTenantId(tenantId);
             carbonContext.setTenantDomain(tenantDomain);
         }
