@@ -21,6 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
+import org.wso2.carbon.governance.common.GovernanceConfiguration;
+import org.wso2.carbon.governance.common.GovernanceConfigurationException;
 import org.wso2.carbon.governance.lcm.tasks.LCNotificationScheduler;
 import org.wso2.carbon.governance.lcm.tasks.events.LifecycleNotificationEvent;
 import org.wso2.carbon.governance.registry.eventing.handlers.utils.events.CheckListItemCheckedEvent;
@@ -57,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import static org.wso2.carbon.governance.common.utils.GovernanceUtils.getGovernanceConfiguration;
 
 public class GovernanceEventingHandler extends Handler {
     private static final Log log = LogFactory.getLog(GovernanceEventingHandler.class);
@@ -157,20 +161,38 @@ public class GovernanceEventingHandler extends Handler {
             return;
         } else if (lcName != null && oldLcName != null && !lcName.equals(oldLcName)
                 && oldLifecycleList.size() < newLifecycleList.size()) {
-            // Add lifecycle checkpoint notification scheduler data when lifecycle state is attached.
-            List stateList = (List) newProps.get("registry.lifecycle." + lcName + ".state");
-            if (stateList != null) {
-                String lifecycleState = (String) stateList.get(0);
-                addLCNotificationScheduler(newResource, lcName, lifecycleState, false);
+            try {
+                GovernanceConfiguration configuration = getGovernanceConfiguration();
+                // Check the enableLifecycleChecklistItems configuration in governance.xml file.
+                if (isLifecycleChecklistItemsEnabled(configuration)) {
+                    // Add lifecycle checkpoint notification scheduler data when lifecycle state is attached.
+                    List stateList = (List) newProps.get("registry.lifecycle." + lcName + ".state");
+                    if (stateList != null) {
+                        String lifecycleState = (String) stateList.get(0);
+                        addLCNotificationScheduler(newResource, lcName, lifecycleState, false);
+                    }
+                }
+            } catch (GovernanceConfigurationException e) {
+                handleException("Unable to load the configuration file", e);
+
             }
         } else if (lcName != null && oldLcName == null) {
-            // Adding scheduler entry when a service is created. This handles the scheduler entries for attaching
-            // default lifecycle schedulers at the service creation time.
-            List statesList = (List) newProps.get("registry.lifecycle." + lcName + ".state");
-            if (statesList != null) {
-                // Getting 0 index because its the initial state of a lifecycle
-                String lifecycleState = (String) statesList.get(0);
-                addLCNotificationScheduler(newResource, lcName, lifecycleState, false);
+            try {
+                GovernanceConfiguration configuration = getGovernanceConfiguration();
+                // Check the enableLifecycleChecklistItems configuration in governance.xml file.
+                if (isLifecycleChecklistItemsEnabled(configuration)) {
+                    // Adding scheduler entry when a service is created.
+                    // This handles the scheduler entries for attaching default lifecycle schedulers at the service
+                    // creation time.
+                    List statesList = (List) newProps.get("registry.lifecycle." + lcName + ".state");
+                    if (statesList != null) {
+                        // Getting 0 index because its the initial state of a lifecycle
+                        String lifecycleState = (String) statesList.get(0);
+                        addLCNotificationScheduler(newResource, lcName, lifecycleState, false);
+                    }
+                }
+            } catch (GovernanceConfigurationException e) {
+                handleException("Unable to load the configuration file", e);
             }
             StringBuilder messageBuilder = new StringBuilder("[").append(lcName)
                     .append("] The LifeCycle was created for resource at ").append(relativePath).append(".");
@@ -738,5 +760,10 @@ public class GovernanceEventingHandler extends Handler {
         }
         return !isMountPath || getRequestDepth(requestContext) == 1;
     }
+
+    private boolean isLifecycleChecklistItemsEnabled(GovernanceConfiguration configuration) {
+        return configuration.isLifecycleChecklistItemsEnabled();
+    }
+
 }
 

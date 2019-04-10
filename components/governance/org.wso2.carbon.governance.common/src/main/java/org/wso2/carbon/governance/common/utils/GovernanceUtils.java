@@ -55,6 +55,8 @@ public class GovernanceUtils {
     public static final String ENDPOINT_STATE_MANAGEMENT = "EndpointStateManagement";
     public static final String ENDPOINT_STATE_MANAGEMENT_ENABLED = "enabled";
     public static final String DEFAULT_ENDPOINT_ACTIVE_DURATION = "DefaultEndpointActiveDuration";
+    public static final String ENABLE_LIFECYCLE_CHECKLIST_ITEMS = "enableLifecycleChecklistItems";
+    public static final String LIFECYCLE_CHECKLIST_ITEMS_ENABLED = "true";
     private static Log log = LogFactory.getLog(GovernanceUtils.class);
 
 
@@ -112,6 +114,7 @@ public class GovernanceUtils {
         readDiscoveryAgents(config, govConfig);
         readComparators(config, govConfig);
         readEndpointStateManagement(config, govConfig);
+        readLifecycleChecklistItems(config, govConfig);
     }
 
     private static void readDiscoveryAgents(Element config,
@@ -163,6 +166,22 @@ public class GovernanceUtils {
             if (durationStr != null) {
                 long duration = Long.valueOf(durationStr);
                 govConfig.setDefaultEndpointActiveDuration(duration);
+            }
+        }
+    }
+
+    /**
+     * This method is used to read the property of 'enableLifecycleChecklistItems' in the governance.xml file..
+     *
+     * @param config    child element of the configuration.
+     * @param govConfig the governance configuration file.
+     */
+    private static void readLifecycleChecklistItems(Element config, GovernanceConfiguration govConfig) {
+        Element enableLifecycleChecklistItemsElement = getFirstElement(config, ENABLE_LIFECYCLE_CHECKLIST_ITEMS);
+        if (enableLifecycleChecklistItemsElement != null) {
+            String lifecycleEnabled = enableLifecycleChecklistItemsElement.getTextContent();
+            if (lifecycleEnabled != null && LIFECYCLE_CHECKLIST_ITEMS_ENABLED.equals(lifecycleEnabled.toLowerCase())) {
+                govConfig.setLifecycleChecklistItemsEnabled(true);
             }
         }
     }

@@ -27,6 +27,7 @@ public class GovernanceConfiguration {
     private Map<String, Map<String, String>> discoveryAgentConfigs = new HashMap();
     private List<String> comparators = new ArrayList<>();
     private boolean endpointStateManagementEnabled = false;
+    private boolean lifecycleChecklistItemsEnabled = false;
     private long defaultEndpointActiveDuration = 90;
 
     private static GovernanceConfiguration instance = new GovernanceConfiguration();
@@ -77,6 +78,14 @@ public class GovernanceConfiguration {
         this.defaultEndpointActiveDuration = defaultEndpointActiveDuration;
     }
 
+    public boolean isLifecycleChecklistItemsEnabled() {
+        return lifecycleChecklistItemsEnabled;
+    }
+
+    public void setLifecycleChecklistItemsEnabled(boolean lifecycleChecklistItemsEnabled) {
+        this.lifecycleChecklistItemsEnabled = lifecycleChecklistItemsEnabled;
+    }
+
     @Override
     public String toString() {
         return "GovernanceConfiguration{" +
@@ -84,6 +93,7 @@ public class GovernanceConfiguration {
                ", comparators=" + comparators +
                ", endpointStateManagementEnabled=" + endpointStateManagementEnabled +
                ", defaultEndpointActiveDuration=" + defaultEndpointActiveDuration +
+               ", lifecycleChecklistItemsEnabled=" + lifecycleChecklistItemsEnabled +
                '}';
     }
 }

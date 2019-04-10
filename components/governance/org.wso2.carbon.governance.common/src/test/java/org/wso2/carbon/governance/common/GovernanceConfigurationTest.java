@@ -72,4 +72,12 @@ public class GovernanceConfigurationTest extends TestCase {
         assertTrue(list.contains("TestComparator2"));
 
     }
+
+    public void testEnableLifecycleChecklistItems() throws GovernanceConfigurationException {
+        GovernanceConfiguration configuration = GovernanceUtils.getGovernanceConfiguration();
+        log.info("configuration ===> " + configuration);
+        assertNotNull(configuration);
+        assertEquals(true, configuration.isLifecycleChecklistItemsEnabled());
+    }
+
 }
