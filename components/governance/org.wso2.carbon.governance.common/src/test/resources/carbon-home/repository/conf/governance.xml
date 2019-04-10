@@ -32,5 +32,6 @@
         <Comparator class="TestComparator1"/>
         <Comparator class="TestComparator2"/>
     </Comparators>
+    <enableLifecycleChecklistItems>true</enableLifecycleChecklistItems>
 </GovernanceConfiguration>
 
