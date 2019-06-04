@@ -49,6 +49,7 @@ import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
+import org.wso2.securevault.commons.MiscellaneousUtil;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -108,19 +109,31 @@ public class APIPublishExecutor implements Execution {
 		// Retrieves the secured password as follows
 		secretResolver.init(GovernanceRegistryExtensionsComponent.getSecretCallbackHandlerService()
 		                                                         .getSecretCallbackHandler());
-		if (secretResolver.isInitialized()) {
-			apimUsername = secretResolver.resolve(ExecutorConstants.APIM_USERNAME);
-			apimPassword = secretResolver.resolve(ExecutorConstants.APIM_PASSWORD);
-		}
 
 		if (parameterMap.get(ExecutorConstants.APIM_ENDPOINT) != null) {
 			apimEndpoint = parameterMap.get(ExecutorConstants.APIM_ENDPOINT).toString();
 		}
+
 		if (parameterMap.get(ExecutorConstants.APIM_USERNAME) != null) {
 			apimUsername = parameterMap.get(ExecutorConstants.APIM_USERNAME).toString();
+			if (secretResolver.isInitialized()) {
+				if (secretResolver.isTokenProtected(ExecutorConstants.APIM_USERNAME)) {
+					apimUsername = secretResolver.resolve(ExecutorConstants.APIM_USERNAME);
+				} else {
+					apimUsername = MiscellaneousUtil.resolve(apimUsername, secretResolver);
+				}
+			}
 		}
 		if (parameterMap.get(ExecutorConstants.APIM_PASSWORD) != null) {
 			apimPassword = parameterMap.get(ExecutorConstants.APIM_PASSWORD).toString();
+			if (secretResolver.isInitialized()) {
+				if (secretResolver.isTokenProtected(ExecutorConstants.APIM_PASSWORD)) {
+					apimPassword = secretResolver.resolve(ExecutorConstants.APIM_PASSWORD);
+				} else {
+					apimPassword = MiscellaneousUtil.resolve(apimPassword, secretResolver);
+				}
+
+			}
 		}
 		if (parameterMap.get(ExecutorConstants.DEFAULT_TIER) != null) {
 			defaultTier = parameterMap.get(ExecutorConstants.DEFAULT_TIER).toString();
