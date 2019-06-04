@@ -1431,7 +1431,7 @@
 
     <properties>
         <!-- Carbon kernel version -->
-        <carbon.kernel.version>4.4.14</carbon.kernel.version>
+        <carbon.kernel.version>4.4.41-SNAPSHOT</carbon.kernel.version>
         <carbon.kernel.imp.pkg.version>[4.4.0, 4.5.0)</carbon.kernel.imp.pkg.version>
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
@@ -1454,7 +1454,7 @@
         <carbon.governance.package.import.version.range>[4.7.0, 5.0.0)
         </carbon.governance.package.import.version.range>
 
-        <carbon.identity.framework.version>5.7.5</carbon.identity.framework.version>
+        <carbon.identity.framework.version>5.12.385-SNAPSHOT</carbon.identity.framework.version>
         <carbon.identity.imp.pkg.version>[5.2.0, 6.0.0)</carbon.identity.imp.pkg.version>
 
 
@@ -1463,9 +1463,9 @@
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
 
         <!-- Axis2 Version -->
-        <axis2.version>1.6.1-wso2v16</axis2.version>
-        <orbit.version.axis2>1.6.1.wso2v16</orbit.version.axis2>
-        <axis2-transports.version>1.1.1-wso2v2</axis2-transports.version>
+        <axis2.version>1.6.1-wso2v35-SNAPSHOT</axis2.version>
+        <orbit.version.axis2>1.6.1-wso2v35-SNAPSHOT</orbit.version.axis2>
+        <axis2-transports.version>2.0.0-wso2v35-SNAPSHOT</axis2-transports.version>
         <axis2.osgi.version.range>[1.6.1, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>

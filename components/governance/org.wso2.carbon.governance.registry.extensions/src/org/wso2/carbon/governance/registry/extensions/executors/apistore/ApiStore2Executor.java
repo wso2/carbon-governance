@@ -52,6 +52,7 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.securevault.commons.MiscellaneousUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,18 +101,30 @@ public class ApiStore2Executor implements Execution {
 		// Retrieves the secured password as follows
 		secretResolver.init(GovernanceRegistryExtensionsComponent.getSecretCallbackHandlerService()
 				.getSecretCallbackHandler());
-		if (secretResolver.isInitialized()) {
-			apimUsername = secretResolver.resolve(APIM_USERNAME);
-			apimPassword = secretResolver.resolve(APIM_PASSWORD);
-		}
 		if (parameterMap.get(APIM_ENDPOINT) != null) {
 			apimEndpoint = parameterMap.get(APIM_ENDPOINT).toString();
 		}
-		if (parameterMap.get(APIM_USERNAME) != null) {
-			apimUsername = parameterMap.get(APIM_USERNAME).toString();
+
+		if (parameterMap.get(ExecutorConstants.APIM_USERNAME) != null) {
+			apimUsername = parameterMap.get(ExecutorConstants.APIM_USERNAME).toString();
+			if (secretResolver.isInitialized()) {
+				if (secretResolver.isTokenProtected(ExecutorConstants.APIM_USERNAME)) {
+					apimUsername = secretResolver.resolve(ExecutorConstants.APIM_USERNAME);
+				} else {
+					apimUsername = MiscellaneousUtil.resolve(apimUsername, secretResolver);
+				}
+			}
 		}
-		if (parameterMap.get(APIM_PASSWORD) != null) {
-			apimPassword = parameterMap.get(APIM_PASSWORD).toString();
+		if (parameterMap.get(ExecutorConstants.APIM_PASSWORD) != null) {
+			apimPassword = parameterMap.get(ExecutorConstants.APIM_PASSWORD).toString();
+			if (secretResolver.isInitialized()) {
+				if (secretResolver.isTokenProtected(ExecutorConstants.APIM_PASSWORD)) {
+					apimPassword = secretResolver.resolve(ExecutorConstants.APIM_PASSWORD);
+				} else {
+					apimPassword = MiscellaneousUtil.resolve(apimPassword, secretResolver);
+				}
+
+			}
 		}
 		if (parameterMap.get(Constants.APIM_ENV) != null) {
 			apimEnv = parameterMap.get(Constants.APIM_ENV).toString();
