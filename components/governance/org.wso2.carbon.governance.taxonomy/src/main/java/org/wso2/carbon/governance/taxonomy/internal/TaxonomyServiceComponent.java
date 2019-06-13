@@ -121,12 +121,6 @@ public class TaxonomyServiceComponent {
              cardinality = ReferenceCardinality.MANDATORY, 
              policy = ReferencePolicy.DYNAMIC, 
              unbind = "unsetRegistryService")
-    @Reference(
-             name = "registry.core.dscomponent", 
-             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
-             cardinality = ReferenceCardinality.MANDATORY, 
-             policy = ReferencePolicy.DYNAMIC, 
-             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting RegistryService for taxonomy");

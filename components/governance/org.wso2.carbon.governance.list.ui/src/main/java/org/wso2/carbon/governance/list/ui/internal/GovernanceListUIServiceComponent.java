@@ -40,7 +40,6 @@ import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.ui.MenuAdminClient;
 import org.wso2.carbon.ui.UIAuthenticationExtender;
 import org.wso2.carbon.ui.deployment.ComponentBuilder;
-import org.wso2.carbon.ui.deployment.beans.Component;
 import org.wso2.carbon.ui.deployment.beans.Menu;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ServerConstants;
@@ -87,7 +86,8 @@ public class GovernanceListUIServiceComponent {
                         Map<String, String> customViewUIMap = new LinkedHashMap<String, String>();
                         List<Menu> userCustomMenuItemsList = new LinkedList<Menu>();
                         for (GovernanceArtifactConfiguration configuration : configurations) {
-                            Component component = new Component();
+                            org.wso2.carbon.ui.deployment.beans.Component component =
+                                    new org.wso2.carbon.ui.deployment.beans.Component();
                             OMElement uiConfigurations = configuration.getUIConfigurations();
                             String key = configuration.getKey();
                             String configurationPath = RegistryConstants.CONFIG_REGISTRY_BASE_PATH + RegistryConstants.GOVERNANCE_COMPONENT_PATH + "/configuration/";
