@@ -15,7 +15,6 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-
 package org.wso2.carbon.governance.registry.extensions.internal;
 
 import org.apache.commons.logging.Log;
@@ -30,46 +29,46 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.securevault.SecretCallbackHandlerService;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.governance.registry.extensions.services" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic"  bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="secret.callback.handler.service"
- * interface="org.wso2.carbon.securevault.SecretCallbackHandlerService" cardinality="1..1"  policy="dynamic"
- * bind="setSecretCallbackHandlerService" unbind="unsetSecretCallbackHandlerService"
- * @scr.reference name="extensions.service"
- * interface="org.wso2.carbon.registry.extensions.services.RXTStoragePathService" cardinality="1..1"
- * policy="dynamic" bind="setRxtStoragePathService" unbind="unsetRxtStoragePathService"
- * @scr.reference name="governanceconfiguration.service"
- * interface="org.wso2.carbon.governance.common.GovernanceConfigurationService" cardinality="1..1"
- * policy="dynamic" bind="setGovernanceConfigurationService" unbind="unsetGovernanceConfiguration"
- */
-
+@Component(
+         name = "org.wso2.governance.registry.extensions.services", 
+         immediate = true)
 public class GovernanceRegistryExtensionsComponent {
 
     private static final Log log = LogFactory.getLog(GovernanceRegistryExtensionsComponent.class);
+
     private static SecretCallbackHandlerService secretCallbackHandlerService = null;
+
     private GovernanceRegistryExtensionsDataHolder dataHolder = GovernanceRegistryExtensionsDataHolder.getInstance();
 
+    @Activate
     protected void activate(ComponentContext componentContext) {
         BundleContext bundleCtx = componentContext.getBundleContext();
         RxtLoader rxtLoader = new RxtLoader();
         CommonUtil.loadDependencyGraphMaxDepthConfig();
-        ServiceRegistration tenantMgtListenerSR = bundleCtx.registerService(
-                Axis2ConfigurationContextObserver.class.getName(), rxtLoader, null);
+        ServiceRegistration tenantMgtListenerSR = bundleCtx.registerService(Axis2ConfigurationContextObserver.class.getName(), rxtLoader, null);
         if (tenantMgtListenerSR != null) {
             log.debug("Identity Provider Management - RXTLoader registered");
         } else {
             log.error("Identity Provider Management - RXTLoader could not be registered");
         }
-
         if (log.isDebugEnabled()) {
             log.debug("GovernanceRegistryExtensionsComponent activated");
         }
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         dataHolder.setRegistryService(registryService);
         if (log.isDebugEnabled()) {
@@ -81,7 +80,12 @@ public class GovernanceRegistryExtensionsComponent {
         dataHolder.setRegistryService(null);
     }
 
-
+    @Reference(
+             name = "secret.callback.handler.service", 
+             service = org.wso2.carbon.securevault.SecretCallbackHandlerService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetSecretCallbackHandlerService")
     protected void setSecretCallbackHandlerService(SecretCallbackHandlerService secretCallbackHandlerService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting SecretCallbackHandlerService");
@@ -97,6 +101,12 @@ public class GovernanceRegistryExtensionsComponent {
         return secretCallbackHandlerService;
     }
 
+    @Reference(
+             name = "extensions.service", 
+             service = org.wso2.carbon.registry.extensions.services.RXTStoragePathService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRxtStoragePathService")
     protected void setRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
         CommonUtil.setRxtStoragePathService(rxtStoragePathService);
     }
@@ -105,6 +115,12 @@ public class GovernanceRegistryExtensionsComponent {
         CommonUtil.setRxtStoragePathService(null);
     }
 
+    @Reference(
+             name = "governanceconfiguration.service", 
+             service = org.wso2.carbon.governance.common.GovernanceConfigurationService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetGovernanceConfiguration")
     protected void setGovernanceConfigurationService(GovernanceConfigurationService govConfigService) {
         dataHolder.setGovernanceConfiguration(govConfigService.getGovernanceConfiguration());
     }
@@ -113,3 +129,4 @@ public class GovernanceRegistryExtensionsComponent {
         dataHolder.setGovernanceConfiguration(null);
     }
 }
+

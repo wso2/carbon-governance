@@ -16,7 +16,6 @@
  *  under the License.
  *
  */
-
 package org.wso2.carbon.discovery.proxy;
 
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -26,19 +25,23 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.discovery.proxy" immediate="true"
- * @scr.reference name="configuration.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
- * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
- */
+@Component(
+         name = "org.wso2.carbon.discovery.proxy", 
+         immediate = true)
 public class DiscoveryProxyComponent {
 
     private static final Log log = LogFactory.getLog(DiscoveryProxyComponent.class);
 
     private ConfigurationContext cfgCtx;
 
+    @Activate
     protected void activate(ComponentContext context) {
         if (cfgCtx != null) {
             AxisConfiguration axisConfig = cfgCtx.getAxisConfiguration();
@@ -46,11 +49,16 @@ public class DiscoveryProxyComponent {
             observer.init(axisConfig);
             axisConfig.addObservers(observer);
         } else {
-            log.warn("ConfigurationContext is not available. Unable to register the " +
-                    "DiscoveryProxyObserver.");
+            log.warn("ConfigurationContext is not available. Unable to register the " + "DiscoveryProxyObserver.");
         }
     }
 
+    @Reference(
+             name = "configuration.context.service", 
+             service = org.wso2.carbon.utils.ConfigurationContextService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetConfigurationContextService")
     protected void setConfigurationContextService(ConfigurationContextService cfgCtxService) {
         if (log.isDebugEnabled()) {
             log.debug("ConfigurationContextService bound to the discovery proxy component");
@@ -64,6 +72,5 @@ public class DiscoveryProxyComponent {
         }
         cfgCtx = null;
     }
-
-
 }
+

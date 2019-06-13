@@ -25,36 +25,40 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.governance.generic.ui.utils.GenericUtil;
 import org.wso2.carbon.ui.CarbonUIAuthenticator;
 import org.wso2.carbon.ui.UIAuthenticationExtender;
-
 import javax.servlet.http.HttpServletRequest;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * The Generic UI Declarative Service Component.
- *
- * @scr.component name="org.wso2.carbon.governance.generic.ui"
- * immediate="true"
- * @scr.reference name="ui.authenticator"
- * interface="org.wso2.carbon.ui.CarbonUIAuthenticator" cardinality="1..1"
- * policy="dynamic" bind="setCarbonUIAuthenticator" unbind="unsetCarbonUIAuthenticator"
  */
-@SuppressWarnings({"unused", "JavaDoc"})
+@SuppressWarnings({ "unused", "JavaDoc" })
+@Component(
+         name = "org.wso2.carbon.governance.generic.ui", 
+         immediate = true)
 public class GovernanceGenericUIServiceComponent {
 
     private static Log log = LogFactory.getLog(GovernanceGenericUIServiceComponent.class);
+
     private ServiceRegistration serviceRegistration;
 
+    @Activate
     protected void activate(ComponentContext context) {
         UIAuthenticationExtender authenticationExtender = new UIAuthenticationExtender() {
-            public void onSuccessAdminLogin(HttpServletRequest request, String s, String s1,
-                                            String s2) {
+
+            public void onSuccessAdminLogin(HttpServletRequest request, String s, String s1, String s2) {
                 GenericUtil.buildMenuItems(request, s, s1, s2);
             }
         };
-        serviceRegistration = context.getBundleContext().registerService(
-                UIAuthenticationExtender.class.getName(), authenticationExtender, null);
+        serviceRegistration = context.getBundleContext().registerService(UIAuthenticationExtender.class.getName(), authenticationExtender, null);
         log.debug("******* Governance List UI bundle is activated ******* ");
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         if (serviceRegistration != null) {
             serviceRegistration.unregister();
@@ -63,9 +67,16 @@ public class GovernanceGenericUIServiceComponent {
         log.debug("Governance Generic UI bundle is deactivated ");
     }
 
+    @Reference(
+             name = "ui.authenticator", 
+             service = org.wso2.carbon.ui.CarbonUIAuthenticator.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetCarbonUIAuthenticator")
     protected void setCarbonUIAuthenticator(CarbonUIAuthenticator uiAuthenticator) {
     }
 
     protected void unsetCarbonUIAuthenticator(CarbonUIAuthenticator uiAuthenticator) {
     }
 }
+

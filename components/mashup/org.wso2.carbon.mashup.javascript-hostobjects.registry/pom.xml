@@ -51,6 +51,11 @@
             <artifactId>axiom-e4x</artifactId>
             <version>2.1.0</version>
         </dependency>
+    <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

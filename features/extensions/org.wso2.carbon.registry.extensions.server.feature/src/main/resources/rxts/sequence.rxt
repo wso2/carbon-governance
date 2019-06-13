@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!--
+ ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~      http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<artifactType type="application/vnd.wso2-sequence+xml" shortName="sequence" singularLabel="Sequence"
+              pluralLabel="Sequences" hasNamespace="false" iconSet="7">
+    <storagePath>/mediation/mediationdata/sequence/@{overview_name}/@{overview_version}/sequence</storagePath>
+    <nameAttribute>overview_name</nameAttribute>
+    <ui>
+        <list>
+            <column name="Name">
+                <data type="path" value="overview_name" href="@{storagePath}"/>
+            </column>
+            <column name="Version">
+                <data type="path" value="overview_version" href="@{storagePath}"/>
+            </column>
+        </list>
+    </ui>
+    <content>
+        <table name="Overview">
+            <field type="text" required="true">
+                <name>Name</name>
+            </field>
+            <field type="text" required="true">
+                <name>Version</name>
+            </field>
+            <field type="text" required="true">
+                <name>OnErrorSequence</name>
+            </field>
+            <field type="options">
+                <name>Trace</name>
+                <values>
+                    <value>Enabled</value>
+                    <value>Disabled</value>
+                </values>
+            </field>
+        </table>
+    </content>
+</artifactType>
+

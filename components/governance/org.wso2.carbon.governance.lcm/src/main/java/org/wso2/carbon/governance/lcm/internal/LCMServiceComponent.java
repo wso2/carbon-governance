@@ -30,48 +30,42 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-
 import javax.xml.stream.XMLStreamException;
 import java.io.FileNotFoundException;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.governance.lcm"
- * immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="registry.attribute.indexing"
- * interface="org.wso2.carbon.registry.common.AttributeSearchService" cardinality="1..1"
- * policy="dynamic" bind="setAttributeSearchService" unbind="unsetAttributeSearchService"
- */
+@Component(
+         name = "org.wso2.carbon.governance.lcm", 
+         immediate = true)
 public class LCMServiceComponent {
 
     private static Log log = LogFactory.getLog(LCMServiceComponent.class);
 
+    @Activate
     protected void activate(ComponentContext context) {
         BundleContext bundleContext = context.getBundleContext();
         // Generate LCM search query if it doesn't exist.
         try {
-        	PrivilegedCarbonContext.startTenantFlow();
-        	PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(-1234, true);
-        	PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-        	RegistryService registryService = LifeCycleServiceHolder.getInstance().getRegistryService();
-        	CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(),
-                    registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME));
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(-1234, true);
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+            RegistryService registryService = LifeCycleServiceHolder.getInstance().getRegistryService();
+            CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(), registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME));
         } catch (XMLStreamException | FileNotFoundException | RegistryException e) {
             log.error("An error occurred while setting up Governance Life Cycle Management", e);
         } finally {
-        	PrivilegedCarbonContext.endTenantFlow();
+            PrivilegedCarbonContext.endTenantFlow();
         }
-
         LifecycleLoader lifecycleLoader = new LifecycleLoader();
-        ServiceRegistration tenantMgtListenerSR = bundleContext.registerService(
-                Axis2ConfigurationContextObserver.class.getName(), lifecycleLoader, null);
-
-        bundleContext.registerService(
-                LifeCycleService.class.getName(), new LifeCycleServiceImpl(), null);
+        ServiceRegistration tenantMgtListenerSR = bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(), lifecycleLoader, null);
+        bundleContext.registerService(LifeCycleService.class.getName(), new LifeCycleServiceImpl(), null);
         if (tenantMgtListenerSR != null) {
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Governance Life Cycle Management - LifecycleLoader registered");
             }
         } else {
@@ -82,22 +76,27 @@ public class LCMServiceComponent {
         }
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Governance Life Cycle Management Service bundle is deactivated");
         }
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
         carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-
         LifeCycleServiceHolder.getInstance().setRegistryService(registryService);
         // Generate LCM search query if it doesn't exist.
         try {
-            CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(),
-                    registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME));
+            CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(), registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME));
         } catch (Exception e) {
             log.error("An error occurred while setting up Governance Life Cycle Management", e);
         }
@@ -112,6 +111,12 @@ public class LCMServiceComponent {
      *
      * @param attributeSearchService    attribute search service.
      */
+    @Reference(
+             name = "registry.attribute.indexing", 
+             service = org.wso2.carbon.registry.common.AttributeSearchService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetAttributeSearchService")
     protected void setAttributeSearchService(AttributeSearchService attributeSearchService) {
         LifeCycleServiceHolder.getInstance().setAttributeSearchService(attributeSearchService);
     }
@@ -125,3 +130,4 @@ public class LCMServiceComponent {
         LifeCycleServiceHolder.getInstance().setAttributeSearchService(null);
     }
 }
+
