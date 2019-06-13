@@ -41,194 +41,158 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.governance.list"
- * immediate="true"
- * @scr.reference name="configuration.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
- * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="extensions.service"
- * interface="org.wso2.carbon.registry.extensions.services.RXTStoragePathService" cardinality="1..1"
- * policy="dynamic" bind="setRxtStoragePathService" unbind="unsetRxtStoragePathService"
- */
+@Component(
+         name = "org.wso2.carbon.governance.list", 
+         immediate = true)
 public class GovernanceMgtUIListMetadataServiceComponent {
 
     private static Log log = LogFactory.getLog(GovernanceMgtUIListMetadataServiceComponent.class);
+
     private ServiceRegistration serviceRegistration;
+
     private static Map<Integer, List<String>> tenantList = new HashMap<>();
 
+    @Activate
     protected void activate(ComponentContext context) {
         final RegistryService registryService = CommonUtil.getRegistryService();
         try {
-            Registry registry =
-                    registryService.getGovernanceUserRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-            CommonUtil.configureGovernanceArtifacts(registry,
-                    CommonUtil.getConfigurationContext().getAxisConfiguration());
+            Registry registry = registryService.getGovernanceUserRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+            CommonUtil.configureGovernanceArtifacts(registry, CommonUtil.getConfigurationContext().getAxisConfiguration());
             HandlerManager handlerManager = registry.getRegistryContext().getHandlerManager();
             if (handlerManager != null) {
-                handlerManager.addHandler(null,
-                        new MediaTypeMatcher(
-                                GovernanceConstants.GOVERNANCE_ARTIFACT_CONFIGURATION_MEDIA_TYPE),
-                        new Handler() {
+                handlerManager.addHandler(null, new MediaTypeMatcher(GovernanceConstants.GOVERNANCE_ARTIFACT_CONFIGURATION_MEDIA_TYPE), new Handler() {
 
-                            public void put(RequestContext requestContext)
-                                    throws RegistryException {
-                                if (!org.wso2.carbon.registry.extensions.utils.CommonUtil
-                                        .isUpdateLockAvailable()) {
-                                    return;
-                                }
-                                org.wso2.carbon.registry.extensions.utils.CommonUtil
-                                        .acquireUpdateLock();
-                                try {
-                                    String rxtContent;
-                                    Object rxtObj = requestContext.getResource().getContent();
+                    public void put(RequestContext requestContext) throws RegistryException {
+                        if (!org.wso2.carbon.registry.extensions.utils.CommonUtil.isUpdateLockAvailable()) {
+                            return;
+                        }
+                        org.wso2.carbon.registry.extensions.utils.CommonUtil.acquireUpdateLock();
+                        try {
+                            String rxtContent;
+                            Object rxtObj = requestContext.getResource().getContent();
+                            if (rxtObj instanceof byte[]) {
+                                rxtContent = RegistryUtils.decodeBytes((byte[]) requestContext.getResource().getContent());
+                            } else if (rxtObj instanceof String) {
+                                rxtContent = rxtObj.toString();
+                            } else {
+                                throw new RegistryException("Invalid RXT");
+                            }
+                            if (!CommonUtil.validateXMLConfigOnSchema(rxtContent, "rxt-ui-config")) {
+                                throw new RegistryException("Violation of RXT definition in" + " configuration file, follow the schema correctly..!!");
+                            }
+                            populateRXTPaths(rxtContent);
+                            Registry userRegistry = requestContext.getRegistry();
+                            userRegistry.put(requestContext.getResourcePath().getPath(), requestContext.getResource());
+                            Registry systemRegistry = requestContext.getSystemRegistry();
+                            CommonUtil.configureGovernanceArtifacts(systemRegistry, CommonUtil.getConfigurationContext().getAxisConfiguration());
+                            requestContext.setProcessingComplete(true);
+                        } finally {
+                            org.wso2.carbon.registry.extensions.utils.CommonUtil.releaseUpdateLock();
+                        }
+                    }
 
-                                    if (rxtObj instanceof byte[]) {
-                                        rxtContent = RegistryUtils.decodeBytes(
-                                                (byte[]) requestContext.getResource().getContent());
-                                    } else if (rxtObj instanceof String) {
-                                        rxtContent = rxtObj.toString();
-                                    } else {
-                                        throw new RegistryException("Invalid RXT");
-                                    }
-                                    if (!CommonUtil.validateXMLConfigOnSchema(rxtContent,
-                                            "rxt-ui-config")) {
-                                        throw new RegistryException("Violation of RXT definition in" +
-                                                " configuration file, follow the schema correctly..!!");
-                                    }
-                                    populateRXTPaths(rxtContent);
+                    public Resource get(RequestContext requestContext) throws RegistryException {
+                        Resource resource = requestContext.getRepository().get(requestContext.getResourcePath().getPath());
+                        requestContext.setProcessingComplete(true);
+                        Object content = resource.getContent();
+                        String path = resource.getPath();
+                        String elementString;
+                        if (content instanceof String) {
+                            elementString = (String) content;
+                        } else {
+                            elementString = RegistryUtils.decodeBytes((byte[]) content);
+                        }
+                        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+                        if (tenantList.get(tenantId) != null && !tenantList.get(tenantId).contains(path)) {
+                            List<String> rxtPaths = tenantList.get(tenantId);
+                            rxtPaths.add(path);
+                            populateRXTPaths(elementString);
+                            tenantList.put(tenantId, rxtPaths);
+                        } else if (tenantList.get(tenantId) == null) {
+                            List<String> rxtPaths = new ArrayList<String>();
+                            rxtPaths.add(path);
+                            populateRXTPaths(elementString);
+                            tenantList.put(tenantId, rxtPaths);
+                        }
+                        return resource;
+                    }
 
-                                    Registry userRegistry = requestContext.getRegistry();
-                                    userRegistry.put(
-                                            requestContext.getResourcePath().getPath(),
-                                            requestContext.getResource());
-                                    Registry systemRegistry = requestContext.getSystemRegistry();
-                                    CommonUtil.configureGovernanceArtifacts(systemRegistry,
-                                            CommonUtil.getConfigurationContext().getAxisConfiguration());
-                                    requestContext.setProcessingComplete(true);
-                                } finally {
-                                    org.wso2.carbon.registry.extensions.utils.CommonUtil
-                                            .releaseUpdateLock();
+                    private void populateRXTPaths(String elementString) {
+                        GovernanceArtifactConfiguration artifactConfiguration = GovernanceUtils.getGovernanceArtifactConfiguration(elementString);
+                        CommonUtil.addStoragePath(artifactConfiguration.getMediaType(), artifactConfiguration.getPathExpression());
+                    }
+
+                    public void delete(RequestContext requestContext) throws RegistryException {
+                        Resource resource = requestContext.getResource();
+                        Object content = resource.getContent();
+                        String elementString;
+                        if (content instanceof String) {
+                            elementString = (String) content;
+                        } else {
+                            elementString = RegistryUtils.decodeBytes((byte[]) content);
+                        }
+                        GovernanceArtifactConfiguration artifactConfiguration = GovernanceUtils.getGovernanceArtifactConfiguration(elementString);
+                        CommonUtil.removeStoragePath(artifactConfiguration.getMediaType());
+                        String needToDelete = artifactConfiguration.getKey();
+                        UserRegistry systemRegistry = registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+                        if (systemRegistry.resourceExists(GovernanceConstants.ARTIFACT_CONTENT_PATH + needToDelete)) {
+                            systemRegistry.delete(GovernanceConstants.ARTIFACT_CONTENT_PATH + needToDelete);
+                        }
+                        List<GovernanceArtifactConfiguration> configurations = GovernanceUtils.findGovernanceArtifactConfigurations(systemRegistry);
+                        GovernanceUtils.loadGovernanceArtifacts(systemRegistry, configurations);
+                        for (GovernanceArtifactConfiguration configuration : configurations) {
+                            for (ManagementPermission uiPermission : configuration.getUIPermissions()) {
+                                String resourceId = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + uiPermission.getResourceId();
+                                if (systemRegistry.resourceExists(resourceId) && needToDelete.equals(configuration.getKey())) {
+                                    systemRegistry.delete(resourceId);
                                 }
                             }
+                        }
+                        unDeployCRUDService(artifactConfiguration, CommonUtil.getConfigurationContext().getAxisConfiguration());
+                    }
+                });
+                handlerManager.addHandler(null, new MediaTypeMatcher() {
 
-                            public Resource get(RequestContext requestContext)
-                                    throws RegistryException {
-                                Resource resource = requestContext.getRepository().get(requestContext.getResourcePath().getPath());
-                                requestContext.setProcessingComplete(true);
-                                Object content = resource.getContent();
-                                String path = resource.getPath();
-                                String elementString;
-                                if (content instanceof String) {
-                                    elementString = (String) content;
-                                } else {
-                                    elementString = RegistryUtils.decodeBytes((byte[]) content);
-                                }
-                                int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-                                if (tenantList.get(tenantId) != null && !tenantList.get(tenantId).contains(path)) {
-                                    List<String> rxtPaths = tenantList.get(tenantId);
-                                    rxtPaths.add(path);
-                                    populateRXTPaths(elementString);
-                                    tenantList.put(tenantId, rxtPaths);
-                                } else if (tenantList.get(tenantId) == null) {
-                                    List<String> rxtPaths = new ArrayList<String>();
-                                    rxtPaths.add(path);
-                                    populateRXTPaths(elementString);
-                                    tenantList.put(tenantId, rxtPaths);
-                                }
+                    public boolean handlePut(RequestContext requestContext) throws RegistryException {
+                        Resource resource = requestContext.getResource();
+                        if (resource == null) {
+                            return false;
+                        }
+                        String mType = resource.getMediaType();
+                        return mType != null && (invert != (mType.matches("application/vnd\\.[a-zA-Z0-9.-]+\\+xml") & !mType.matches("application/vnd.wso2-service\\+xml")));
+                    }
 
-                                return resource;
-                            }
+                    @Override
+                    public boolean handleCreateLink(RequestContext requestContext) throws RegistryException {
+                        String targetPath = requestContext.getTargetPath();
+                        if (!requestContext.getRegistry().resourceExists(targetPath)) {
+                            return false;
+                        }
+                        Resource targetResource = requestContext.getRegistry().get(targetPath);
+                        String mType = targetResource.getMediaType();
+                        return mType != null && (invert != (mType.matches("application/vnd\\.[a-zA-Z0-9.-]+\\+xml") & !mType.matches("application/vnd.wso2-service\\+xml")));
+                    }
+                }, new Handler() {
 
-                            private void populateRXTPaths(String elementString){
-                                GovernanceArtifactConfiguration artifactConfiguration = GovernanceUtils.getGovernanceArtifactConfiguration(elementString);
-                                CommonUtil.addStoragePath(artifactConfiguration.getMediaType(),artifactConfiguration.getPathExpression());
-                            }
-
-                            public void delete(RequestContext requestContext) throws RegistryException {
-                                Resource resource = requestContext.getResource();
-                                Object content = resource.getContent();
-                                String elementString;
-                                if (content instanceof String) {
-                                    elementString = (String) content;
-                                } else {
-                                    elementString = RegistryUtils.decodeBytes((byte[]) content);
-                                }
-                                GovernanceArtifactConfiguration artifactConfiguration =
-                                        GovernanceUtils.getGovernanceArtifactConfiguration(elementString);
-	                            CommonUtil.removeStoragePath(artifactConfiguration.getMediaType());
-                                String needToDelete = artifactConfiguration.getKey();
-
-                                UserRegistry systemRegistry =
-                                        registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-                                if (systemRegistry.resourceExists(GovernanceConstants.ARTIFACT_CONTENT_PATH + needToDelete)) {
-                                    systemRegistry.delete(GovernanceConstants.ARTIFACT_CONTENT_PATH + needToDelete);
-                                }
-                                List<GovernanceArtifactConfiguration> configurations =
-                                        GovernanceUtils.findGovernanceArtifactConfigurations(systemRegistry);
-                                GovernanceUtils.loadGovernanceArtifacts(systemRegistry, configurations);
-                                for (GovernanceArtifactConfiguration configuration : configurations) {
-                                    for (ManagementPermission uiPermission : configuration.getUIPermissions()) {
-                                        String resourceId = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-                                                uiPermission.getResourceId();
-                                        if (systemRegistry.resourceExists(resourceId) && needToDelete.equals(configuration.getKey())) {
-                                            systemRegistry.delete(resourceId);
-                                        }
-                                    }
-                                }
-
-                                unDeployCRUDService(artifactConfiguration,
-                                        CommonUtil.getConfigurationContext().getAxisConfiguration());
-                            }
-                        });
-                handlerManager.addHandler(null,
-                        new MediaTypeMatcher() {
-                            public boolean handlePut(RequestContext requestContext)
-                                    throws RegistryException {
-                                Resource resource = requestContext.getResource();
-                                if (resource == null) {
-                                    return false;
-                                }
-                                String mType = resource.getMediaType();
-                                return mType != null && (invert != (mType.matches(
-                                        "application/vnd\\.[a-zA-Z0-9.-]+\\+xml") & !mType.matches(
-                                        "application/vnd.wso2-service\\+xml")));
-                            }
-
-                            @Override
-                            public boolean handleCreateLink(RequestContext requestContext) throws RegistryException {
-                                String targetPath = requestContext.getTargetPath();
-                                if (!requestContext.getRegistry().resourceExists(targetPath)) {
-                                    return false;
-                                }
-                                Resource targetResource = requestContext.getRegistry().get(targetPath);
-                                String mType = targetResource.getMediaType();
-
-                                return mType != null && (invert != (mType.matches(
-                                        "application/vnd\\.[a-zA-Z0-9.-]+\\+xml") & !mType.matches(
-                                        "application/vnd.wso2-service\\+xml")));
-                            }
-                        },
-                        new Handler() {
-                            @Override
-                            public void createLink(RequestContext requestContext) throws RegistryException {
-                                String symlinkPath = requestContext.getResourcePath().getPath();
-
-                                if (!symlinkPath.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH)) {
-                                    throw new RegistryException("symlink creation is not allowed for artifact "
-                                            + requestContext.getTargetPath());
-                                }
-                            }
-                        });
+                    @Override
+                    public void createLink(RequestContext requestContext) throws RegistryException {
+                        String symlinkPath = requestContext.getResourcePath().getPath();
+                        if (!symlinkPath.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH)) {
+                            throw new RegistryException("symlink creation is not allowed for artifact " + requestContext.getTargetPath());
+                        }
+                    }
+                });
             }
         } catch (RegistryException e) {
             log.error("Unable to load governance artifacts.", e);
@@ -238,7 +202,6 @@ public class GovernanceMgtUIListMetadataServiceComponent {
 
     private void unDeployCRUDService(GovernanceArtifactConfiguration configuration, AxisConfiguration axisConfig) {
         String singularLabel = configuration.getSingularLabel();
-
         try {
             if (axisConfig.getService(singularLabel) != null) {
                 axisConfig.removeService(singularLabel);
@@ -248,6 +211,12 @@ public class GovernanceMgtUIListMetadataServiceComponent {
         }
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         CommonUtil.setRegistryService(registryService);
     }
@@ -256,23 +225,35 @@ public class GovernanceMgtUIListMetadataServiceComponent {
         CommonUtil.setRegistryService(null);
     }
 
-    protected void setConfigurationContextService(
-            ConfigurationContextService configurationContextService) {
+    @Reference(
+             name = "configuration.context.service", 
+             service = org.wso2.carbon.utils.ConfigurationContextService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetConfigurationContextService")
+    protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
         log.debug("The Configuration Context Service was set");
         if (configurationContextService != null) {
             CommonUtil.setConfigurationContext(configurationContextService.getServerConfigContext());
         }
     }
+
     protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
         CommonUtil.setConfigurationContext(null);
     }
 
-	protected void setRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
-		CommonUtil.setRxtStoragePathService(rxtStoragePathService);
-	}
+    @Reference(
+             name = "extensions.service", 
+             service = org.wso2.carbon.registry.extensions.services.RXTStoragePathService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRxtStoragePathService")
+    protected void setRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
+        CommonUtil.setRxtStoragePathService(rxtStoragePathService);
+    }
 
-	protected void unsetRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
-		CommonUtil.setRxtStoragePathService(null);
-	}
-
+    protected void unsetRxtStoragePathService(RXTStoragePathService rxtStoragePathService) {
+        CommonUtil.setRxtStoragePathService(null);
+    }
 }
+

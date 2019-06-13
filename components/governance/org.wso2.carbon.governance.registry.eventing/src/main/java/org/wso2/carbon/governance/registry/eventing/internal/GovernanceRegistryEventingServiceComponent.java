@@ -16,7 +16,6 @@
  *  under the License.
  *
  */
-
 package org.wso2.carbon.governance.registry.eventing.internal;
 
 import org.apache.commons.logging.Log;
@@ -30,19 +29,16 @@ import org.wso2.carbon.registry.core.jdbc.handlers.HandlerLifecycleManager;
 import org.wso2.carbon.registry.app.RemoteRegistryService;
 import org.wso2.carbon.registry.common.eventing.NotificationService;
 import org.wso2.carbon.governance.registry.eventing.handlers.GovernanceEventingHandler;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.governance.registry.eventing" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="listener.manager.service"
- * interface="org.apache.axis2.engine.ListenerManager" cardinality="0..1" policy="dynamic"
- * bind="setListenerManager" unbind="unsetListenerManager"
- * @scr.reference name="registry.notification.service"
- * interface="org.wso2.carbon.registry.common.eventing.NotificationService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryNotificationService" unbind="unsetRegistryNotificationService"
- */
+@Component(
+         name = "org.wso2.carbon.governance.registry.eventing", 
+         immediate = true)
 public class GovernanceRegistryEventingServiceComponent {
 
     private static Log log = LogFactory.getLog(GovernanceRegistryEventingServiceComponent.class);
@@ -53,14 +49,22 @@ public class GovernanceRegistryEventingServiceComponent {
 
     private boolean initialized = false;
 
+    @Activate
     protected void activate(ComponentContext context) {
         log.debug("Governance Eventing bundle is activated ");
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         log.debug("Governance Eventing bundle is deactivated ");
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         EventDataHolder.getInstance().setRegistryService(registryService);
         initailize();
@@ -70,6 +74,12 @@ public class GovernanceRegistryEventingServiceComponent {
         EventDataHolder.getInstance().setRegistryService(null);
     }
 
+    @Reference(
+             name = "registry.notification.service", 
+             service = org.wso2.carbon.registry.common.eventing.NotificationService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryNotificationService")
     protected void setRegistryNotificationService(NotificationService notificationService) {
         EventDataHolder.getInstance().setRegistryNotificationService(notificationService);
         initailize();
@@ -79,6 +89,12 @@ public class GovernanceRegistryEventingServiceComponent {
         EventDataHolder.getInstance().setRegistryNotificationService(null);
     }
 
+    @Reference(
+             name = "listener.manager.service", 
+             service = org.apache.axis2.engine.ListenerManager.class, 
+             cardinality = ReferenceCardinality.OPTIONAL, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetListenerManager")
     protected void setListenerManager(ListenerManager listenerManager) {
         this.listenerManager = listenerManager;
         initailize();
@@ -91,14 +107,11 @@ public class GovernanceRegistryEventingServiceComponent {
     private void initailize() {
         if (Boolean.toString(Boolean.TRUE).equals(System.getProperty("disable.event.handlers"))) {
             initialized = true;
-            log.debug("Default Eventing Handlers have been disabled. Events will not be " +
-                    "generated unless a custom handler has been configured.");
+            log.debug("Default Eventing Handlers have been disabled. Events will not be " + "generated unless a custom handler has been configured.");
             return;
         }
         RegistryService registryService = EventDataHolder.getInstance().getRegistryService();
-        if (!initialized &&
-                listenerManager != null && registryService != null &&
-                EventDataHolder.getInstance().getRegistryNotificationService() != null) {
+        if (!initialized && listenerManager != null && registryService != null && EventDataHolder.getInstance().getRegistryNotificationService() != null) {
             if (registryService instanceof RemoteRegistryService) {
                 initialized = true;
                 log.warn("Eventing is not available on Remote Registry");
@@ -114,9 +127,7 @@ public class GovernanceRegistryEventingServiceComponent {
                     return;
                 }
                 registry = systemRegistry;
-                if (registry == null ||
-                        registry.getRegistryContext() == null ||
-                        registry.getRegistryContext().getHandlerManager() == null) {
+                if (registry == null || registry.getRegistryContext() == null || registry.getRegistryContext().getHandlerManager() == null) {
                     String msg = "Error Initializing Governance Eventing Handler";
                     log.error(msg);
                 } else {
@@ -124,8 +135,7 @@ public class GovernanceRegistryEventingServiceComponent {
                     filter.setPutPattern(".*");
                     filter.setInvokeAspectPattern(".*");
                     GovernanceEventingHandler handler = new GovernanceEventingHandler();
-                    registry.getRegistryContext().getHandlerManager().addHandler(null, filter,
-                            handler, HandlerLifecycleManager.DEFAULT_REPORTING_HANDLER_PHASE);
+                    registry.getRegistryContext().getHandlerManager().addHandler(null, filter, handler, HandlerLifecycleManager.DEFAULT_REPORTING_HANDLER_PHASE);
                     handler.init(registry.getEventingServiceURL(null));
                     log.debug("Successfully Initialized the Governance Eventing Handler");
                 }

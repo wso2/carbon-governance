@@ -21,27 +21,38 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.governance.gadgets.impactanalysis"
- * immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- */
+@Component(
+         name = "org.wso2.carbon.governance.gadgets.impactanalysis", 
+         immediate = true)
 public class GovernanceImpactAnalysisServiceComponent {
 
     private static Log log = LogFactory.getLog(GovernanceImpactAnalysisServiceComponent.class);
+
     private RegistryService registryService;
 
+    @Activate
     protected void activate(ComponentContext context) {
         log.debug("******* Governance Impact Analysis bundle is activated ******* ");
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         log.debug("Governance Impact Analysis bundle is deactivated ");
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         this.registryService = registryService;
     }
@@ -49,5 +60,5 @@ public class GovernanceImpactAnalysisServiceComponent {
     protected void unsetRegistryService(RegistryService registryService) {
         this.registryService = null;
     }
-
 }
+

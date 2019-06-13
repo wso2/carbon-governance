@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -18,17 +17,27 @@ package org.wso2.carbon.governance.client.internal;
 
 import org.wso2.carbon.governance.client.WSRegistrySearchUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+
 /**
  * Service Component for Client to WS Search API.
- *
- * @scr.component name="registry.ws.client.component" immediate="true"
- * @scr.reference name="config.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService"
- * cardinality="1..1" policy="dynamic" bind="setConfigurationContextService"
- * unbind="unsetConfigurationContextService"
  */
+@Component(
+         name = "registry.ws.client.component", 
+         immediate = true)
 public class WSRegistrySearchComponent {
 
+    @Reference(
+             name = "config.context.service", 
+             service = org.wso2.carbon.utils.ConfigurationContextService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetConfigurationContextService")
     protected void setConfigurationContextService(ConfigurationContextService contextService) {
         WSRegistrySearchUtils.setConfigurationContext(contextService.getClientConfigContext());
     }
@@ -37,3 +46,4 @@ public class WSRegistrySearchComponent {
         WSRegistrySearchUtils.setConfigurationContext(null);
     }
 }
+

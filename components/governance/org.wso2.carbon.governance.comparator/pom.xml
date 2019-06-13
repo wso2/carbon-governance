@@ -52,6 +52,11 @@
             <!-- TODO - Move dependency versino into root POM -->
             <version>18.0</version>
         </dependency>
+    <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

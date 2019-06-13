@@ -15,7 +15,6 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-
 package org.wso2.carbon.governance.taxonomy.internal;
 
 import org.apache.commons.logging.Log;
@@ -37,23 +36,16 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.governance.taxonomy"
- * immediate="true"
- * @scr.reference name="realm.service"
- * interface="org.wso2.carbon.user.core.service.RealmService" cardinality="1..1"
- * policy="dynamic" bind="setRealmService" unbind="unsetRealmService"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="registry.core.dscomponent"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="tenant.registryloader" interface="org.wso2.carbon.registry.core.service.TenantRegistryLoader" cardinality="1..1"
- * policy="dynamic" bind="setTenantRegistryLoader" unbind="unsetTenantRegistryLoader"
- */
-
+@Component(
+         name = "org.wso2.carbon.governance.taxonomy", 
+         immediate = true)
 public class TaxonomyServiceComponent {
 
     private static final Log log = LogFactory.getLog(TaxonomyServiceComponent.class);
@@ -63,15 +55,11 @@ public class TaxonomyServiceComponent {
      *
      * @param context OSGi component context.
      */
-    protected void activate(ComponentContext context)
-            throws UserStoreException, RegistryException, ParserConfigurationException, SAXException,
-            XPathExpressionException, IOException {
-
+    @Activate
+    protected void activate(ComponentContext context) throws UserStoreException, RegistryException, ParserConfigurationException, SAXException, XPathExpressionException, IOException {
         BundleContext bundleContext = context.getBundleContext();
         TenantLoginStorageService tenantLoginStorageService = new TenantLoginStorageService();
-        ServiceRegistration tenantMgtListenerSR = bundleContext
-                .registerService(Axis2ConfigurationContextObserver.class.getName(), tenantLoginStorageService, null);
-
+        ServiceRegistration tenantMgtListenerSR = bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(), tenantLoginStorageService, null);
         if (tenantMgtListenerSR != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Governance Taxonomy Management - TenantLoginStorageService registered");
@@ -79,11 +67,8 @@ public class TaxonomyServiceComponent {
         } else {
             log.error("Governance Taxonomy Management - TenantLoginStorageService could not be registered");
         }
-
         BundleContext taxonomyBundleContext = context.getBundleContext();
-        ServiceRegistration taxonomyManagementService = taxonomyBundleContext
-                .registerService(ITaxonomyServices.class.getName(), new TaxonomyServicesImpl(), null);
-
+        ServiceRegistration taxonomyManagementService = taxonomyBundleContext.registerService(ITaxonomyServices.class.getName(), new TaxonomyServicesImpl(), null);
         if (taxonomyManagementService != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Governance Taxonomy Management - Manager services registered");
@@ -91,11 +76,9 @@ public class TaxonomyServiceComponent {
         } else {
             log.error("Governance Taxonomy Management - Manager services could not be registered");
         }
-
         if (log.isDebugEnabled()) {
             log.debug("Governance Taxonomy Management Service bundle is activated");
         }
-
         try {
             TaxonomyManager taxonomyManager = new TaxonomyManager();
             taxonomyManager.initTaxonomyStorage();
@@ -105,19 +88,14 @@ public class TaxonomyServiceComponent {
         } catch (UserStoreException e) {
             log.error("Error occurred while getting RealmConfigurations when activating osgi service", e);
         } catch (RegistryException e) {
-
             log.error("Error occurred while getting taxonomy files from registry when activating osgi service", e);
         } catch (IOException e) {
-
             log.error("Error occurred while parsing taxonomy xml when activating osgi service", e);
         } catch (ParserConfigurationException e) {
-
             log.error("Error occurred while building new document for taxonomy when activating osgi service", e);
         } catch (SAXException e) {
-
             log.error("Error occurred parsing taxonomy content stream when activating osgi service", e);
         }
-
     }
 
     /**
@@ -125,6 +103,7 @@ public class TaxonomyServiceComponent {
      *
      * @param context OSGi component context.
      */
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         if (log.isDebugEnabled()) {
             log.info("taxonomy bundle is deactivated");
@@ -136,6 +115,18 @@ public class TaxonomyServiceComponent {
      *
      * @param registryService service to get tenant data.
      */
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
+    @Reference(
+             name = "registry.core.dscomponent", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting RegistryService for taxonomy");
@@ -160,6 +151,12 @@ public class TaxonomyServiceComponent {
      *
      * @param realmService service to get tenant data.
      */
+    @Reference(
+             name = "realm.service", 
+             service = org.wso2.carbon.user.core.service.RealmService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRealmService")
     protected void setRealmService(RealmService realmService) {
         log.debug("Setting RealmService for WSO2 Governance Registry migration");
         ServiceHolder.setRealmService(realmService);
@@ -182,6 +179,12 @@ public class TaxonomyServiceComponent {
      *
      * @param tenantRegLoader tenant registry loader
      */
+    @Reference(
+             name = "tenant.registryloader", 
+             service = org.wso2.carbon.registry.core.service.TenantRegistryLoader.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetTenantRegistryLoader")
     protected void setTenantRegistryLoader(TenantRegistryLoader tenantRegLoader) {
         log.debug("Setting TenantRegistryLoader for WSO2 Governance Registry migration");
         ServiceHolder.setTenantRegLoader(tenantRegLoader);
@@ -196,5 +199,5 @@ public class TaxonomyServiceComponent {
         log.debug("Unset Tenant Registry Loader");
         ServiceHolder.setTenantRegLoader(null);
     }
-
 }
+

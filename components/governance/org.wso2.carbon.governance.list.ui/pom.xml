@@ -138,6 +138,11 @@
             <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.list.stub</artifactId>
         </dependency>
+    <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

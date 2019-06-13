@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.governance.sramp.internal;
 
 import org.apache.commons.logging.Log;
@@ -24,27 +23,28 @@ import org.osgi.service.http.HttpService;
 import org.wso2.carbon.governance.sramp.SRAMPServlet;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.ConfigurationContextService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * OSGi Service Component that Registers the S-RAMP servlet implementation of Carbon.
- *
- * @scr.component name="org.wso2.carbon.registry.servlet" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="configuration.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
- * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
- * @scr.reference name="http.service" interface="org.osgi.service.http.HttpService"
- * cardinality="1..1" policy="dynamic"  bind="setHttpService" unbind="unsetHttpService"
  */
-@SuppressWarnings({"unused", "JavaDoc"})
+@SuppressWarnings({ "unused", "JavaDoc" })
+@Component(
+         name = "org.wso2.carbon.registry.servlet", 
+         immediate = true)
 public class SRAMPServiceComponent {
 
     private static Log log = LogFactory.getLog(SRAMPServiceComponent.class);
 
     private RegistryService registryService = null;
+
     private ConfigurationContextService configurationContextService = null;
+
     private HttpService httpService = null;
 
     /**
@@ -52,6 +52,7 @@ public class SRAMPServiceComponent {
      *
      * @param context the OSGi component context.
      */
+    @Activate
     protected void activate(ComponentContext context) {
         try {
             registerServlet(context.getBundleContext());
@@ -66,17 +67,22 @@ public class SRAMPServiceComponent {
      *
      * @param context the OSGi component context.
      */
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         httpService.unregister("/s-ramp");
         log.debug("******* Governance S-Ramp bundle is deactivated ******* ");
     }
 
     private void registerServlet(BundleContext bundleContext) throws Exception {
-        httpService.registerServlet("/s-ramp",
-                new SRAMPServlet(configurationContextService, registryService), null,
-                httpService.createDefaultHttpContext());
+        httpService.registerServlet("/s-ramp", new SRAMPServlet(configurationContextService, registryService), null, httpService.createDefaultHttpContext());
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         this.registryService = registryService;
     }
@@ -85,6 +91,12 @@ public class SRAMPServiceComponent {
         this.registryService = null;
     }
 
+    @Reference(
+             name = "http.service", 
+             service = org.osgi.service.http.HttpService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetHttpService")
     protected void setHttpService(HttpService httpService) {
         this.httpService = httpService;
     }
@@ -93,13 +105,18 @@ public class SRAMPServiceComponent {
         this.httpService = null;
     }
 
-    protected void setConfigurationContextService(
-            ConfigurationContextService configurationContextService) {
+    @Reference(
+             name = "configuration.context.service", 
+             service = org.wso2.carbon.utils.ConfigurationContextService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetConfigurationContextService")
+    protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
         this.configurationContextService = configurationContextService;
     }
 
-    protected void unsetConfigurationContextService(
-            ConfigurationContextService configurationContextService) {
+    protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
         this.configurationContextService = null;
     }
 }
+

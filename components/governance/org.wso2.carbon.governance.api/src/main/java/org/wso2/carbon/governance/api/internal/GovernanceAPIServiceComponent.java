@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.governance.api.internal;
 
 import org.apache.commons.logging.Log;
@@ -25,29 +24,20 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.registry.indexing.service.TermsQuerySearchService;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
-
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * The Governance API Declarative Service Component.
- *
- * @scr.component name="org.wso2.carbon.governance.api" immediate="true"
- * @scr.reference name="registryService.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="registry.search.component"
- * interface="org.wso2.carbon.registry.common.AttributeSearchService"
- * cardinality="1..1" policy="dynamic" bind="setAttributeSearchService" unbind="unsetAttributeSearchService"
- * @scr.reference name="registry.content.search.component"
- * interface="org.wso2.carbon.registry.indexing.service.ContentSearchService"
- * cardinality="1..1" policy="dynamic" bind="setContentSearchService" unbind="unsetContentSearchService"
- * @scr.reference name="registry.term.component"
- * interface="org.wso2.carbon.registry.indexing.service.TermsSearchService"
- * cardinality="1..1" policy="dynamic" bind="setTermsSearchService" unbind="unsetTermsSearchService"
- * @scr.reference name="registry.term.query.component"
- * interface="org.wso2.carbon.registry.indexing.service.TermsQuerySearchService"
- * cardinality="1..1" policy="dynamic" bind="setTermsQuerySearchService" unbind="unsetTermsQuerySearchService"
  */
-@SuppressWarnings({"JavaDoc", "unused"})
+@SuppressWarnings({ "JavaDoc", "unused" })
+@Component(
+         name = "org.wso2.carbon.governance.api", 
+         immediate = true)
 public class GovernanceAPIServiceComponent {
 
     private static final Log log = LogFactory.getLog(GovernanceAPIServiceComponent.class);
@@ -57,6 +47,7 @@ public class GovernanceAPIServiceComponent {
      *
      * @param context the OSGi component context.
      */
+    @Activate
     protected void activate(ComponentContext context) {
         try {
             log.debug("Governance API bundle is activated ");
@@ -70,6 +61,7 @@ public class GovernanceAPIServiceComponent {
      *
      * @param context the OSGi component context.
      */
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         log.debug("Governance API bundle is deactivated ");
     }
@@ -80,6 +72,12 @@ public class GovernanceAPIServiceComponent {
      *
      * @param registryService the registry service.
      */
+    @Reference(
+             name = "registryService.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         log.debug("Setting the Registry Service");
         GovernanceUtils.setRegistryService(registryService);
@@ -89,35 +87,44 @@ public class GovernanceAPIServiceComponent {
      * This method is called when the current registry service becomes un-available.
      *
      * @param registryService the current registry service instance, to be used for any
-     *                        cleaning-up.
+     * cleaning-up.
      */
     protected void unsetRegistryService(RegistryService registryService) {
         log.debug("Un-setting the Registry Service");
         GovernanceUtils.setRegistryService(null);
     }
 
-    protected void  setAttributeSearchService(AttributeSearchService searchService){
+    @Reference(
+             name = "registry.search.component", 
+             service = org.wso2.carbon.registry.common.AttributeSearchService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetAttributeSearchService")
+    protected void setAttributeSearchService(AttributeSearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Attribute Search Service");
         }
         GovernanceUtils.setAttributeSearchService(searchService);
-
     }
 
-    protected void  unsetAttributeSearchService(AttributeSearchService searchService){
+    protected void unsetAttributeSearchService(AttributeSearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting Attribute Search Service");
         }
         GovernanceUtils.setAttributeSearchService(null);
-
     }
 
+    @Reference(
+             name = "registry.content.search.component", 
+             service = org.wso2.carbon.registry.indexing.service.ContentSearchService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetContentSearchService")
     protected void setContentSearchService(ContentSearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Content Search Service");
         }
         GovernanceUtils.setContentSearchService(searchService);
-
     }
 
     protected void unsetContentSearchService(ContentSearchService searchService) {
@@ -125,9 +132,14 @@ public class GovernanceAPIServiceComponent {
             log.debug("Unsetting Content Search Service");
         }
         GovernanceUtils.setContentSearchService(null);
-
     }
 
+    @Reference(
+             name = "registry.term.component", 
+             service = org.wso2.carbon.registry.indexing.service.TermsSearchService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetTermsSearchService")
     protected void setTermsSearchService(TermsSearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting TermSearchService");
@@ -135,13 +147,19 @@ public class GovernanceAPIServiceComponent {
         GovernanceUtils.setTermsSearchService(searchService);
     }
 
-    protected void  unsetTermsSearchService(TermsSearchService searchService){
+    protected void unsetTermsSearchService(TermsSearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting TermSearchService");
         }
         GovernanceUtils.setTermsSearchService(null);
     }
 
+    @Reference(
+             name = "registry.term.query.component", 
+             service = org.wso2.carbon.registry.indexing.service.TermsQuerySearchService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetTermsQuerySearchService")
     protected void setTermsQuerySearchService(TermsQuerySearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting TermsQuerySearchService");
@@ -149,10 +167,11 @@ public class GovernanceAPIServiceComponent {
         GovernanceUtils.setTermsQuerySearchService(searchService);
     }
 
-    protected void  unsetTermsQuerySearchService(TermsQuerySearchService searchService){
+    protected void unsetTermsQuerySearchService(TermsQuerySearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting TermQuerySearchService");
         }
         GovernanceUtils.setTermsQuerySearchService(null);
     }
 }
+
