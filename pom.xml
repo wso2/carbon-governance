@@ -1431,31 +1431,31 @@
 
     <properties>
         <!-- Carbon kernel version -->
-        <carbon.kernel.version>4.4.41-SNAPSHOT</carbon.kernel.version>
-        <carbon.kernel.imp.pkg.version>[4.4.0, 4.5.0)</carbon.kernel.imp.pkg.version>
+        <carbon.kernel.version>4.5.0-m1</carbon.kernel.version>
+        <carbon.kernel.imp.pkg.version>[4.5.0, 5.0.0)</carbon.kernel.imp.pkg.version>
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.5.4</carbon.commons.version>
-        <carbon.commons.imp.pkg.version>[4.4.0, 5.0.0)</carbon.commons.imp.pkg.version>
+        <carbon.commons.version>4.7.0</carbon.commons.version>
+        <carbon.commons.imp.pkg.version>[4.7.0, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Business Process -->
-        <carbon.business.process.version>4.4.9</carbon.business.process.version>
-        <carbon.business.process.imp.pkg.version>[4.4.0, 4.5.0)</carbon.business.process.imp.pkg.version>
+        <carbon.business.process.version>4.5.1</carbon.business.process.version>
+        <carbon.business.process.imp.pkg.version>[4.5.0, 4.6.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.6.40</carbon.registry.version>
-        <carbon.registry.imp.pkg.version>[4.6.0, 5.0.0)</carbon.registry.imp.pkg.version>
+        <carbon.registry.version>4.7.0</carbon.registry.version>
+        <carbon.registry.imp.pkg.version>[4.7.0, 5.0.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon governance version comes here-->
         <carbon.governance.version>4.7.31-SNAPSHOT</carbon.governance.version>
         <carbon.governance.package.export.version>${carbon.governance.version}
         </carbon.governance.package.export.version>
-        <carbon.governance.package.import.version.range>[4.7.0, 5.0.0)
+        <carbon.governance.package.import.version.range>[4.8.0, 5.0.0)
         </carbon.governance.package.import.version.range>
 
-        <carbon.identity.framework.version>5.12.385-SNAPSHOT</carbon.identity.framework.version>
-        <carbon.identity.imp.pkg.version>[5.2.0, 6.0.0)</carbon.identity.imp.pkg.version>
+        <carbon.identity.framework.version>5.13.4</carbon.identity.framework.version>
+        <carbon.identity.imp.pkg.version>[5.13.0, 6.0.0)</carbon.identity.imp.pkg.version>
 
 
 
@@ -1463,22 +1463,22 @@
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
 
         <!-- Axis2 Version -->
-        <axis2.version>1.6.1-wso2v35-SNAPSHOT</axis2.version>
-        <orbit.version.axis2>1.6.1-wso2v35-SNAPSHOT</orbit.version.axis2>
-        <axis2-transports.version>2.0.0-wso2v35-SNAPSHOT</axis2-transports.version>
+        <axis2.version>1.6.1-wso2v37</axis2.version>
+        <orbit.version.axis2>1.6.1-wso2v37</orbit.version.axis2>
+        <axis2-transports.version>2.0.0-wso2v35</axis2-transports.version>
         <axis2.osgi.version.range>[1.6.1, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>
-        <rampart.wso2.version>1.6.1.wso2v19</rampart.wso2.version>
+        <rampart.wso2.version>1.6.1-wso2v36</rampart.wso2.version>
 
         <!-- Apache Axiom -->
-        <axiom.version>1.2.11-wso2v9</axiom.version>
-        <orbit.version.axiom>1.2.11.wso2v9</orbit.version.axiom>
-        <axiom.wso2.version>1.2.11.wso2v9</axiom.wso2.version>
+        <axiom.version>1.2.11-wso2v16</axiom.version>
+        <orbit.version.axiom>1.2.11-wso2v16</orbit.version.axiom>
+        <axiom.wso2.version>1.2.11-wso2v16</axiom.wso2.version>
         <exp.pkg.version.axiom>1.2.11</exp.pkg.version.axiom>
         <imp.pkg.version.axiom>[1.2.11, 1.3.0)</imp.pkg.version.axiom>
         <axiom.osgi.version.range>[1.2.11, 1.3.0)</axiom.osgi.version.range>
-        <version.axiom>1.2.11-wso2v9</version.axiom>
+        <version.axiom>1.2.11-wso2v16</version.axiom>
 
         <!-- XmlSchema Versions -->
         <orbit.version.xmlschema>1.4.7.wso2v2</orbit.version.xmlschema>
