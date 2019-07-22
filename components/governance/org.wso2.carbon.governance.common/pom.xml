@@ -43,8 +43,8 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.logging</artifactId>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
         </dependency>
 
         <!--<dependency>-->
@@ -89,7 +89,7 @@
                             javax.xml.parsers;version=0.0.0,
                             org.w3c.dom.*,
                             org.xml.sax.*,
-                            org.apache.commons.logging.*,
+                            org.apache.commons.logging.*; version="${commons-logging.osgi.version.range}",
                             org.osgi.framework.*
                         </Import-Package>
                     </instructions>

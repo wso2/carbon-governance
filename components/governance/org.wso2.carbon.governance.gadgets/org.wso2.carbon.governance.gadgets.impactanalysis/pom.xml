@@ -101,7 +101,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Import-Package>
-                            org.apache.commons.logging.*,
+                            org.apache.commons.logging.*; version="${commons-logging.osgi.version.range}",
                             org.wso2.carbon.registry.core.*,
                             org.wso2.carbon.governance.api.*,
                             *;resolution:=optional
