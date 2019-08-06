@@ -1418,10 +1418,15 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
             </dependency>
-        <dependency>
+            <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
                 <version>${apache.felix.scr.ds.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.eclipse.osgi</groupId>
+                <artifactId>org.eclipse.osgi.services</artifactId>
+                <version>${version.org.eclipse.osgi.services}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -1551,5 +1556,6 @@
     <apache.felix.scr.ds.annotations.version>1.2.4</apache.felix.scr.ds.annotations.version>
         <maven.scr.plugin.version>1.26.0</maven.scr.plugin.version>
         <version.maven.bundle.plugin>3.2.0</version.maven.bundle.plugin>
+        <version.org.eclipse.osgi.services>3.5.100.v20160504-1419</version.org.eclipse.osgi.services>
     </properties>
 </project>
