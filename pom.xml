@@ -57,7 +57,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>${version.maven.bundle.plugin}</version>
                     <extensions>true</extensions>
                 </plugin>
                 <plugin>
@@ -1434,11 +1434,11 @@
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.7.0</carbon.commons.version>
+        <carbon.commons.version>4.7.2</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.7.0, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Business Process -->
-        <carbon.business.process.version>4.5.1</carbon.business.process.version>
+        <carbon.business.process.version>4.5.8</carbon.business.process.version>
         <carbon.business.process.imp.pkg.version>[4.5.0, 4.6.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
@@ -1452,8 +1452,8 @@
         <carbon.governance.package.import.version.range>[4.8.0, 5.0.0)
         </carbon.governance.package.import.version.range>
 
-        <carbon.identity.framework.version>5.13.4</carbon.identity.framework.version>
-        <carbon.identity.imp.pkg.version>[5.13.0, 6.0.0)</carbon.identity.imp.pkg.version>
+        <carbon.identity.framework.version>5.14.0</carbon.identity.framework.version>
+        <carbon.identity.imp.pkg.version>[5.14.0, 6.0.0)</carbon.identity.imp.pkg.version>
 
 
 
@@ -1550,5 +1550,6 @@
 
     <apache.felix.scr.ds.annotations.version>1.2.4</apache.felix.scr.ds.annotations.version>
         <maven.scr.plugin.version>1.26.0</maven.scr.plugin.version>
+        <version.maven.bundle.plugin>3.2.0</version.maven.bundle.plugin>
     </properties>
 </project>
