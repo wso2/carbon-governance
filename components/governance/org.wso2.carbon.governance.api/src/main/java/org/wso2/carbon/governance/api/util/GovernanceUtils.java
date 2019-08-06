@@ -64,6 +64,7 @@ import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.registry.indexing.service.TermsQuerySearchService;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
+import org.wso2.carbon.registry.indexing.utils.RxtUnboundedDataLoadUtils;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -1980,8 +1981,12 @@ public class GovernanceUtils {
                         if(!subParts[0].equals("name")) {
                             if (!hasOneProperty || possibleProperties.size() == 0) {
                                 possibleProperties.put(subParts[0], value);
+                                fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
+                            } else if (RxtUnboundedDataLoadUtils.isMultiValueField(mediaType,subParts[0])){
+                                fields.put(subParts[0], value);
+                            } else {
+                                fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
                             }
-                            fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
                             editedCriteria = editedCriteria.replace(subParts[1], value);
                             //add new query parameter to search in both resource properties and metadata content
                             String overviewField = OVERVIEW + UNDERSCORE + subParts[0] + ":" + value + " OR ";
