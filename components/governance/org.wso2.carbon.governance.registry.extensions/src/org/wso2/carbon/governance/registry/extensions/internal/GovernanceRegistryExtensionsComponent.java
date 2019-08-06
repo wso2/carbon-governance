@@ -22,9 +22,12 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.common.GovernanceConfigurationService;
 import org.wso2.carbon.governance.registry.extensions.listeners.RxtLoader;
 import org.wso2.carbon.governance.registry.extensions.utils.CommonUtil;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.securevault.SecretCallbackHandlerService;
@@ -48,7 +51,7 @@ public class GovernanceRegistryExtensionsComponent {
     private GovernanceRegistryExtensionsDataHolder dataHolder = GovernanceRegistryExtensionsDataHolder.getInstance();
 
     @Activate
-    protected void activate(ComponentContext componentContext) {
+    protected void activate(ComponentContext componentContext) throws RegistryException {
         BundleContext bundleCtx = componentContext.getBundleContext();
         RxtLoader rxtLoader = new RxtLoader();
         CommonUtil.loadDependencyGraphMaxDepthConfig();
@@ -60,6 +63,13 @@ public class GovernanceRegistryExtensionsComponent {
         }
         if (log.isDebugEnabled()) {
             log.debug("GovernanceRegistryExtensionsComponent activated");
+        }
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        RegistryService service = RegistryCoreServiceComponent.getRegistryService();
+        try {
+            CommonUtil.addRxtConfigs(service.getGovernanceSystemRegistry(tenantId), tenantId);
+        } catch (RegistryException e) {
+            throw new RegistryException("Failed to add rxt to registry", e);
         }
     }
 
