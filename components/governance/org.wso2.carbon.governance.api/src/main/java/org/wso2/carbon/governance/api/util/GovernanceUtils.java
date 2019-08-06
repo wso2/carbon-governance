@@ -65,7 +65,6 @@ import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.registry.indexing.service.RxtUnboundedFieldManagerService;
 import org.wso2.carbon.registry.indexing.service.TermsQuerySearchService;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
-import org.wso2.carbon.registry.indexing.utils.RxtUnboundedDataLoadUtils;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
