@@ -62,9 +62,9 @@ import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
+import org.wso2.carbon.registry.indexing.service.RxtUnboundedFieldManagerService;
 import org.wso2.carbon.registry.indexing.service.TermsQuerySearchService;
 import org.wso2.carbon.registry.indexing.service.TermsSearchService;
-import org.wso2.carbon.registry.indexing.utils.RxtUnboundedDataLoadUtils;
 import org.wso2.carbon.utils.component.xml.config.ManagementPermission;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -1982,7 +1982,7 @@ public class GovernanceUtils {
                             if (!hasOneProperty || possibleProperties.size() == 0) {
                                 possibleProperties.put(subParts[0], value);
                                 fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
-                            } else if (RxtUnboundedDataLoadUtils.isMultiValueField(mediaType,subParts[0])){
+                            } else if (isMultiValueField(mediaType,subParts[0])){
                                 fields.put(subParts[0], value);
                             } else {
                                 fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
@@ -2883,5 +2883,28 @@ public class GovernanceUtils {
             String msg = "Error in deleting the the lifecycle history file at: " + historyResourcePath + ".";
             throw new GovernanceException(msg, e);
         }
+    }
+    /**
+     * This method is used to check whether a field is a multi value field or not.
+     *
+     * @param mediaType media type
+     * @param fieldKey  field key
+     * @return
+     */
+    public static boolean isMultiValueField(String mediaType, String fieldKey) {
+        Map<Integer, Map<String, List<String>>> allTenantsUnboundedFields = RxtUnboundedFieldManagerService
+                .getInstance().getTenantsUnboundedFields();
+
+        if (allTenantsUnboundedFields.size() > 0) {
+            Map<String, List<String>> rxtDetails = allTenantsUnboundedFields.get(PrivilegedCarbonContext
+                    .getThreadLocalCarbonContext().getTenantId());
+            if (rxtDetails != null) {
+                List<String> fields = rxtDetails.get(mediaType);
+                if (fields != null) {
+                    return fields.contains(fieldKey);
+                }
+            }
+        }
+        return false;
     }
 }
