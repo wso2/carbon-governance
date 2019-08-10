@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * Service Component for Client to WS Search API.
  */
 @Component(
-         name = "registry.ws.client.component", 
+         name = "governance.ws.client.component",
          immediate = true)
 public class WSRegistrySearchComponent {
 
