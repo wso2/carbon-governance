@@ -1447,7 +1447,7 @@
         <carbon.business.process.imp.pkg.version>[4.5.0, 4.6.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.7.5</carbon.registry.version>
+        <carbon.registry.version>4.7.8</carbon.registry.version>
         <carbon.registry.imp.pkg.version>[4.7.0, 5.0.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon governance version comes here-->
@@ -1557,5 +1557,6 @@
         <maven.scr.plugin.version>1.26.0</maven.scr.plugin.version>
         <version.maven.bundle.plugin>3.2.0</version.maven.bundle.plugin>
         <version.org.eclipse.osgi.services>3.5.100.v20160504-1419</version.org.eclipse.osgi.services>
+        <imp.package.version.osgi.services>[1.2.0,2.0.0)</imp.package.version.osgi.services>
     </properties>
 </project>

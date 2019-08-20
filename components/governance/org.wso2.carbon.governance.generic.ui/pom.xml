@@ -50,6 +50,7 @@
                             org.apache.lucene.*,
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.wso2.carbon.governance.generic.stub.*;version="${carbon.governance.package.import.version.range}",
+                            org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
