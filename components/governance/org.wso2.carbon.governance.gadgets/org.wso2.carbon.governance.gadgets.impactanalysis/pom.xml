@@ -90,6 +90,7 @@
                             org.apache.commons.logging.*; version="${commons-logging.osgi.version.range}",
                             org.wso2.carbon.registry.core.*,
                             org.wso2.carbon.governance.api.*,
+                            org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>
                         
