@@ -40,12 +40,20 @@
             <artifactId>org.wso2.carbon.registry.extensions</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.extensions.resources</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.governance</groupId>
             <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.governance</groupId>
+            <artifactId>org.wso2.carbon.governance.registry.extensions.resources</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.wsdl.validator.wso2</groupId>
@@ -116,7 +124,9 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.extensions</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.extensions.resources</bundleDef>
                                 <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.registry.extensions</bundleDef>
+                                <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.registry.extensions.resources</bundleDef>
                                 <bundleDef>org.wso2.carbon.governance:org.wso2.carbon.governance.common</bundleDef>
                             </bundles>
                             <importBundles>
