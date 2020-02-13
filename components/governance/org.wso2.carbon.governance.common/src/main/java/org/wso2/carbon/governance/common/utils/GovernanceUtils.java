@@ -20,6 +20,7 @@ package org.wso2.carbon.governance.common.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xerces.util.SecurityManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -57,6 +58,7 @@ public class GovernanceUtils {
     public static final String DEFAULT_ENDPOINT_ACTIVE_DURATION = "DefaultEndpointActiveDuration";
     public static final String ENABLE_LIFECYCLE_CHECKLIST_ITEMS = "enableLifecycleChecklistItems";
     public static final String LIFECYCLE_CHECKLIST_ITEMS_ENABLED = "true";
+    private static final int ENTITY_EXPANSION_LIMIT = 0;
     private static Log log = LogFactory.getLog(GovernanceUtils.class);
 
 
@@ -93,7 +95,7 @@ public class GovernanceUtils {
     private static void initGovernanceConfiguration(InputStream in, GovernanceConfiguration govConfig)
             throws GovernanceConfigurationException {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = getSecuredDocumentBuilder();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(in);
             readChildElements(document.getDocumentElement(), govConfig);
@@ -219,6 +221,35 @@ public class GovernanceUtils {
             carbonConfigDir = CarbonUtils.getCarbonConfigDirPath();
         }
         return carbonConfigDir;
+    }
+
+    /**
+     * Returns a secured DocumentBuilderFactory instance
+     *
+     * @return DocumentBuilderFactory
+     */
+    public static DocumentBuilderFactory getSecuredDocumentBuilder() {
+
+        org.apache.xerces.impl.Constants Constants = null;
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setXIncludeAware(false);
+        dbf.setExpandEntityReferences(false);
+        try {
+            dbf.setFeature(Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE, false);
+            dbf.setFeature(Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE, false);
+            dbf.setFeature(Constants.XERCES_FEATURE_PREFIX + Constants.LOAD_EXTERNAL_DTD_FEATURE, false);
+        } catch (ParserConfigurationException e) {
+            log.error(
+                    "Failed to load XML Processor Feature " + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE + " or " +
+                            Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE + " or " + Constants.LOAD_EXTERNAL_DTD_FEATURE);
+        }
+
+        SecurityManager securityManager = new SecurityManager();
+        securityManager.setEntityExpansionLimit(ENTITY_EXPANSION_LIMIT);
+        dbf.setAttribute(Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY, securityManager);
+
+        return dbf;
     }
 }
 
