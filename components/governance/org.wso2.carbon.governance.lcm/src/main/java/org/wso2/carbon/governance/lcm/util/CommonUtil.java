@@ -17,12 +17,15 @@
 package org.wso2.carbon.governance.lcm.util;
 
 import org.apache.axiom.om.*;
-import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xerces.impl.Constants;
+import org.apache.xerces.util.SecurityManager;
+import org.w3c.dom.Document;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.governance.lcm.beans.LifecycleBean;
 import org.wso2.carbon.governance.lcm.internal.LifeCycleServiceHolder;
@@ -38,10 +41,14 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ServerConstants;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -55,6 +62,7 @@ public class CommonUtil {
 
     private static final Log log = LogFactory.getLog(CommonUtil.class);
     private static String contextRoot = null;
+    private static final int ENTITY_EXPANSION_LIMIT = 0;
 
     // Lifecycle property search query.
     public static final String searchLCMPropertiesQuery = RegistryConstants.QUERIES_COLLECTION_PATH +
@@ -301,15 +309,9 @@ public class CommonUtil {
     }
 
     public static OMElement buildOMElement(String payload) throws RegistryException {
-        OMElement element;
-        try {
-            element = AXIOMUtil.stringToOM(payload);
-            element.build();
-        } catch (Exception e) {
-            String message = "Unable to parse the XML configuration. Please validate the XML configuration";
-            log.error(message,e);
-            throw new RegistryException(message,e);
-        }
+
+        OMElement element = getOMElementFromString(payload);
+        element.build();
         return element;
     }
 
@@ -358,7 +360,7 @@ public class CommonUtil {
         return null;
     }
 
-    public static boolean generateAspect(String resourceFullPath, Registry registry) throws RegistryException, XMLStreamException {
+    public static boolean generateAspect(String resourceFullPath, Registry registry) throws RegistryException {
         RegistryContext registryContext = registry.getRegistryContext();
         if (registryContext == null) {
             return false;
@@ -367,10 +369,10 @@ public class CommonUtil {
         if (resource != null) {
             String content = null;
             if (resource.getContent() != null) {
-                content = RegistryUtils.decodeBytes((byte[])resource.getContent());
+                content = RegistryUtils.decodeBytes((byte[]) resource.getContent());
             }
             if (content != null) {
-                OMElement aspect = AXIOMUtil.stringToOM(content);
+                OMElement aspect = getOMElementFromString(content);
                 if (aspect != null) {
                     OMElement dummy = OMAbstractFactory.getOMFactory().createOMElement("dummy", null);
                     dummy.addChild(aspect);
@@ -381,12 +383,33 @@ public class CommonUtil {
                         OMElement aspectelement = (OMElement) aspectElement.next();
                         name = aspectelement.getAttributeValue(new QName("name"));
                     }
-                    registry.addAspect(name,aspectinstance);
+                    registry.addAspect(name, aspectinstance);
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * This method is used parse the String XML payload and get the corresponding OMElement.
+     *
+     * @param payload String XML payload
+     * @return OMElement
+     * @throws RegistryException If an error occcurs while parsing.
+     */
+    public static OMElement getOMElementFromString(String payload) throws RegistryException {
+
+        try {
+            DocumentBuilderFactory dbf = getSecuredDocumentBuilder();
+            DocumentBuilder builder = dbf.newDocumentBuilder();
+            Document document = builder.parse(new InputSource(new StringReader(payload)));
+            return XMLUtils.toOM((document).getDocumentElement());
+        } catch (Exception e) {
+            String message = "Unable to parse the XML configuration. Please validate the XML configuration";
+            log.error(message, e);
+            throw new RegistryException(message, e);
+        }
     }
 
     public static boolean removeAspect(String aspectname, Registry registry) throws RegistryException {
@@ -545,9 +568,10 @@ public class CommonUtil {
     }
 
     public static boolean isLifecycleNameInUse(String name, Registry registry, Registry rootRegistry)
-            throws RegistryException, XMLStreamException {
+            throws RegistryException {
+
         if (name.contains("<aspect")) {
-            OMElement element = AXIOMUtil.stringToOM(name);
+            OMElement element = getOMElementFromString(name);
             if (element != null) {
                 name = element.getAttributeValue(new QName("name"));
 
@@ -578,6 +602,35 @@ public class CommonUtil {
         }
         return false;
     }
+
+    /**
+     * This method is used to get a secured document builder factory instance.
+     *
+     * @return Secured DocumentBuilderFactory Instance
+     */
+    public static DocumentBuilderFactory getSecuredDocumentBuilder() {
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setXIncludeAware(false);
+        dbf.setExpandEntityReferences(false);
+        try {
+            dbf.setFeature(Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE, false);
+            dbf.setFeature(Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE, false);
+            dbf.setFeature(Constants.XERCES_FEATURE_PREFIX + Constants.LOAD_EXTERNAL_DTD_FEATURE, false);
+        } catch (ParserConfigurationException e) {
+            log.error(
+                    "Failed to load XML Processor Feature " + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE + " or "
+                            + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE + " or "
+                            + Constants.LOAD_EXTERNAL_DTD_FEATURE);
+        }
+
+        SecurityManager securityManager = new SecurityManager();
+        securityManager.setEntityExpansionLimit(ENTITY_EXPANSION_LIMIT);
+        dbf.setAttribute(Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY, securityManager);
+        return dbf;
+    }
+
 
 
 //    The methods have been duplicated in several places because there is no common bundle to place them.
