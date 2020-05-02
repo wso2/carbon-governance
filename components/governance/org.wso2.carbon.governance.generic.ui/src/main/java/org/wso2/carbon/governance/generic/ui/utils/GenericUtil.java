@@ -19,11 +19,14 @@ package org.wso2.carbon.governance.generic.ui.utils;
 
 import org.apache.axiom.om.*;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jaxen.JaxenException;
+import org.apache.xerces.impl.Constants;
+import org.apache.xerces.util.SecurityManager;
+import org.w3c.dom.Document;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
 import org.wso2.carbon.registry.core.ActionConstants;
@@ -41,27 +44,37 @@ import org.wso2.carbon.ui.deployment.beans.Component;
 import org.wso2.carbon.ui.deployment.beans.Menu;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ServerConstants;
+import org.xml.sax.InputSource;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.util.*;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 public class GenericUtil {
     private static final Log log = LogFactory.getLog(GenericUtil.class);
     private static final String DEFAULT_LIFECYCLE_GENERATOR_CLASS
             = "org.wso2.carbon.governance.generic.ui.utils.LifecycleListPopulator";
+    private static final int ENTITY_EXPANSION_LIMIT = 0;
 
     public static void buildMenuItems(HttpServletRequest request, String s, String s1, String s2) {
         int menuOrder = 50;
-        if(CarbonUIUtil.isUserAuthorized(request, "/permission/admin/manage/resources/ws-api")){
+        if (CarbonUIUtil.isUserAuthorized(request, "/permission/admin/manage/resources/ws-api")) {
             HttpSession session = request.getSession();
             String cookie =
                     (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
@@ -117,7 +130,7 @@ public class GenericUtil {
                         userCustomMenuItemsList.toArray(
                                 new Menu[userCustomMenuItemsList.size()]));
                 session.setAttribute("customAddUI", customAddUIMap);
-                session.setAttribute("customViewUI",customViewUIMap);
+                session.setAttribute("customViewUI", customViewUIMap);
             } catch (RegistryException e) {
                 log.error("unable to create connection to registry");
             } catch (org.wso2.carbon.user.api.UserStoreException e) {
@@ -127,7 +140,7 @@ public class GenericUtil {
     }
 
     private static void buildViewUI(GovernanceArtifactConfiguration configuration,
-                             Map<String, String> viewUIMap, String key) {
+                                    Map<String, String> viewUIMap, String key) {
         String singularLabel = configuration.getSingularLabel();
         String pluralLabel = configuration.getPluralLabel();
 
@@ -146,7 +159,7 @@ public class GenericUtil {
                 }
             } else {
                 String path = "../generic/edit_ajaxprocessor.jsp?hideEditView=true&key=" + key +
-                        "&lifecycleAttribute=" + lifecycleAttribute +"&add_edit_breadcrumb=" +
+                        "&lifecycleAttribute=" + lifecycleAttribute + "&add_edit_breadcrumb=" +
                         singularLabel + "&add_edit_region=region3&add_edit_item=governance_add_" +
                         key + "_menu&breadcrumb=" + singularLabel;
                 viewUIMap.put(configuration.getMediaType(), path);
@@ -172,7 +185,7 @@ public class GenericUtil {
         </field>
     *  */
     private static String BuilLifecycleAttribute(GovernanceArtifactConfiguration configuration,
-                                          String defaultLifecycleGeneratorClass, String lifecycleAttribute) {
+                                                 String defaultLifecycleGeneratorClass, String lifecycleAttribute) {
         try {
 //            This part checks whether the user has given a lifecycle populates.
 //            If not, then we check whether there is an attribute called, "isLifecycle"
@@ -188,8 +201,8 @@ public class GenericUtil {
                 String lifecycleName = null;
 
                 for (Object resultNode : resultNodes) {
-                    OMElement parentElement = ((OMAttribute)resultNode).getOwner();
-                    if(parentElement.getAttributeValue(new QName("class")).equals(defaultLifecycleGeneratorClass)){
+                    OMElement parentElement = ((OMAttribute) resultNode).getOwner();
+                    if (parentElement.getAttributeValue(new QName("class")).equals(defaultLifecycleGeneratorClass)) {
                         Iterator childrenIterator = parentElement.getParent().getChildrenWithLocalName("name");
                         while (childrenIterator.hasNext()) {
                             OMElement next = (OMElement) childrenIterator.next();
@@ -198,7 +211,7 @@ public class GenericUtil {
                         OMElement rootElement = (OMElement) ((OMElement) parentElement.getParent()).getParent();
                         lifecycleParentName = rootElement.getAttributeValue(new QName("name"));
                         break;
-                    }else if(parentElement.getAttributeValue(new QName("isLifecycle")) != null && parentElement.getAttributeValue(new QName("isLifecycle")).equals("true")){
+                    } else if (parentElement.getAttributeValue(new QName("isLifecycle")) != null && parentElement.getAttributeValue(new QName("isLifecycle")).equals("true")) {
                         Iterator childrenIterator = parentElement.getParent().getChildrenWithLocalName("name");
                         while (childrenIterator.hasNext()) {
                             OMElement next = (OMElement) childrenIterator.next();
@@ -218,7 +231,7 @@ public class GenericUtil {
         } catch (OMException e) {
             log.error("Governance artifact configuration of configuration key:" + configuration.getKey() + " is invalid", e);
         } catch (JaxenException e) {
-            log.error("Error in getting the lifecycle attribute",e);
+            log.error("Error in getting the lifecycle attribute", e);
         }
         return null;
     }
@@ -248,8 +261,8 @@ public class GenericUtil {
     }
 
     private static int buildMenuList(HttpServletRequest request,
-                              GovernanceArtifactConfiguration configuration, List<Menu> menuList,
-                              String key, int menuOrder) {
+                                     GovernanceArtifactConfiguration configuration, List<Menu> menuList,
+                                     String key, int menuOrder) {
         String singularLabel = configuration.getSingularLabel();
         String pluralLabel = configuration.getPluralLabel();
         boolean hasNamespace = configuration.hasNamespace();
@@ -561,19 +574,19 @@ public class GenericUtil {
         }
         return child;
     }
-    
+
     public static List<OMElement> getChildsWithName(OMElement head, String widgetName, String namespace) {
-		String adjustedName = getDataElementName(widgetName);
-		if (adjustedName == null) {
-			return null;
-		}
-		List<OMElement> list = new ArrayList<OMElement>();
-		Iterator headingList = head.getChildrenWithName(new QName(namespace, adjustedName));
-		while (headingList.hasNext()) {
-			OMElement subheading = (OMElement) headingList.next();
-			list.add(subheading);
-		}
-		return list;
+        String adjustedName = getDataElementName(widgetName);
+        if (adjustedName == null) {
+            return null;
+        }
+        List<OMElement> list = new ArrayList<OMElement>();
+        Iterator headingList = head.getChildrenWithName(new QName(namespace, adjustedName));
+        while (headingList.hasNext()) {
+            OMElement subheading = (OMElement) headingList.next();
+            list.add(subheading);
+        }
+        return list;
     }
 
     public static String decorateVersionElement(String version, String basicVersionElement,
@@ -771,15 +784,57 @@ public class GenericUtil {
     }
 
     public static OMElement buildOMElement(String payload) throws RegistryException {
-        OMElement element;
+        OMElement element = getOMElementFromString(payload);
+        element.build();
+        return element;
+    }
+
+    /**
+     * This method is used parse the String XML payload and get the corresponding OMElement.
+     *
+     * @param payload String XML payload
+     * @return OMElement
+     * @throws RegistryException If an error occcurs while parsing.
+     */
+    public static OMElement getOMElementFromString(String payload) throws RegistryException {
+
         try {
-            element = AXIOMUtil.stringToOM(payload);
-            element.build();
+            DocumentBuilderFactory dbf = getSecuredDocumentBuilder();
+            DocumentBuilder builder = dbf.newDocumentBuilder();
+            Document document = builder.parse(new InputSource(new StringReader(payload)));
+            return XMLUtils.toOM((document).getDocumentElement());
         } catch (Exception e) {
             String message = "Unable to parse the XML configuration. Please validate the XML configuration";
             log.error(message, e);
             throw new RegistryException(message, e);
         }
-        return element;
+    }
+
+    /**
+     * This method is used to get a secured document builder factory instance.
+     *
+     * @return Secured DocumentBuilderFactory Instance
+     */
+    public static DocumentBuilderFactory getSecuredDocumentBuilder() {
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setXIncludeAware(false);
+        dbf.setExpandEntityReferences(false);
+        try {
+            dbf.setFeature(Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE, false);
+            dbf.setFeature(Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE, false);
+            dbf.setFeature(Constants.XERCES_FEATURE_PREFIX + Constants.LOAD_EXTERNAL_DTD_FEATURE, false);
+        } catch (ParserConfigurationException e) {
+            log.error(
+                    "Failed to load XML Processor Feature " + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE + " or "
+                            + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE + " or "
+                            + Constants.LOAD_EXTERNAL_DTD_FEATURE);
+        }
+
+        SecurityManager securityManager = new SecurityManager();
+        securityManager.setEntityExpansionLimit(ENTITY_EXPANSION_LIMIT);
+        dbf.setAttribute(Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY, securityManager);
+        return dbf;
     }
 }

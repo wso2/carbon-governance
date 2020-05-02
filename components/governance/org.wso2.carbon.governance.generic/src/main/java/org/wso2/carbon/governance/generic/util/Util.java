@@ -16,28 +16,41 @@
 package org.wso2.carbon.governance.generic.util;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.axis2.util.XMLUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xerces.impl.Constants;
+import org.apache.xerces.util.SecurityManager;
+import org.w3c.dom.Document;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.utils.CarbonUtils;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.*;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.io.File;
+import java.io.StringReader;
 
 public class Util {
 
     private static final Log log = LogFactory.getLog(Util.class);
 
     private static Validator serviceSchemaValidator = null;
+    private static final int ENTITY_EXPANSION_LIMIT = 0;
 
-//    The methods have been duplicated in several places because there is no common bundle to place them.
+    //    The methods have been duplicated in several places because there is no common bundle to place them.
 //    We have to keep this inside different bundles so that users will not run in to problems if they uninstall some features
     public static boolean validateOMContent(OMElement omContent, Validator validator) {
         try {
@@ -59,7 +72,7 @@ public class Util {
         return true;
     }
 
-    public static Validator getSchemaValidator(String schemaPath){
+    public static Validator getSchemaValidator(String schemaPath) {
 
         if (serviceSchemaValidator == null) {
             try {
@@ -74,13 +87,13 @@ public class Util {
         return serviceSchemaValidator;
     }
 
-    public static String getServicesSchemaLocation(){
-        return CarbonUtils.getCarbonHome() + File.separator + "repository"+File.separator +"resources"+ File.separator +
-                "service-ui-config.xsd";
+    public static String getServicesSchemaLocation() {
+        return CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "resources"
+                + File.separator + "service-ui-config.xsd";
     }
 
     public static void validateOMContent(OMElement element) throws RegistryException {
-        if(!validateOMContent(element,getSchemaValidator(getServicesSchemaLocation()))){
+        if (!validateOMContent(element, getSchemaValidator(getServicesSchemaLocation()))) {
             String message = "Unable to validate the xml configuration";
             log.error(message);
             throw new RegistryException(message);
@@ -88,16 +101,52 @@ public class Util {
     }
 
     public static OMElement buildOMElement(String payload) throws RegistryException {
-        OMElement element;
+        OMElement element = Util.getOMElementFromString(payload);
+        element.build();
+        return element;
+    }
+
+    /**
+     * This method is used parse the String XML payload and get the corresponding OMElement.
+     *
+     * @param payload String XML payload
+     * @return OMElement
+     * @throws RegistryException If an error occurs while parsing.
+     */
+    public static OMElement getOMElementFromString(String payload) throws RegistryException {
         try {
-            element = AXIOMUtil.stringToOM(payload);
-            element.build();
+            DocumentBuilderFactory dbf = getSecuredDocumentBuilder();
+            DocumentBuilder builder = dbf.newDocumentBuilder();
+            Document document = builder.parse(new InputSource(new StringReader(payload)));
+            return XMLUtils.toOM((document).getDocumentElement());
         } catch (Exception e) {
             String message = "Unable to parse the XML configuration. Please validate the XML configuration";
-            log.error(message,e);
-            throw new RegistryException(message,e);
+            log.error(message, e);
+            throw new RegistryException(message, e);
         }
-        return element;
+    }
+
+    public static DocumentBuilderFactory getSecuredDocumentBuilder() {
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setXIncludeAware(false);
+        dbf.setExpandEntityReferences(false);
+        try {
+            dbf.setFeature(Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE, false);
+            dbf.setFeature(Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE, false);
+            dbf.setFeature(Constants.XERCES_FEATURE_PREFIX + Constants.LOAD_EXTERNAL_DTD_FEATURE, false);
+        } catch (ParserConfigurationException e) {
+            log.error(
+                    "Failed to load XML Processor Feature " + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE + " or "
+                            + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE + " or "
+                            + Constants.LOAD_EXTERNAL_DTD_FEATURE);
+        }
+
+        SecurityManager securityManager = new SecurityManager();
+        securityManager.setEntityExpansionLimit(ENTITY_EXPANSION_LIMIT);
+        dbf.setAttribute(Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY, securityManager);
+        return dbf;
     }
 
 }

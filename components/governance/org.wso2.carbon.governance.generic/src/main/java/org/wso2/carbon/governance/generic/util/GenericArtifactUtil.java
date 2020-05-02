@@ -17,7 +17,6 @@ package org.wso2.carbon.governance.generic.util;
  */
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.util.GovernanceConstants;
@@ -108,15 +107,8 @@ public class GenericArtifactUtil {
 
 
     public static OMElement buildOMElement(String payload) throws RegistryException {
-        OMElement element;
-        try {
-            element = AXIOMUtil.stringToOM(payload);
-            element.build();
-        } catch (Exception e) {
-            String message = "Unable to parse the XML configuration. Please validate the XML configuration";
-            log.error(message, e);
-            throw new RegistryException(message, e);
-        }
+        OMElement element = Util.getOMElementFromString(payload);
+        element.build();
         return element;
     }
 
