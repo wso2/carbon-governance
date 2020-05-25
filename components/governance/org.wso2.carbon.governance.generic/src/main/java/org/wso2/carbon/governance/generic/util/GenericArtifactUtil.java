@@ -56,7 +56,7 @@ public class GenericArtifactUtil {
 
         OMElement element = buildOMElement(rxtConfig);
         if (!CommonUtil.validateXMLConfigOnSchema(
-                RegistryUtils.decodeBytes(rxtConfig.getBytes()), "rxt-ui-config")) {
+                RegistryUtils.decodeBytes(element.toString().getBytes()), "rxt-ui-config")) {
             throw new RegistryException("Violation of RXT definition in" +
                     " configuration file, follow the schema correctly..!!");
         }
@@ -81,7 +81,7 @@ public class GenericArtifactUtil {
                 }
             Cache<String,Boolean> rxtConfigCache = GovernanceUtils.getRXTConfigCache(GovernanceConstants.RXT_CONFIG_CACHE_ID);
 
-            resource.setContent(rxtConfig.getBytes());
+            resource.setContent(element.toString().getBytes());
             resource.setMediaType(CommonConstants.RXT_MEDIA_TYPE);
             registry.beginTransaction();
             registry.put(rxtStoragePath, resource);
