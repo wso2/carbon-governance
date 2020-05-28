@@ -22,19 +22,35 @@
 
 <%
     String errorMessage = null;
-    try {
-        DeleteProcessor.process(request, response, config);
-        if (session != null) {
-            GenericUtil.buildMenuItems(request, (String) session.getAttribute("logged-user"),
-                    (String) session.getAttribute("tenantDomain"), (String) session.getAttribute("ServerURL"));
-        }
+    String contextPath = (request.getContextPath().equals("") || request.getContextPath()
+            .equals("/")) ? "" : request.getContextPath();
+    HttpSession session1;
+    boolean authenticated = false;
 
-    } catch (Exception e) {
-        errorMessage = e.getMessage();
+    // Get the user's current authenticated session - if any exists.
+    session1 = request.getSession();
+    Boolean authenticatedObj = (Boolean) session1.getAttribute("authenticated");
+    if (authenticatedObj != null) {
+        authenticated = authenticatedObj.booleanValue();
+    }
+    if (authenticated) {
+        try {
+            DeleteProcessor.process(request, response, config);
+            if (session != null) {
+                GenericUtil.buildMenuItems(request, (String) session.getAttribute("logged-user"),
+                        (String) session.getAttribute("tenantDomain"), (String) session.getAttribute("ServerURL"));
+            }
+        } catch (Exception e) {
+            errorMessage = e.getMessage();
+        }
+    } else {
+        errorMessage = "Unauthenticated Request";
+        response.setStatus(401);
+        response.sendRedirect(contextPath + "/admin/login.jsp");
     }
 %>
 
-<% if (errorMessage != null) {
+<% if (errorMessage != null && response.getStatus() != 401) {
     response.setStatus(500);
 %><%=errorMessage%><%
     } %>

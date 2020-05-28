@@ -23,34 +23,52 @@
 <%
     ManageGenericArtifactServiceClient client = null;
     String error = null;
+    String contextPath = (request.getContextPath().equals("") || request.getContextPath()
+            .equals("/")) ? "" : request.getContextPath();
+    HttpSession session1;
+    boolean authenticated = false;
 
-    try {
-        client = new ManageGenericArtifactServiceClient(config, session);
-        String payload = request.getParameter("payload");
-        String path = request.getParameter("path");
-        String rxtName = request.getParameter("rxtName");
-        String keyInPayload = null;
+    // Get the user's current authenticated session - if any exists.
+    session1 = request.getSession();
+    Boolean authenticatedObj = (Boolean) session1.getAttribute("authenticated");
 
-        try {
-            keyInPayload = GenericUtil.getRXTKeyFromContent(payload);
-        } catch (RegistryException e) {
-            //Skip XML payload parsing issue for backend validation
-        }
-        boolean isInstalled = false;
-        if (keyInPayload != null && rxtName != null && !keyInPayload.equals(rxtName)) {
-            error = "RXT short name can't be modified.";
-        } else if (keyInPayload != null) {
-            isInstalled = client.addRXTResource(request, payload, path);
-        }
-
-        if (!isInstalled && error == null) {
-            error = "Failed to install the generic artifact type.!";
-        }
-
-    } catch (Exception e) {
-        error = e.getMessage().replaceAll(">", "&gt;").replaceAll("<", "&lt;");
+    if (authenticatedObj != null) {
+        authenticated = authenticatedObj.booleanValue();
     }
-    if (error != null) {
+    if (authenticated) {
+        try {
+            client = new ManageGenericArtifactServiceClient(config, session);
+            String payload = request.getParameter("payload");
+            String path = request.getParameter("path");
+            String rxtName = request.getParameter("rxtName");
+            String keyInPayload = null;
+
+            try {
+                keyInPayload = GenericUtil.getRXTKeyFromContent(payload);
+            } catch (RegistryException e) {
+                //Skip XML payload parsing issue for backend validation
+            }
+            boolean isInstalled = false;
+            if (keyInPayload != null && rxtName != null && !keyInPayload.equals(rxtName)) {
+                error = "RXT short name can't be modified.";
+            } else if (keyInPayload != null) {
+                isInstalled = client.addRXTResource(request, payload, path);
+            }
+
+            if (!isInstalled && error == null) {
+                error = "Failed to install the generic artifact type.!";
+            }
+
+        } catch (Exception e) {
+            error = e.getMessage().replaceAll(">", "&gt;").replaceAll("<", "&lt;");
+        }
+    } else {
+        error = "Unauthenticated Request";
+        response.setStatus(401);
+        response.sendRedirect(contextPath + "/admin/login.jsp");
+    }
+
+    if (error != null && response.getStatus() != 401) {
         response.setStatus(500);
 %><%=error%><%
     }
