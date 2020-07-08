@@ -110,7 +110,7 @@ public class Util {
      * This method is used parse the String XML payload and get the corresponding OMElement.
      *
      * @param payload String XML payload
-     * @return OMElement
+     * @return OMElement of given String XML payload
      * @throws RegistryException If an error occurs while parsing.
      */
     public static OMElement getOMElementFromString(String payload) throws RegistryException {
@@ -121,7 +121,6 @@ public class Util {
             return XMLUtils.toOM((document).getDocumentElement());
         } catch (Exception e) {
             String message = "Unable to parse the XML configuration. Please validate the XML configuration";
-            log.error(message, e);
             throw new RegistryException(message, e);
         }
     }
