@@ -696,7 +696,7 @@ td.deprecate-warning {
 
                         <% if (isLCAvailable) {%><td><%=LCState%></td><%} %>
                         <td><% if (artifact.getCanDelete()) { %><a title="<fmt:message key="delete"/>"
-                                                                   onclick="deleteArtifact('<%=Encode.forUri(artifact.getPath())%>','/','../generic/list.jsp?region=<%=URLEncoder.encode(region)%>&item=<%=URLEncoder.encode(item)%><%=Encode.forUri(queryTrailer)%>')"
+                                                                   onclick="deleteArtifact('<%=Encode.forUri(artifact.getPath())%>','/','../generic/list.jsp?region=<%=URLEncoder.encode(region)%>&item=<%=URLEncoder.encode(item)%><%=Encode.forJavaScript(Encode.forUri(queryTrailer))%>')"
                                                                    href="#" class="icon-link registryWriteOperation"
                                                                    style="background-image:url(../admin/images/delete.gif);"><fmt:message
                                 key="delete"/></a><% } else {%><a class="icon-link registryWriteOperation"
