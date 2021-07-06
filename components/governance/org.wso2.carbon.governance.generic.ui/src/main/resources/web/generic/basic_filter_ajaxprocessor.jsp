@@ -35,14 +35,14 @@
     String feild = Encode.forUriComponent(request.getParameter("filterBy"));
     String region = Encode.forUriComponent(request.getParameter("region"));
     String item = Encode.forUriComponent(request.getParameter("item"));
-    String singularLabel = Encode.forUriComponent(request.getParameter("singularLabel"));
-    String pluralLabel = Encode.forUriComponent(request.getParameter("pluralLabel"));
+    String singularLabel = Encode.forJavaScript(Encode.forUriComponent(request.getParameter("singularLabel")));
+    String pluralLabel = Encode.forJavaScript(Encode.forUriComponent(request.getParameter("pluralLabel")));
     String key = Encode.forUriComponent(request.getParameter("key"));
-    String breadcrumb = Encode.forUriComponent(request.getParameter("breadcrumb"));
+    String breadcrumb = Encode.forJavaScript(Encode.forUriComponent(request.getParameter("breadcrumb")));
 
     response.sendRedirect(
             "../generic/list.jsp?filterBy=" + feild + "&searchValue=" + searchValue + "&filter=filter&region=" + region
                     + "&item=" + item + "&dataName=" + Encode.forUriComponent(dataName) + "&singularLabel="
-                    + singularLabel + "&pluralLabel=" + pluralLabel + "&dataNamespace=" + Encode
-                    .forUriComponent(dataNamespace) + "&key=" + key + "&breadcrumb=" + breadcrumb);
+                    + singularLabel + "&pluralLabel=" + pluralLabel + "&dataNamespace=" + Encode.forJavaScript(Encode
+                    .forUriComponent(dataNamespace)) + "&key=" + key + "&breadcrumb=" + breadcrumb);
 %>
