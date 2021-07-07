@@ -28,24 +28,24 @@
                 .forUriComponent(lc_state) + "&lc_in_out=" + Encode.forUriComponent(lc_in_out) + "&lc_state_in_out="
                 + Encode.forUriComponent(lc_state_in_out) + "&filter=filter&region=" + Encode
                 .forUriComponent(request.getParameter("region")) + "&item=" + Encode
-                .forUriComponent(request.getParameter("item")) + "&dataName=" + Encode
-                .forUriComponent(request.getParameter("dataName")) + "&singularLabel=" + Encode
-                .forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" + Encode
-                .forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" + Encode
-                .forUriComponent(request.getParameter("dataNamespace")) + "&key=" + Encode
-                .forUriComponent(request.getParameter("key")) + "&breadcrumb=" + Encode
-                .forUriComponent(request.getParameter("breadcrumb")));
+                .forUriComponent(request.getParameter("item")) + "&dataName=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("dataName"))) + "&singularLabel=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("singularLabel"))) + "&pluralLabel=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("pluralLabel"))) + "&dataNamespace=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("dataNamespace"))) + "&key=" + Encode
+                .forUriComponent(request.getParameter("key")) + "&breadcrumb=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("breadcrumb"))));
     } else {
         response.sendRedirect("../generic/list.jsp?lc_name=" + Encode.forUriComponent(lc_name) + "&lc_in_out=" + Encode
                 .forUriComponent(lc_in_out) + "&lc_state_in_out=" + Encode.forUriComponent(lc_state_in_out)
                 + "&filter=filter&region=" + Encode.forUriComponent(request.getParameter("region")) + "&item=" + Encode
-                .forUriComponent(request.getParameter("item")) + "&dataName=" + Encode
-                .forUriComponent(request.getParameter("dataName")) + "&singularLabel=" + Encode
-                .forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" + Encode
-                .forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" + Encode
-                .forUriComponent(request.getParameter("dataNamespace")) + "&key=" + Encode
-                .forUriComponent(request.getParameter("key")) + "&breadcrumb=" + Encode
-                .forUriComponent(request.getParameter("breadcrumb")));
+                .forUriComponent(request.getParameter("item")) + "&dataName=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("dataName"))) + "&singularLabel=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("singularLabel"))) + "&pluralLabel=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("pluralLabel"))) + "&dataNamespace=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("dataNamespace"))) + "&key=" + Encode
+                .forUriComponent(request.getParameter("key")) + "&breadcrumb=" + Encode.forJavaScript(Encode
+                .forUriComponent(request.getParameter("breadcrumb"))));
 
     }
 %>

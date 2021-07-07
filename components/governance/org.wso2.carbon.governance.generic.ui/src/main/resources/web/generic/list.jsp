@@ -104,13 +104,13 @@ td.deprecate-warning {
     if (singularLabel == null) {
         singularLabel = "Artifact";
     } else {
-        queryTrailer += "&singularLabel=" + singularLabel;
+        queryTrailer += "&singularLabel=" + Encode.forJavaScript(singularLabel);
     }
     String pluralLabel = request.getParameter("pluralLabel");
     if (pluralLabel == null) {
         pluralLabel = "Artifacts";
     } else {
-        queryTrailer += "&pluralLabel=" + pluralLabel;
+        queryTrailer += "&pluralLabel=" + Encode.forJavaScript(pluralLabel);
     }
     String criteria = null;
     boolean filter = request.getParameter("filter") != null;
@@ -306,7 +306,7 @@ td.deprecate-warning {
         </tr>
     </table>
     <div id="middle">
-        <h2><fmt:message key="artifact.list"><fmt:param value="<%=Encode.forHtml(singularLabel)%>"/><</fmt:message></h2>
+        <h2><fmt:message key="artifact.list"><fmt:param value="<%=Encode.forJavaScript(Encode.forHtml(singularLabel))%>"/><</fmt:message></h2>
 
         <div id="workArea">
             <%if ((bean.getArtifacts() != null && bean.getArtifacts().length != 0) || filter ) {%>
@@ -317,8 +317,8 @@ td.deprecate-warning {
             <form id="filterForm" action="basic_filter_ajaxprocessor.jsp"
                   onsubmit="return submitToAdvanceFilter();" method="post">
                 <input type="hidden" name="dataName" value="<%=Encode.forHtml(dataName)%>"/>
-                <input type="hidden" name="singularLabel" value="<%=Encode.forHtml(singularLabel)%>"/>
-                <input type="hidden" name="pluralLabel" value="<%=Encode.forHtml(pluralLabel)%>"/>
+                <input type="hidden" name="singularLabel" value="<%=Encode.forJavaScript(Encode.forHtml(singularLabel))%>"/>
+                <input type="hidden" name="pluralLabel" value="<%=Encode.forJavaScript(Encode.forHtml(pluralLabel))%>"/>
                 <input type="hidden" name="dataNamespace" value="<%=Encode.forHtml(dataNamespace)%>">
                 <input type="hidden" name="key" value="<%=Encode.forHtml(key)%>">
                 <input type="hidden" name="region" value="<%=Encode.forHtml(region)%>">
@@ -335,8 +335,8 @@ td.deprecate-warning {
             <form id="filterLCForm" action="filter_lc_ajaxprocessor.jsp"
                   onsubmit="return submitToLCFilter();" method="post">
                 <input type="hidden" name="dataName" value="<%=Encode.forHtml(dataName)%>"/>
-                <input type="hidden" name="singularLabel" value="<%=Encode.forHtml(singularLabel)%>"/>
-                <input type="hidden" name="pluralLabel" value="<%=Encode.forHtml(pluralLabel)%>"/>
+                <input type="hidden" name="singularLabel" value="<%=Encode.forJavaScript(Encode.forHtml(singularLabel))%>"/>
+                <input type="hidden" name="pluralLabel" value="<%=Encode.forJavaScript(Encode.forHtml(pluralLabel))%>"/>
                 <input type="hidden" name="dataNamespace" value="<%=Encode.forHtml(dataNamespace)%>">
                 <input type="hidden" name="key" value="<%=Encode.forHtml(key)%>">
                 <input type="hidden" name="region" value="<%=Encode.forHtml(region)%>">
@@ -452,12 +452,12 @@ td.deprecate-warning {
                                         Encode.forUriComponent(item)%>&dataNamespace=<%=
                                         Encode.forUriComponent(dataNamespace)%>&dataName=<%=
                                         Encode.forUriComponent(dataName)%>&singularLabel=<%=
-                                        Encode.forUriComponent(singularLabel)%>&pluralLabel=<%=
-                                        Encode.forUriComponent(pluralLabel)%>&key=<%=
+                                        Encode.forJavaScript(Encode.forUriComponent(singularLabel))%>&pluralLabel=<%=
+                                        Encode.forJavaScript(Encode.forUriComponent(pluralLabel))%>&key=<%=
                                         Encode.forUriComponent(key)%>&list_breadcrumb=<%=
                                         Encode.forUriComponent(breadcrumb)%>"><fmt:message
                                                 key="filter.artifact.message"><fmt:param
-                                                value="<%=Encode.forHtml(singularLabel)%>"/></fmt:message></a>
+                                                value="<%=Encode.forJavaScript(Encode.forHtml(singularLabel))%>"/></fmt:message></a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -478,9 +478,9 @@ td.deprecate-warning {
                             if (filter) {
                         %>
                         <th><fmt:message key="no.artifact.matches.filter"><fmt:param
-                                value="<%=Encode.forHtml(singularLabel)%>"/></fmt:message></th>
+                                value="<%=Encode.forJavaScript(Encode.forHtml(singularLabel))%>"/></fmt:message></th>
                         <% } else { %>
-                        <th><fmt:message key="no.artifacts"><fmt:param value="<%=Encode.forHtml(pluralLabel)%>"/></fmt:message></th>
+                        <th><fmt:message key="no.artifacts"><fmt:param value="<%=Encode.forJavaScript(Encode.forHtml(pluralLabel))%>"/></fmt:message></th>
                         <% } %>
                     </tr>
                     </thead>
@@ -747,9 +747,9 @@ td.deprecate-warning {
                 Encode.forUriComponent(request.getParameter("lc_in_out")):"") + ((request.getParameter("lc_state_in_out")!=null)?"&lc_state_in_out=" +
                 Encode.forUriComponent(request.getParameter("lc_state_in_out")):"") + "&region=" + Encode.forUriComponent(request.getParameter("region")) + "&item=" +
                 Encode.forUriComponent(request.getParameter("item")) + "&dataName=" + Encode.forUriComponent(request.getParameter("dataName")) + "&singularLabel=" +
-                Encode.forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" + Encode.forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" +
+                Encode.forJavaScript(Encode.forUriComponent(request.getParameter("singularLabel"))) + "&pluralLabel=" + Encode.forJavaScript(Encode.forUriComponent(request.getParameter("pluralLabel"))) + "&dataNamespace=" +
                 Encode.forUriComponent(request.getParameter("dataNamespace")) + "&key=" + Encode.forUriComponent(request.getParameter("key")) + "&breadcrumb=" +
-                Encode.forUriComponent(request.getParameter("breadcrumb")) + (filter ? "&filter=filter" : "") +"&sortOrder=" + Encode.forUriComponent(sortOrder) + "&sortBy=" +
+                Encode.forJavaScript(Encode.forUriComponent(request.getParameter("breadcrumb"))) + (filter ? "&filter=filter" : "") +"&sortOrder=" + Encode.forUriComponent(sortOrder) + "&sortBy=" +
                 Encode.forUriComponent(sortBy)+ "&page=" %>' + page;
 
          }else{
@@ -758,9 +758,9 @@ td.deprecate-warning {
                 Encode.forUriComponent(request.getParameter("filterBy")):"") + ((request.getParameter("searchValue")!=null)?"&searchValue=" +
                 Encode.forUriComponent(request.getParameter("searchValue")):"") + "&region=" + Encode.forUriComponent(request.getParameter("region")) + "&item=" +
                 Encode.forUriComponent(request.getParameter("item")) + "&dataName=" + Encode.forUriComponent(request.getParameter("dataName")) + "&singularLabel=" +
-                Encode.forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" + Encode.forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" +
+                Encode.forJavaScript(Encode.forUriComponent(request.getParameter("singularLabel"))) + "&pluralLabel=" + Encode.forJavaScript(Encode.forUriComponent(request.getParameter("pluralLabel"))) + "&dataNamespace=" +
                 Encode.forUriComponent(request.getParameter("dataNamespace")) + "&key=" + Encode.forUriComponent(request.getParameter("key")) + "&breadcrumb=" +
-                Encode.forUriComponent(request.getParameter("breadcrumb")) + (filter ? "&filter=filter" : "") +"&sortOrder=" + Encode.forUriComponent(sortOrder) + "&sortBy=" +
+                Encode.forJavaScript(Encode.forUriComponent(request.getParameter("breadcrumb"))) + (filter ? "&filter=filter" : "") +"&sortOrder=" + Encode.forUriComponent(sortOrder) + "&sortBy=" +
                 Encode.forUriComponent(sortBy)+ "&page=" %>' + page;
          }
      }
@@ -775,9 +775,9 @@ td.deprecate-warning {
                 Encode.forUriComponent(request.getParameter("lc_in_out")):"") + ((request.getParameter("lc_state_in_out")!=null)?"&lc_state_in_out=" +
                 Encode.forUriComponent(request.getParameter("lc_state_in_out")):"") + "&region=" + Encode.forUriComponent(request.getParameter("region")) + "&item=" +
                 Encode.forUriComponent(request.getParameter("item")) + "&dataName=" + Encode.forUriComponent(request.getParameter("dataName")) + "&singularLabel=" +
-                Encode.forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" + Encode.forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" +
+                Encode.forJavaScript(Encode.forUriComponent(request.getParameter("singularLabel"))) + "&pluralLabel=" + Encode.forJavaScript(Encode.forUriComponent(request.getParameter("pluralLabel"))) + "&dataNamespace=" +
                 Encode.forUriComponent(request.getParameter("dataNamespace")) + "&key=" + Encode.forUriComponent(request.getParameter("key")) + "&breadcrumb=" +
-                Encode.forUriComponent(request.getParameter("breadcrumb")) + (filter ? "&filter=filter" : "") + "&page=" %>'+ page +
+                Encode.forJavaScript(Encode.forUriComponent(request.getParameter("breadcrumb"))) + (filter ? "&filter=filter" : "") + "&page=" %>'+ page +
                 '<%="&sortOrder="%>' +sortOrder+ '<%="&sortBy="%>' +sortBy;
 
             }else{
@@ -785,9 +785,9 @@ td.deprecate-warning {
                 Encode.forUriComponent(request.getParameter("filterBy")):"") + ((request.getParameter("searchValue")!=null)?"&searchValue=" +
                 Encode.forUriComponent(request.getParameter("searchValue")):"") + "&region=" + Encode.forUriComponent(request.getParameter("region")) + "&item=" +
                 Encode.forUriComponent(request.getParameter("item")) + "&dataName=" + Encode.forUriComponent(request.getParameter("dataName")) + "&singularLabel=" +
-                Encode.forUriComponent(request.getParameter("singularLabel")) + "&pluralLabel=" + Encode.forUriComponent(request.getParameter("pluralLabel")) + "&dataNamespace=" +
+                Encode.forJavaScript(Encode.forUriComponent(request.getParameter("singularLabel"))) + "&pluralLabel=" + Encode.forJavaScript(Encode.forUriComponent(request.getParameter("pluralLabel"))) + "&dataNamespace=" +
                 Encode.forUriComponent(request.getParameter("dataNamespace")) + "&key=" + Encode.forUriComponent(request.getParameter("key")) + "&breadcrumb=" +
-                Encode.forUriComponent(request.getParameter("breadcrumb")) + (filter ? "&filter=filter" : "") + "&page=" %>'+ page +
+                Encode.forJavaScript(Encode.forUriComponent(request.getParameter("breadcrumb"))) + (filter ? "&filter=filter" : "") + "&page=" %>'+ page +
                 '<%="&sortOrder="%>' +sortOrder+ '<%="&sortBy="%>' +sortBy;
             }
         }
