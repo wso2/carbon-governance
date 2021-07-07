@@ -1499,7 +1499,7 @@
         <orbit.version.xmlschema>1.4.7.wso2v2</orbit.version.xmlschema>
 
         <!-- Commons -->
-        <commons-beanutils.version>1.8.0</commons-beanutils.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-collections.version>3.2</commons-collections.version>
         <commons-digester.version>1.8</commons-digester.version>
         <orbit.version.commons.beanutils>1.8.0.wso2v1</orbit.version.commons.beanutils>
