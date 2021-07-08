@@ -1976,7 +1976,10 @@ public class GovernanceUtils {
                         editedCriteria = editedCriteria.replace(subParts[0], subParts[0].replace(":", "_"));
                         editedCriteria = editedCriteria.replace(subParts[1], value);
                     } else {
-                        String value = subParts[1].toLowerCase();
+                        if (!subParts[0].contains("api_meta")) {
+                            subParts[1] = subParts[1].toLowerCase();
+                        }
+                        String value = subParts[1];
                         value = buildSearchValue(value);
                         if(!subParts[0].equals("name")) {
                             if (!hasOneProperty || possibleProperties.size() == 0) {
@@ -1984,8 +1987,10 @@ public class GovernanceUtils {
                                 fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
                             } else if (isMultiValueField(mediaType,subParts[0])){
                                 fields.put(subParts[0], value);
-                            } else {
+                            } else if (!subParts[0].contains("api_meta")) {
                                 fields.put(OVERVIEW + UNDERSCORE + subParts[0], value);
+                            } else {
+                                fields.put(subParts[0], value);
                             }
                             editedCriteria = editedCriteria.replace(subParts[1], value);
                             //add new query parameter to search in both resource properties and metadata content
