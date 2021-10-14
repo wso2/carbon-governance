@@ -718,15 +718,15 @@ public class GovernanceUtils {
             String name = current.substring(2, current.length() - 1);
             //To replace special values such as {@resourcePath}
             if (name.equals("resourcePath")) {
-                parameterizedString = parameterizedString.replaceAll("\\" + current.replace("}", "\\}"), resourcePath);
+                parameterizedString = parameterizedString.replaceAll( "\\\\" + current.replace("}", "\\}"), resourcePath);
             }
 
             try {
                 governanceArtifact = GovernanceUtils.retrieveGovernanceArtifactByPath(requestContext.getSystemRegistry(), resourcePath);
                 if (governanceArtifact != null && governanceArtifact.getAttribute(name) != null) {
-                    parameterizedString = parameterizedString.replaceAll("\\" + current.replace("}", "\\}"), governanceArtifact.getAttribute(name));
+                    parameterizedString = parameterizedString.replaceAll("\\\\" + current.replace("}", "\\}"), governanceArtifact.getAttribute(name));
                 } else if (registry.get(resourcePath).getProperty(name) != null) {
-                    parameterizedString = parameterizedString.replaceAll("\\" + current.replace("}", "\\}"), registry.get(resourcePath).getProperty(name));
+                    parameterizedString = parameterizedString.replaceAll("\\\\" + current.replace("}", "\\}"), registry.get(resourcePath).getProperty(name));
                 } else {
                     log.error("Unable to locate the given value in properties or attributes");
                 }
@@ -1894,7 +1894,8 @@ public class GovernanceUtils {
         }
 
         List<String> possibleKeys = Arrays.asList("createdAfter", "createdBefore", "updatedAfter", "updatedBefore", "author", "author!", "associationType", "associationDest",
-                "updater", "updater!", "tags", "taxonomy", "content", "mediaType", "mediaType!", "lcName", "lcState");
+                "updater", "updater!", "tags", "taxonomy", "content", "mediaType", "mediaType!", "lcName", "lcState",
+                "group", "group.sort", "group.field", "group.ngroups", "group.format");
 
         List<String> finalTempList = new ArrayList<>();
         if (StringUtils.isNotEmpty(criteria)) {
@@ -1944,6 +1945,14 @@ public class GovernanceUtils {
                             break;
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
+                            break;
+                        case "group.field":
+                            fields.put(subParts[0], OVERVIEW + UNDERSCORE + subParts[1]);
+                            break;
+                        case "group.sort":
+                            String groupSortBy = subParts[1];
+                            fields.put(subParts[0],  OVERVIEW + UNDERSCORE + groupSortBy);
+                            editedCriteria = editedCriteria.replace(subParts[1], groupSortBy);
                             break;
                         default:
                             String value = subParts[1].toLowerCase();
