@@ -718,15 +718,15 @@ public class GovernanceUtils {
             String name = current.substring(2, current.length() - 1);
             //To replace special values such as {@resourcePath}
             if (name.equals("resourcePath")) {
-                parameterizedString = parameterizedString.replaceAll( "\\\\" + current.replace("}", "\\}"), resourcePath);
+                parameterizedString = parameterizedString.replaceAll("\\" + current.replace("}", "\\}"), resourcePath);
             }
 
             try {
                 governanceArtifact = GovernanceUtils.retrieveGovernanceArtifactByPath(requestContext.getSystemRegistry(), resourcePath);
                 if (governanceArtifact != null && governanceArtifact.getAttribute(name) != null) {
-                    parameterizedString = parameterizedString.replaceAll("\\\\" + current.replace("}", "\\}"), governanceArtifact.getAttribute(name));
+                    parameterizedString = parameterizedString.replaceAll("\\" + current.replace("}", "\\}"), governanceArtifact.getAttribute(name));
                 } else if (registry.get(resourcePath).getProperty(name) != null) {
-                    parameterizedString = parameterizedString.replaceAll("\\\\" + current.replace("}", "\\}"), registry.get(resourcePath).getProperty(name));
+                    parameterizedString = parameterizedString.replaceAll("\\" + current.replace("}", "\\}"), registry.get(resourcePath).getProperty(name));
                 } else {
                     log.error("Unable to locate the given value in properties or attributes");
                 }
