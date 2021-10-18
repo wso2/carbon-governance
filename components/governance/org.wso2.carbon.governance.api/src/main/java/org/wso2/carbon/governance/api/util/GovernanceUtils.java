@@ -1894,7 +1894,8 @@ public class GovernanceUtils {
         }
 
         List<String> possibleKeys = Arrays.asList("createdAfter", "createdBefore", "updatedAfter", "updatedBefore", "author", "author!", "associationType", "associationDest",
-                "updater", "updater!", "tags", "taxonomy", "content", "mediaType", "mediaType!", "lcName", "lcState");
+                "updater", "updater!", "tags", "taxonomy", "content", "mediaType", "mediaType!", "lcName", "lcState",
+                "group", "group.sort", "group.field", "group.ngroups", "group.format");
 
         List<String> finalTempList = new ArrayList<>();
         if (StringUtils.isNotEmpty(criteria)) {
@@ -1944,6 +1945,14 @@ public class GovernanceUtils {
                             break;
                         case "associationDest":
                             fields.put(subParts[0], subParts[1]);
+                            break;
+                        case "group.field":
+                            fields.put(subParts[0], OVERVIEW + UNDERSCORE + subParts[1]);
+                            break;
+                        case "group.sort":
+                            String groupSortBy = subParts[1];
+                            fields.put(subParts[0],  OVERVIEW + UNDERSCORE + groupSortBy);
+                            editedCriteria = editedCriteria.replace(subParts[1], groupSortBy);
                             break;
                         default:
                             String value = subParts[1].toLowerCase();
