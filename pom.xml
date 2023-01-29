@@ -1469,7 +1469,7 @@
         <carbon.governance.package.import.version.range>[4.8.0, 5.0.0)
         </carbon.governance.package.import.version.range>
 
-        <carbon.identity.framework.version>5.14.67</carbon.identity.framework.version>
+        <carbon.identity.framework.version>5.24.5</carbon.identity.framework.version>
         <carbon.identity.imp.pkg.version>[5.14.0, 6.0.0)</carbon.identity.imp.pkg.version>
 
 
@@ -1563,7 +1563,7 @@
         <mockito.version>2.4.2</mockito.version>
 
         <!-- Pax Logging -->
-        <pax.logging.api.version>1.10.1</pax.logging.api.version>
+        <pax.logging.api.version>1.11.10</pax.logging.api.version>
 
     <apache.felix.scr.ds.annotations.version>1.2.4</apache.felix.scr.ds.annotations.version>
         <maven.scr.plugin.version>1.26.0</maven.scr.plugin.version>
