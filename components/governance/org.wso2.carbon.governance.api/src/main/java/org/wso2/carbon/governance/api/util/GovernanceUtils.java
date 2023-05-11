@@ -2193,7 +2193,13 @@ public class GovernanceUtils {
 
             for (ResourceData result : results) {
                 GovernanceArtifact governanceArtifact = null;
-                String path = result.getResourcePath().substring(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH.length());
+                int registryBasePathLength = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH.length();
+                if (result == null
+                        || result.getResourcePath() == null
+                        || result.getResourcePath().length() < registryBasePathLength) {
+                    continue;
+                }
+                String path = result.getResourcePath().substring(registryBasePathLength);
                 try {
                     governanceArtifact = retrieveGovernanceArtifactByPath(registry, path);
                 } catch (GovernanceException e) {
