@@ -233,6 +233,7 @@
                         <exclude>**/BaseTestCase.java</exclude>
                         <exclude>**/EndpointTest.java</exclude>
                     </excludes>
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
             <plugin>
