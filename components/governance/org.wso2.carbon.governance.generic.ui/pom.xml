@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance</artifactId>
-        <version>4.8.32-SNAPSHOT</version>
+        <version>4.8.33-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -47,7 +47,6 @@
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
-                            org.apache.lucene.*,
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.wso2.carbon.governance.generic.stub.*;version="${carbon.governance.package.import.version.range}",
                             org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
