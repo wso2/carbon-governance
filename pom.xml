@@ -27,7 +27,7 @@
     <groupId>org.wso2.carbon.governance</groupId>
     <artifactId>carbon-governance</artifactId>
     <packaging>pom</packaging>
-    <version>4.8.32-SNAPSHOT</version>
+    <version>4.8.33-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -1167,7 +1167,7 @@
                 <version>${orbit.version.xmlschema}</version>
             </dependency>
             <dependency>
-                <groupId>org.ops4j.pax.logging</groupId>
+                <groupId>org.wso2.org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
                 <version>${pax.logging.api.version}</version>
             </dependency>
@@ -1459,11 +1459,11 @@
         <carbon.business.process.imp.pkg.version>[4.5.0, 4.6.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.8.5</carbon.registry.version>
+        <carbon.registry.version>4.8.26</carbon.registry.version>
         <carbon.registry.imp.pkg.version>[4.7.0, 5.0.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon governance version comes here-->
-        <carbon.governance.version>4.8.32-SNAPSHOT</carbon.governance.version>
+        <carbon.governance.version>4.8.33-SNAPSHOT</carbon.governance.version>
         <carbon.governance.package.export.version>${carbon.governance.version}
         </carbon.governance.package.export.version>
         <carbon.governance.package.import.version.range>[4.8.0, 5.0.0)
@@ -1532,7 +1532,7 @@
         <mashup.version>4.2.0</mashup.version>
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>8.11.1.wso2v1</version.solr>
+        <version.solr>9.5.0.wso2v1</version.solr>
         <derby.version>10.4.2.0</derby.version>
         <activation.version>1.1</activation.version>
         <javamail.version>1.4</javamail.version>
@@ -1559,11 +1559,11 @@
         <project.scm.id>my-scm-server</project.scm.id>
         <owasp.encoder.version>1.1</owasp.encoder.version>
 
-        <jacoco.version>0.7.9</jacoco.version>
+        <jacoco.version>0.8.2</jacoco.version>
         <mockito.version>2.4.2</mockito.version>
 
         <!-- Pax Logging -->
-        <pax.logging.api.version>1.11.10</pax.logging.api.version>
+        <pax.logging.api.version>2.2.1-wso2v1</pax.logging.api.version>
 
     <apache.felix.scr.ds.annotations.version>1.2.4</apache.felix.scr.ds.annotations.version>
         <maven.scr.plugin.version>1.26.0</maven.scr.plugin.version>

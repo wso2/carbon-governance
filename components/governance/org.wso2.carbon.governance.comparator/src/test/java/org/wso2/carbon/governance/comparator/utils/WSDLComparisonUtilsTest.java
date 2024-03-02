@@ -19,21 +19,15 @@
 package org.wso2.carbon.governance.comparator.utils;
 
 import junit.framework.TestCase;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.wso2.carbon.governance.comparator.wsdl.WSDLTestUtils;
 
-import javax.validation.constraints.AssertTrue;
 import javax.wsdl.Definition;
 import javax.wsdl.Import;
 import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class WSDLComparisonUtilsTest extends TestCase {
 

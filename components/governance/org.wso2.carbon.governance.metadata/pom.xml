@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.governance</groupId>
         <artifactId>governance</artifactId>
-        <version>4.8.32-SNAPSHOT</version>
+        <version>4.8.33-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -125,7 +125,7 @@
     </dependency>
 
     <dependency>
-        <groupId>org.ops4j.pax.logging</groupId>
+        <groupId>org.wso2.org.ops4j.pax.logging</groupId>
         <artifactId>pax-logging-api</artifactId>
     </dependency>
 
