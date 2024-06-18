@@ -35,7 +35,7 @@ public interface GovernanceArtifact {
      *
      * @param qName of the artifact
      */
-    void setQName(QName qName) throws GovernanceException;
+    void setQName(QName qName);
 
     /**
      * Returns the id of the artifact
@@ -412,7 +412,7 @@ public interface GovernanceArtifact {
      * @param artifactID          lifecycle associated artifacts ID.
      * @param lcName                lifecycle name.
      * @return                      a map of current lifecycle state duration colour and duration.
-     * @throws GovernanceException
+     * @throws GovernanceException throws if the operation failed.
      */
     public Map<String, String> getCurrentStateDuration(String artifactID,  String lcName) throws GovernanceException;
 

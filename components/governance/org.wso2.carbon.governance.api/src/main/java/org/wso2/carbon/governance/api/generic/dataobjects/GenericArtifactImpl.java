@@ -48,6 +48,7 @@ public class GenericArtifactImpl extends GovernanceArtifactImpl implements Gener
      * Copy constructor used for cloning.
      *
      * @param artifact the object to be copied.
+     * @param mediaType Media type
      */
     protected GenericArtifactImpl(GovernanceArtifact artifact, String mediaType) {
         super((GovernanceArtifactImpl)artifact);
@@ -72,6 +73,7 @@ public class GenericArtifactImpl extends GovernanceArtifactImpl implements Gener
      *
      * @param id    the resource identifier.
      * @param qName the qualified name.
+     * @param mediaType Media type
      */
     public GenericArtifactImpl(String id, QName qName, String mediaType) {
         super(id);
@@ -155,6 +157,7 @@ public class GenericArtifactImpl extends GovernanceArtifactImpl implements Gener
      * @param artifactNamespaceAttribute the attribute that specifies the namespace of the artifact.
      * @param artifactElementNamespace   the attribute that specifies the artifact element's
      *                                   namespace.
+     * @param mediaType Media type
      *
      * @throws GovernanceException if the construction fails.
      */
@@ -202,7 +205,6 @@ public class GenericArtifactImpl extends GovernanceArtifactImpl implements Gener
      *
      * @param qName the qualified name.
      *
-     * @throws GovernanceException if the operation failed.
      */
     public void setQName(QName qName) {
         // the path will be synced with the qualified name

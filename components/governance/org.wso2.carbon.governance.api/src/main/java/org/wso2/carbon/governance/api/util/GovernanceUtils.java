@@ -172,7 +172,7 @@ public class GovernanceUtils {
      * @param registry registry instance
      * @param tenantId tenant id
      * @param path path of the resource
-     * @throws RegistryException
+     * @throws RegistryException if the operation failed.
      */
     public static void registerArtifactConfigurationByPath(Registry registry, int tenantId, String path) throws RegistryException {
 
@@ -1226,6 +1226,7 @@ public class GovernanceUtils {
      * @param currentUser      current registry user
      * @param artifactResource resource related to the artifact
      * @param artifact         artifact related to the resource
+     * @param artifactLC       artifact related to the lifecycle
      * @return ApproveItemBean array extracted from the resource
      * @throws GovernanceException if the operation failed.
      */
@@ -1795,6 +1796,7 @@ public class GovernanceUtils {
      * @param path path of the resource
      * @param aspect   the aspect to be removed.
      * @param registry registry instance to be used
+     * @throws GovernanceException if the operation failed.
      */
     public static void setDefaultLifeCycle(String path, String aspect, Registry registry) throws RegistryException {
         Resource resource = registry.get(path);
@@ -1810,6 +1812,7 @@ public class GovernanceUtils {
      *
      * @param criteria the search criteria
      * @param registry the governance registry instance
+     * @param mediaType media type
      * @return search result
      * @throws GovernanceException if the operation failed
      */
@@ -2265,7 +2268,7 @@ public class GovernanceUtils {
      * @param mediaType artifact type need to filter : optional
      * @param authRequired authorization required flag
      * @return term results
-     * @throws GovernanceException
+     * @throws GovernanceException if the operation failed.
      */
     public static List<TermData> getTermDataList(Map<String, List<String>> criteria, String facetField, String mediaType, boolean authRequired) throws GovernanceException {
         if (getTermsSearchService() == null) {
@@ -2318,8 +2321,9 @@ public class GovernanceUtils {
      * @param criteria the filter criteria to be matched
      * @param facetField field used for faceting : required
      * @param mediaType artifact type need to filter : optional
+     * @param registry registry
      * @return term results
-     * @throws GovernanceException
+     * @throws GovernanceException if the operation failed.
      */
     public static List<TermData> getTermDataList(String criteria, String facetField, String mediaType, Registry registry) throws GovernanceException {
         if (getTermsSearchService() == null) {
@@ -2806,7 +2810,7 @@ public class GovernanceUtils {
      * @param registry              the instance of the registry.
      * @param elementString         the short name of the artifact type.
      * @param artifact              artifact to be checked for mandatory fields.
-     * @throws GovernanceException
+     * @throws GovernanceException if the operation failed.
      */
     public static void CheckMandatoryFields(Registry registry, String elementString, GovernanceArtifact artifact)
             throws GovernanceException {
@@ -2898,7 +2902,7 @@ public class GovernanceUtils {
      *
      * @param mediaType media type
      * @param fieldKey  field key
-     * @return
+     * @return status of field
      */
     public static boolean isMultiValueField(String mediaType, String fieldKey) {
         Map<Integer, Map<String, List<String>>> allTenantsUnboundedFields = RxtUnboundedFieldManagerService

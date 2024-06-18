@@ -18,7 +18,6 @@ package org.wso2.carbon.governance.api.schema.dataobjects;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifact;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
@@ -50,7 +49,6 @@ public class SchemaImpl extends GovernanceArtifactImpl implements Schema {
      * Constructor accepting resource path, identifier and a registry instance.
      * This constructor should be used only when the wsdl already saved in the registry.
      *
-     * @param path     the resource path.
      * @param id       the resource identifier.
      * @param registry the registry instance.
      *
@@ -82,9 +80,8 @@ public class SchemaImpl extends GovernanceArtifactImpl implements Schema {
      *
      * @param qName the qualified name.
      *
-     * @throws GovernanceException if the operation failed.
      */
-    public void setQName(QName qName) throws GovernanceException {
+    public void setQName(QName qName) {
         // the path will be synced with the qualified name
         this.qname = qName;
     }

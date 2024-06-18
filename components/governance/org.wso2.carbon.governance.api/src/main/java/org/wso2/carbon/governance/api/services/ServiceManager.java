@@ -46,6 +46,7 @@ public class ServiceManager {
      * Constructor accepting an instance of the registry to use.
      *
      * @param registry the instance of the registry.
+     * @throws RegistryException if the operation failed.
      */
     public ServiceManager(Registry registry) throws RegistryException {
         this(registry, GovernanceConstants.SERVICE_MEDIA_TYPE);
@@ -57,6 +58,7 @@ public class ServiceManager {
      *
      * @param registry  the instance of the registry.
      * @param mediaType the media type of resources being saved or fetched.
+     * @throws RegistryException if the operation failed.
      */
     protected ServiceManager(Registry registry, String mediaType) throws RegistryException {
         GovernanceArtifactConfiguration configuration =

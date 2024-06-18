@@ -35,8 +35,6 @@ import javax.cache.event.CacheEntryListenerException;
 /**
  * This is a listener class to listen to cache entry creations
  *
- * @param <K>
- * @param <V>
  */
 public class RXTConfigCacheEntryCreatedListener<K, V> implements CacheEntryCreatedListener<K, V> {
     private static final Log log = LogFactory.getLog(RXTConfigCacheEntryCreatedListener.class);

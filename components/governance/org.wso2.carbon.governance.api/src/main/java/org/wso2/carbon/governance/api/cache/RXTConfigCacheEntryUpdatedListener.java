@@ -35,8 +35,7 @@ import javax.cache.event.CacheEntryUpdatedListener;
 
 /**
  * This is a listener class to listen to cache entry updates
- * @param <K>
- * @param <V>
+ *
  */
 public class RXTConfigCacheEntryUpdatedListener<K, V>  implements CacheEntryUpdatedListener<K, V> {
     private static final Log log = LogFactory.getLog(RXTConfigCacheEntryUpdatedListener.class);

@@ -22,11 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
-import org.wso2.carbon.governance.api.util.GovernanceConstants;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
 
 import javax.xml.namespace.QName;
@@ -35,9 +33,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * This represents an endpoint artifact stored on the Registry. Endpoint artifacts are created as a
@@ -89,7 +84,7 @@ public class EndpointImpl extends GovernanceArtifactImpl implements Endpoint {
     }
 
     @Override
-    public void setQName(QName qName) throws GovernanceException {
+    public void setQName(QName qName) {
         this.name = qName.getLocalPart();
     }
 

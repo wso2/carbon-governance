@@ -773,7 +773,7 @@ public class GovernanceArtifactManager {
      * @param facetField field used for faceting
      * @param authRequired authorization required flag
      * @return term results
-     * @throws GovernanceException
+     * @throws GovernanceException if the operation failed.
      */
     public TermData[] getTermData(Map<String, List<String>> criteria, String facetField, boolean authRequired) throws GovernanceException {
         List<TermData> termsList;
@@ -913,7 +913,7 @@ public class GovernanceArtifactManager {
      * @param lcName Name of the lifecycle
      *
      * @return GovernanceArtifact array
-     * @throws GovernanceException
+     * @throws GovernanceException if the operation failed.
      */
     public GovernanceArtifact[] getAllGovernanceArtifactsByLifecycle(String lcName) throws GovernanceException {
         String[] paths = GovernanceUtils.getAllArtifactPathsByLifecycle(registry, lcName, mediaType);
@@ -930,7 +930,7 @@ public class GovernanceArtifactManager {
      * @param lcState Name of the current lifecycle state
      *
      * @return GovernanceArtifact array
-     * @throws GovernanceException
+     * @throws GovernanceException if the operation failed.
      */
     public GovernanceArtifact[] getAllGovernanceArtifactsByLIfecycleStatus(String lcName, String lcState)
             throws GovernanceException {
