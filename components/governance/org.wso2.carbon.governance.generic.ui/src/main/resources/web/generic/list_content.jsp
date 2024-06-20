@@ -275,7 +275,7 @@
         <tr>
             <td class="deprecate-warning">From version 5.1.0 onwards, performing governance operations are deprecated
                 from the management console. Please use the publisher app(<a
-                        href='https://<%=hostName%>:<%=port%>/store'>https://<%=hostName%>:<%=port%>/store</a>) instead.
+                        href='https://<%=hostName%>:<%=port%>/publisher'>https://<%=hostName%>:<%=port%>/publisher</a>) instead.
             </td>
         </tr>
     </table>
