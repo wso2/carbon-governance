@@ -22,9 +22,7 @@ import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.common.SolrException;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.api.common.dataobjects.GovernanceArtifactImpl;
-import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
 import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
 import org.wso2.carbon.governance.api.util.GovernanceUtils;
@@ -34,19 +32,15 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.AsyncIndexer;
 import org.wso2.carbon.registry.indexing.IndexingManager;
-import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
 import org.wso2.carbon.registry.indexing.indexer.Indexer;
 import org.wso2.carbon.registry.indexing.indexer.XMLIndexer;
-import org.wso2.carbon.registry.indexing.service.RxtUnboundedFieldManagerService;
 import org.wso2.carbon.registry.indexing.solr.IndexDocument;
-import org.wso2.carbon.registry.indexing.utils.RxtUnboundedDataLoadUtils;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RXTIndexer extends XMLIndexer implements Indexer {
 
@@ -114,7 +108,7 @@ public class RXTIndexer extends XMLIndexer implements Indexer {
         }
 
         @Override
-        public void setQName(QName qName) throws GovernanceException {
+        public void setQName(QName qName) {
             throw new UnsupportedOperationException();
         }
 

@@ -208,7 +208,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             public QName getQName() {
                 return null;
             }
-            public void setQName(QName qName) throws GovernanceException {
+            public void setQName(QName qName) {
 
             }
         };
@@ -224,7 +224,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
             public QName getQName() {
                 return null;
             }
-            public void setQName (QName qName)  throws GovernanceException {}
+            public void setQName (QName qName) {}
         };
     }
 
@@ -401,6 +401,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
     /**
      * De-associate lifecycle associated with the artifact
      *
+     * @param lifecycleName lifecycle name of which actions are needed
      * @throws GovernanceException if an error occurred.
      */
     public void detachLifecycle(String lifecycleName) throws GovernanceException {
@@ -1425,7 +1426,7 @@ public abstract class GovernanceArtifactImpl implements GovernanceArtifact {
      * @param artifactID lifecycle associated artifacts id.
      * @param lcName     lifecycle name.
      * @return a map of current lifecycle state duration colour and duration.
-     * @throws GovernanceException
+     * @throws GovernanceException throws if the operation failed.
      */
     @Override
     public Map<String, String> getCurrentStateDuration(String artifactID, String lcName) throws GovernanceException {

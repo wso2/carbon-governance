@@ -89,6 +89,8 @@ public class GovernanceArtifactConfiguration {
 
     /**
      * Method to get the content URL.
+     *
+     * @return content URL
      */
     public String getContentURL() {
         return contentURL;
@@ -123,6 +125,8 @@ public class GovernanceArtifactConfiguration {
 
     /**
      * Method to get whether namespace exists.
+     *
+     * @return existence of namespace
      */
     public boolean hasNamespace() {
         return hasNamespace;
@@ -487,6 +491,8 @@ public class GovernanceArtifactConfiguration {
     /**
      * Method to associate taxonomy with the artifact configuration
      *
+     * @param disable enable or disable
+     * @param isGlobal global or not
      * @param taxonomyName Name of the taxonomy associated with the artifact configuration
      */
     public void setTaxonomy(String taxonomyName,Boolean disable,Boolean isGlobal) {

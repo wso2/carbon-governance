@@ -33,8 +33,7 @@ import javax.cache.event.CacheEntryRemovedListener;
 
 /**
  * This is a listener class to listen to cache entry removals
- * @param <K>
- * @param <V>
+ *
  */
 public class RXTConfigCacheEntryRemovedListener<K, V>  implements CacheEntryRemovedListener<K, V> {
     private static final Log log = LogFactory.getLog(RXTConfigCacheEntryRemovedListener.class);

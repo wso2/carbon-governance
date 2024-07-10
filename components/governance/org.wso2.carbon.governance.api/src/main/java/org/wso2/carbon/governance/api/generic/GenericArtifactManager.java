@@ -133,6 +133,7 @@ public class GenericArtifactManager {
      * Creates a new artifact from the given qualified name.
      *
      * @param qName the qualified name of this artifact.
+     * @param content content
      *
      * @return the artifact added.
      * @throws GovernanceException if the operation failed.
@@ -271,7 +272,7 @@ public class GenericArtifactManager {
      * @param facetField field used for faceting
      * @param authRequired authorization required flag
      * @return term results
-     * @throws GovernanceException
+     * @throws GovernanceException if the operation failed.
      */
     public TermData[] getTermData(Map<String, List<String>> criteria, String facetField, boolean authRequired) throws GovernanceException {
         return manager.getTermData(criteria, facetField, authRequired);
@@ -325,7 +326,7 @@ public class GenericArtifactManager {
      * @param lcName Name of the lifecycle
      *
      * @return GenericArtifact array
-     * @throws GovernanceException
+     * @throws GovernanceException if the operation failed.
      */
     public GenericArtifact[] getAllGenericArtifactsByLifecycle(String lcName) throws GovernanceException {
         return getGenericArtifacts(manager.getAllGovernanceArtifactsByLifecycle(lcName));
@@ -338,7 +339,7 @@ public class GenericArtifactManager {
      * @param lcState Name of the current lifecycle state
      *
      * @return GenericArtifact array
-     * @throws GovernanceException
+     * @throws GovernanceException if the operation failed.
      */
     public GenericArtifact[] getAllGenericArtifactsByLifecycleStatus(String lcName, String lcState) throws GovernanceException {
         return getGenericArtifacts(manager.getAllGovernanceArtifactsByLIfecycleStatus(lcName, lcState));

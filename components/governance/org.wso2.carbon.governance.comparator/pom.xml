@@ -81,7 +81,7 @@
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.resources;version="${imp.pkg.version.javax.servlet}",
-                            org.eclipse.equinox.http.helper,
+                            org.eclipse.osgi.services,
                             org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>

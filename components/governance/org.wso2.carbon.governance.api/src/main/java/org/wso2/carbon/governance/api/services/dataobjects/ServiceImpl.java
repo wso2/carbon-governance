@@ -104,9 +104,8 @@ public class ServiceImpl extends GovernanceArtifactImpl implements Service {
      *
      * @param qName the qualified name.
      *
-     * @throws GovernanceException if the operation failed.
      */
-    public void setQName(QName qName) throws GovernanceException {
+    public void setQName(QName qName) {
         // the path will be synced with the qualified name
         this.qName = qName;
     }
