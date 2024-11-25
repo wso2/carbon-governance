@@ -302,7 +302,7 @@ td.deprecate-warning {
      %>
      <table width="100%" style="margin: 0px 0px 5px 0px;">
         <tr>
-            <td class="deprecate-warning">From version 5.1.0 onwards, performing governance operations are deprecated from the management console. Please use the publisher app(<a href='https://<%=hostName%>:<%=port%>/store'>https://<%=hostName%>:<%=port%>/store</a>) instead.</td>
+            <td class="deprecate-warning">From version 5.1.0 onwards, performing governance operations are deprecated from the management console. Please use the publisher app(<a href='https://<%=hostName%>:<%=port%>/publisher'>https://<%=hostName%>:<%=port%>/publisher</a>) instead.</td>
         </tr>
     </table>
     <div id="middle">
