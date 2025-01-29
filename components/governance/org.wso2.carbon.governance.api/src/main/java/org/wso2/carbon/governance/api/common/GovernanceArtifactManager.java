@@ -153,6 +153,18 @@ public class GovernanceArtifactManager {
     }
 
     /**
+     * Creates a new artifact from the given qualified name.
+     *
+     * @param uuid the UUID of the artifact.
+     * @return the artifact added.
+     * @throws GovernanceException if the operation failed.
+     */
+    public GovernanceArtifact newGovernanceArtifact(String uuid) throws GovernanceException {
+        List<String> uniqueAttributes = GovernanceUtils.getUniqueAttributesNames(registry, mediaType);
+        return GovernanceArtifactImpl.create(registry, uuid, uniqueAttributes);
+    }
+
+    /**
      * Creates a new artifact from the given content.
      *
      * @param content the artifact content.

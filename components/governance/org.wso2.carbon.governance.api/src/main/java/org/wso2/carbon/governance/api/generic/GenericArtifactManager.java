@@ -130,6 +130,20 @@ public class GenericArtifactManager {
     }
 
     /**
+     * Creates a new artifact from the given qualified name and uuid.
+     * @param qName the qualified name of this artifact.
+     * @param uuid the uuid of this artifact.
+     * @return the artifact added.
+     * @throws GovernanceException if the operation failed.
+     */
+    public GenericArtifact newGovernanceArtifact(QName qName, String uuid) throws GovernanceException {
+        GenericArtifactImpl genericArtifact =
+                new GenericArtifactImpl(manager.newGovernanceArtifact(uuid), mediaType) {};
+        genericArtifact.setQName(qName);
+        return genericArtifact;
+    }
+
+    /**
      * Creates a new artifact from the given qualified name.
      *
      * @param qName the qualified name of this artifact.

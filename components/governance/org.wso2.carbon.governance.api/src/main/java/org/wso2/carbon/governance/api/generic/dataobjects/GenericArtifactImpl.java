@@ -201,8 +201,6 @@ public class GenericArtifactImpl extends GovernanceArtifactImpl implements Gener
      * Method to set the qualified name of this artifact.
      *
      * @param qName the qualified name.
-     *
-     * @throws GovernanceException if the operation failed.
      */
     public void setQName(QName qName) {
         // the path will be synced with the qualified name
