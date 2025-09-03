@@ -17,13 +17,15 @@
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
+<%@ page import="org.owasp.encoder.Encode" %>
+
 <%
     String parentPath = request.getParameter("parentPath");
 %>
 
 <br/>
 <form id="customUIForm" action="../governance/service/import/mex_add_handler_ajaxprocessor.jsp" method="post">
-<input type="hidden" name="parentPath" value="<%=parentPath%>"/>
+<input type="hidden" name="parentPath" value="<%=Encode.forHtmlAttribute(parentPath)%>"/>
 <table cellspacing="0" cellpadding="0" border="0" style="width:100%" class="styledLeft">
     <thead>
         <tr>
