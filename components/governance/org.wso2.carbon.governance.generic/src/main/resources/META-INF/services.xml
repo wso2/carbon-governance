@@ -41,13 +41,13 @@
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/resources/govern/generic/list</parameter>
         </operation>
         <operation name="getArtifactUIConfiguration">
-            <parameter name="AuthorizationAction" locked="true">/permission/admin/login</parameter>
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/governance/manage-rxt</parameter>
         </operation>
         <operation name="getAvailableAspects">
-            <parameter name="AuthorizationAction" locked="true">/permission/admin/login</parameter>
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/governance/manage-rxt</parameter>
         </operation>
         <operation name="canChange">
-            <parameter name="AuthorizationAction" locked="true">/permission/admin/login</parameter>
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/governance/manage-rxt</parameter>
         </operation>
         <operation name="addRXTResource">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/configure/governance/manage-rxt</parameter>
