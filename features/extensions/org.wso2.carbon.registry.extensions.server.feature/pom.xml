@@ -64,10 +64,6 @@
             <artifactId>wadl-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.scm.wso2</groupId>
-            <artifactId>maven-scm</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-scxml.wso2</groupId>
             <artifactId>commons-scxml</artifactId>
             <version>${commons.scxml.wso2.version}</version>
@@ -132,7 +128,6 @@
                             <importBundles>
                                 <importBundleDef>org.wso2.wsdl.validator.wso2:wsdl-validator</importBundleDef>
                                 <importBundleDef>org.wso2.orbit.wadl.core:wadl-core:1.1.6.wso2v1</importBundleDef>
-                                <importBundleDef>org.apache.maven.scm.wso2:maven-scm</importBundleDef>
                                 <importBundleDef>commons-scxml.wso2:commons-scxml</importBundleDef>
                             </importBundles>
                             <importFeatures>
