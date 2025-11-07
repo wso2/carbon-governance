@@ -1395,11 +1395,6 @@
                 <version>1.1.6.wso2v1</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.maven.scm.wso2</groupId>
-                <artifactId>maven-scm</artifactId>
-                <version>1.7.0.wso2v2</version>
-            </dependency>
-            <dependency>
                 <groupId>com.ibm.icu</groupId>
                 <artifactId>icu4j</artifactId>
                 <version>3.8</version>
