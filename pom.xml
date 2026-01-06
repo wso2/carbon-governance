@@ -1431,7 +1431,7 @@
                 <version>${apache.felix.scr.ds.annotations.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.eclipse.osgi</groupId>
+                <groupId>org.eclipse.platform</groupId>
                 <artifactId>org.eclipse.osgi.services</artifactId>
                 <version>${version.org.eclipse.osgi.services}</version>
             </dependency>
@@ -1518,7 +1518,7 @@
 
         <!-- Servlet API -->
         <exp.pkg.version.javax.servlet>2.6.0</exp.pkg.version.javax.servlet>
-        <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
+        <imp.pkg.version.javax.servlet>[3.1.0, 4.0.0)</imp.pkg.version.javax.servlet>
 
         <!-- Misc -->
         <scxml.version>0.9.0.wso2v1</scxml.version>
@@ -1563,8 +1563,8 @@
 
     <apache.felix.scr.ds.annotations.version>1.2.4</apache.felix.scr.ds.annotations.version>
         <maven.scr.plugin.version>1.26.0</maven.scr.plugin.version>
-        <version.maven.bundle.plugin>3.2.0</version.maven.bundle.plugin>
-        <version.org.eclipse.osgi.services>3.5.100.v20160504-1419</version.org.eclipse.osgi.services>
+        <version.maven.bundle.plugin>5.1.9</version.maven.bundle.plugin>
+        <version.org.eclipse.osgi.services>3.12.0</version.org.eclipse.osgi.services>
         <imp.package.version.osgi.services>[1.2.0,2.0.0)</imp.package.version.osgi.services>
     </properties>
 </project>
