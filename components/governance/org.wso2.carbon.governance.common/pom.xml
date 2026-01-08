@@ -87,6 +87,9 @@
                             org.apache.commons.logging.*; version="${commons-logging.osgi.version.range}",
                             org.osgi.framework.*
                         </Import-Package>
+                        <Provide-Capability>
+                            osgi.service;objectClass=org.wso2.carbon.governance.common.GovernanceConfigurationService,
+                        </Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
