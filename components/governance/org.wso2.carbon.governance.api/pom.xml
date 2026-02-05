@@ -217,10 +217,9 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.16</version>
+                <version>${maven.surefire.plugin.version}</version>
                 <inherited>true</inherited>
                 <configuration>
-                    <forkMode>pertest</forkMode>
                     <argLine>
                         --add-opens=java.xml/jdk.xml.internal=ALL-UNNAMED
                         --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED

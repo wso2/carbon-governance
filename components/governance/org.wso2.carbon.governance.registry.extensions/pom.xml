@@ -124,10 +124,9 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.7.1</version>
+                <version>${maven.surefire.plugin.version}</version>
                 <inherited>true</inherited>
                 <configuration>
-                    <forkMode>pertest</forkMode>
                     <argLine>-enableassertions</argLine>
                     <testFailureIgnore>false</testFailureIgnore>
                     <excludes>
