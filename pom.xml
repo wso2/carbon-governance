@@ -27,7 +27,7 @@
     <groupId>org.wso2.carbon.governance</groupId>
     <artifactId>carbon-governance</artifactId>
     <packaging>pom</packaging>
-    <version>4.8.39-SNAPSHOT</version>
+    <version>4.9.0-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -63,7 +63,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.18.1</version>
+                    <version>${maven.surefire.plugin.version}</version>
                     <configuration>
                         <systemPropertyVariables>
                             <jacoco-agent.destfile>${basedir}/target/coverage-reports/jacoco-ut.exec
@@ -74,7 +74,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.19.1</version>
+                    <version>3.2.5</version>
                     <configuration>
                         <systemPropertyVariables>
                             <jacoco-agent.destfile>${basedir}/target/coverage-reports/jacoco-it.exec
@@ -1431,7 +1431,7 @@
                 <version>${apache.felix.scr.ds.annotations.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.eclipse.osgi</groupId>
+                <groupId>org.eclipse.platform</groupId>
                 <artifactId>org.eclipse.osgi.services</artifactId>
                 <version>${version.org.eclipse.osgi.services}</version>
             </dependency>
@@ -1455,11 +1455,11 @@
         <carbon.business.process.imp.pkg.version>[4.5.0, 4.6.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.8.26</carbon.registry.version>
+        <carbon.registry.version>4.9.1</carbon.registry.version>
         <carbon.registry.imp.pkg.version>[4.7.0, 5.0.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon governance version comes here-->
-        <carbon.governance.version>4.8.39-SNAPSHOT</carbon.governance.version>
+        <carbon.governance.version>4.9.0-SNAPSHOT</carbon.governance.version>
         <carbon.governance.package.export.version>${carbon.governance.version}
         </carbon.governance.package.export.version>
         <carbon.governance.package.import.version.range>[4.8.0, 5.0.0)
@@ -1518,7 +1518,7 @@
 
         <!-- Servlet API -->
         <exp.pkg.version.javax.servlet>2.6.0</exp.pkg.version.javax.servlet>
-        <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
+        <imp.pkg.version.javax.servlet>[3.1.0, 4.0.0)</imp.pkg.version.javax.servlet>
 
         <!-- Misc -->
         <scxml.version>0.9.0.wso2v1</scxml.version>
@@ -1555,7 +1555,7 @@
         <project.scm.id>my-scm-server</project.scm.id>
         <owasp.encoder.version>1.1</owasp.encoder.version>
 
-        <jacoco.version>0.8.2</jacoco.version>
+        <jacoco.version>0.8.12</jacoco.version>
         <mockito.version>2.4.2</mockito.version>
 
         <!-- Pax Logging -->
@@ -1563,8 +1563,9 @@
 
     <apache.felix.scr.ds.annotations.version>1.2.4</apache.felix.scr.ds.annotations.version>
         <maven.scr.plugin.version>1.26.0</maven.scr.plugin.version>
-        <version.maven.bundle.plugin>3.2.0</version.maven.bundle.plugin>
-        <version.org.eclipse.osgi.services>3.5.100.v20160504-1419</version.org.eclipse.osgi.services>
+        <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
+        <version.maven.bundle.plugin>5.1.9</version.maven.bundle.plugin>
+        <version.org.eclipse.osgi.services>3.12.0</version.org.eclipse.osgi.services>
         <imp.package.version.osgi.services>[1.2.0,2.0.0)</imp.package.version.osgi.services>
     </properties>
 </project>
