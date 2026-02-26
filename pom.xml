@@ -1441,13 +1441,13 @@
 
     <properties>
         <!-- Carbon kernel version -->
-        <carbon.kernel.version>4.5.0</carbon.kernel.version>
+        <carbon.kernel.version>4.11.1</carbon.kernel.version>
         <carbon.kernel.feature.version>4.5.0</carbon.kernel.feature.version>
         <carbon.kernel.imp.pkg.version>[4.5.0, 5.0.0)</carbon.kernel.imp.pkg.version>
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.7.11</carbon.commons.version>
+        <carbon.commons.version>4.13.2</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.7.0, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Business Process -->
@@ -1455,7 +1455,7 @@
         <carbon.business.process.imp.pkg.version>[4.5.0, 4.6.0)</carbon.business.process.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.9.1</carbon.registry.version>
+        <carbon.registry.version>4.9.4</carbon.registry.version>
         <carbon.registry.imp.pkg.version>[4.7.0, 5.0.0)</carbon.registry.imp.pkg.version>
 
         <!-- Carbon governance version comes here-->
@@ -1465,7 +1465,7 @@
         <carbon.governance.package.import.version.range>[4.8.0, 5.0.0)
         </carbon.governance.package.import.version.range>
 
-        <carbon.identity.framework.version>5.24.5</carbon.identity.framework.version>
+        <carbon.identity.framework.version>5.27.6</carbon.identity.framework.version>
         <carbon.identity.imp.pkg.version>[5.14.0, 6.0.0)</carbon.identity.imp.pkg.version>
 
 
@@ -1474,7 +1474,7 @@
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
 
         <!-- Axis2 Version -->
-        <axis2.version>1.6.1-wso2v38</axis2.version>
+        <axis2.version>1.6.1-wso2v120</axis2.version>
         <orbit.version.axis2>${axis2.version}</orbit.version.axis2>
         <axis2-transports.version>2.0.0-wso2v38</axis2-transports.version>
         <axis2.osgi.version.range>[1.6.1, 1.7.0)</axis2.osgi.version.range>
@@ -1483,7 +1483,7 @@
         <rampart.wso2.version>1.6.1-wso2v39</rampart.wso2.version>
 
         <!-- Apache Axiom -->
-        <axiom.version>1.2.11-wso2v16</axiom.version>
+        <axiom.version>1.2.11-wso2v34</axiom.version>
         <orbit.version.axiom>${axiom.version}</orbit.version.axiom>
         <axiom.wso2.version>${axiom.version}</axiom.wso2.version>
         <exp.pkg.version.axiom>1.2.11</exp.pkg.version.axiom>
