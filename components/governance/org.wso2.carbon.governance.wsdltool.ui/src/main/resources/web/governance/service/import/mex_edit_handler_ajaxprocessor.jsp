@@ -20,6 +20,10 @@
 <%@ page import="org.wso2.carbon.registry.common.ui.UIException" %>
 <%@ page import="org.wso2.carbon.governance.wsdltool.ui.utils.SaveWSDLToolUtil" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String esPath = request.getParameter("path");
     try {
         SaveWSDLToolUtil.saveEndpointBean(esPath, request, config, session);

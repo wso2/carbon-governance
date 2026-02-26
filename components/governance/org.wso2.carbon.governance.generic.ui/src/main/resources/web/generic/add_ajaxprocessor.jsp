@@ -25,6 +25,10 @@
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.UIException" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String error1 = "Your modification cause replacement of another resource!";
     String dataName = request.getParameter("dataName");
     String dataNamespace = request.getParameter("dataNamespace");

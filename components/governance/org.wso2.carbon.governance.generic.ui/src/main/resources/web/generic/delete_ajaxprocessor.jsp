@@ -21,6 +21,10 @@
 <%@ page import="org.wso2.carbon.governance.generic.ui.utils.GenericUtil" %>
 
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String errorMessage = null;
     String contextPath = (request.getContextPath().equals("") || request.getContextPath()
             .equals("/")) ? "" : request.getContextPath();

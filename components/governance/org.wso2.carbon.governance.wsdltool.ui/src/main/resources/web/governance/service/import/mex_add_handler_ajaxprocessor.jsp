@@ -24,6 +24,10 @@
 <%@ page import="java.net.URLEncoder" %>
 
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String parentPath = request.getParameter("parentPath");
     try {
         parentPath = URLEncoder.encode(parentPath, "UTF-8");
