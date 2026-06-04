@@ -111,7 +111,7 @@
             String error = request.getParameter("msg");
     %>
     <script type="text/javascript">
-        CARBON.showErrorDialog("<fmt:message key="unable.to.upload.file"/> " + "<%=(error != null) ? error : ""%>");
+        CARBON.showErrorDialog("<fmt:message key="unable.to.upload.file"/> " + "<%=(error != null) ? Encode.forJavaScript(error) : ""%>");
     </script>
     <%
         }
